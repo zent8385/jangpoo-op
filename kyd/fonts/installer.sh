@@ -28,13 +28,13 @@
 ###############################################################################
 
 
-# Android system locale, zh-TW = Traditional Chinese, zh-CN = Simplified Chinese
+# Android system locale
 lang=ko-KR
 
 update_font=0
 
 # check regular font
-if [ ! -f "/system/fonts/NotoSansKR-Regular.otf" ]; then
+if [ ! -f "/system/fonts/NotoSansCJKtc-Regular.otf" ]; then
     update_font=1
 fi
 
@@ -44,12 +44,12 @@ if [ $update_font -eq "1" ]; then
     mount -o remount,rw /system
     if [ $update_font -eq "1" ]; then
         # install font
-        cp -rf /data/openpilot/kyd/fonts/NotoSansKR-* /system/fonts/
+        cp -rf /data/openpilot/kyd/fonts/NotoSansCJ-* /system/fonts/
         # install font mapping
         cp -rf /data/openpilot/kyd/fonts/fonts.xml /system/etc/fonts.xml
         # change permissions
         chmod 644 /system/etc/fonts.xml
-        chmod 644 /system/fonts/NotoSansKR-*
+        chmod 644 /system/fonts/NotoSansCJ-*
     fi
     mount -o remount,r /system
 fi

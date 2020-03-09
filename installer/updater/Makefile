@@ -31,9 +31,9 @@ FRAMEBUFFER_LIBS = -lutils -lgui -lEGL
 .PHONY: all
 all: updater
 
-OBJS = NotoSansKR-Regular.otf.o \
-			 NotoSansKR-Medium.otf.o \
-			 NotoSansKR-Bold.otf.o \
+OBJS = NotoSansCJKtc-Regular.otf.o \
+			 NotoSansCJKtc-Medium.otf.o \
+			 NotoSansCJKtc-Bold.otf.o \
        ../../selfdrive/common/touch.o \
        ../../selfdrive/common/framebuffer.o \
        $(PHONELIBS)/json11/json11.o \
@@ -52,15 +52,15 @@ updater: updater.o $(OBJS)
     -lcutils -lm -llog
 	strip updater
 
-NotoSansCJKtc-Regular.otf.o: ../../selfdrive/assets/fonts/NotoSansKR-Regular.otf
+NotoSansCJKtc-Regular.otf.o: ../../selfdrive/assets/fonts/NotoSansCJKtc-Regular.otf
 	@echo "[ bin2o ] $@"
 	cd '$(dir $<)' && ld -r -b binary '$(notdir $<)' -o '$(abspath $@)'
 
-NotoSansCJKtc-Bold.otf.o: ../../selfdrive/assets/fonts/NotoSansKR-Bold.otf
+NotoSansCJKtc-Bold.otf.o: ../../selfdrive/assets/fonts/NotoSansCJKtc-Bold.otf
 	@echo "[ bin2o ] $@"
 	cd '$(dir $<)' && ld -r -b binary '$(notdir $<)' -o '$(abspath $@)'
 
-NotoSansCJKtc-Medium.otf.o: ../../selfdrive/assets/fonts/NotoSansKR-Medium.otf
+NotoSansCJKtc-Medium.otf.o: ../../selfdrive/assets/fonts/NotoSansCJKtc-Medium.otf
 	@echo "[ bin2o ] $@"
 	cd '$(dir $<)' && ld -r -b binary '$(notdir $<)' -o '$(abspath $@)'
 
