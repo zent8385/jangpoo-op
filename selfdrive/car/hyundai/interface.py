@@ -295,6 +295,11 @@ class CarInterface(CarInterfaceBase):
       ret.cruiseState.speed = 0
     ret.cruiseState.available = bool(self.CS.main_on)
     ret.cruiseState.standstill = False
+    
+    # Optima only has blinker flash signal
+    if self.CP.carFingerprint in [CAR.K5, CAR.K5_HYBRID, CAR.GRANDEUR_HYBRID, CAR.KONA_EV, CAR.STINGER, CAR.SONATA_TURBO,CAR.IONIQ_EV]:
+      self.CS.left_blinker_on = self.CS.left_blinker_flash or self.CS.prev_left_blinker_on and self.CC.turning_signal_timer
+      self.CS.right_blinker_on = self.CS.right_blinker_flash or self.CS.prev_right_blinker_on and self.CC.turning_signal_timer
 
     ret.lcaLeft = self.CS.lca_left != 0
     ret.lcaRight = self.CS.lca_right != 0
@@ -302,21 +307,21 @@ class CarInterface(CarInterfaceBase):
     # TODO: button presses
     buttonEvents = []
 
-    if self.CS.left_blinker_flash != self.CS.prev_left_blinker_flash:
+    if self.CS.left_blinker_on != self.CS.prev_left_blinker_on:
       be = car.CarState.ButtonEvent.new_message()
       be.type = ButtonType.leftBlinker
-      be.pressed = self.CS.left_blinker_flash != 0
+      be.pressed = self.CS.left_blinker_on != 0
       buttonEvents.append(be)
 
-    if self.CS.right_blinker_flash != self.CS.prev_right_blinker_flash:
+    if self.CS.right_blinker_on != self.CS.prev_right_blinker_on:
       be = car.CarState.ButtonEvent.new_message()
       be.type = ButtonType.rightBlinker
-      be.pressed = self.CS.right_blinker_flash != 0
+      be.pressed = self.CS.right_blinker_on != 0
       buttonEvents.append(be)
-
+      
     ret.buttonEvents = buttonEvents
-    ret.leftBlinker = bool(self.CS.left_blinker_flash)
-    ret.rightBlinker = bool(self.CS.right_blinker_flash)
+    ret.leftBlinker = bool(self.CS.left_blinker_on)
+    ret.rightBlinker = bool(self.CS.right_blinker_on)
 
     ret.doorOpen = not self.CS.door_all_closed
     ret.seatbeltUnlatched = not self.CS.seatbelt
