@@ -188,7 +188,7 @@ ALERTS = [
 
   Alert(
       "startupMaster",
-      "경고: 이 브랜치는 테스트 되지 않았습니다,
+      "경고: 이 브랜치는 테스트되지 않았습니다",
       "안전운전을 위해 항상 핸들을 잡고 도로교통 상황을 주시하세요",
       AlertStatus.userPrompt, AlertSize.mid,
       Priority.LOW_LOWEST, VisualAlert.none, AudibleAlert.none, 0., 0., 15.),
