@@ -32,38 +32,28 @@
 lang=ko-KR
 
 update_font=0
-remove_old_font=0
 
 # check regular font
-if [ ! -f "/system/fonts/NotoSansCJKtc-Regular.otf" ]; then
+if [ ! -f "/system/fonts/NotoSansKR-Regular.otf" ]; then
     update_font=1
 fi
 
-# check miui font
-if ls /system/fonts/Miui*.ttf 1> /dev/null 2>&1; then
-    remove_old_font=1
-fi
-
-if [ $update_font -eq "1" ] || [ $remove_old_font -eq "1" ]; then
+if [ $update_font -eq "1" ]; then
     # sleep 3 secs in case, make sure the /system is re-mountable
     sleep 3
     mount -o remount,rw /system
     if [ $update_font -eq "1" ]; then
         # install font
-        cp -rf /data/openpilot/kyd/fonts/NotoSansCJKtc-* /system/fonts/
+        cp -rf /data/openpilot/kyd/fonts/NotoSansKR-* /system/fonts/
         # install font mapping
         cp -rf /data/openpilot/kyd/fonts/fonts.xml /system/etc/fonts.xml
         # change permissions
         chmod 644 /system/etc/fonts.xml
-        chmod 644 /system/fonts/NotoSansCJKtc-*
-    fi
-    # remove miui font
-    if [ $remove_old_font -eq "1" ]; then
-        rm -fr /system/fonts/Miui*.ttf
+        chmod 644 /system/fonts/NotoSansKR-*
     fi
     mount -o remount,r /system
-    # change system locale
 fi
 
+# change system locale
 setprop persist.sys.locale $lang
 setprop persist.sys.local $lang
