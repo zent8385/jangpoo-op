@@ -665,7 +665,7 @@ static void bb_ui_draw_measures_right(UIState *s, int bb_x, int bb_y, int bb_w )
        snprintf(val_str, sizeof(val_str), "-");
     }
     if (s->is_metric) {
-      snprintf(uom_str, sizeof(uom_str), "km/h");;
+      snprintf(uom_str, sizeof(uom_str), "kph");;
     } else {
       snprintf(uom_str, sizeof(uom_str), "mph");
     }
