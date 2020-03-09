@@ -1,4 +1,4 @@
-#include <assert.h>
+﻿#include <assert.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <time.h>
@@ -572,7 +572,6 @@ static void bb_ui_draw_measures_left(UIState *s, int bb_x, int bb_y, int bb_w ) 
     char val_str[16];
     char uom_str[3];
     NVGcolor val_color = nvgRGBA(255, 255, 255, 200);
-
     //show red/orange if free space is low
     if(scene->freeSpace < 0.4) {
       val_color = nvgRGBA(255, 188, 3, 200);
@@ -580,10 +579,8 @@ static void bb_ui_draw_measures_left(UIState *s, int bb_x, int bb_y, int bb_w ) 
     if(scene->freeSpace < 0.2) {
       val_color = nvgRGBA(255, 0, 0, 200);
     }
-
     snprintf(val_str, sizeof(val_str), "%.0f%%", s->scene.freeSpace* 100);
     snprintf(uom_str, sizeof(uom_str), "");
-
     bb_h +=bb_ui_draw_measure(s, val_str, uom_str, "FREE SPACE",
       bb_rx, bb_ry, bb_uom_dx,
       val_color, lab_color, uom_color,
@@ -665,7 +662,7 @@ static void bb_ui_draw_measures_right(UIState *s, int bb_x, int bb_y, int bb_w )
        snprintf(val_str, sizeof(val_str), "-");
     }
     if (s->is_metric) {
-      snprintf(uom_str, sizeof(uom_str), "kph");;
+      snprintf(uom_str, sizeof(uom_str), "km/h");;
     } else {
       snprintf(uom_str, sizeof(uom_str), "mph");
     }
@@ -1369,11 +1366,11 @@ void ui_nvg_init(UIState *s) {
 
   s->font_courbd = nvgCreateFont(s->vg, "courbd", "../assets/fonts/courbd.ttf");
   assert(s->font_courbd >= 0);
-  s->font_sans_regular = nvgCreateFont(s->vg, "sans-regular", "../../kyd/fonts/NotoSansCJKtc-Regular.otf");
+  s->font_sans_regular = nvgCreateFont(s->vg, "sans-regular", "../assets/fonts/opensans_regular.ttf");
   assert(s->font_sans_regular >= 0);
-  s->font_sans_semibold = nvgCreateFont(s->vg, "sans-semibold", "../../kyd/fonts/NotoSansCJKtc-Medium.otf");
+  s->font_sans_semibold = nvgCreateFont(s->vg, "sans-semibold", "../assets/fonts/opensans_semibold.ttf");
   assert(s->font_sans_semibold >= 0);
-  s->font_sans_bold = nvgCreateFont(s->vg, "sans-bold", "../../kyd/fonts/NotoSansCJKtc-Bold.otf");
+  s->font_sans_bold = nvgCreateFont(s->vg, "sans-bold", "../assets/fonts/opensans_bold.ttf");
   assert(s->font_sans_bold >= 0);
 
   assert(s->img_wheel >= 0);
