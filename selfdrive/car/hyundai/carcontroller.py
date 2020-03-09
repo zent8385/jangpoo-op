@@ -112,14 +112,20 @@ class CarController():
     # Fix for sharp turns mdps fault and Genesis hard fault at low speed
     if CS.v_ego < 15.5 and self.car_fingerprint == CAR.GENESIS and not CS.mdps_bus:
       self.turning_signal_timer = 100
-    if ((CS.left_blinker_flash or CS.right_blinker_flash or CS.left_blinker_on or CS.right_blinker_on) and (CS.steer_override or abs(CS.angle_steers) > 10.) and CS.v_ego < 16.666667): # Disable steering when blinker on and belwo ALC speed
-      self.turning_signal_timer = 100  # Disable for 1.0 Seconds after blinker turned off
+      
+    # Disable steering while turning blinker on and speed below 60 kph
+    if CS.left_blinker_on or CS.right_blinker_on:
+      if self.car_fingerprint not in [CAR.K5, CAR.K5_HYBRID, CAR.GRANDEUR_HYBRID, CAR.KONA_EV, CAR.STINGER, CAR.SONATA_TURBO, CAR.IONIQ_EV]:
+        self.turning_signal_timer = 100  # Disable for 1.0 Seconds after blinker turned off
+      elif CS.left_blinker_flash or CS.right_blinker_flash:
+        self.turning_signal_timer = 100
     if self.turning_signal_timer and CS.v_ego < 16.666667:
       lkas_active = 0
+    if self.turning_signal_timer:
       self.turning_signal_timer -= 1
     if not lkas_active:
       apply_steer = 0
-
+      
     steer_req = 1 if apply_steer else 0
 
     self.apply_accel_last = apply_accel
@@ -130,7 +136,7 @@ class CarController():
             left_line, right_line,left_lane_depart, right_lane_depart)
 
     clu11_speed = CS.clu11["CF_Clu_Vanz"]
-    enabled_speed = 34 if CS.is_set_speed_in_mph  else 55
+    enabled_speed = 38 if CS.is_set_speed_in_mph  else 60
     if clu11_speed > enabled_speed or not lkas_active:
       enabled_speed = clu11_speed
 
