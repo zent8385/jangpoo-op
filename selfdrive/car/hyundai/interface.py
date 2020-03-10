@@ -336,7 +336,7 @@ class CarInterface(CarInterfaceBase):
     self.turning_indicator_alert = True if self.CC.turning_signal_timer and self.CS.v_ego < 16.666667 else False
     # LKAS button alert logic
     self.lkas_button_alert = True if not self.CC.lkas_button else False
-    if self.CP.carFingerprint in [CAR.GRANDEUR_HYBRID, CAR.KONA, CAR.IONIQ]:
+    if self.CP.carFingerprint in [CAR.GRANDEUR_HYBRID, CAR.KONA, CAR.IONIQ, CAR.KONA_EV]:
       self.lkas_button_alert = True if self.CC.lkas_button else False
 
     events = []
