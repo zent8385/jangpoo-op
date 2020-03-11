@@ -294,7 +294,7 @@ ALERTS = [
   Alert(
       "posenetInvalid",
       "핸들을 잡아주세요",
-      "전방 영상 인식이 부정확합니다",
+      "전방 영상 인식이 불확실합니다",
       AlertStatus.userPrompt, AlertSize.mid,
       Priority.LOW, VisualAlert.steerRequired, AudibleAlert.chimeWarning1, .4, 2., 3.),
 
@@ -629,7 +629,7 @@ ALERTS = [
   Alert(
       "posenetInvalidNoEntry",
       "오픈파일럿 사용 불가",
-      "전방 영상 인식이 부정확합니다",
+      "전방 영상 인식이 불확실합니다",
       AlertStatus.normal, AlertSize.mid,
       Priority.LOW, VisualAlert.none, AudibleAlert.chimeError, .4, 2., 3.),
 
