@@ -335,9 +335,9 @@ class CarInterface(CarInterfaceBase):
     # turning indicator alert hysteresis logic
     self.turning_indicator_alert = True if self.CC.turning_signal_timer and self.CS.v_ego < 16.666667 else False
     # LKAS button alert logic
-    if self.CP.carFingerprint in [CAR.K5, CAR.K5_HYBRID, CAR.SORENTO, CAR.GRANDEUR, CAR. GRANDEUR_HYBRID, CAR.IONIQ_EV]:
+    if self.CP.carFingerprint in [CAR.K5, CAR.K5_HYBRID, CAR.SORENTO, CAR.GRANDEUR, CAR. GRANDEUR_HYBRID, CAR.IONIQ_EV, CAR.KONA_EV]:
       self.lkas_button_alert = True if not self.CC.lkas_button else False
-    if self.CP.carFingerprint in [CAR.KONA, CAR.KONA_EV, CAR.IONIQ]:
+    if self.CP.carFingerprint in [CAR.KONA, CAR.IONIQ]:
       self.lkas_button_alert = True if self.CC.lkas_button else False
 
     events = []
