@@ -337,7 +337,7 @@ class CarInterface(CarInterfaceBase):
     # LKAS button alert logic
     if self.CP.carFingerprint in [CAR.K5, CAR.K5_HYBRID, CAR.SORENTO, CAR.GRANDEUR, CAR.IONIQ_EV, CAR.KONA_EV]:
       self.lkas_button_alert = True if not self.CC.lkas_button else False
-    if self.CP.carFingerprint in [CAR.KONA, CAR.IONIQ, CAR.GRANDEUR_HYBRID]:
+    if self.CP.carFingerprint in [CAR.KONA, CAR.IONIQ]:
       self.lkas_button_alert = True if self.CC.lkas_button else False
 
     events = []
