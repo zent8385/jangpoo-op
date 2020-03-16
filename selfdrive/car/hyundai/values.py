@@ -193,8 +193,8 @@ CHECKSUM = {
 }
 
 FEATURES = {
-  "use_cluster_gears": [CAR.AVANTE, CAR.KONA, CAR.I30, CAR.GRANDEUR],  # Use Cluster for Gear Selection, rather than Transmission
-  "use_tcu_gears": [CAR.K5, CAR.K7, CAR.SONATA, CAR.SONATA_TURBO],  # Use TCU Message for Gear Selection
+  "use_cluster_gears": [CAR.AVANTE, CAR.KONA, CAR.I30, CAR.GRANDEUR, CAR.K7],  # Use Cluster for Gear Selection, rather than Transmission
+  "use_tcu_gears": [CAR.K5, CAR.SONATA, CAR.SONATA_TURBO],  # Use TCU Message for Gear Selection
   "use_elect_gears": [CAR.K5_HYBRID, CAR.SONATA_HYBRID, CAR.GRANDEUR_HYBRID, CAR.IONIQ_EV, CAR.KONA_EV, CAR.NIRO_EV],
 }
 
