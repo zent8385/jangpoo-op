@@ -113,7 +113,7 @@ class CarInterface(CarInterfaceBase):
       ret.steerRateCost = 0.4
       ret.lateralTuning.pid.kiBP, ret.lateralTuning.pid.kpBP = [[0.], [0.]]
       ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.25], [0.05]]
-    elif candidate == CAR.GRANDEUR:
+    elif candidate in [CAR.GRANDEUR, CAR.K7]:
       ret.lateralTuning.pid.kf = 0.00005
       ret.mass = 1570. + STD_CARGO_KG
       ret.wheelbase = 2.885
@@ -121,7 +121,7 @@ class CarInterface(CarInterfaceBase):
       ret.steerRateCost = 0.4
       ret.lateralTuning.pid.kiBP, ret.lateralTuning.pid.kpBP = [[0.], [0.]]
       ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.25], [0.05]]
-    elif candidate == CAR.GRANDEUR_HYBRID:
+    elif candidate in [CAR.GRANDEUR_HYBRID, CAR.K7_HYBRID]:
       ret.lateralTuning.pid.kf = 0.00005
       ret.mass = 1675. + STD_CARGO_KG
       ret.wheelbase = 2.885
@@ -296,8 +296,8 @@ class CarInterface(CarInterfaceBase):
     ret.cruiseState.available = bool(self.CS.main_on)
     ret.cruiseState.standstill = False
     
-    # Optima only has blinker flash signal
-    if self.CP.carFingerprint in [CAR.K5, CAR.K5_HYBRID, CAR.GRANDEUR_HYBRID, CAR.KONA_EV, CAR.STINGER, CAR.SONATA_TURBO, CAR.IONIQ_EV, CAR.SORENTO, CAR.GRANDEUR]:
+    # Some HKG cars only have blinker flash signal
+    if self.CP.carFingerprint in [CAR.K5, CAR.K5_HYBRID, CAR.GRANDEUR_HYBRID, CAR.KONA_EV, CAR.STINGER, CAR.SONATA_TURBO, CAR.IONIQ_EV, CAR.SORENTO, CAR.GRANDEUR, CAR.K7, CAR.K7_HYBRID]:
       self.CS.left_blinker_on = self.CS.left_blinker_flash or self.CS.prev_left_blinker_on and self.CC.turning_signal_timer
       self.CS.right_blinker_on = self.CS.right_blinker_flash or self.CS.prev_right_blinker_on and self.CC.turning_signal_timer
 
@@ -335,12 +335,12 @@ class CarInterface(CarInterfaceBase):
     # turning indicator alert hysteresis logic
     self.turning_indicator_alert = True if self.CC.turning_signal_timer and self.CS.v_ego < 16.666667 else False
     # LKAS button alert logic
-    if self.CP.carFingerprint in [CAR.K5, CAR.K5_HYBRID, CAR.SORENTO, CAR.GRANDEUR, CAR.IONIQ_EV, CAR.KONA_EV]:
-      self.lkas_button_alert = True if not self.CC.lkas_button else False
-    if self.CP.carFingerprint in [CAR.KONA, CAR.IONIQ]:
-      self.lkas_button_alert = True if self.CC.lkas_button else False
-    if self.CP.carFingerprint in [CAR.GRANDEUR_HYBRID]:
-      self.lkas_button_alert = False
+#    if self.CP.carFingerprint in [CAR.K5, CAR.K5_HYBRID, CAR.SORENTO, CAR.GRANDEUR, CAR.IONIQ_EV, CAR.KONA_EV]:
+#      self.lkas_button_alert = True if not self.CC.lkas_button else False
+#    if self.CP.carFingerprint in [CAR.KONA, CAR.IONIQ]:
+#      self.lkas_button_alert = True if self.CC.lkas_button else False
+#    if self.CP.carFingerprint in [CAR.GRANDEUR_HYBRID, CAR.K7_HYBRID]:
+#      self.lkas_button_alert = False
 
     events = []
     if not ret.gearShifter == GearShifter.drive:
@@ -375,8 +375,8 @@ class CarInterface(CarInterfaceBase):
       events.append(create_event('belowSteerSpeed', [ET.WARNING]))
     if self.turning_indicator_alert:
       events.append(create_event('turningIndicatorOn', [ET.WARNING]))
-    if self.lkas_button_alert:
-      events.append(create_event('lkasButtonOff', [ET.WARNING]))
+#    if self.lkas_button_alert:
+#      events.append(create_event('lkasButtonOff', [ET.WARNING]))
     #TODO Varible for min Speed for LCA
     if ret.rightBlinker and ret.lcaRight and self.CS.v_ego > (60 * CV.KPH_TO_MS):
       events.append(create_event('rightLCAbsm', [ET.WARNING]))
