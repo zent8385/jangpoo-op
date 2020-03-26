@@ -390,7 +390,7 @@ class CarState():
       elif cp.vl["CLU15"]["CF_Clu_InhibitR"] == 1:
         self.gear_shifter = GearShifter.reverse
       else:
-        self.gear_shifter = GearShifter.unknown
+        self.gear_shifter = GearShifter.drive # fixed by KYD to resolve "Gear not D" issue
     # Gear Selecton via TCU12
     elif self.car_fingerprint in FEATURES["use_tcu_gears"]:
       gear = cp.vl["TCU12"]["CUR_GR"]
@@ -401,7 +401,7 @@ class CarState():
       elif gear > 0 and gear < 9:    # unaware of anything over 8 currently
         self.gear_shifter = GearShifter.drive
       else:
-        self.gear_shifter = GearShifter.unknown
+        self.gear_shifter = GearShifter.drive # fixed by KYD to resolve "Gear not D" issue
     # Gear Selecton - This is only compatible with optima hybrid 2017
     elif self.car_fingerprint in FEATURES["use_elect_gears"]:
       gear = cp.vl["ELECT_GEAR"]["Elect_Gear_Shifter"]
@@ -414,7 +414,7 @@ class CarState():
       elif gear == 7:
         self.gear_shifter = GearShifter.reverse
       else:
-        self.gear_shifter = GearShifter.unknown
+        self.gear_shifter = GearShifter.drive # fixed by KYD to resolve "Gear not D" issue
     # Gear Selecton - This is not compatible with all Kia/Hyundai's, But is the best way for those it is compatible with
     else:
       gear = cp.vl["LVR12"]["CF_Lvr_Gear"]
@@ -427,7 +427,7 @@ class CarState():
       elif gear == 7:
         self.gear_shifter = GearShifter.reverse
       else:
-        self.gear_shifter = GearShifter.unknown
+        self.gear_shifter = GearShifter.drive # fixed by KYD to resolve "Gear not D" issue
 
     self.lkas_button_on = 7 > cp_cam.vl["LKAS11"]["CF_Lkas_LdwsSysState"] != 0
     self.lkas_error = cp_cam.vl["LKAS11"]["CF_Lkas_LdwsSysState"] == 7
