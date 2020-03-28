@@ -823,7 +823,7 @@ static void ui_draw_vision_maxspeed(UIState *s) {
   } else {
     nvgFillColor(s->vg, nvgRGBA(255, 255, 255, 100));
   }
-  nvgText(s->vg, viz_maxspeed_x+(viz_maxspeed_xo/2)+(viz_maxspeed_w/2), 148, "크루즈속도", NULL);
+  nvgText(s->vg, viz_maxspeed_x+(viz_maxspeed_xo/2)+(viz_maxspeed_w/2), 148, "설정속도", NULL);
 
   // Draw Speed Text
   nvgFontFace(s->vg, "sans-bold");
