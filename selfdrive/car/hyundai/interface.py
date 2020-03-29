@@ -246,12 +246,12 @@ class CarInterface(CarInterfaceBase):
     ret.sasBus = 1 if 688 in fingerprint[1] and 1296 not in fingerprint[1] else 0
     ret.sccBus = 0 if 1056 in fingerprint[0] else 1 if 1056 in fingerprint[1] and 1296 not in fingerprint[1] \
                                                                      else 2 if 1056 in fingerprint[2] else -1
-    ret.autoLcaEnabled = 1
+    ret.autoLcaEnabled = 0
 
     return ret
 
   # returns a car.CarState
-  def update(self, c, can_strings):
+  def update(self, c, can_strings):     # c => CC
     # ******************* do can recv *******************
     self.cp.update_strings(can_strings)
     self.cp2.update_strings(can_strings)
@@ -342,6 +342,7 @@ class CarInterface(CarInterfaceBase):
     # turning indicator alert hysteresis logic
     self.turning_indicator_alert = True if self.CC.turning_signal_timer and self.CS.v_ego < 16.666667 else False
     # LKAS button alert logic
+    self.lkas_button_alert = not self.CC.lkas_button
 #    if self.CP.carFingerprint in [CAR.K5, CAR.K5_HYBRID, CAR.SORENTO, CAR.GRANDEUR, CAR.IONIQ_EV, CAR.KONA_EV]:
 #      self.lkas_button_alert = True if not self.CC.lkas_button else False
 #    if self.CP.carFingerprint in [CAR.KONA, CAR.IONIQ]:
@@ -380,10 +381,10 @@ class CarInterface(CarInterfaceBase):
 
     if self.low_speed_alert and not self.CS.mdps_bus :
       events.append(create_event('belowSteerSpeed', [ET.WARNING]))
-    if self.turning_indicator_alert:
+    elif self.turning_indicator_alert:
       events.append(create_event('turningIndicatorOn', [ET.WARNING]))
-#    if self.lkas_button_alert:
-#      events.append(create_event('lkasButtonOff', [ET.WARNING]))
+    elif self.lkas_button_alert:
+      events.append(create_event('lkasButtonOff', [ET.WARNING]))
     #TODO Varible for min Speed for LCA
     if ret.rightBlinker and ret.lcaRight and self.CS.v_ego > (60 * CV.KPH_TO_MS):
       events.append(create_event('rightLCAbsm', [ET.WARNING]))
