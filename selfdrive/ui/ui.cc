@@ -861,7 +861,8 @@ int is_leon() {
 
 
 
-int main(int argc, char* argv[]) {
+int main(int argc, char* argv[]) 
+{
   int err;
   setpriority(PRIO_PROCESS, 0, -14);
 
@@ -906,12 +907,18 @@ int main(int argc, char* argv[]) {
   const int MIN_VOLUME = LEON ? 12 : 9;
   const int MAX_VOLUME = LEON ? 15 : 12;
 
+
+  printf("ui.cc  1111111111111start ==================> ");
   set_volume(MIN_VOLUME);
   s->volume_timeout = 5 * UI_FREQ;
   int draws = 0;
-  while (!do_exit) {
+  while (!do_exit) 
+  {
+    printf("ui.cc  start ==================> ");
+
     bool should_swap = false;
-    if (!s->vision_connected) {
+    if (!s->vision_connected) 
+    {
       // Delay a while to avoid 9% cpu usage while car is not started and user is keeping touching on the screen.
       // Don't hold the lock while sleeping, so that vision_connect_thread have chances to get the lock.
       usleep(30 * 1000);
