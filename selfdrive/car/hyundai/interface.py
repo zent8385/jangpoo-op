@@ -392,10 +392,10 @@ class CarInterface(CarInterfaceBase):
     elif self.turning_indicator_alert:
       events.append(create_event('turningIndicatorOn', [ET.WARNING]))
     elif self.CS.stopped:
-      if ret.cruiseState.standstill:
+      #if ret.cruiseState.standstill:
         events.append(create_event('resumeRequired', [ET.WARNING]))
-      else:
-        events.append(create_event('preStoped', [ET.WARNING]))
+      #else:
+      #  events.append(create_event('preStoped', [ET.WARNING]))
     elif self.low_speed_alert and not self.CS.mdps_bus:
       events.append(create_event('belowSteerSpeed', [ET.WARNING]))
 
