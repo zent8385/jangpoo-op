@@ -1,6 +1,23 @@
 from cereal import car
 from selfdrive.car import dbc_dict
+from selfdrive.config import Conversions as CV
 Ecu = car.CarParams.Ecu
+
+# Steer torque limits
+class SteerLimitParams:
+  STEER_MAX = 255   # 409 is the max, 255 is stock
+  STEER_DELTA_UP = 3
+  STEER_DELTA_DOWN = 5
+  STEER_DRIVER_ALLOWANCE = 50
+  STEER_DRIVER_MULTIPLIER = 2
+  STEER_DRIVER_FACTOR = 1
+
+
+class LaneChangeParms:
+  LANE_CHANGE_SPEED_MIN = 60 * CV.KPH_TO_MS
+  LANE_CHANGE_TIME_MAX = 10
+
+
 
 class CAR:
   AVANTE = "HYUNDAI AVANTE"
