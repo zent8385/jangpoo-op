@@ -58,7 +58,7 @@ if __name__ == "__main__":
               item = evt
               for key in value:
                 item = getattr(item, key)
-              print("{} = {}".format(".".join(value), item))
+              #print("{} = {}".format(".".join(value), item))
           print("")
         else:
           print(evt)
