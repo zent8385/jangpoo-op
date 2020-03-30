@@ -922,8 +922,6 @@ int main(int argc, char* argv[])
       usleep(30 * 1000);
     }
 
-    printf("ui.cc  start ==================>  %d \n", s->vision_connected);
-
     pthread_mutex_lock(&s->lock);
     double u1 = millis_since_boot();
 
@@ -992,8 +990,10 @@ int main(int argc, char* argv[])
       set_awake(s, false);
     }
 
+    printf(" ui.cc \n", );
     // Don't waste resources on drawing in case screen is off or car is not started.
-    if (s->awake && s->vision_connected) {
+    //if (s->awake && s->vision_connected) 
+    {
       dashcam(s, touch_x, touch_y);
       ui_draw(s);
       glFinish();
