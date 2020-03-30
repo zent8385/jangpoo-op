@@ -908,13 +908,11 @@ int main(int argc, char* argv[])
   const int MAX_VOLUME = LEON ? 15 : 12;
 
 
-  printf("ui.cc  1111111111111start ==================> ");
   set_volume(MIN_VOLUME);
   s->volume_timeout = 5 * UI_FREQ;
   int draws = 0;
   while (!do_exit) 
   {
-    printf("ui.cc  start ==================> ");
 
     bool should_swap = false;
     if (!s->vision_connected) 
@@ -923,6 +921,9 @@ int main(int argc, char* argv[])
       // Don't hold the lock while sleeping, so that vision_connect_thread have chances to get the lock.
       usleep(30 * 1000);
     }
+
+    printf("ui.cc  start ==================>  %d \n", s->vision_connected);
+
     pthread_mutex_lock(&s->lock);
     double u1 = millis_since_boot();
 
@@ -933,33 +934,43 @@ int main(int argc, char* argv[])
     if (smooth_brightness > 255) smooth_brightness = 255;
     set_brightness(s, (int)smooth_brightness);
 
-    if (!s->vision_connected) {
+    if (!s->vision_connected) 
+    {
       // Car is not started, keep in idle state and awake on touch events
       zmq_pollitem_t polls[1] = {{0}};
       polls[0].fd = s->touch_fd;
       polls[0].events = ZMQ_POLLIN;
       int ret = zmq_poll(polls, 1, 0);
-      if (ret < 0){
+      if (ret < 0)
+      {
         if (errno == EINTR) continue;
         LOGW("poll failed (%d)", ret);
-      } else if (ret > 0) {
+      } 
+      else if (ret > 0) 
+      {
         // awake on any touch
         int touch_x = -1, touch_y = -1;
         int touched = touch_read(&touch, &touch_x, &touch_y);
-        if (touched == 1) {
+        if (touched == 1) 
+        {
           set_awake(s, true);
         }
       }
-      if (s->status != STATUS_STOPPED) {
+      if (s->status != STATUS_STOPPED) 
+      {
         update_status(s, STATUS_STOPPED);
       }
-    } else {
-      if (s->status == STATUS_STOPPED) {
+    } 
+    else 
+    {
+      if (s->status == STATUS_STOPPED) 
+      {
         update_status(s, STATUS_DISENGAGED);
       }
       // Car started, fetch a new rgb image from ipc and peek for zmq events.
       ui_update(s);
-      if(!s->vision_connected) {
+      if(!s->vision_connected) 
+      {
         // Visiond process is just stopped, force a redraw to make screen blank again.
         ui_draw(s);
         glFinish();
