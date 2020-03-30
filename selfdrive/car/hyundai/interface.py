@@ -340,7 +340,7 @@ class CarInterface(CarInterfaceBase):
     # low speed steer alert hysteresis logic (only for cars with steer cut off above 10 m/s)
 
 
-    print("asdfasdfasfasdf   adsdfasdf")
+    printf("asdfasdfasfasdf   adsdfasdf")
 
     # turning indicator alert hysteresis logic
     self.turning_indicator_alert = self.CC.turning_indicator
