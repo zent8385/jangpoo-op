@@ -35,7 +35,7 @@ if __name__ == "__main__":
   if args.values:
     values = [s.strip().split(".") for s in args.values.split(",")]
 
-  while 1:
+  #while 1:
     polld = poller.poll(1000)
     for sock in polld:
       msg = sock.receive()
@@ -58,7 +58,7 @@ if __name__ == "__main__":
               item = evt
               for key in value:
                 item = getattr(item, key)
-              #print("{} = {}".format(".".join(value), item))
+              print("{} = {}".format(".".join(value), item))
           print("")
         else:
           print(evt)
