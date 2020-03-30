@@ -990,9 +990,9 @@ int main(int argc, char* argv[])
       set_awake(s, false);
     }
 
-    printf(" ui.cc  = %d \n", s->vision_connected );
+    //printf(" ui.cc  = %d \n", s->vision_connected );
     // Don't waste resources on drawing in case screen is off or car is not started.
-    //if (s->awake && s->vision_connected) 
+    if (s->awake && s->vision_connected) 
     {
       dashcam(s, touch_x, touch_y);
       ui_draw(s);
