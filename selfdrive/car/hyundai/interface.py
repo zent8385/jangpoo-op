@@ -4,9 +4,10 @@ from selfdrive.config import Conversions as CV
 from selfdrive.controls.lib.drive_helpers import EventTypes as ET, create_event
 from selfdrive.controls.lib.vehicle_model import VehicleModel
 from selfdrive.car.hyundai.carstate import CarState, get_can_parser, get_can2_parser, get_camera_parser
-from selfdrive.car.hyundai.values import Ecu, ECU_FINGERPRINT, CAR, FINGERPRINTS
+from selfdrive.car.hyundai.values import Ecu, ECU_FINGERPRINT, CAR, FINGERPRINTS, LaneChangeParms
 from selfdrive.car import STD_CARGO_KG, scale_rot_inertia, scale_tire_stiffness, is_ecu_disconnected, gen_empty_fingerprint
 from selfdrive.car.interfaces import CarInterfaceBase
+
 
 GearShifter = car.CarState.GearShifter
 ButtonType = car.CarState.ButtonEvent.Type
@@ -21,7 +22,7 @@ class CarInterface(CarInterfaceBase):
     self.brake_pressed_prev = False
     self.cruise_enabled_prev = False
     self.low_speed_alert = False
-    self.vEgo_prev = False
+
 
     # *** init the major players ***
     self.CS = CarState(CP)
@@ -51,7 +52,10 @@ class CarInterface(CarInterfaceBase):
     ret.steerActuatorDelay = 0.15  # Default delay
     ret.steerRateCost = 0.45
     ret.steerLimitTimer = 0.8
+    ret.minSteerSpeed = 5 * CV.KPH_TO_MS    # 25 km/h 
+
     tire_stiffness_factor = 0.7
+
 
     if candidate in [CAR.SANTAFE, CAR.SANTAFE_1]:
       ret.lateralTuning.pid.kf = 0.00005
@@ -334,69 +338,80 @@ class CarInterface(CarInterfaceBase):
     ret.seatbeltUnlatched = not self.CS.seatbelt
 
     # low speed steer alert hysteresis logic (only for cars with steer cut off above 10 m/s)
-    if ret.vEgo < self.CP.minSteerSpeed and self.CP.minSteerSpeed > 10.:
-      self.low_speed_alert = True
-    if ret.vEgo > self.CP.minSteerSpeed:
-      self.low_speed_alert = False
+
+
+
 
     # turning indicator alert hysteresis logic
-    self.turning_indicator_alert = True if self.CC.turning_signal_timer and self.CS.v_ego < 16.666667 else False
+    self.turning_indicator_alert = self.CC.turning_indicator
+  
     # LKAS button alert logic
     self.lkas_button_alert = not self.CC.lkas_button
-#    if self.CP.carFingerprint in [CAR.K5, CAR.K5_HYBRID, CAR.SORENTO, CAR.GRANDEUR, CAR.IONIQ_EV, CAR.KONA_EV]:
-#      self.lkas_button_alert = True if not self.CC.lkas_button else False
-#    if self.CP.carFingerprint in [CAR.KONA, CAR.IONIQ]:
-#      self.lkas_button_alert = True if self.CC.lkas_button else False
-#    if self.CP.carFingerprint in [CAR.GRANDEUR_HYBRID, CAR.K7_HYBRID]:
-#      self.lkas_button_alert = False
+    self.low_speed_alert = self.CC.low_speed_car
+    self.steer_angle_over_alert = self.CC.streer_angle_over
+
 
     events = []
-    if not ret.gearShifter == GearShifter.drive:
-      events.append(create_event('wrongGear', [ET.NO_ENTRY, ET.USER_DISABLE]))
-    if ret.doorOpen:
-      events.append(create_event('doorOpen', [ET.NO_ENTRY, ET.SOFT_DISABLE]))
-    if ret.seatbeltUnlatched:
-      events.append(create_event('seatbeltNotLatched', [ET.NO_ENTRY, ET.SOFT_DISABLE]))
-    if self.CS.esp_disabled:
-      events.append(create_event('espDisabled', [ET.NO_ENTRY, ET.SOFT_DISABLE]))
-    if not self.CS.main_on:
-      events.append(create_event('wrongCarMode', [ET.NO_ENTRY, ET.USER_DISABLE]))
-    if ret.gearShifter == GearShifter.reverse:
-      events.append(create_event('reverseGear', [ET.NO_ENTRY, ET.IMMEDIATE_DISABLE]))
-    if self.CS.steer_error:
-      events.append(create_event('steerTempUnavailable', [ET.NO_ENTRY, ET.WARNING]))
 
-    if ret.cruiseState.enabled and not self.cruise_enabled_prev:
-      events.append(create_event('pcmEnable', [ET.ENABLE]))
-    elif not ret.cruiseState.enabled:
-      events.append(create_event('pcmDisable', [ET.USER_DISABLE]))
+    if not self.CS.main_on:
+      events.append(create_event('wrongCarMode', [ET.NO_ENTRY, ET.USER_DISABLE])) 
+
+    if self.CS.esp_disabled:
+      events.append(create_event('espDisabled', [ET.NO_ENTRY, ET.SOFT_DISABLE])) 
+    elif ret.doorOpen:
+      events.append(create_event('doorOpen', [ET.NO_ENTRY, ET.SOFT_DISABLE]))      
+    elif ret.seatbeltUnlatched:
+      events.append(create_event('seatbeltNotLatched', [ET.NO_ENTRY, ET.SOFT_DISABLE]))
+    elif ret.gearShifter == GearShifter.reverse:
+      events.append(create_event('reverseGear', [ET.NO_ENTRY, ET.USER_DISABLE]))      
+    elif not ret.gearShifter == GearShifter.drive:
+      events.append(create_event('wrongGear', [ET.NO_ENTRY, ET.USER_DISABLE]))
+    elif self.steer_angle_over_alert:
+      events.append(create_event('steerTempUnavailable', [ET.NO_ENTRY, ET.WARNING]))
+    elif self.CS.steer_error:
+      events.append(create_event('steerTempUnavailable', [ET.NO_ENTRY, ET.WARNING]))      
+
+    if ret.cruiseState.enabled != self.cruise_enabled_prev:
+        if ret.cruiseState.enabled:
+            events.append(create_event('pcmEnable', [ET.ENABLE]))
+        else:
+            events.append(create_event('pcmDisable', [ET.USER_DISABLE]))
+        self.cruise_enabled_prev = ret.cruiseState.enabled
+
+
+
 
     # disable on pedals rising edge or when brake is pressed and speed isn't zero
-    if ((ret.gasPressed and not self.gas_pressed_prev) or \
-      (ret.brakePressed and (not self.brake_pressed_prev or ret.vEgoRaw > 0.1))) and self.CC.longcontrol:
-      events.append(create_event('pedalPressed', [ET.NO_ENTRY, ET.USER_DISABLE]))
+    if self.CC.longcontrol:
+      if ((ret.gasPressed and not self.gas_pressed_prev) or (ret.brakePressed and (not self.brake_pressed_prev or ret.vEgoRaw > 0.1))):
+          events.append(create_event('pedalPressed', [ET.NO_ENTRY, ET.USER_DISABLE]))
+      if ret.gasPressed:
+        events.append(create_event('pedalPressed', [ET.PRE_ENABLE]))
 
-    if ret.gasPressed and self.CC.longcontrol:
-      events.append(create_event('pedalPressed', [ET.PRE_ENABLE]))
 
-    if self.low_speed_alert and not self.CS.mdps_bus :
-      events.append(create_event('belowSteerSpeed', [ET.WARNING]))
+    if self.lkas_button_alert:
+      events.append(create_event('lkasButtonOff', [ET.WARNING]))
     elif self.turning_indicator_alert:
       events.append(create_event('turningIndicatorOn', [ET.WARNING]))
-    elif self.lkas_button_alert:
-      events.append(create_event('lkasButtonOff', [ET.WARNING]))
+    elif self.CS.stopped:
+      if ret.cruiseState.standstill:
+        events.append(create_event('resumeRequired', [ET.WARNING]))
+      else:
+        events.append(create_event('preStoped', [ET.WARNING]))
+    elif self.low_speed_alert and not self.CS.mdps_bus:
+      events.append(create_event('belowSteerSpeed', [ET.WARNING]))
+
+
     #TODO Varible for min Speed for LCA
-    if ret.rightBlinker and ret.lcaRight and self.CS.v_ego > (60 * CV.KPH_TO_MS):
+    if ret.rightBlinker and ret.lcaRight and self.CS.v_ego > LaneChangeParms.LANE_CHANGE_SPEED_MIN: 
       events.append(create_event('rightLCAbsm', [ET.WARNING]))
-    if ret.leftBlinker and ret.lcaLeft and self.CS.v_ego > (60 * CV.KPH_TO_MS):
+    if ret.leftBlinker and ret.lcaLeft and self.CS.v_ego > LaneChangeParms.LANE_CHANGE_SPEED_MIN: 
       events.append(create_event('leftLCAbsm', [ET.WARNING]))
 
     ret.events = events
 
     self.gas_pressed_prev = ret.gasPressed
     self.brake_pressed_prev = ret.brakePressed
-    self.cruise_enabled_prev = ret.cruiseState.enabled
-    self.vEgo_prev = ret.vEgo
 
     return ret.as_reader()
 
