@@ -4,10 +4,10 @@ from selfdrive.car.hyundai.values import CAR, CHECKSUM
 hyundai_checksum = crcmod.mkCrcFun(0x11D, initCrc=0xFD, rev=False, xorOut=0xdf)
 
 def create_lkas11(packer, car_fingerprint, bus, apply_steer, steer_req, cnt, enabled, lkas11, hud_alert,
-                                   lane_visible, left_lane_depart, right_lane_depart, keep_stock=False):
+                                   lane_visible, keep_stock=False):
   values = {
     "CF_Lkas_Bca_R": lkas11["CF_Lkas_Bca_R"] if keep_stock else 3,
-    "CF_Lkas_LdwsSysState": lane_visible,
+    "CF_Lkas_LdwsSysState": lkas11["CF_Lkas_LdwsSysState"] if not enabled else lane_visible,
     "CF_Lkas_SysWarning": hud_alert,
     "CF_Lkas_LdwsLHWarning": lkas11["CF_Lkas_LdwsLHWarning"],
     "CF_Lkas_LdwsRHWarning": lkas11["CF_Lkas_LdwsRHWarning"],

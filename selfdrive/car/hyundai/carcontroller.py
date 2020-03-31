@@ -63,15 +63,17 @@ class CarController():
     self.last_resume_frame = 0
     self.last_lead_distance = 0
     self.turning_signal_timer = 0
+    self.steer_active_timer = 0
     self.lkas_button = 1
-    self.lkas_button_last = 0
+
     self.longcontrol = 0 #TODO: make auto
     self.low_speed_car = False 
     self.streer_angle_over = False
     self.turning_indicator = 0 
 
-  def update(self, enabled, CS, frame, actuators, pcm_cancel_cmd, visual_alert,
-              left_line, right_line, left_lane_depart, right_lane_depart):
+  def update(self, enabled, CS, frame, actuators, 
+              pcm_cancel_cmd, visual_alert,
+              left_line, right_line ):
 
     # *** compute control surfaces ***
 
@@ -117,10 +119,7 @@ class CarController():
     elif abs(CS.angle_steers) < 1.5:
       self.streer_angle_over =  False
 
-    # Fix for sharp turns mdps fault and Genesis hard fault at low speed
-    if CS.v_ego < 15.5 and self.car_fingerprint == CAR.GENESIS and not CS.mdps_bus:
-      self.turning_signal_timer = 100
-      
+
     # Disable steering while turning blinker on and speed below 60 kph
     if CS.left_blinker_on or CS.right_blinker_on:
       if self.car_fingerprint not in [CAR.K5, CAR.K5_HYBRID, CAR.GRANDEUR_HYBRID, CAR.KONA_EV, CAR.STINGER, CAR.SONATA_TURBO, CAR.IONIQ_EV, CAR.SORENTO, CAR.GRANDEUR, CAR.K7_HYBRID, CAR.NEXO]:
@@ -132,6 +131,12 @@ class CarController():
    # turning indicator alert logic
     self.turning_indicator = self.turning_signal_timer and CS.v_ego <  LaneChangeParms.LANE_CHANGE_SPEED_MIN
 
+    if self.turning_signal_timer:
+        self.turning_signal_timer -= 1 
+
+
+    hud_alert, lane_visible = process_hud_alert(lkas_active, self.lkas_button, visual_alert, left_line, right_line )    
+
     # disable lkas 
     if self.streer_angle_over and not CS.mdps_bus:
         lkas_active = 0
@@ -139,10 +144,14 @@ class CarController():
         lkas_active = 0
     elif self.turning_indicator:
         lkas_active = 0
+    elif lane_visible <= 1:   #  fail to recognize all the lanes
+        self.steer_active_timer = 100
 
-
-    if self.turning_signal_timer:
-      self.turning_signal_timer -= 1
+    
+    if self.steer_active_timer:
+        lkas_active = 0
+        self.steer_active_timer -= 1
+        
       
     if not lkas_active:
       apply_steer = 0
@@ -152,7 +161,8 @@ class CarController():
     self.apply_accel_last = apply_accel
     self.apply_steer_last = apply_steer
 
-    hud_alert, lane_visible =  process_hud_alert(lkas_active, self.lkas_button, visual_alert, left_line, right_line )
+      
+
 
     clu11_speed = CS.clu11["CF_Clu_Vanz"]
     enabled_speed = 38 if CS.is_set_speed_in_mph  else 60
@@ -176,8 +186,8 @@ class CarController():
     else:    
       bus_cmd = 0 
 
-    can_sends.append(create_lkas11(self.packer, self.car_fingerprint, bus_cmd, apply_steer, steer_req, self.lkas11_cnt, lkas_active,
-                                   CS.lkas11, hud_alert, lane_visible, left_lane_depart, right_lane_depart, keep_stock=True))
+    can_sends.append(create_lkas11(self.packer, self.car_fingerprint, bus_cmd, apply_steer, steer_req, self.lkas11_cnt, enabled,
+                                   CS.lkas11, hud_alert, lane_visible, keep_stock=True))
 
     #  2. clu
     if CS.mdps_bus: # send clu11 to mdps if it is not on bus 0

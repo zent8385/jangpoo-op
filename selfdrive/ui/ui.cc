@@ -366,15 +366,19 @@ void handle_message(UIState *s, Message * msg) {
     }
 
     s->scene.alert_blinkingrate = datad.alertBlinkingRate;
-    if (datad.alertBlinkingRate > 0.) {
-      if (s->alert_blinked) {
-        if (s->alert_blinking_alpha > 0.0 && s->alert_blinking_alpha < 1.0) {
+    if (datad.alertBlinkingRate > 0.) 
+    {
+      if (s->alert_blinked) 
+      {
+        if (s->alert_blinking_alpha > 0.0 && s->alert_blinking_alpha < 1.0) 
+        {
           s->alert_blinking_alpha += (0.05*datad.alertBlinkingRate);
         } else {
           s->alert_blinked = false;
         }
       } else {
-        if (s->alert_blinking_alpha > 0.25) {
+        if (s->alert_blinking_alpha > 0.25) 
+        {
           s->alert_blinking_alpha -= (0.05*datad.alertBlinkingRate);
         } else {
           s->alert_blinking_alpha += 0.25;
