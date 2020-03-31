@@ -287,7 +287,7 @@ def state_control(frame, rcv_frame, plan, path_plan, CS, CP, state, events, v_cr
     if e == "calibrationIncomplete":
       extra_text_1 = str(cal_perc) + "%"
       if is_metric:
-        extra_text_2 = str(int(round(Filter.MIN_SPEED * CV.MS_TO_KPH))) + " kph"
+        extra_text_2 = str(int(round(Filter.MIN_SPEED * CV.MS_TO_KPH))) + " km/h"
       else:
         extra_text_2 = str(int(round(Filter.MIN_SPEED * CV.MS_TO_MPH))) + " mph"
     AM.add(frame, str(e) + "Permanent", enabled, extra_text_1=extra_text_1, extra_text_2=extra_text_2)
