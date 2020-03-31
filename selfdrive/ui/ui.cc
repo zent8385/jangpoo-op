@@ -515,15 +515,19 @@ void handle_message(UIState *s, Message * msg) {
   capn_free(&ctx);
 }
 
-static void ui_update(UIState *s) {
+static void ui_update(UIState *s) 
+{
   int err;
 
-  if (s->vision_connect_firstrun) {
+  if (s->vision_connect_firstrun) 
+  {
     // cant run this in connector thread because opengl.
     // do this here for now in lieu of a run_on_main_thread event
 
-    for (int i=0; i<UI_BUF_COUNT; i++) {
-      if(s->khr[i] != NULL) {
+    for (int i=0; i<UI_BUF_COUNT; i++) 
+    {
+      if(s->khr[i] != NULL) 
+      {
         visionimg_destroy_gl(s->khr[i], s->priv_hnds[i]);
         glDeleteTextures(1, &s->frame_texs[i]);
       }
@@ -597,7 +601,8 @@ static void ui_update(UIState *s) {
 
   zmq_pollitem_t polls[1] = {{0}};
   // Take an rgb image from visiond if there is one
-  while(true) {
+  while(true) 
+  {
     assert(s->ipc_fd >= 0);
     polls[0].fd = s->ipc_fd;
     polls[0].events = ZMQ_POLLIN;
@@ -630,7 +635,9 @@ static void ui_update(UIState *s) {
       s->vision_connected = false;
       return;
     }
-    if (rp.type == VIPC_STREAM_ACQUIRE) {
+
+    if (rp.type == VIPC_STREAM_ACQUIRE) 
+    {
       bool front = rp.d.stream_acq.type == VISION_STREAM_RGB_FRONT;
       int idx = rp.d.stream_acq.idx;
 
