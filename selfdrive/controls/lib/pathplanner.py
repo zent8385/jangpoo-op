@@ -149,7 +149,7 @@ class PathPlanner():
     else:
       self.steerRatio = self.sR[0]
 
-    print("steerRatio = ", self.steerRatio)
+    #print("steerRatio = ", self.steerRatio)
 
     self.LP.parse_model(sm['model'])
 
@@ -157,12 +157,8 @@ class PathPlanner():
     one_blinker = sm['carState'].leftBlinker != sm['carState'].rightBlinker
     below_lane_change_speed = v_ego < 60 * CV.KPH_TO_MS
 
-    if sm['carState'].leftBlinker:
-      self.lane_change_direction = LaneChangeDirection.left
-    elif sm['carState'].rightBlinker:
-      self.lane_change_direction = LaneChangeDirection.right
 
-    if (not active) or (self.lane_change_timer > 10.0) or (not one_blinker) or (not self.lane_change_enabled) or (sm['carState'].steeringPressed and ((sm['carState'].steeringTorque > 0 and self.lane_change_direction == LaneChangeDirection.right) or (sm['carState'].steeringTorque < 0 and self.lane_change_direction == LaneChangeDirection.left))):
+    if (not active) or below_lane_change_speed or (self.lane_change_timer > 10.0) or (not one_blinker) or (not self.lane_change_enabled) or (sm['carState'].steeringPressed and ((sm['carState'].steeringTorque > 0 and self.lane_change_direction == LaneChangeDirection.right) or (sm['carState'].steeringTorque < 0 and self.lane_change_direction == LaneChangeDirection.left))):
       self.lane_change_state = LaneChangeState.off
       self.lane_change_direction = LaneChangeDirection.none
     else:
@@ -173,12 +169,8 @@ class PathPlanner():
 
       if self.lane_change_direction == LaneChangeDirection.left:
         torque_applied = sm['carState'].steeringTorque > 0 and sm['carState'].steeringPressed
-        if CP.autoLcaEnabled and 1.6 > self.pre_auto_LCA_timer > 1.1 and not lca_left:
-          torque_applied = True # Enable auto LCA only once after 1 sec 
-      else:
+      elif self.lane_change_direction == LaneChangeDirection.right:
         torque_applied = sm['carState'].steeringTorque < 0 and sm['carState'].steeringPressed
-        if CP.autoLcaEnabled and 1.6 > self.pre_auto_LCA_timer > 1.1 and not lca_right:
-          torque_applied = True # Enable auto LCA only once after 1 sec 
 
       lane_change_prob = self.LP.l_lane_change_prob + self.LP.r_lane_change_prob
 
@@ -224,6 +216,12 @@ class PathPlanner():
           self.lane_change_state = LaneChangeState.preLaneChange
         else:
           self.lane_change_state = LaneChangeState.off
+
+    if self.lane_change_state != LaneChangeState.off:
+      if self.steerRatio > 90:
+        self.steerRatio = 90
+      elif self.steerRatio < -90:
+        self.steerRatio = -90
 
     if self.lane_change_state in [LaneChangeState.off, LaneChangeState.preLaneChange]:
       self.lane_change_timer = 0.0
