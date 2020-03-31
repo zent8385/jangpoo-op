@@ -943,6 +943,7 @@ int main(int argc, char* argv[])
   int draws = 0;
 
   s->vision_connect_firstrun = true;
+  s->vision_connected = true;
   while (!do_exit) 
   {
 
@@ -995,12 +996,6 @@ int main(int argc, char* argv[])
       {
         update_status(s, STATUS_STOPPED);
       }
-
-
-      printf("UI   ui_update1 vision_connected = %d  \n",s->vision_connected ); 
-
-      ui_update(s);
-      printf("UI   ui_update2 vision_connected = %d  \n",s->vision_connected ); 
 
     } 
     else 
