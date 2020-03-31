@@ -984,7 +984,10 @@ int main(int argc, char* argv[])
       }
 
 
+      printf("UI   ui_update1 vision_connected = %d  \n",s->vision_connected ); 
+
       ui_update(s);
+      printf("UI   ui_update2 vision_connected = %d  \n",s->vision_connected ); 
 
     } 
     else 
