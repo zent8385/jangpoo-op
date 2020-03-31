@@ -520,8 +520,11 @@ void handle_message(UIState *s, Message * msg)
   capn_free(&ctx);
 }
 
-static void ui_update(UIState *s) {
+static void ui_update(UIState *s) 
+{
   int err;
+
+      printf("UI  ui.cc ui_update vision_connected = %d  ==>  status = %d \n",s->vision_connected, s->status ); 
 
   if (s->vision_connect_firstrun) {
     // cant run this in connector thread because opengl.
@@ -980,7 +983,9 @@ int main(int argc, char* argv[])
         update_status(s, STATUS_STOPPED);
       }
 
-      printf("UI  ui.cc main vision_connected = %d  ==>  status = %d \n",s->vision_connected, s->status ); 
+
+      ui_update(s);
+
     } 
     else 
     {
