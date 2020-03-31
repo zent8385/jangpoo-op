@@ -144,7 +144,8 @@ class CarController():
         lkas_active = 0
     elif self.turning_indicator:
         lkas_active = 0
-    elif lane_visible <= 1:   #  fail to recognize all the lanes
+    elif  not left_line and not right_line:   #  fail to recognize all the lanes
+        lkas_active = 0
         self.steer_active_timer = 100
 
     
@@ -155,6 +156,8 @@ class CarController():
       
     if not lkas_active:
       apply_steer = 0
+      if lane_visible == 3:
+          lane_visible = 4
       
     steer_req = 1 if apply_steer else 0
 

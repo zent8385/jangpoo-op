@@ -318,8 +318,8 @@ def data_send(sm, pm, CS, CI, CP, VM, state, events, actuators, v_cruise_kph, rk
   CC.hudControl.leadVisible = sm['plan'].hasLead
 
   lane_visible = sm['pathPlan'].rProb
-  right_lane_visible = lane_visible > 0.2
-  left_lane_visible = lane_visible > 0.2
+  right_lane_visible = lane_visible > 0.5
+  left_lane_visible = lane_visible > 0.5
   CC.hudControl.rightLaneVisible = bool(right_lane_visible)
   CC.hudControl.leftLaneVisible = bool(left_lane_visible)
 
