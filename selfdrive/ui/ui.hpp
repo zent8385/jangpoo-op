@@ -153,6 +153,15 @@ typedef struct UIScene {
   float freeSpace;
   float gpsAccuracy;
 
+
+ 
+  struct _PID_
+  {
+    float  p;
+    float  i;
+    float  f;
+  } pid; 
+
 } UIScene;
 
 typedef struct {
@@ -266,6 +275,7 @@ typedef struct UIState {
   float light_sensor;
 
   int touch_fd;
+
 
   // Hints for re-calculations and redrawing
   bool model_changed;

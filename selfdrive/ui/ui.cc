@@ -273,7 +273,8 @@ static void update_status(UIState *s, int status) {
 }
 
 
-void handle_message(UIState *s, Message * msg) {
+void handle_message(UIState *s, Message * msg) 
+{
   struct capn ctx;
   capn_init_mem(&ctx, (uint8_t*)msg->getData(), msg->getSize(), 0);
 
@@ -282,7 +283,8 @@ void handle_message(UIState *s, Message * msg) {
   struct cereal_Event eventd;
   cereal_read_Event(&eventd, eventp);
 
-  if (eventd.which == cereal_Event_controlsState) {
+  if (eventd.which == cereal_Event_controlsState) 
+  {
     struct cereal_ControlsState datad;
     cereal_read_ControlsState(&datad, eventd.controlsState);
 
@@ -292,7 +294,8 @@ void handle_message(UIState *s, Message * msg) {
     s->controls_timeout = 1 * UI_FREQ;
     s->controls_seen = true;
 
-    if (datad.vCruise != s->scene.v_cruise) {
+    if (datad.vCruise != s->scene.v_cruise) 
+    {
       s->scene.v_cruise_update_ts = eventd.logMonoTime;
     }
     s->scene.v_cruise = datad.vCruise;
@@ -310,10 +313,19 @@ void handle_message(UIState *s, Message * msg) {
 
     s->scene.decel_for_model = datad.decelForModel;
 
+
+// PID
+    s->scene.pid.p = datad.upAccelCmd;
+    s->scene.pid.i = datad.uiAccelCmd;
+    s->scene.pid.f = datad.ufAccelCmd;
+
+    printf("handle_message    ==>  p:%.1f  i:%.1f  f:%.1f \n", s->scene.pid.p , s->scene.pid.i , s->scene.pid.f );
+
     // getting steering related data for dev ui
     s->scene.angleSteersDes = datad.angleSteersDes;
 
-    if (datad.alertSound != cereal_CarControl_HUDControl_AudibleAlert_none && datad.alertSound != s->alert_sound) {
+    if (datad.alertSound != cereal_CarControl_HUDControl_AudibleAlert_none && datad.alertSound != s->alert_sound) 
+    {
       if (s->alert_sound != cereal_CarControl_HUDControl_AudibleAlert_none) {
         stop_alert_sound(s->alert_sound);
       }
@@ -917,6 +929,9 @@ int main(int argc, char* argv[])
   int draws = 0;
   while (!do_exit) 
   {
+
+
+    printf("ui.cc main   ==>  p:%.1f  i:%.1f  f:%.1f \n", s->scene.pid.p , s->scene.pid.i , s->scene.pid.f );
 
     bool should_swap = false;
     if (!s->vision_connected) 
