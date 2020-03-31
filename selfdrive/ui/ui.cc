@@ -611,7 +611,7 @@ static void ui_update(UIState *s)
 
   zmq_pollitem_t polls[1] = {{0}};
   // Take an rgb image from visiond if there is one
-  printf("UI  ui.cc debug 1  [%d] \n", i );  
+  printf("UI  ui.cc debug 1   \n" );  
   s->ipc_fd = 1;
   while(true) {
     assert(s->ipc_fd >= 0);
@@ -682,7 +682,7 @@ static void ui_update(UIState *s)
   }
   // peek and consume all events in the zmq queue, then return.
 
-  printf("UI  ui.cc debug 2  [%d] \n", i );  
+  printf("UI  ui.cc debug 2  \n" );  
   while(true) {
     auto polls = s->poller->poll(0);
 
