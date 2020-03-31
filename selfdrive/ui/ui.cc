@@ -273,8 +273,7 @@ static void update_status(UIState *s, int status) {
 }
 
 
-void handle_message(UIState *s, Message * msg) 
-{
+void handle_message(UIState *s, Message * msg) {
   struct capn ctx;
   capn_init_mem(&ctx, (uint8_t*)msg->getData(), msg->getSize(), 0);
 
@@ -283,8 +282,7 @@ void handle_message(UIState *s, Message * msg)
   struct cereal_Event eventd;
   cereal_read_Event(&eventd, eventp);
 
-  if (eventd.which == cereal_Event_controlsState) 
-  {
+  if (eventd.which == cereal_Event_controlsState) {
     struct cereal_ControlsState datad;
     cereal_read_ControlsState(&datad, eventd.controlsState);
 
@@ -294,8 +292,7 @@ void handle_message(UIState *s, Message * msg)
     s->controls_timeout = 1 * UI_FREQ;
     s->controls_seen = true;
 
-    if (datad.vCruise != s->scene.v_cruise) 
-    {
+    if (datad.vCruise != s->scene.v_cruise) {
       s->scene.v_cruise_update_ts = eventd.logMonoTime;
     }
     s->scene.v_cruise = datad.vCruise;
@@ -319,13 +316,11 @@ void handle_message(UIState *s, Message * msg)
     s->scene.pid.i = datad.uiAccelCmd;
     s->scene.pid.f = datad.ufAccelCmd;
 
-    printf("UI handle_message    ==>  p:%.1f  i:%.1f  f:%.1f \n", s->scene.pid.p , s->scene.pid.i , s->scene.pid.f );
 
     // getting steering related data for dev ui
     s->scene.angleSteersDes = datad.angleSteersDes;
 
-    if (datad.alertSound != cereal_CarControl_HUDControl_AudibleAlert_none && datad.alertSound != s->alert_sound) 
-    {
+    if (datad.alertSound != cereal_CarControl_HUDControl_AudibleAlert_none && datad.alertSound != s->alert_sound) {
       if (s->alert_sound != cereal_CarControl_HUDControl_AudibleAlert_none) {
         stop_alert_sound(s->alert_sound);
       }
@@ -520,20 +515,14 @@ void handle_message(UIState *s, Message * msg)
   capn_free(&ctx);
 }
 
-static void ui_update(UIState *s) 
-{
+static void ui_update(UIState *s) {
   int err;
-
-  printf("UI  ui.cc ui_update vision_connect_firstrun = %d  ==>  status = %d \n",s->vision_connect_firstrun, s->status ); 
-
 
   if (s->vision_connect_firstrun) {
     // cant run this in connector thread because opengl.
     // do this here for now in lieu of a run_on_main_thread event
 
     for (int i=0; i<UI_BUF_COUNT; i++) {
-
-
       if(s->khr[i] != NULL) {
         visionimg_destroy_gl(s->khr[i], s->priv_hnds[i]);
         glDeleteTextures(1, &s->frame_texs[i]);
@@ -563,15 +552,11 @@ static void ui_update(UIState *s)
       glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_B, GL_RED);
     }
 
-
-
     for (int i=0; i<UI_BUF_COUNT; i++) {
-
       if(s->khr_front[i] != NULL) {
         visionimg_destroy_gl(s->khr_front[i], s->priv_hnds_front[i]);
         glDeleteTextures(1, &s->frame_front_texs[i]);
       }
-
 
       VisionImg img = {
         .fd = s->front_bufs[i].fd,
@@ -612,8 +597,6 @@ static void ui_update(UIState *s)
 
   zmq_pollitem_t polls[1] = {{0}};
   // Take an rgb image from visiond if there is one
-  printf("UI  ui.cc debug 1   \n" );  
-  s->ipc_fd = 1;
   while(true) {
     assert(s->ipc_fd >= 0);
     polls[0].fd = s->ipc_fd;
@@ -682,8 +665,6 @@ static void ui_update(UIState *s)
     break;
   }
   // peek and consume all events in the zmq queue, then return.
-
-  printf("UI  ui.cc debug 2  \n" );  
   while(true) {
     auto polls = s->poller->poll(0);
 
@@ -941,14 +922,8 @@ int main(int argc, char* argv[])
   set_volume(MIN_VOLUME);
   s->volume_timeout = 5 * UI_FREQ;
   int draws = 0;
-
-  s->vision_connect_firstrun = true;
-  s->vision_connected = true;
   while (!do_exit) 
   {
-
-
-
 
     bool should_swap = false;
     if (!s->vision_connected) 
@@ -967,8 +942,6 @@ int main(int argc, char* argv[])
     smooth_brightness = clipped_brightness * 0.01 + smooth_brightness * 0.99;
     if (smooth_brightness > 255) smooth_brightness = 255;
     set_brightness(s, (int)smooth_brightness);
-
-
 
     if (!s->vision_connected) 
     {
@@ -996,7 +969,6 @@ int main(int argc, char* argv[])
       {
         update_status(s, STATUS_STOPPED);
       }
-
     } 
     else 
     {

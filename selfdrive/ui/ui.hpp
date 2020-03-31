@@ -276,7 +276,6 @@ typedef struct UIState {
 
   int touch_fd;
 
-
   // Hints for re-calculations and redrawing
   bool model_changed;
   bool livempc_or_radarstate_changed;

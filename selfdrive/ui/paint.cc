@@ -823,7 +823,7 @@ static void ui_draw_vision_maxspeed(UIState *s) {
   } else {
     nvgFillColor(s->vg, nvgRGBA(255, 255, 255, 100));
   }
-  nvgText(s->vg, viz_maxspeed_x+(viz_maxspeed_xo/2)+(viz_maxspeed_w/2), 148, "설정속도", NULL);
+  nvgText(s->vg, viz_maxspeed_x+(viz_maxspeed_xo/2)+(viz_maxspeed_w/2), 148, "MAX", NULL);
 
   // Draw Speed Text
   nvgFontFace(s->vg, "sans-bold");
@@ -836,7 +836,7 @@ static void ui_draw_vision_maxspeed(UIState *s) {
     nvgFontFace(s->vg, "sans-semibold");
     nvgFontSize(s->vg, 42*2.5);
     nvgFillColor(s->vg, nvgRGBA(255, 255, 255, 100));
-    nvgText(s->vg, viz_maxspeed_x+(viz_maxspeed_xo/2)+(viz_maxspeed_w/2), 242, "-", NULL);
+    nvgText(s->vg, viz_maxspeed_x+(viz_maxspeed_xo/2)+(viz_maxspeed_w/2), 242, "N/A", NULL);
   }
   //BB START: add new measures panel  const int bb_dml_w = 180;
   bb_ui_draw_UI(s);
@@ -928,7 +928,34 @@ static void ui_draw_vision_speedlimit(UIState *s) {
   }
 }
 
-static void ui_draw_vision_speed(UIState *s) {
+static void ui_draw_debug(UIState *s) 
+{
+  const UIScene *scene = &s->scene;
+  int ui_viz_rx = scene->ui_viz_rx;
+  int ui_viz_rw = scene->ui_viz_rw;
+
+
+  const int viz_speed_w = 280;
+  const int viz_speed_x = ui_viz_rx+((ui_viz_rw/2)-(viz_speed_w/2));
+
+  char speed_str[32];
+
+  int  y_pos = 0;
+  int  x_pos = 0;
+
+  x_pos = viz_speed_x - 250;
+  y_pos = 150; 
+  
+  snprintf(speed_str, sizeof(speed_str), "P:%.5f", scene.pid.p );
+  nvgText(s->vg, x_pos, y_pos+0, speed_str, NULL);
+  snprintf(speed_str, sizeof(speed_str), "I:%.5f", scene.pid.i );
+  nvgText(s->vg, x_pos, y_pos+50, speed_str, NULL);
+  snprintf(speed_str, sizeof(speed_str), "F:%.5f", scene.pid.f );
+  nvgText(s->vg, x_pos, y_pos+100, speed_str, NULL);
+}
+
+static void ui_draw_vision_speed(UIState *s) 
+{
   const UIScene *scene = &s->scene;
   int ui_viz_rx = scene->ui_viz_rx;
   int ui_viz_rw = scene->ui_viz_rw;
@@ -970,7 +997,8 @@ static void ui_draw_vision_speed(UIState *s) {
   // nvgRect(s->vg, viz_speed_x, box_y, viz_speed_w, header_h);
   nvgTextAlign(s->vg, NVG_ALIGN_CENTER | NVG_ALIGN_BASELINE);
 
-  if (s->is_metric) {
+  if (s->is_metric) 
+  {
     snprintf(speed_str, sizeof(speed_str), "%d", (int)(speed * 3.6 + 0.5));
   } else {
     snprintf(speed_str, sizeof(speed_str), "%d", (int)(speed * 2.2369363 + 0.5));
@@ -984,11 +1012,15 @@ static void ui_draw_vision_speed(UIState *s) {
   nvgFontSize(s->vg, 36*2.5);
   nvgFillColor(s->vg, nvgRGBA(255, 255, 255, 200));
 
-  if (s->is_metric) {
+  if (s->is_metric) 
+  {
     nvgText(s->vg, viz_speed_x+viz_speed_w/2, 320, "km/h", NULL);
   } else {
     nvgText(s->vg, viz_speed_x+viz_speed_w/2, 320, "m/h", NULL);
   }
+
+
+  ui_draw_debug( s );
 }
 
 static void ui_draw_vision_event(UIState *s) {
