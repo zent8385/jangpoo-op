@@ -63,7 +63,6 @@ class CarController():
     self.last_resume_frame = 0
     self.last_lead_distance = 0
     self.turning_signal_timer = 0
-    self.steer_active_timer = 0
     self.lkas_button = 1
 
     self.longcontrol = 0 #TODO: make auto
@@ -135,7 +134,7 @@ class CarController():
         self.turning_signal_timer -= 1 
 
 
-    hud_alert, lane_visible = process_hud_alert(lkas_active, self.lkas_button, visual_alert, left_line, right_line )    
+
 
     # disable lkas 
     if self.streer_angle_over and not CS.mdps_bus:
@@ -144,28 +143,18 @@ class CarController():
         lkas_active = 0
     elif self.turning_indicator:
         lkas_active = 0
-    elif  not left_line and not right_line:   #  fail to recognize all the lanes
-        lkas_active = 0
-        self.steer_active_timer = 100
-
-    
-    if self.steer_active_timer:
-        lkas_active = 0
-        self.steer_active_timer -= 1
-        
       
     if not lkas_active:
       apply_steer = 0
-      if lane_visible == 3:
-          lane_visible = 4
+
       
     steer_req = 1 if apply_steer else 0
 
     self.apply_accel_last = apply_accel
     self.apply_steer_last = apply_steer
 
-      
 
+    hud_alert, lane_visible = process_hud_alert(lkas_active, self.lkas_button, visual_alert, left_line, right_line )    
 
     clu11_speed = CS.clu11["CF_Clu_Vanz"]
     enabled_speed = 38 if CS.is_set_speed_in_mph  else 60
