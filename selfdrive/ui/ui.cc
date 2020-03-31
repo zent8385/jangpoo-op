@@ -532,7 +532,7 @@ static void ui_update(UIState *s)
 
     for (int i=0; i<UI_BUF_COUNT; i++) {
 
-      printf("UI  ui.cc debug 1  [%d] \n", i );  
+
       if(s->khr[i] != NULL) {
         visionimg_destroy_gl(s->khr[i], s->priv_hnds[i]);
         glDeleteTextures(1, &s->frame_texs[i]);
@@ -565,13 +565,13 @@ static void ui_update(UIState *s)
 
 
     for (int i=0; i<UI_BUF_COUNT; i++) {
-      printf("UI  ui.cc debug 2   [%d]\n", i ); 
+
       if(s->khr_front[i] != NULL) {
         visionimg_destroy_gl(s->khr_front[i], s->priv_hnds_front[i]);
         glDeleteTextures(1, &s->frame_front_texs[i]);
       }
 
-      printf("UI  ui.cc debug 3  [%d]\n", i ); 
+
       VisionImg img = {
         .fd = s->front_bufs[i].fd,
         .format = VISIONIMG_FORMAT_RGB24,
@@ -611,6 +611,8 @@ static void ui_update(UIState *s)
 
   zmq_pollitem_t polls[1] = {{0}};
   // Take an rgb image from visiond if there is one
+  printf("UI  ui.cc debug 1  [%d] \n", i );  
+  s->ipc_fd = 1;
   while(true) {
     assert(s->ipc_fd >= 0);
     polls[0].fd = s->ipc_fd;
@@ -679,6 +681,8 @@ static void ui_update(UIState *s)
     break;
   }
   // peek and consume all events in the zmq queue, then return.
+
+  printf("UI  ui.cc debug 2  [%d] \n", i );  
   while(true) {
     auto polls = s->poller->poll(0);
 
