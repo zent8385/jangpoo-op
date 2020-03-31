@@ -526,7 +526,7 @@ static void ui_update(UIState *s)
 
   printf("UI  ui.cc ui_update vision_connect_firstrun = %d  ==>  status = %d \n",s->vision_connect_firstrun, s->status ); 
 
-  s->vision_connect_firstrun = 1;
+
   if (s->vision_connect_firstrun) {
     // cant run this in connector thread because opengl.
     // do this here for now in lieu of a run_on_main_thread event
@@ -941,6 +941,8 @@ int main(int argc, char* argv[])
   set_volume(MIN_VOLUME);
   s->volume_timeout = 5 * UI_FREQ;
   int draws = 0;
+
+  s->vision_connect_firstrun = true;
   while (!do_exit) 
   {
 
