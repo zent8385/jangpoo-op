@@ -990,7 +990,6 @@ int main(int argc, char* argv[])
       set_awake(s, false);
     }
 
-    //printf(" ui.cc  = %d \n", s->vision_connected );
     // Don't waste resources on drawing in case screen is off or car is not started.
     if (s->awake && s->vision_connected) 
     {
