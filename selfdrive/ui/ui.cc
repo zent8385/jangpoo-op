@@ -319,7 +319,7 @@ void handle_message(UIState *s, Message * msg)
     s->scene.pid.i = datad.uiAccelCmd;
     s->scene.pid.f = datad.ufAccelCmd;
 
-    printf("handle_message    ==>  p:%.1f  i:%.1f  f:%.1f \n", s->scene.pid.p , s->scene.pid.i , s->scene.pid.f );
+    printf("UI handle_message    ==>  p:%.1f  i:%.1f  f:%.1f \n", s->scene.pid.p , s->scene.pid.i , s->scene.pid.f );
 
     // getting steering related data for dev ui
     s->scene.angleSteersDes = datad.angleSteersDes;
@@ -931,7 +931,7 @@ int main(int argc, char* argv[])
   {
 
 
-    printf("ui.cc main   ==>  p:%.1f  i:%.1f  f:%.1f \n", s->scene.pid.p , s->scene.pid.i , s->scene.pid.f );
+    printf("UI  ui.cc main   ==>  p:%.1f  i:%.1f  f:%.1f \n", s->scene.pid.p , s->scene.pid.i , s->scene.pid.f );
 
     bool should_swap = false;
     if (!s->vision_connected) 
