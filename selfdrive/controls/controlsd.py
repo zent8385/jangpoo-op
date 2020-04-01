@@ -322,28 +322,12 @@ def data_send(sm, pm, CS, CI, CP, VM, state, events, actuators, v_cruise_kph, rk
   CC.hudControl.rightLaneVisible = bool(right_lane_visible)
   CC.hudControl.leftLaneVisible = bool(left_lane_visible)
 
-  recent_blinker = (sm.frame - last_blinker_frame) * DT_CTRL < 5.0  # 5s blinker cooldown
-  calibrated = sm['liveCalibration'].calStatus == Calibration.CALIBRATED
-  ldw_allowed = CS.vEgo > 31 * CV.MPH_TO_MS and not recent_blinker and is_ldw_enabled and not isActive(state) and calibrated
-
-  md = sm['model']
-  if len(md.meta.desirePrediction):
-    l_lane_change_prob = md.meta.desirePrediction[log.PathPlan.Desire.laneChangeLeft - 1]
-    r_lane_change_prob = md.meta.desirePrediction[log.PathPlan.Desire.laneChangeRight - 1]
-
-    l_lane_close = left_lane_visible and (sm['pathPlan'].lPoly[3] < (1.08 - CAMERA_OFFSET))
-    r_lane_close = right_lane_visible and (sm['pathPlan'].rPoly[3] > -(1.08 + CAMERA_OFFSET))
-
-    if ldw_allowed:
-      CC.hudControl.leftLaneDepart = bool(l_lane_change_prob > LANE_DEPARTURE_THRESHOLD and l_lane_close)
-      CC.hudControl.rightLaneDepart = bool(r_lane_change_prob > LANE_DEPARTURE_THRESHOLD and r_lane_close)
-
-  ##if CC.hudControl.rightLaneDepart or CC.hudControl.leftLaneDepart:
-  #  AM.add(sm.frame, 'ldwPermanent', False)
-  #  events.append(create_event('ldw', [ET.PERMANENT]))
+  # not use  
+  CC.hudControl.leftLaneDepart = False
+  CC.hudControl.rightLaneDepart = False
 
   AM.process_alerts(sm.frame)
-  CC.hudControl.visualAlert = AM.visual_alert
+  CC.hudControl.visualAlert = AM.visual_alert   # steer hand check. 
 
   if not read_only:
     # send car controls over can
@@ -380,9 +364,9 @@ def data_send(sm, pm, CS, CI, CP, VM, state, events, actuators, v_cruise_kph, rk
     "longControlState": LoC.long_control_state,
     "vPid": float(LoC.v_pid),
     "vCruise": float(v_cruise_kph),
-    "upAccelCmd": float(LoC.pid.p),
-    "uiAccelCmd": float(LoC.pid.i),
-    "ufAccelCmd": float(LoC.pid.f),
+    "upAccelCmd": float(LaC.pid.p),
+    "uiAccelCmd": float(LaC.pid.i),
+    "ufAccelCmd": float(LaC.pid.f),
     "angleSteersDes": float(LaC.angle_steers_des),
     "vTargetLead": float(v_acc),
     "aTarget": float(a_acc),
