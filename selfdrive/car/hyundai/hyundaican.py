@@ -8,14 +8,14 @@ def create_lkas11(packer, car_fingerprint, bus, apply_steer, steer_req, cnt, ena
   values = {
     "CF_Lkas_Bca_R": lkas11["CF_Lkas_Bca_R"] if keep_stock else 3,
     "CF_Lkas_LdwsSysState": lkas11["CF_Lkas_LdwsSysState"] if not enabled else lane_visible,
-    "CF_Lkas_SysWarning": hud_alert,
+    "CF_Lkas_SysWarning": lkas11["CF_Lkas_SysWarning"] if not enabled else hud_alert,
     "CF_Lkas_LdwsLHWarning": lkas11["CF_Lkas_LdwsLHWarning"],
     "CF_Lkas_LdwsRHWarning": lkas11["CF_Lkas_LdwsRHWarning"],
     "CF_Lkas_HbaLamp": lkas11["CF_Lkas_HbaLamp"] if keep_stock else 0,
     "CF_Lkas_FcwBasReq": lkas11["CF_Lkas_FcwBasReq"] if keep_stock else 0,
-    "CR_Lkas_StrToqReq": apply_steer,
-    "CF_Lkas_ActToi": steer_req,
-    "CF_Lkas_ToiFlt": 0,
+    "CR_Lkas_StrToqReq": lkas11["CR_Lkas_StrToqReq"] if not enabled else  apply_steer,
+    "CF_Lkas_ActToi": lkas11["CF_Lkas_ActToi"] if not enabled else  steer_req,
+    "CF_Lkas_ToiFlt": lkas11["CF_Lkas_ToiFlt"] if not enabled else  0,
     "CF_Lkas_HbaSysState": lkas11["CF_Lkas_HbaSysState"] if keep_stock else 1,
     "CF_Lkas_FcwOpt": lkas11["CF_Lkas_FcwOpt"] if keep_stock else 0,
     "CF_Lkas_HbaOpt": lkas11["CF_Lkas_HbaOpt"] if keep_stock else 3,
@@ -103,12 +103,12 @@ def create_scc12(packer, apply_accel, enabled, cnt, scc12):
 
   return packer.make_can_msg("SCC12", 0, values)
 
-def create_mdps12(packer, car_fingerprint, cnt, mdps12):
+def create_mdps12(packer, car_fingerprint, cnt, mdps12, enabled ):
   values = {
     "CR_Mdps_StrColTq": mdps12["CR_Mdps_StrColTq"],
     "CF_Mdps_Def": mdps12["CF_Mdps_Def"],
-    "CF_Mdps_ToiActive": 0,
-    "CF_Mdps_ToiUnavail": 1,
+    "CF_Mdps_ToiActive": mdps12["CF_Mdps_ToiActive"] if not enabled else  0,
+    "CF_Mdps_ToiUnavail": mdps12["CF_Mdps_ToiUnavail"] if not enabled else 1,
     "CF_Mdps_MsgCount2": cnt,
     "CF_Mdps_Chksum2": 0,
     "CF_Mdps_ToiFlt": mdps12["CF_Mdps_ToiFlt"],
