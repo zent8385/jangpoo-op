@@ -317,17 +317,33 @@ def data_send(sm, pm, CS, CI, CP, VM, state, events, actuators, v_cruise_kph, rk
   CC.hudControl.lanesVisible = isEnabled(state)
   CC.hudControl.leadVisible = sm['plan'].hasLead
 
-  right_lane_visible = sm['pathPlan'].rProb > 0.2
-  left_lane_visible = sm['pathPlan'].lProb > 0.2
+  right_lane_visible = sm['pathPlan'].rProb > 0.3
+  left_lane_visible = sm['pathPlan'].lProb > 0.3
   CC.hudControl.rightLaneVisible = bool(right_lane_visible)
   CC.hudControl.leftLaneVisible = bool(left_lane_visible)
 
-  # not use  
-  CC.hudControl.leftLaneDepart = False
-  CC.hudControl.rightLaneDepart = False
+  recent_blinker = (sm.frame - last_blinker_frame) * DT_CTRL < 5.0  # 5s blinker cooldown
+  calibrated = sm['liveCalibration'].calStatus == Calibration.CALIBRATED
+  ldw_allowed = CS.vEgo > 31 * CV.MPH_TO_MS and not recent_blinker and is_ldw_enabled and not isActive(state) and calibrated
+
+  md = sm['model']
+  if len(md.meta.desirePrediction):
+    l_lane_change_prob = md.meta.desirePrediction[log.PathPlan.Desire.laneChangeLeft - 1]
+    r_lane_change_prob = md.meta.desirePrediction[log.PathPlan.Desire.laneChangeRight - 1]
+
+    l_lane_close = left_lane_visible and (sm['pathPlan'].lPoly[3] < (1.08 - CAMERA_OFFSET))
+    r_lane_close = right_lane_visible and (sm['pathPlan'].rPoly[3] > -(1.08 + CAMERA_OFFSET))
+
+    if ldw_allowed:
+      CC.hudControl.leftLaneDepart = bool(l_lane_change_prob > LANE_DEPARTURE_THRESHOLD and l_lane_close)
+      CC.hudControl.rightLaneDepart = bool(r_lane_change_prob > LANE_DEPARTURE_THRESHOLD and r_lane_close)
+
+  ##if CC.hudControl.rightLaneDepart or CC.hudControl.leftLaneDepart:
+  #  AM.add(sm.frame, 'ldwPermanent', False)
+  #  events.append(create_event('ldw', [ET.PERMANENT]))
 
   AM.process_alerts(sm.frame)
-  CC.hudControl.visualAlert = AM.visual_alert   # steer hand check. 
+  CC.hudControl.visualAlert = AM.visual_alert
 
   if not read_only:
     # send car controls over can
