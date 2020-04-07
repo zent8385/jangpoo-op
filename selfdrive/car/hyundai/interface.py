@@ -9,6 +9,8 @@ from selfdrive.car import STD_CARGO_KG, scale_rot_inertia, scale_tire_stiffness,
 from selfdrive.car.interfaces import CarInterfaceBase
 
 
+import common.log as trace
+
 GearShifter = car.CarState.GearShifter
 ButtonType = car.CarState.ButtonEvent.Type
 
@@ -33,6 +35,11 @@ class CarInterface(CarInterfaceBase):
     self.CC = None
     if CarController is not None:
       self.CC = CarController(self.cp.dbc_name, CP.carFingerprint)
+
+    self.traceLKA = trace.Loger("LKA")
+    self.traceCLU = trace.Loger("clu11")
+    self.traceSCC = trace.Loger("scc12")
+    self.traceMDPS = trace.Loger("mdps12")
 
   @staticmethod
   def compute_gb(accel, speed):
@@ -411,6 +418,8 @@ class CarInterface(CarInterfaceBase):
     self.gas_pressed_prev = ret.gasPressed
     self.brake_pressed_prev = ret.brakePressed
 
+    self.log_update( can_strings )
+
     return ret.as_reader()
 
   def apply(self, c):
@@ -419,3 +428,21 @@ class CarInterface(CarInterfaceBase):
                                c.hudControl.leftLaneVisible, c.hudControl.rightLaneVisible )
     self.frame += 1
     return can_sends
+
+
+
+
+  def log_update(self, can_string):
+      log_v_ego = ' v_ego={:5.0f} km/h'.format(self.CS.v_ego*CV.MS_TO_KPH)
+
+      log_data = ' lkas11=' + log_v_ego + str(self.CS.lkas11)
+      self.traceLKA.add( log_data )
+
+      log_data = ' clu11=' + log_v_ego + str(self.CS.clu11)      
+      self.traceCLU.add( log_data )
+
+      log_data = ' scc12='+ log_v_ego + str(self.CS.scc12)      
+      self.traceSCC.add( log_data )
+
+      log_data = ' mdps12='+ log_v_ego + str(self.CS.mdps12)      
+      self.traceMDPS.add( log_data )
