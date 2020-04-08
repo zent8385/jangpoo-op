@@ -433,8 +433,9 @@ class CarInterface(CarInterfaceBase):
 
 
   def log_update(self, can_string):
-      log_v_ego = ' v_ego={:5.0f} km/h'.format(self.CS.v_ego*CV.MS_TO_KPH)
-      if log_v_ego > 10:
+      v_ego = self.CS.v_ego * CV.MS_TO_KPH
+      if v_ego > 10:
+        log_v_ego = ' v_ego={:5.0f} km/h'.format( v_ego ) 
         log_data =  log_v_ego + str(self.CS.lkas11)
         self.traceLKA.add( log_data )
 
