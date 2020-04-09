@@ -496,6 +496,7 @@ void handle_message(UIState *s, Message * msg) {
     s->scene.brakeLights = datad.brakeLights;
     if(s->scene.leftBlinker!=datad.leftBlinker || s->scene.rightBlinker!=datad.rightBlinker)
       s->scene.blinker_blinkingrate = 100;
+      
     s->scene.leftBlinker = datad.leftBlinker;
     s->scene.rightBlinker = datad.rightBlinker;
 
