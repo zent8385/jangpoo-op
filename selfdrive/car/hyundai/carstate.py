@@ -444,3 +444,5 @@ class CarState():
     self.clu11 = cp.vl["CLU11"]
     self.scc12 = cp_scc.vl["SCC12"]
     self.mdps12 = cp_mdps.vl["MDPS12"]
+    self.cgw1 = cp.vl["CGW1"]
+    
