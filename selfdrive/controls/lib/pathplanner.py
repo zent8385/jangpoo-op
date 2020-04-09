@@ -120,7 +120,7 @@ class PathPlanner():
 
     # Get steerRatio and steerRateCost from kegman.json every x seconds
     self.mpc_frame += 1
-    if self.mpc_frame % 500 == 0:
+    if self.mpc_frame % 5000 == 0:
       # live tuning through /data/openpilot/tune.py overrides interface.py settings
       kegman = kegman_conf()
       if kegman.conf['tuneGernby'] == "1":
@@ -135,7 +135,7 @@ class PathPlanner():
 
       self.mpc_frame = 0
 
-    if v_ego > 11.111:
+    if v_ego > 40 * CV.KPH_TO_MS:  # 11.111:
       # boost steerRatio by boost amount if desired steer angle is high
       self.steerRatio_new = interp(abs(angle_steers), self.sRBP, self.sR)
 
@@ -196,10 +196,10 @@ class PathPlanner():
       elif self.lane_change_state == LaneChangeState.laneChangeStarting:
         if lca_left and self.lane_change_direction == LaneChangeDirection.left and not self.prev_torque_applied:
           self.lane_change_BSM = LaneChangeBSM.left
-          self.lane_change_state = LaneChangeState.preLaneChange
+          self.lane_change_state = LaneChangeState.off
         elif lca_right and self.lane_change_direction == LaneChangeDirection.right and not self.prev_torque_applied:
           self.lane_change_BSM = LaneChangeBSM.right
-          self.lane_change_state = LaneChangeState.preLaneChange
+          self.lane_change_state = LaneChangeState.off
         else:
           # starting
           self.lane_change_BSM = LaneChangeBSM.off

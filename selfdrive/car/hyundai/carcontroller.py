@@ -70,6 +70,9 @@ class CarController():
     self.streer_angle_over = False
     self.turning_indicator = 0 
 
+    self.hud_timer_left = 0
+    self.hud_timer_right = 0
+
   def update(self, enabled, CS, frame, actuators, 
               pcm_cancel_cmd, visual_alert,
               left_line, right_line ):
@@ -121,9 +124,9 @@ class CarController():
 
     # Disable steering while turning blinker on and speed below 60 kph
     if CS.left_blinker_on or CS.right_blinker_on:
-      if self.car_fingerprint not in [CAR.K5, CAR.K5_HYBRID, CAR.GRANDEUR_HYBRID, CAR.KONA_EV, CAR.STINGER, CAR.SONATA_TURBO, CAR.IONIQ_EV, CAR.SORENTO, CAR.GRANDEUR, CAR.K7_HYBRID, CAR.NEXO]:
+      #if self.car_fingerprint not in [CAR.K5, CAR.K5_HYBRID, CAR.GRANDEUR_HYBRID, CAR.KONA_EV, CAR.STINGER, CAR.SONATA_TURBO, CAR.IONIQ_EV, CAR.SORENTO, CAR.GRANDEUR, CAR.K7_HYBRID, CAR.NEXO]:
         self.turning_signal_timer = 500  # Disable for 5.0 Seconds after blinker turned off
-      elif CS.left_blinker_flash or CS.right_blinker_flash:
+    elif CS.left_blinker_flash or CS.right_blinker_flash:
         self.turning_signal_timer = 500
 
 
@@ -153,8 +156,20 @@ class CarController():
     self.apply_accel_last = apply_accel
     self.apply_steer_last = apply_steer
 
+    if left_line:
+      self.hud_timer_left = 50
 
-    hud_alert, lane_visible = process_hud_alert(lkas_active, self.lkas_button, visual_alert, left_line, right_line )    
+    if right_line:
+      self.hud_timer_right = 50      
+
+    if self.hud_timer_left:
+      self.hud_timer_left -= 1
+
+    if self.hud_timer_right:
+      self.hud_timer_right -= 1
+
+
+    hud_alert, lane_visible = process_hud_alert(lkas_active, self.lkas_button, visual_alert, hud_timer_left, hud_timer_right )    
 
     clu11_speed = CS.clu11["CF_Clu_Vanz"]
     enabled_speed = 38 if CS.is_set_speed_in_mph  else 60

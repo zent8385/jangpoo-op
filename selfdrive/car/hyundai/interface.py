@@ -25,6 +25,8 @@ class CarInterface(CarInterfaceBase):
     self.cruise_enabled_prev = False
     self.low_speed_alert = False
 
+    self.blinker_status = 0
+    self.blinker_timer = 0
 
     # *** init the major players ***
     self.CS = CarState(CP)
@@ -321,6 +323,40 @@ class CarInterface(CarInterfaceBase):
     #  self.CS.left_blinker_on = self.CS.left_blinker_flash or self.CS.prev_left_blinker_on and self.CC.turning_signal_timer
     #  self.CS.right_blinker_on = self.CS.right_blinker_flash or self.CS.prev_right_blinker_on and self.CC.turning_signal_timer
 
+
+    if self.CS.left_blinker_flash == self.CS.right_blinker_flash:  # EMG
+      self.blinker_status = 3
+      self.blinker_timer = 50
+    elif self.CS.left_blinker_flash:
+      self.blinker_status = -1
+      self.blinker_timer = 50
+    elif self.CS.right_blinker_flash:
+      self.blinker_status = 1
+      self.blinker_timer = 50
+    elif not self.blinker_timer:
+      self.blinker_status = 0 
+
+    if self.blinker_status == 3:
+      ret.leftBlinker = bool(self.blinker_timer)
+      ret.rightBlinker = bool(self.blinker_timer)
+    elif self.blinker_status == 1:
+      ret.leftBlinker = False
+      ret.rightBlinker = bool(self.blinker_timer)
+    elif self.blinker_status == -1:
+      ret.leftBlinker = bool(self.blinker_timer)
+      ret.rightBlinker = False
+    else:
+      ret.leftBlinker = False
+      ret.rightBlinker = False
+
+    if self.blinker_timer:
+      self.blinker_timer -= 1
+
+    #ret.leftBlinker = bool(self.CS.left_blinker_flash)
+    #ret.rightBlinker = bool(self.CS.right_blinker_flash)
+
+
+
     ret.lcaLeft = self.CS.lca_left != 0
     ret.lcaRight = self.CS.lca_right != 0
 
@@ -340,8 +376,7 @@ class CarInterface(CarInterfaceBase):
       buttonEvents.append(be)
       
     ret.buttonEvents = buttonEvents
-    ret.leftBlinker = bool(self.CS.left_blinker_on)
-    ret.rightBlinker = bool(self.CS.right_blinker_on)
+
 
     ret.doorOpen = not self.CS.door_all_closed
     ret.seatbeltUnlatched = not self.CS.seatbelt
@@ -410,10 +445,10 @@ class CarInterface(CarInterfaceBase):
 
 
     #TODO Varible for min Speed for LCA
-    if ret.rightBlinker and ret.lcaRight and self.CS.v_ego > LaneChangeParms.LANE_CHANGE_SPEED_MIN: 
-      events.append(create_event('rightLCAbsm', [ET.WARNING]))
-    if ret.leftBlinker and ret.lcaLeft and self.CS.v_ego > LaneChangeParms.LANE_CHANGE_SPEED_MIN: 
-      events.append(create_event('leftLCAbsm', [ET.WARNING]))
+    #if ret.rightBlinker and ret.lcaRight and self.CS.v_ego > LaneChangeParms.LANE_CHANGE_SPEED_MIN: 
+    #  events.append(create_event('rightLCAbsm', [ET.WARNING]))
+    #if ret.leftBlinker and ret.lcaLeft and self.CS.v_ego > LaneChangeParms.LANE_CHANGE_SPEED_MIN: 
+    #  events.append(create_event('leftLCAbsm', [ET.WARNING]))
 
     ret.events = events
 
