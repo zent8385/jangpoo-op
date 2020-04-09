@@ -135,7 +135,7 @@ class CarInterface(CarInterfaceBase):
     elif candidate in [CAR.GRANDEUR_HYBRID, CAR.K7_HYBRID]:
       ret.lateralTuning.pid.kf = 0.00005
       ret.mass = 1675. + STD_CARGO_KG
-      ret.wheelbase = 2.885
+      ret.wheelbase = 2.845
       ret.steerRatio = 12.5
       ret.steerRateCost = 0.4
       ret.lateralTuning.pid.kiBP, ret.lateralTuning.pid.kpBP = [[0.], [0.]]
@@ -315,9 +315,10 @@ class CarInterface(CarInterfaceBase):
     ret.cruiseState.standstill = False
     
     # Some HKG cars only have blinker flash signal
-    if self.CP.carFingerprint in [CAR.K5, CAR.K5_HYBRID, CAR.GRANDEUR_HYBRID, CAR.KONA_EV, CAR.STINGER, CAR.SONATA_TURBO, CAR.IONIQ_EV, CAR.SORENTO, CAR.GRANDEUR, CAR.K7, CAR.K7_HYBRID, CAR.NEXO]:
-      self.CS.left_blinker_on = self.CS.left_blinker_flash or self.CS.prev_left_blinker_on and self.CC.turning_signal_timer
-      self.CS.right_blinker_on = self.CS.right_blinker_flash or self.CS.prev_right_blinker_on and self.CC.turning_signal_timer
+    # bhcho-debug  blinker signal debug
+    #if self.CP.carFingerprint in [CAR.K5, CAR.K5_HYBRID, CAR.KONA_EV, CAR.STINGER, CAR.SONATA_TURBO, CAR.IONIQ_EV, CAR.SORENTO, CAR.GRANDEUR, CAR.K7, CAR.K7_HYBRID, CAR.NEXO]:
+    #  self.CS.left_blinker_on = self.CS.left_blinker_flash or self.CS.prev_left_blinker_on and self.CC.turning_signal_timer
+    #  self.CS.right_blinker_on = self.CS.right_blinker_flash or self.CS.prev_right_blinker_on and self.CC.turning_signal_timer
 
     ret.lcaLeft = self.CS.lca_left != 0
     ret.lcaRight = self.CS.lca_right != 0
