@@ -324,7 +324,7 @@ class CarInterface(CarInterfaceBase):
     #  self.CS.right_blinker_on = self.CS.right_blinker_flash or self.CS.prev_right_blinker_on and self.CC.turning_signal_timer
 
 
-    if  self.CS.left_blinker_flash and (self.CS.left_blinker_flash == self.CS.right_blinker_flash):  # EMG
+    if  self.CS.left_blinker_flash and  self.CS.right_blinker_flash:  # EMG
       self.blinker_status = 3
       self.blinker_timer = 50
     elif self.CS.left_blinker_flash:
