@@ -139,8 +139,8 @@ class CarInterface(CarInterfaceBase):
       ret.lateralTuning.pid.kf = 0.00005
       ret.mass = 1675. + STD_CARGO_KG
       ret.wheelbase = 2.845
-      ret.steerRatio = 10.5  #12.5
-      ret.steerRateCost = 0.01 #0.4
+      ret.steerRatio = 12.5  #12.5
+      ret.steerRateCost = 0.4 #0.4
       ret.lateralTuning.pid.kiBP, ret.lateralTuning.pid.kpBP = [[0.], [0.]]
       ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.25], [0.05]]
     elif candidate == CAR.STINGER:
