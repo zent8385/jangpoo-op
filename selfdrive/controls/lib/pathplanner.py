@@ -352,8 +352,8 @@ class PathPlanner():
 
 
     # log
-    log_str = ' curvature_factor={}'.Format( curvature_factor )
-    tracePP.add( log_str )
+    #log_str = ' curvature_factor={}'.Format( curvature_factor )
+    #tracePP.add( log_str )
 
     if LOG_MPC:
       dat = messaging.new_message()
