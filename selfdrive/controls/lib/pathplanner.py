@@ -176,7 +176,7 @@ class PathPlanner():
         self.lane_change_timer2 += 1
         if torque_applied:
             self.nCommand=0
-        elif lane_change_prob > 0.2 or self.lane_change_timer2 > 100:
+        elif lane_change_prob > 0.3 or self.lane_change_timer2 > 200:
             self.lane_change_timer2 = 0
             self.lane_change_state = LaneChangeState.laneChangeFinishing
             self.nCommand=4
@@ -266,9 +266,6 @@ class PathPlanner():
         else:
           self.lane_change_timer += 0.01
 
-
-    str_msg = 'cmd={} L:{:.3f} R:{:.3f}  L:{} R:{}'.format(  self.nCommand, self.LP.l_lane_change_prob, self.LP.r_lane_change_prob, self.LP.l_prob , self.LP.r_prob )
-    print( 'cmd = {} '.format(  str_msg ) )
 
     desire = DESIRES[self.lane_change_direction][self.lane_change_state]
 
