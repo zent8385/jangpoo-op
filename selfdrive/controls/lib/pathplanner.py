@@ -110,7 +110,7 @@ class PathPlanner():
     self.angle_steers_des_time = 0.0
 
 
-  def lane_change( self, sm, lca_left, lca_right ):
+  def lane_change( self, sm, lca_left, lca_right, lane_change_prob ):
       if self.nCommand == 0:
         self.lane_change_timer = 0
         self.lane_change_timer2 = 0.0
@@ -167,32 +167,28 @@ class PathPlanner():
             self.nCommand=3
 
       elif self.nCommand == 3:   # laneChangeStarting
-        lane_change_prob = self.LP.l_lane_change_prob + self.LP.r_lane_change_prob
-        
         torque_applied = 0
         if self.lane_change_direction == LaneChangeDirection.left:
             torque_applied = sm['carState'].steeringTorque < -50
         elif self.lane_change_direction == LaneChangeDirection.right:
             torque_applied = sm['carState'].steeringTorque > 50
 
-        self.lane_change_timer2 += 0.01
+        self.lane_change_timer2 += 1
         if torque_applied:
             self.nCommand=0
-        elif lane_change_prob > 0.2 or self.lane_change_timer2 > 1:
-            self.lane_change_timer2 = 0.0
+        elif lane_change_prob > 0.2 or self.lane_change_timer2 > 100:
+            self.lane_change_timer2 = 0
             self.lane_change_state = LaneChangeState.laneChangeFinishing
             self.nCommand=4
         else:
-            self.lane_change_timer2 = 0.0
+            self.lane_change_timer2 = 0
 
       elif self.nCommand == 4:   # laneChangeFinishing
-        angle_steers = sm['carState'].steeringAngle
-        lane_change_prob = abs(angle_steers)   # self.LP.l_lane_change_prob + self.LP.r_lane_change_prob
-        if lane_change_prob < 0.2:
-            self.lane_change_timer2 += 0.01
-            if self.lane_change_timer2 > 2:
-              self.lane_change_state = LaneChangeState.off
-              self.nCommand=0
+        if sm['carState'].leftBlinker or sm['carState'].rightBlinker:
+          pass
+        elif lane_change_prob < 0.1:
+            self.lane_change_state = LaneChangeState.off
+            self.nCommand=0
         else:
             self.lane_change_timer2 = 0.0
 
@@ -262,7 +258,8 @@ class PathPlanner():
         self.lane_change_state = LaneChangeState.off
         self.lane_change_direction = LaneChangeDirection.none
     else:
-        self.lane_change( sm, lca_left, lca_right )
+        lane_change_prob = self.LP.l_lane_change_prob + self.LP.r_lane_change_prob
+        self.lane_change( sm, lca_left, lca_right, lane_change_prob )
         
         if self.lane_change_state in [LaneChangeState.off, LaneChangeState.preLaneChange]:
           self.lane_change_timer = 0.0
