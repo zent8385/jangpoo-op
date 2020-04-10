@@ -102,7 +102,7 @@ class CarController():
     apply_steer = apply_std_steer_torque_limits(new_steer, self.apply_steer_last, CS.steer_torque_driver, SteerLimitParams)
     self.steer_rate_limited = new_steer != apply_steer
 
-    print( 'stree ={} pcm_cancel_cmd={} pcm_cancel_cmd={}'.format( actuators.steer, apply_steer, pcm_cancel_cmd ) )
+    #print( 'stree ={} pcm_cancel_cmd={} pcm_cancel_cmd={}'.format( actuators.steer, apply_steer, pcm_cancel_cmd ) )
 
     ### LKAS button to temporarily disable steering
     if not CS.lkas_error:
@@ -152,11 +152,11 @@ class CarController():
 
 
     if self.low_speed_car:
-        apply_steer = self.limit_ctrl( apply_steer, 10 )
-    elif CS.v_ego < 20 * CV.KPH_TO_MS:
         apply_steer = self.limit_ctrl( apply_steer, 50 )
+    elif CS.v_ego < 20 * CV.KPH_TO_MS:
+        apply_steer = self.limit_ctrl( apply_steer, 90 )
     elif CS.v_ego < 40 * CV.KPH_TO_MS:
-        apply_steer = self.limit_ctrl( apply_steer, 100 )
+        apply_steer = self.limit_ctrl( apply_steer, 150 )
 
     # disable lkas 
     if self.streer_angle_over and not CS.mdps_bus:
