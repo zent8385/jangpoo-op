@@ -270,7 +270,7 @@ class PathPlanner():
           self.lane_change_timer += 0.01
 
 
-    str_msg = 'cmd={} L:{:.2f} R:{:.2f}  L:{} R:{}'.format(  self.nCommand, self.LP.l_lane_change_prob, self.LP.r_lane_change_prob, self.LP.l_prob , self.LP.r_prob )
+    str_msg = 'cmd={} L:{:.3f} R:{:.3f}  L:{} R:{}'.format(  self.nCommand, self.LP.l_lane_change_prob, self.LP.r_lane_change_prob, self.LP.l_prob , self.LP.r_prob )
     print( 'cmd = {} '.format(  str_msg ) )
 
     desire = DESIRES[self.lane_change_direction][self.lane_change_state]
