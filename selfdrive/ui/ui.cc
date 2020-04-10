@@ -316,6 +316,17 @@ void handle_message(UIState *s, Message * msg) {
     s->scene.pid.i = datad.uiAccelCmd;
     s->scene.pid.f = datad.ufAccelCmd;
 
+// debug Message
+    s->scene.status.nCanError = datad.canErrorCounter;
+    if (datad.alertTextMsg.str) 
+    {
+      snprintf(s->scene.status.alert_text, sizeof(s->scene.status.alert_text), "%s", datad.alertTextMsg.str);
+    } 
+    else 
+    {
+      s->scene.status.alert_text[0] = '\0';
+    }
+
 
     // getting steering related data for dev ui
     s->scene.angleSteersDes = datad.angleSteersDes;

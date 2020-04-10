@@ -162,6 +162,12 @@ typedef struct UIScene {
     float  f;
   } pid; 
 
+  struct _STATUS_
+  {
+      int  nCanError;
+      char alert_text[1024]; 
+  } status;
+
 } UIScene;
 
 typedef struct {

@@ -238,7 +238,7 @@ ALERTS = [
   Alert(
       "belowSteerSpeed",
       "핸들을 잡아주세요",
-      "차량속도가 낮아 조향제어가 일시적으로 비활성화 되었습니다",
+      "차량속도가 낮아 조향제어가 일시적으로 비활성화",
       AlertStatus.userPrompt, AlertSize.mid,
       Priority.MID, VisualAlert.steerRequired, AudibleAlert.none, 0., 0.4, .3),
 

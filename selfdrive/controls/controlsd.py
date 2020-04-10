@@ -7,7 +7,10 @@ from common.numpy_fast import clip
 from common.realtime import sec_since_boot, set_realtime_priority, Ratekeeper, DT_CTRL
 from common.profiler import Profiler
 from common.params import Params
+
+import common.log as trace1
 import cereal.messaging as messaging
+
 from selfdrive.config import Conversions as CV
 from selfdrive.boardd.boardd import can_list_to_can_capnp
 from selfdrive.car.car_helpers import get_car, get_startup_alert
@@ -317,10 +320,13 @@ def data_send(sm, pm, CS, CI, CP, VM, state, events, actuators, v_cruise_kph, rk
   CC.hudControl.lanesVisible = isEnabled(state)
   CC.hudControl.leadVisible = sm['plan'].hasLead
 
-  right_lane_visible = sm['pathPlan'].rProb > 0.3
-  left_lane_visible = sm['pathPlan'].lProb > 0.3
-  CC.hudControl.rightLaneVisible = bool(right_lane_visible)
-  CC.hudControl.leftLaneVisible = bool(left_lane_visible)
+  right_lane_visible = sm['pathPlan'].rProb
+  left_lane_visible = sm['pathPlan'].lProb
+
+  trace1.printf( 'R:{:.3f} L:{:.3f}'.format( right_lane_visible, left_lane_visible ) )
+
+  CC.hudControl.rightLaneVisible = bool(right_lane_visible > 0.3)
+  CC.hudControl.leftLaneVisible = bool(left_lane_visible > 0.3)
 
   # not use  
   CC.hudControl.leftLaneDepart = False
@@ -364,9 +370,9 @@ def data_send(sm, pm, CS, CI, CP, VM, state, events, actuators, v_cruise_kph, rk
     "longControlState": LoC.long_control_state,
     "vPid": float(LoC.v_pid),
     "vCruise": float(v_cruise_kph),
-    "upAccelCmd": float(LaC.pid.p),
-    "uiAccelCmd": float(LaC.pid.i),
-    "ufAccelCmd": float(LaC.pid.f),
+    "upAccelCmd": float(LoC.pid.p),
+    "uiAccelCmd": float(LoC.pid.i),
+    "ufAccelCmd": float(LoC.pid.f),
     "angleSteersDes": float(LaC.angle_steers_des),
     "vTargetLead": float(v_acc),
     "aTarget": float(a_acc),
@@ -379,6 +385,7 @@ def data_send(sm, pm, CS, CI, CP, VM, state, events, actuators, v_cruise_kph, rk
     "mapValid": sm['plan'].mapValid,
     "forceDecel": bool(force_decel),
     "canErrorCounter": can_error_counter,
+    "alertTextMsg": str(trace1.alertTextMsg),
   }
 
   if CP.lateralTuning.which() == 'pid':
@@ -529,22 +536,24 @@ def controlsd_thread(sm=None, pm=None, can_sock=None):
       events.append(create_event('radarCommIssue', [ET.NO_ENTRY, ET.SOFT_DISABLE]))
     elif not sm.all_alive_and_valid():
       events.append(create_event('commIssue', [ET.NO_ENTRY, ET.SOFT_DISABLE]))
-    if not sm['pathPlan'].mpcSolutionValid:
+    elif not sm['pathPlan'].mpcSolutionValid:
       events.append(create_event('plannerError', [ET.NO_ENTRY, ET.IMMEDIATE_DISABLE]))
-    if not sm['pathPlan'].sensorValid:
-      events.append(create_event('sensorDataInvalid', [ET.NO_ENTRY, ET.PERMANENT]))
-    if not sm['pathPlan'].paramsValid:
+    elif not sm['pathPlan'].paramsValid:
       events.append(create_event('vehicleModelInvalid', [ET.WARNING]))
-    if not sm['pathPlan'].posenetValid:
+    elif not sm['pathPlan'].posenetValid:
       events.append(create_event('posenetInvalid', [ET.NO_ENTRY, ET.WARNING]))
-    if not sm['plan'].radarValid:
+    elif not sm['plan'].radarValid:
       events.append(create_event('radarFault', [ET.NO_ENTRY, ET.SOFT_DISABLE]))
-    if sm['plan'].radarCanError:
+    elif sm['plan'].radarCanError:
       events.append(create_event('radarCanError', [ET.NO_ENTRY, ET.SOFT_DISABLE]))
-    if not CS.canValid:
+    elif not CS.canValid:
       events.append(create_event('canError', [ET.NO_ENTRY, ET.IMMEDIATE_DISABLE]))
+
     if not sounds_available:
       events.append(create_event('soundsUnavailable', [ET.NO_ENTRY, ET.PERMANENT]))
+    if not sm['pathPlan'].sensorValid:
+      events.append(create_event('sensorDataInvalid', [ET.NO_ENTRY, ET.PERMANENT]))
+
 #    if internet_needed:
 #      events.append(create_event('internetConnectivityNeeded', [ET.NO_ENTRY, ET.PERMANENT]))
 #    if community_feature_disallowed:

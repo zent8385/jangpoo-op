@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import gc
+import time as tm
 from common.realtime import set_realtime_priority
 from common.params import Params, put_nonblocking
 import cereal.messaging as messaging
@@ -42,6 +43,8 @@ def dmonitoringd_thread(sm=None, pm=None):
 
   # 10Hz <- dmonitoringmodeld
   while True:
+    tm.sleep(0.01)
+    
     sm.update()
 
     # GPS coords RHD parsing, once every restart

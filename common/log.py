@@ -3,6 +3,14 @@ import common.CTime1000 as tm
 
 ROOT_LOG = '/data/media/0/realdata/'
 
+
+alertTextMsg = 'TXT'
+
+
+def printf( txt ):
+    global alertTextMsg
+    alertTextMsg = txt
+
 class Loger:
     debug_step_latch = 0   # debug
     debug_step_data = 0  # debug 
@@ -16,6 +24,7 @@ class Loger:
 
     def __del__(self):
         print( "{} - Loger class delete".format( self.name ))
+
 
 
     def add( self, txt ):

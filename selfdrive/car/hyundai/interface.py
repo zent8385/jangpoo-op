@@ -139,8 +139,8 @@ class CarInterface(CarInterfaceBase):
       ret.lateralTuning.pid.kf = 0.00005
       ret.mass = 1675. + STD_CARGO_KG
       ret.wheelbase = 2.845
-      ret.steerRatio = 12.5
-      ret.steerRateCost = 0.4
+      ret.steerRatio = 10.5  #12.5
+      ret.steerRateCost = 0.01 #0.4
       ret.lateralTuning.pid.kiBP, ret.lateralTuning.pid.kpBP = [[0.], [0.]]
       ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.25], [0.05]]
     elif candidate == CAR.STINGER:
@@ -411,16 +411,25 @@ class CarInterface(CarInterfaceBase):
     elif self.steer_angle_over_alert:
       events.append(create_event('steerTempUnavailable', [ET.NO_ENTRY, ET.WARNING]))
     elif self.CS.steer_error:
-      events.append(create_event('steerTempUnavailable', [ET.NO_ENTRY, ET.WARNING]))      
-
-    if ret.cruiseState.enabled != self.cruise_enabled_prev:
+      events.append(create_event('steerTempUnavailable', [ET.NO_ENTRY, ET.WARNING]))
+    elif self.lkas_button_alert:
+      events.append(create_event('lkasButtonOff', [ET.WARNING]))    
+    elif ret.cruiseState.enabled != self.cruise_enabled_prev:
         if ret.cruiseState.enabled:
             events.append(create_event('pcmEnable', [ET.ENABLE]))
         else:
             events.append(create_event('pcmDisable', [ET.USER_DISABLE]))
         self.cruise_enabled_prev = ret.cruiseState.enabled
-
-
+    elif  ret.cruiseState.enabled:
+        if self.turning_indicator_alert:
+          events.append(create_event('turningIndicatorOn', [ET.WARNING]))
+        elif self.CS.stopped:
+          if ret.cruiseState.standstill:
+            events.append(create_event('resumeRequired', [ET.WARNING]))
+          else:
+            events.append(create_event('preStoped', [ET.WARNING]))
+        elif self.low_speed_alert and not self.CS.mdps_bus:
+          events.append(create_event('belowSteerSpeed', [ET.WARNING]))
 
 
     # disable on pedals rising edge or when brake is pressed and speed isn't zero
@@ -429,19 +438,6 @@ class CarInterface(CarInterfaceBase):
           events.append(create_event('pedalPressed', [ET.NO_ENTRY, ET.USER_DISABLE]))
       if ret.gasPressed:
         events.append(create_event('pedalPressed', [ET.PRE_ENABLE]))
-
-
-    if self.lkas_button_alert:
-      events.append(create_event('lkasButtonOff', [ET.WARNING]))
-    elif self.turning_indicator_alert:
-      events.append(create_event('turningIndicatorOn', [ET.WARNING]))
-    elif self.CS.stopped:
-      if ret.cruiseState.standstill:
-        events.append(create_event('resumeRequired', [ET.WARNING]))
-      else:
-        events.append(create_event('preStoped', [ET.WARNING]))
-    elif self.low_speed_alert and not self.CS.mdps_bus:
-      events.append(create_event('belowSteerSpeed', [ET.WARNING]))
 
 
     #TODO Varible for min Speed for LCA
