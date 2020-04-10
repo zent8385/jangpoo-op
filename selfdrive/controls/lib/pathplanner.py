@@ -242,7 +242,7 @@ class PathPlanner():
       self.steerRatio = self.sR[0]
 
 
-    #print("steerRatio = ", self.steerRatio)
+    print("steerRatio = ", self.steerRatio)
 
     self.LP.parse_model(sm['model'])
 
@@ -263,8 +263,10 @@ class PathPlanner():
           self.lane_change_timer += 0.01
 
 
-    trace1.printf( 'cmd={} L:{:.2f} R:{:.2f}  L:{} R:{}'.format(  self.nCommand, self.LP.l_lane_change_prob, self.LP.r_lane_change_prob, self.LP.l_prob , self.LP.r_prob ) )
+    str_msg = 'cmd={} L:{:.2f} R:{:.2f}  L:{} R:{}'.format(  self.nCommand, self.LP.l_lane_change_prob, self.LP.r_lane_change_prob, self.LP.l_prob , self.LP.r_prob )
+    trace1.printf( str_msg )
 
+    print( 'cmd = {} '.format(  str_msg ) )
 
     desire = DESIRES[self.lane_change_direction][self.lane_change_state]
 
