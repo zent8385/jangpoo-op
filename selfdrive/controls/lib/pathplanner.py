@@ -87,9 +87,9 @@ class PathPlanner():
 
     self.lane_change_state = LaneChangeState.off
     self.lane_change_direction = LaneChangeDirection.none
-    self.lane_change_timer = 0.0
-    self.lane_change_timer2 = 0.0
-    self.lane_change_timer3 = 0.0
+    self.lane_change_timer1 = 0
+    self.lane_change_timer2 = 0
+    self.lane_change_timer3 = 0
     self.lane_change_BSM = LaneChangeBSM.off
 
 
@@ -112,9 +112,9 @@ class PathPlanner():
 
   def lane_change( self, sm, lca_left, lca_right, lane_change_prob ):
       if self.nCommand == 0:
-        self.lane_change_timer = 0
-        self.lane_change_timer2 = 0.0
-        self.lane_change_timer3 = 0.0
+        self.lane_change_timer1 = 0
+        self.lane_change_timer2 = 0
+        self.lane_change_timer3 = 0
         self.lane_change_state = LaneChangeState.off
         self.lane_change_direction = LaneChangeDirection.none
         self.nCommand=1
@@ -131,15 +131,15 @@ class PathPlanner():
             self.lane_change_direction = LaneChangeDirection.none
 
           if self.lane_change_BSM != LaneChangeBSM.off:
-            self.lane_change_timer3 += 0.01            
-            if self.lane_change_timer3 > 2:
-               self.lane_change_timer3 = 0.0
+            self.lane_change_timer3 += 1           
+            if self.lane_change_timer3 > 200:
+               self.lane_change_timer3 = 0
                self.lane_change_BSM = LaneChangeBSM.off
 
 
           self.lane_change_state = LaneChangeState.off
           if self.lane_change_direction != LaneChangeDirection.none:
-            self.lane_change_timer3 = 0.0
+            self.lane_change_timer3 = 0
             self.lane_change_BSM = LaneChangeBSM.off
             self.lane_change_state = LaneChangeState.preLaneChange
             self.nCommand=2
@@ -162,19 +162,25 @@ class PathPlanner():
               torque_applied = sm['carState'].steeringTorque < 0
 
         if torque_applied:
-            self.lane_change_timer2 = 0.0
+            self.lane_change_timer2 = 0
             self.lane_change_state = LaneChangeState.laneChangeStarting
             self.nCommand=3
 
       elif self.nCommand == 3:   # laneChangeStarting
-        torque_applied = 0
+        cancel_applied = 0
         if self.lane_change_direction == LaneChangeDirection.left:
-            torque_applied = sm['carState'].steeringTorque < -50
+            if sm['carState'].rightBlinker:
+                cancel_applied = True
+            else:
+                cancel_applied = sm['carState'].steeringTorque < -50
         elif self.lane_change_direction == LaneChangeDirection.right:
-            torque_applied = sm['carState'].steeringTorque > 50
+            if sm['carState'].leftBlinker:
+                cancel_applied = True
+            else:   
+                cancel_applied = sm['carState'].steeringTorque > 50
 
         self.lane_change_timer2 += 1
-        if torque_applied:
+        if cancel_applied:
             self.nCommand=0
         elif lane_change_prob > 0.5 or self.lane_change_timer2 > 200:
             self.lane_change_timer2 = 0
@@ -190,7 +196,7 @@ class PathPlanner():
             self.lane_change_state = LaneChangeState.off
             self.nCommand=0
         else:
-            self.lane_change_timer2 = 0.0
+            self.lane_change_timer2 = 0
 
 
 
@@ -252,8 +258,8 @@ class PathPlanner():
     # Lane change logic
     below_lane_change_speed = v_ego < 60 * CV.KPH_TO_MS
 
-    if (not active) or below_lane_change_speed or (self.lane_change_timer > 10.0):  # 5 sec
-        self.lane_change_timer = 0
+    if (not active) or below_lane_change_speed or (self.lane_change_timer1 > 10.0):  # 5 sec
+        self.lane_change_timer1 = 0
         self.nCommand = 0 
         self.lane_change_state = LaneChangeState.off
         self.lane_change_direction = LaneChangeDirection.none
@@ -262,9 +268,9 @@ class PathPlanner():
         self.lane_change( sm, lca_left, lca_right, lane_change_prob )
         
         if self.lane_change_state in [LaneChangeState.off, LaneChangeState.preLaneChange]:
-          self.lane_change_timer = 0.0
+          self.lane_change_timer1 = 0
         else:
-          self.lane_change_timer += 0.01
+          self.lane_change_timer1 += 0.01
 
     #trace1.printf( 'R:{:.3f} L:{:.3f}'.format( right_lane_visible, left_lane_visible ) )
     desire = DESIRES[self.lane_change_direction][self.lane_change_state]
