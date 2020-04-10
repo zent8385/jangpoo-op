@@ -96,7 +96,7 @@ def data_sample(CI, CC, sm, can_sock, state, mismatch_counter, can_error_counter
   #bsm alerts
   if lane_change_bsm == LaneChangeBSM.left:
       events.append(create_event('preventLCA', [ET.WARNING]))
-  if lane_change_bsm == LaneChangeBSM.right:
+  elif lane_change_bsm == LaneChangeBSM.right:
       events.append(create_event('preventLCA', [ET.WARNING]))
   
 

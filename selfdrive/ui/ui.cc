@@ -1049,9 +1049,11 @@ int main(int argc, char* argv[])
 
       // if visiond is still running and controlsState times out, display an alert
       // TODO: refactor this to not be here
-      if (s->controls_seen && s->vision_connected && strcmp(s->scene.alert_text2, "Controls Unresponsive") != 0) {
+      if (s->controls_seen && s->vision_connected && strcmp(s->scene.alert_text2, "Controls Unresponsive") != 0) 
+      {
         s->scene.alert_size = ALERTSIZE_FULL;
-        if (s->status != STATUS_STOPPED) {
+        if (s->status != STATUS_STOPPED) 
+        {
           update_status(s, STATUS_ALERT);
         }
         snprintf(s->scene.alert_text1, sizeof(s->scene.alert_text1), "%s", "TAKE CONTROL IMMEDIATELY");
@@ -1076,9 +1078,11 @@ int main(int argc, char* argv[])
 
     // the bg thread needs to be scheduled, so the main thread needs time without the lock
     // safe to do this outside the lock?
-    if (should_swap) {
+    if (should_swap) 
+    {
       double u2 = millis_since_boot();
-      if (u2-u1 > 66) {
+      if (u2-u1 > 66) 
+      {
         // warn on sub 15fps
         LOGW("slow frame(%d) time: %.2f", draws, u2-u1);
       }

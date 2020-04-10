@@ -89,6 +89,7 @@ class PathPlanner():
     self.lane_change_direction = LaneChangeDirection.none
     self.lane_change_timer = 0.0
     self.lane_change_timer2 = 0.0
+    self.lane_change_timer3 = 0.0
     self.lane_change_BSM = LaneChangeBSM.off
 
 
@@ -111,55 +112,80 @@ class PathPlanner():
 
   def lane_change( self, sm, lca_left, lca_right ):
       if self.nCommand == 0:
+        self.lane_change_timer = 0
+        self.lane_change_timer2 = 0.0
+        self.lane_change_timer3 = 0.0
+        self.lane_change_state = LaneChangeState.off
+        self.lane_change_direction = LaneChangeDirection.none
+        self.nCommand=1
+
+      elif self.nCommand == 1:
           one_blinker = sm['carState'].leftBlinker != sm['carState'].rightBlinker
           if not one_blinker:
-            self.nCommand=0
-          if sm['carState'].leftBlinker and not lca_left:
+            pass
+          elif sm['carState'].leftBlinker and not lca_left:
             self.lane_change_direction = LaneChangeDirection.left
           elif sm['carState'].rightBlinker  and not lca_right:
             self.lane_change_direction = LaneChangeDirection.right
           else:
             self.lane_change_direction = LaneChangeDirection.none
 
-          self.lane_change_BSM = LaneChangeBSM.off
+          if self.lane_change_BSM != LaneChangeBSM.off:
+            self.lane_change_timer3 += 0.01            
+            if self.lane_change_timer3 > 2:
+               self.lane_change_timer3 = 0.0
+               self.lane_change_BSM = LaneChangeBSM.off
+
+
           self.lane_change_state = LaneChangeState.off
           if self.lane_change_direction != LaneChangeDirection.none:
+            self.lane_change_timer3 = 0.0
+            self.lane_change_BSM = LaneChangeBSM.off
             self.lane_change_state = LaneChangeState.preLaneChange
-            self.nCommand=1
-
-      elif self.nCommand == 1:   # preLaneChange
-        torque_applied = 0        
-        if sm['carState'].steeringPressed:
-          if self.lane_change_direction == LaneChangeDirection.left:
-              if lca_left:  # BSM
-                self.lane_change_BSM = LaneChangeBSM.left
-                self.nCommand=0
-              else:            
-                torque_applied = sm['carState'].steeringTorque > 0
-          elif self.lane_change_direction == LaneChangeDirection.right:
-              if lca_right:  # BSM
-                self.lane_change_BSM = LaneChangeBSM.right
-                self.nCommand=0            
-              else:
-                torque_applied = sm['carState'].steeringTorque < 0
-
-        if torque_applied:
-            self.lane_change_state = LaneChangeState.laneChangeStarting
             self.nCommand=2
 
-      elif self.nCommand == 2:   # laneChangeStarting
-        lane_change_prob = self.LP.l_lane_change_prob + self.LP.r_lane_change_prob
-        self.lane_change_timer2 = 0.0
-        if lane_change_prob > 0.4:
-            self.lane_change_state = LaneChangeState.laneChangeFinishing
+      elif self.nCommand == 2:   # preLaneChange
+        torque_applied = 0        
+        if not sm['carState'].steeringPressed:
+          pass
+        elif self.lane_change_direction == LaneChangeDirection.left:
+            if lca_left:  # BSM
+              self.lane_change_BSM = LaneChangeBSM.left
+              self.nCommand=0
+            else:            
+              torque_applied = sm['carState'].steeringTorque > 0
+        elif self.lane_change_direction == LaneChangeDirection.right:
+            if lca_right:  # BSM
+              self.lane_change_BSM = LaneChangeBSM.right
+              self.nCommand=0            
+            else:
+              torque_applied = sm['carState'].steeringTorque < 0
+
+        if torque_applied:
+            self.lane_change_timer2 = 0.0
+            self.lane_change_state = LaneChangeState.laneChangeStarting
             self.nCommand=3
 
-      elif self.nCommand == 3:   # laneChangeFinishing
-        self.lane_change_timer2 += 0.01
+      elif self.nCommand == 3:   # laneChangeStarting
+        lane_change_prob = self.LP.l_lane_change_prob + self.LP.r_lane_change_prob
+        
+        if lane_change_prob > 0.5:
+            self.lane_change_timer2 += 0.01
+            if self.lane_change_timer2 > 1:
+              self.lane_change_timer2 = 0.0
+              self.lane_change_state = LaneChangeState.laneChangeFinishing
+              self.nCommand=4
+        else:
+            self.lane_change_timer2 = 0.0
+
+
+      elif self.nCommand == 4:   # laneChangeFinishing
         lane_change_prob = self.LP.l_lane_change_prob + self.LP.r_lane_change_prob
         if lane_change_prob < 0.2:
-            if self.lane_change_timer2 > 1:
+            self.lane_change_timer2 += 0.01
+            if self.lane_change_timer2 > 2:
               self.lane_change_state = LaneChangeState.off
+              self.nCommand=0
         else:
             self.lane_change_timer2 = 0.0
 
