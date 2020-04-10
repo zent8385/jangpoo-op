@@ -264,7 +264,7 @@ class PathPlanner():
 
 
     str_msg = 'cmd={} L:{:.2f} R:{:.2f}  L:{} R:{}'.format(  self.nCommand, self.LP.l_lane_change_prob, self.LP.r_lane_change_prob, self.LP.l_prob , self.LP.r_prob )
-    trace1.printf( str_msg )
+    trace1.alertTextMsg = str_msg
 
     print( 'cmd = {} '.format(  str_msg ) )
 
