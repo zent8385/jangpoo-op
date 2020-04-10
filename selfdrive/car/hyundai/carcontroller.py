@@ -152,9 +152,9 @@ class CarController():
 
 
     if self.low_speed_car:
-        apply_steer = self.limit_ctrl( apply_steer, 50 )
+        apply_steer = self.limit_ctrl( apply_steer, 40 )
     elif CS.v_ego < 20 * CV.KPH_TO_MS:
-        apply_steer = self.limit_ctrl( apply_steer, 90 )
+        apply_steer = self.limit_ctrl( apply_steer, 80 )
     elif CS.v_ego < 40 * CV.KPH_TO_MS:
         apply_steer = self.limit_ctrl( apply_steer, 150 )
 

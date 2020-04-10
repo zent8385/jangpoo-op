@@ -169,13 +169,23 @@ class PathPlanner():
       elif self.nCommand == 3:   # laneChangeStarting
         lane_change_prob = self.LP.l_lane_change_prob + self.LP.r_lane_change_prob
         
-        if lane_change_prob > 0.5:
+        torque_applied = 0
+        if not sm['carState'].steeringPressed:
+          pass
+        elif self.lane_change_direction == LaneChangeDirection.left:
+            torque_applied = sm['carState'].steeringTorque < 0
+        elif self.lane_change_direction == LaneChangeDirection.right:
+            torque_applied = sm['carState'].steeringTorque > 0
+
+        if torque_applied:
+            self.lane_change_state = LaneChangeState.laneChangeFinishing
+            self.nCommand=4
+        elif lane_change_prob > 0.3:
             self.lane_change_timer2 = 0.0
             self.lane_change_state = LaneChangeState.laneChangeFinishing
             self.nCommand=4
         else:
             self.lane_change_timer2 = 0.0
-
 
       elif self.nCommand == 4:   # laneChangeFinishing
         lane_change_prob = self.LP.l_lane_change_prob + self.LP.r_lane_change_prob
@@ -240,7 +250,7 @@ class PathPlanner():
       self.steerRatio = self.sR[0]
 
 
-    print("steerRatio = ", self.steerRatio)
+    #print("steerRatio = ", self.steerRatio)
 
     self.LP.parse_model(sm['model'])
 
@@ -262,8 +272,6 @@ class PathPlanner():
 
 
     str_msg = 'cmd={} L:{:.2f} R:{:.2f}  L:{} R:{}'.format(  self.nCommand, self.LP.l_lane_change_prob, self.LP.r_lane_change_prob, self.LP.l_prob , self.LP.r_prob )
-    trace1.alertTextMsg = str_msg
-
     print( 'cmd = {} '.format(  str_msg ) )
 
     desire = DESIRES[self.lane_change_direction][self.lane_change_state]
