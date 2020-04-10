@@ -240,10 +240,7 @@ class PathPlanner():
         self.sR_delay_counter = 0
     else:
       self.steerRatio = self.sR[0]
-      if self.steerRatio > 80:
-        self.steerRatio = 80
-      elif self.steerRatio < -80:
-        self.steerRatio = -80
+
 
     #print("steerRatio = ", self.steerRatio)
 
@@ -265,10 +262,6 @@ class PathPlanner():
         else:
           self.lane_change_timer += 0.01
 
-          if self.steerRatio > 100:
-            self.steerRatio = 100
-          elif self.steerRatio < -100:
-            self.steerRatio = -100
 
     trace1.printf( 'cmd={} L:{:.2f} R:{:.2f}  L:{} R:{}'.format(  self.nCommand, self.LP.l_lane_change_prob, self.LP.r_lane_change_prob, self.LP.l_prob , self.LP.r_prob ) )
 

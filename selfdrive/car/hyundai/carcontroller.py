@@ -1,10 +1,12 @@
 from cereal import car
 from common.numpy_fast import clip
+from selfdrive.config import Conversions as CV
 from selfdrive.car import apply_std_steer_torque_limits
 from selfdrive.car.hyundai.hyundaican import create_lkas11, create_clu11, \
                                              create_scc12, create_mdps12
 from selfdrive.car.hyundai.values import Buttons, SteerLimitParams, LaneChangeParms, CAR
 from opendbc.can.packer import CANPacker
+
 
 VisualAlert = car.CarControl.HUDControl.VisualAlert
 
@@ -73,6 +75,16 @@ class CarController():
     self.hud_timer_left = 0
     self.hud_timer_right = 0
 
+
+  def limit_ctrl(self, value, limit ):
+      if value > limit:
+          value = limit
+      elif  value < -limit:
+          value = -limit
+
+      return value
+
+
   def update(self, enabled, CS, frame, actuators, 
               pcm_cancel_cmd, visual_alert,
               left_line, right_line ):
@@ -137,16 +149,22 @@ class CarController():
         self.turning_signal_timer -= 1 
 
 
-
+    if self.low_speed_car:
+        apply_steer = self.limit_ctrl( apply_steer, 10 )
+    elif CS.v_ego < 20 * CV.KPH_TO_MS:
+        apply_steer = self.limit_ctrl( apply_steer, 50 )
+    elif CS.v_ego < 40 * CV.KPH_TO_MS:
+        apply_steer = self.limit_ctrl( apply_steer, 100 )
 
     # disable lkas 
     if self.streer_angle_over and not CS.mdps_bus:
         lkas_active = 0
-    elif self.low_speed_car and not CS.mdps_bus:
-        lkas_active = 0
     elif self.turning_indicator:
         lkas_active = 0
-      
+    #elif self.low_speed_car and not CS.mdps_bus:
+        #lkas_active = 0
+        
+               
     if not lkas_active:
       apply_steer = 0
 
