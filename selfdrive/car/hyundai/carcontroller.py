@@ -102,6 +102,8 @@ class CarController():
     apply_steer = apply_std_steer_torque_limits(new_steer, self.apply_steer_last, CS.steer_torque_driver, SteerLimitParams)
     self.steer_rate_limited = new_steer != apply_steer
 
+    print( 'stree ={} pcm_cancel_cmd={} pcm_cancel_cmd={}'.format( actuators.steer, apply_steer, pcm_cancel_cmd ) )
+
     ### LKAS button to temporarily disable steering
     if not CS.lkas_error:
       if self.lkas_button != CS.lkas_button_on:

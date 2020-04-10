@@ -170,11 +170,9 @@ class PathPlanner():
         lane_change_prob = self.LP.l_lane_change_prob + self.LP.r_lane_change_prob
         
         if lane_change_prob > 0.5:
-            self.lane_change_timer2 += 0.01
-            if self.lane_change_timer2 > 1:
-              self.lane_change_timer2 = 0.0
-              self.lane_change_state = LaneChangeState.laneChangeFinishing
-              self.nCommand=4
+            self.lane_change_timer2 = 0.0
+            self.lane_change_state = LaneChangeState.laneChangeFinishing
+            self.nCommand=4
         else:
             self.lane_change_timer2 = 0.0
 
