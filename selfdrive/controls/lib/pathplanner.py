@@ -176,7 +176,7 @@ class PathPlanner():
         self.lane_change_timer2 += 1
         if torque_applied:
             self.nCommand=0
-        elif lane_change_prob > 0.3 or self.lane_change_timer2 > 200:
+        elif lane_change_prob > 0.5 or self.lane_change_timer2 > 200:
             self.lane_change_timer2 = 0
             self.lane_change_state = LaneChangeState.laneChangeFinishing
             self.nCommand=4
@@ -266,7 +266,7 @@ class PathPlanner():
         else:
           self.lane_change_timer += 0.01
 
-
+    #trace1.printf( 'R:{:.3f} L:{:.3f}'.format( right_lane_visible, left_lane_visible ) )
     desire = DESIRES[self.lane_change_direction][self.lane_change_state]
 
     # Turn off lanes during lane change
