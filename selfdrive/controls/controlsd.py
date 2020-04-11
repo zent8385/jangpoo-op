@@ -8,7 +8,8 @@ from common.realtime import sec_since_boot, set_realtime_priority, Ratekeeper, D
 from common.profiler import Profiler
 from common.params import Params
 
-import common.log as trace1
+import common.log as  trace1
+
 import cereal.messaging as messaging
 
 from selfdrive.config import Conversions as CV
@@ -302,6 +303,8 @@ def data_send(sm, pm, CS, CI, CP, VM, state, events, actuators, v_cruise_kph, rk
               LaC, LoC, read_only, start_time, v_acc, a_acc, lac_log, events_prev,
               last_blinker_frame, is_ldw_enabled, can_error_counter):
   """Send actuators and hud commands to the car, send controlsstate and MPC logging"""
+  global trace1
+
 
   CC = car.CarControl.new_message()
   CC.enabled = isEnabled(state)

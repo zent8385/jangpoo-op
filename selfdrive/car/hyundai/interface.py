@@ -9,7 +9,7 @@ from selfdrive.car import STD_CARGO_KG, scale_rot_inertia, scale_tire_stiffness,
 from selfdrive.car.interfaces import CarInterfaceBase
 
 
-import common.log as trace
+import common.log as trace1
 
 GearShifter = car.CarState.GearShifter
 ButtonType = car.CarState.ButtonEvent.Type
@@ -38,11 +38,11 @@ class CarInterface(CarInterfaceBase):
     if CarController is not None:
       self.CC = CarController(self.cp.dbc_name, CP.carFingerprint)
 
-    self.traceLKA = trace.Loger("LKA")
-    self.traceCLU = trace.Loger("clu11")
-    self.traceSCC = trace.Loger("scc12")
-    self.traceMDPS = trace.Loger("mdps12")
-    self.traceCGW = trace.Loger("CGW1")
+    self.traceLKA = trace1.Loger("LKA")
+    self.traceCLU = trace1.Loger("clu11")
+    self.traceSCC = trace1.Loger("scc12")
+    self.traceMDPS = trace1.Loger("mdps12")
+    self.traceCGW = trace1.Loger("CGW1")
 
   @staticmethod
   def compute_gb(accel, speed):
@@ -451,7 +451,7 @@ class CarInterface(CarInterfaceBase):
     self.gas_pressed_prev = ret.gasPressed
     self.brake_pressed_prev = ret.brakePressed
 
-    self.log_update( can_strings )
+    #self.log_update( can_strings )
 
     return ret.as_reader()
 
