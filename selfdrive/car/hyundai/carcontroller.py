@@ -157,9 +157,9 @@ class CarController():
 
 
     if self.low_speed_car:
-        apply_steer = self.limit_ctrl( apply_steer, 30 )
+        apply_steer = self.limit_ctrl( apply_steer, 10 )
     elif CS.v_ego < 20 * CV.KPH_TO_MS:
-        apply_steer = self.limit_ctrl( apply_steer, 70 )
+        apply_steer = self.limit_ctrl( apply_steer, 20 )
     elif CS.v_ego < 40 * CV.KPH_TO_MS:
         apply_steer = self.limit_ctrl( apply_steer, 100 )
 
@@ -174,9 +174,10 @@ class CarController():
                
     if not lkas_active:
       apply_steer = 0
-      steer_req = 0
-    else:
-      steer_req = 1 #if apply_steer else 0    
+
+
+
+
 
 
     if  -0.1 < CS.yaw_rate and CS.yaw_rate < 0.1:
@@ -186,7 +187,7 @@ class CarController():
     else:
       self.lkas_active_timer2 = 0
 
-
+    steer_req = 1 if apply_steer else 0    
 
 
     if apply_steer == 0:
@@ -194,7 +195,7 @@ class CarController():
     else:
       self.lkas_active_timer1 += 1
       if  self.lkas_active_timer1 < 50:
-          apply_steer = self.limit_ctrl( apply_steer, 30 )
+          apply_steer = self.limit_ctrl( apply_steer, 20 )
       elif self.lkas_active_timer1 < 100:
           apply_steer = self.limit_ctrl( apply_steer, 70 )
       else:
