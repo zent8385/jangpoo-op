@@ -145,7 +145,7 @@ class PathPlanner():
             self.nCommand=2
 
       elif self.nCommand == 2:   # preLaneChange
-        torque_applied = 0        
+        torque_applied = False        
         if not sm['carState'].steeringPressed:
           pass
         elif self.lane_change_direction == LaneChangeDirection.left:
@@ -167,7 +167,7 @@ class PathPlanner():
             self.nCommand=3
 
       elif self.nCommand == 3:   # laneChangeStarting
-        cancel_applied = 0
+        cancel_applied = False
         if self.lane_change_direction == LaneChangeDirection.left:
             if sm['carState'].rightBlinker:
                 cancel_applied = True
@@ -272,7 +272,7 @@ class PathPlanner():
         else:
           self.lane_change_timer1 += 0.01
 
-    #trace1.printf( 'R:{:.3f} L:{:.3f}'.format( right_lane_visible, left_lane_visible ) )
+    #trace1.printf( 'R:{:.3f} L:{:.3f}'.format( self.LP.l_lane_change_prob, self.LP.r_lane_change_prob ) )
     desire = DESIRES[self.lane_change_direction][self.lane_change_state]
 
     # Turn off lanes during lane change
