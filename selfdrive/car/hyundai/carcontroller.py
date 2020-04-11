@@ -174,9 +174,9 @@ class CarController():
                
     if not lkas_active:
       apply_steer = 0
-
-
-    steer_req = 1 if apply_steer else 0    
+      steer_req = 0
+    else:
+      steer_req = 1 #if apply_steer else 0    
 
 
     if  -0.1 < CS.yaw_rate and CS.yaw_rate < 0.1:
@@ -201,7 +201,7 @@ class CarController():
           self.lkas_active_timer1 = 200
 
 
-    trace1.printf( 'A:{} Toq:{:.3f} yaw:{:.3f}'.format( steer_req, apply_steer, CS.yaw_rate ) )
+    trace1.printf( 'A:{} Toq:{} yaw:{:.3f}'.format( steer_req, apply_steer, CS.yaw_rate ) )
 
     self.apply_accel_last = apply_accel
     self.apply_steer_last = apply_steer
