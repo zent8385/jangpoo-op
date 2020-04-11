@@ -75,6 +75,9 @@ class CarController():
     self.hud_timer_left = 0
     self.hud_timer_right = 0
 
+    self.lkas_active_timer1 = 0
+    self.lkas_active_timer2 = 0
+
 
   def limit_ctrl(self, value, limit ):
       if value > limit:
@@ -165,13 +168,38 @@ class CarController():
         lkas_active = 0
     #elif self.low_speed_car and not CS.mdps_bus:
         #lkas_active = 0
-        
+
                
     if not lkas_active:
       apply_steer = 0
+      steer_req = 0
+    else:
+      steer_req = 1
 
-      
-    steer_req = 1 if apply_steer else 0
+
+    if  -0.3 < CS.yaw_rate and CS.yaw_rate < 0.3:
+      self.lkas_active_timer2 += 1
+      if self.lkas_active_timer2 > 50:
+          steer_req = 0
+    else:
+      self.lkas_active_timer2 = 0
+
+
+
+
+    if steer_req == 0:
+       self.lkas_active_timer1 = 0
+    else:
+      self.lkas_active_timer1 += 1
+      if  self.lkas_active_timer1 < 50:
+          apply_steer = self.limit_ctrl( apply_steer, 30 )
+      elif self.lkas_active_timer1 < 100:
+          apply_steer = self.limit_ctrl( apply_steer, 70 )
+      else:
+          self.lkas_active_timer1 = 200
+
+
+
 
     self.apply_accel_last = apply_accel
     self.apply_steer_last = apply_steer

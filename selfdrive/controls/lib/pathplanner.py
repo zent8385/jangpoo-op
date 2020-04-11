@@ -52,153 +52,154 @@ def calc_states_after_delay(states, v_ego, steer_angle, curvature_factor, steer_
 
 class PathPlanner():
   def __init__(self, CP):
-    self.LP = LanePlanner()
+      self.LP = LanePlanner()
 
-    self.last_cloudlog_t = 0
-    self.steer_rate_cost = CP.steerRateCost
+      self.last_cloudlog_t = 0
+      self.steer_rate_cost = CP.steerRateCost
 
-    self.setup_mpc()
-    self.solution_invalid_cnt = 0
-    self.lane_change_enabled = Params().get('LaneChangeEnabled') == b'1'
-    self.path_offset_i = 0.0
+      self.setup_mpc()
+      self.solution_invalid_cnt = 0
+      self.lane_change_enabled = Params().get('LaneChangeEnabled') == b'1'
+      self.path_offset_i = 0.0
 
-    self.mpc_frame = 0
-    self.sR_delay_counter = 0
-    self.steerRatio_new = 0.0
-    self.sR_time = 1
-    self.nCommand = 0
+      self.mpc_frame = 0
+      self.sR_delay_counter = 0
+      self.steerRatio_new = 0.0
+      self.sR_time = 1
+      self.nCommand = 0
 
-    kegman = kegman_conf(CP)
-    if kegman.conf['steerRatio'] == "-1":
-      self.steerRatio = CP.steerRatio
-    else:
-      self.steerRatio = float(kegman.conf['steerRatio'])
+      kegman = kegman_conf(CP)
+      if kegman.conf['steerRatio'] == "-1":
+        self.steerRatio = CP.steerRatio
+      else:
+        self.steerRatio = float(kegman.conf['steerRatio'])
 
-    if kegman.conf['steerRateCost'] == "-1":
-      self.steerRateCost = CP.steerRateCost
-    else:
-      self.steerRateCost = float(kegman.conf['steerRateCost'])
+      if kegman.conf['steerRateCost'] == "-1":
+        self.steerRateCost = CP.steerRateCost
+      else:
+        self.steerRateCost = float(kegman.conf['steerRateCost'])
 
-    self.sR = [float(kegman.conf['steerRatio']), (float(kegman.conf['steerRatio']) + float(kegman.conf['sR_boost']))]
-    self.sRBP = [float(kegman.conf['sR_BP0']), float(kegman.conf['sR_BP1'])]
+      self.sR = [float(kegman.conf['steerRatio']), (float(kegman.conf['steerRatio']) + float(kegman.conf['sR_boost']))]
+      self.sRBP = [float(kegman.conf['sR_BP0']), float(kegman.conf['sR_BP1'])]
 
-    self.steerRateCost_prev = self.steerRateCost
-    self.setup_mpc()
+      self.steerRateCost_prev = self.steerRateCost
+      self.setup_mpc()
 
-    self.lane_change_state = LaneChangeState.off
-    self.lane_change_direction = LaneChangeDirection.none
-    self.lane_change_timer1 = 0
-    self.lane_change_timer2 = 0
-    self.lane_change_timer3 = 0
-    self.lane_change_BSM = LaneChangeBSM.off
+      self.lane_change_state = LaneChangeState.off
+      self.lane_change_direction = LaneChangeDirection.none
+      self.lane_change_timer1 = 0
+      self.lane_change_timer2 = 0
+      self.lane_change_timer3 = 0
+      self.lane_change_BSM = LaneChangeBSM.off
 
 
   def setup_mpc(self):
-    self.libmpc = libmpc_py.libmpc
-    self.libmpc.init(MPC_COST_LAT.PATH, MPC_COST_LAT.LANE, MPC_COST_LAT.HEADING, self.steer_rate_cost)
+      self.libmpc = libmpc_py.libmpc
+      self.libmpc.init(MPC_COST_LAT.PATH, MPC_COST_LAT.LANE, MPC_COST_LAT.HEADING, self.steer_rate_cost)
 
-    self.mpc_solution = libmpc_py.ffi.new("log_t *")
-    self.cur_state = libmpc_py.ffi.new("state_t *")
-    self.cur_state[0].x = 0.0
-    self.cur_state[0].y = 0.0
-    self.cur_state[0].psi = 0.0
-    self.cur_state[0].delta = 0.0
+      self.mpc_solution = libmpc_py.ffi.new("log_t *")
+      self.cur_state = libmpc_py.ffi.new("state_t *")
+      self.cur_state[0].x = 0.0
+      self.cur_state[0].y = 0.0
+      self.cur_state[0].psi = 0.0
+      self.cur_state[0].delta = 0.0
 
-    self.angle_steers_des = 0.0
-    self.angle_steers_des_mpc = 0.0
-    self.angle_steers_des_prev = 0.0
-    self.angle_steers_des_time = 0.0
+      self.angle_steers_des = 0.0
+      self.angle_steers_des_mpc = 0.0
+      self.angle_steers_des_prev = 0.0
+      self.angle_steers_des_time = 0.0
 
 
   def lane_change( self, sm, lca_left, lca_right, lane_change_prob ):
       if self.nCommand == 0:
-        self.lane_change_timer1 = 0
-        self.lane_change_timer2 = 0
-        self.lane_change_timer3 = 0
-        self.lane_change_state = LaneChangeState.off
-        self.lane_change_direction = LaneChangeDirection.none
-        self.nCommand=1
+          self.lane_change_timer1 = 0
+          self.lane_change_timer2 = 0
+          self.lane_change_timer3 = 0
+          self.lane_change_timer4 = 0
+          self.lane_change_state = LaneChangeState.off
+          self.lane_change_direction = LaneChangeDirection.none
+          self.nCommand=1
 
       elif self.nCommand == 1:
           one_blinker = sm['carState'].leftBlinker != sm['carState'].rightBlinker
           if not one_blinker:
-            pass
+              pass
           elif sm['carState'].leftBlinker and not lca_left:
-            self.lane_change_direction = LaneChangeDirection.left
+              self.lane_change_direction = LaneChangeDirection.left
           elif sm['carState'].rightBlinker  and not lca_right:
-            self.lane_change_direction = LaneChangeDirection.right
+              self.lane_change_direction = LaneChangeDirection.right
           else:
-            self.lane_change_direction = LaneChangeDirection.none
-
-          if self.lane_change_BSM != LaneChangeBSM.off:
-            self.lane_change_timer3 += 1           
-            if self.lane_change_timer3 > 200:
-               self.lane_change_timer3 = 0
-               self.lane_change_BSM = LaneChangeBSM.off
-
+              self.lane_change_direction = LaneChangeDirection.none
 
           self.lane_change_state = LaneChangeState.off
           if self.lane_change_direction != LaneChangeDirection.none:
-            self.lane_change_timer3 = 0
-            self.lane_change_BSM = LaneChangeBSM.off
-            self.lane_change_state = LaneChangeState.preLaneChange
-            self.nCommand=2
+              self.lane_change_BSM = LaneChangeBSM.off
+              self.lane_change_state = LaneChangeState.preLaneChange
+              self.nCommand=2
 
       elif self.nCommand == 2:   # preLaneChange
-        torque_applied = False        
-        if not sm['carState'].steeringPressed:
-          pass
-        elif self.lane_change_direction == LaneChangeDirection.left:
-            if lca_left:  # BSM
-              self.lane_change_BSM = LaneChangeBSM.left
-              self.nCommand=0
-            else:            
-              torque_applied = sm['carState'].steeringTorque > 0
-        elif self.lane_change_direction == LaneChangeDirection.right:
-            if lca_right:  # BSM
-              self.lane_change_BSM = LaneChangeBSM.right
-              self.nCommand=0            
-            else:
-              torque_applied = sm['carState'].steeringTorque < 0
+          torque_applied = False        
+          if not sm['carState'].steeringPressed:
+              pass
+          elif self.lane_change_direction == LaneChangeDirection.left:
+              if lca_left:  # BSM
+                self.lane_change_BSM = LaneChangeBSM.left
+                self.nCommand=5  # cancel
+              else:            
+                torque_applied = sm['carState'].steeringTorque > 0
+          elif self.lane_change_direction == LaneChangeDirection.right:
+              if lca_right:  # BSM
+                self.lane_change_BSM = LaneChangeBSM.right
+                self.nCommand=5   # cancel         
+              else:
+                torque_applied = sm['carState'].steeringTorque < 0
 
-        if torque_applied:
-            self.lane_change_timer2 = 0
-            self.lane_change_state = LaneChangeState.laneChangeStarting
-            self.nCommand=3
+          if torque_applied:
+              self.lane_change_timer2 = 0
+              self.lane_change_state = LaneChangeState.laneChangeStarting
+              self.nCommand=3
 
       elif self.nCommand == 3:   # laneChangeStarting
-        cancel_applied = False
-        if self.lane_change_direction == LaneChangeDirection.left:
-            if sm['carState'].rightBlinker:
-                cancel_applied = True
-            else:
-                cancel_applied = sm['carState'].steeringTorque < -50
-        elif self.lane_change_direction == LaneChangeDirection.right:
-            if sm['carState'].leftBlinker:
-                cancel_applied = True
-            else:   
-                cancel_applied = sm['carState'].steeringTorque > 50
+          cancel_applied = False
+          if self.lane_change_direction == LaneChangeDirection.left:
+              if sm['carState'].rightBlinker:
+                  cancel_applied = True
+              else:
+                  cancel_applied = sm['carState'].steeringTorque < -50
+          elif self.lane_change_direction == LaneChangeDirection.right:
+              if sm['carState'].leftBlinker:
+                  cancel_applied = True
+              else:
+                  cancel_applied = sm['carState'].steeringTorque > 50
 
-        self.lane_change_timer2 += 1
-        if cancel_applied:
-            self.nCommand=0
-        elif lane_change_prob > 0.5 or self.lane_change_timer2 > 200:
-            self.lane_change_timer2 = 0
-            self.lane_change_state = LaneChangeState.laneChangeFinishing
-            self.nCommand=4
-        else:
-            self.lane_change_timer2 = 0
+          self.lane_change_timer2 += 1
+          if cancel_applied:
+              self.nCommand=5  # cancel
+          elif lane_change_prob > 0.5 or self.lane_change_timer2 > 200:
+              self.lane_change_timer2 = 0
+              self.lane_change_state = LaneChangeState.laneChangeFinishing
+              self.nCommand=4
+          else:
+              self.lane_change_timer2 = 0
 
       elif self.nCommand == 4:   # laneChangeFinishing
-        if sm['carState'].leftBlinker or sm['carState'].rightBlinker:
-          pass
-        elif lane_change_prob < 0.1:
-            self.lane_change_state = LaneChangeState.off
-            self.nCommand=0
-        else:
-            self.lane_change_timer2 = 0
+          if sm['carState'].leftBlinker or sm['carState'].rightBlinker:
+              pass
+          elif lane_change_prob < 0.1:
+              self.lane_change_state = LaneChangeState.off
+              self.nCommand=0
+
+      elif self.nCommand == 5:  # cancel
+          self.lane_change_timer4 += 1
+          if self.lane_change_timer4 > 500:
+              self.nCommand = 0
 
 
+          self.lane_change_state = LaneChangeState.off
+          self.lane_change_direction = LaneChangeDirection.none
+          one_blinker = sm['carState'].leftBlinker != sm['carState'].rightBlinker
+          if not one_blinker:
+              self.nCommand = 0
 
 
 
@@ -259,7 +260,6 @@ class PathPlanner():
     below_lane_change_speed = v_ego < 60 * CV.KPH_TO_MS
 
     if (not active) or below_lane_change_speed or (self.lane_change_timer1 > 10.0):  # 5 sec
-        self.lane_change_timer1 = 0
         self.nCommand = 0 
         self.lane_change_state = LaneChangeState.off
         self.lane_change_direction = LaneChangeDirection.none
@@ -271,6 +271,12 @@ class PathPlanner():
           self.lane_change_timer1 = 0
         else:
           self.lane_change_timer1 += 0.01
+
+    if self.lane_change_BSM != LaneChangeBSM.off:
+      self.lane_change_timer3 += 1
+      if self.lane_change_timer3 > 100:
+          self.lane_change_timer3 = 0
+          self.lane_change_BSM = LaneChangeBSM.off
 
     #trace1.printf( 'R:{:.3f} L:{:.3f}'.format( self.LP.l_lane_change_prob, self.LP.r_lane_change_prob ) )
     desire = DESIRES[self.lane_change_direction][self.lane_change_state]
