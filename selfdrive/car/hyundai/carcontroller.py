@@ -8,6 +8,8 @@ from selfdrive.car.hyundai.values import Buttons, SteerLimitParams, LaneChangePa
 from opendbc.can.packer import CANPacker
 
 
+import common.log as trace1
+
 VisualAlert = car.CarControl.HUDControl.VisualAlert
 
 
@@ -199,7 +201,7 @@ class CarController():
           self.lkas_active_timer1 = 200
 
 
-
+    trace1.printf( 'A:{} Toq:{:.3f} yaw:{:.3f}'.format( steer_req, apply_steer, CS.yaw_rate ) )
 
     self.apply_accel_last = apply_accel
     self.apply_steer_last = apply_steer

@@ -4,12 +4,12 @@ import common.CTime1000 as tm
 ROOT_LOG = '/data/media/0/realdata/'
 
 
-alertTextMsg = 'TXT'
+global_alertTextMsg = 'TXT'
 
 
 def printf( txt ):
-    global alertTextMsg
-    alertTextMsg = txt
+    global global_alertTextMsg
+    global_alertTextMsg = txt
 
 class Loger:
     debug_step_latch = 0   # debug
