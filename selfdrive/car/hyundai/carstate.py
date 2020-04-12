@@ -332,6 +332,11 @@ class CarState():
     self.sas_bus = CP.sasBus
     self.scc_bus = CP.sccBus
 
+
+    self.blinker_timer = 0
+    self.blinker_left = 0
+    self.blinker_right = 0
+
     self.traceAVM= trace1.Loger("AVM")
 
     # Q = np.matrix([[10.0, 0.0], [0.0, 100.0]])
@@ -425,6 +430,26 @@ class CarState():
     self.stopped = cp_scc.vl["SCC11"]['SCCInfoDisplay'] == 4. if not self.no_radar else False
     self.lead_distance = cp_scc.vl["SCC11"]['ACC_ObjDist'] if not self.no_radar else 0
 
+
+    
+
+    if self.left_blinker_flash:
+        self.blinker_left = 1
+        self.blinker_timer = 500
+
+
+    if self.left_blinker_flash:
+        self.blinker_right = 1
+        self.blinker_timer = 500
+
+    if self.blinker_timer:
+       self.blinker_timer -= 1
+    else:
+        self.blinker_left = 0
+        self.blinker_right = 0
+
+
+
     self.user_brake = 0
 
     self.brake_pressed = cp.vl["TCS13"]['DriverBraking']
@@ -503,22 +528,22 @@ class CarState():
     self.cgw1 = cp.vl["CGW1"]
     self.avm = cp_avm.vl["AVM_HU_PE_00"]
     
-    self.traceAVM.add( self.avm )
+    #self.traceAVM.add( self.avm )
 
 
-    b1 = self.AVM_View
-    b2 = self.AVM_ParkAssist_btn
-    b3 = self.AVM_Disp_Msg
-    b4 = self.AVM_Popup_Msg 
-    b5 = self.AVM_Ready
-    b6 = self.AVM_ParkAssit_step
-    b7 = self.AVM_FrontBtn
-    a1 = self.AVM_Option
-    a2 = self.AVM_HU_FrontView
-    a3 = self.AVM_HU_RearView
-    a4 = self.AVM_HU_FrontView
-    a5 = self.AVM_Version
-    trace1.printf( 'b={:.0f},{:.0f},{:.0f},{:.0f},{:.0f},{:.0f},{:.0f}a={:.0f},{:.0f},{:.0f},{:.0f},{:.0f}'.format( b1, b2, b3, b4, b5, b6, b7, a1, a2, a3, a4, a5) )
+    #b1 = self.AVM_View
+    #b2 = self.AVM_ParkAssist_btn
+    #b3 = self.AVM_Disp_Msg
+    #b4 = self.AVM_Popup_Msg 
+    #b5 = self.AVM_Ready
+    #b6 = self.AVM_ParkAssit_step
+    #b7 = self.AVM_FrontBtn
+    #a1 = self.AVM_Option
+    #a2 = self.AVM_HU_FrontView
+    #a3 = self.AVM_HU_RearView
+    #a4 = self.AVM_HU_FrontView
+    #a5 = self.AVM_Version
+    #trace1.printf( 'b={:.0f},{:.0f},{:.0f},{:.0f},{:.0f},{:.0f},{:.0f}a={:.0f},{:.0f},{:.0f},{:.0f},{:.0f}'.format( b1, b2, b3, b4, b5, b6, b7, a1, a2, a3, a4, a5) )
 
 
     

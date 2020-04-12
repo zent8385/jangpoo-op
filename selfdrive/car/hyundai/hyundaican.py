@@ -1,6 +1,8 @@
 import crcmod
 from selfdrive.car.hyundai.values import CAR, CHECKSUM
 
+import common.log as trace1
+
 hyundai_checksum = crcmod.mkCrcFun(0x11D, initCrc=0xFD, rev=False, xorOut=0xdf)
 
 def create_lkas11(packer, car_fingerprint, bus, apply_steer, steer_req, cnt, enabled, lkas11, hud_alert,
@@ -122,9 +124,10 @@ def create_AVM(packer, car_fingerprint, avm_hu, CS):
   disp  = avm_hu["AVM_Display_Message"]
   view = avm_hu["AVM_View"]
 
+  left = CS.blinker_left
+  right = CS.blinker_right
+
   if not popup:
-    left = CS.left_blinker_flash
-    right = CS.right_blinker_flash
     if left or right:
         popup = 1
         disp = 61
@@ -133,9 +136,7 @@ def create_AVM(packer, car_fingerprint, avm_hu, CS):
         elif right:
           popup = 7
 
-  
-
-
+  trace1.printf( 'popup={:.0f},disp={:.0f},view={:.0f} L:{:.0f}R:{:.0f}'.format(popup, disp,view, left, right) )
 
   values = {
     "AVM_View": view,
