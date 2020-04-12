@@ -94,6 +94,11 @@ struct CarEvent @0x9b1657f34caf3ad3 {
     driverMonitorLowAcc @68;
     manualSteeringRequired @69;
     manualSteeringRequiredBlinkersOn @70;
+	turningIndicatorOn @71;
+    lkasButtonOff @72;
+    rightLCAbsm @73;
+    leftLCAbsm @74;
+    preventLCA @75;
   }
 }
 
@@ -157,6 +162,9 @@ struct CarState {
 
   readdistancelines @36 :Float32;
   lkMode @35 :Bool;
+  
+  lcaLeft @36 :Bool;
+  lcaRight @37 :Bool;
 
 
 
@@ -320,6 +328,14 @@ struct CarControl {
       chimeWarning2 @5;
       chimeWarningRepeat @6;
       chimePrompt @7;
+      chimeReady @8;
+      chimeDoorOpen @9;
+      chimeGearDrive @10;
+      chimeLaneChange @11;
+      chimeLaneDeparture @12;
+      chimeRoadWarning @13;
+      chimeSeatBelt @14;
+      chimeViewUncertain @15;
     }
   }
 }
@@ -390,6 +406,10 @@ struct CarParams {
   radarTimeStep @45: Float32 = 0.05;  # time delta between radar updates, 20Hz is very standard
   communityFeature @46: Bool;  # true if a community maintained feature is detected
   fingerprintSource @49: FingerprintSource;
+  mdpsBus @50: Int8;
+  sasBus @51: Int8;
+  sccBus @52: Int8;
+  autoLcaEnabled @53: Int8;
 
   struct LateralParams {
     torqueBP @0 :List(Int32);
