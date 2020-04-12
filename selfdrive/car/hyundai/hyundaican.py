@@ -132,6 +132,4 @@ def create_AVM(packer, car_fingerprint, avm_hu):
     "AVM_Version": avm_hu["AVM_Version"],
   }
 
-  dat = packer.make_can_msg("AVM_HU_PE_00", 2, values)[2]
-
-  return packer.make_can_msg("AVM_HU_PE_00", 2, values)
+  return packer.make_can_msg("AVM_HU_PE_00", 0, values)
