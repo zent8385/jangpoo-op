@@ -188,7 +188,7 @@ class CarController():
     #steer_req = 1 if apply_steer else 0
 
 
-    if apply_steer == 0:
+    if lkas_active:
        self.lkas_active_timer1 = 0
     else:
       self.lkas_active_timer1 += 1
