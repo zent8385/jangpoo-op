@@ -204,7 +204,7 @@ class CarController():
           self.lkas_active_timer1 = 600
 
 
-    trace1.printf( 'A:{} Toq:{}  accel={} ns={} HDA={}'.format( steer_req, apply_steer, apply_accel,  new_steer, CS.Navi_HDA ) )
+    trace1.printf( 'A:{} Toq:{}  acc={} ns={} H={}'.format( steer_req, apply_steer, apply_accel,  new_steer, CS.Navi_HDA ) )
 
     self.apply_accel_last = apply_accel
     self.apply_steer_last = apply_steer
