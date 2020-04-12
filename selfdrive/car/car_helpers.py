@@ -163,4 +163,8 @@ def get_car(logcan, sendcan, has_relay=False):
   car_params.carFw = car_fw
   car_params.fingerprintSource = source
 
+<<<<<<< HEAD
   return CarInterface(car_params, CarController, CarState)
+=======
+  return CarInterface(car_params, CarController, CarState), car_params
+>>>>>>> parent of 3132806d8... Update car_helpers.py
