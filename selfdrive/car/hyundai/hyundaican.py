@@ -98,7 +98,7 @@ def create_mdps12(packer, car_fingerprint, cnt, mdps12, steer_req):
   values = {
     "CR_Mdps_StrColTq": mdps12["CR_Mdps_StrColTq"],
     "CF_Mdps_Def": mdps12["CF_Mdps_Def"],
-    "CF_Mdps_ToiActive": steer_req,
+    "CF_Mdps_ToiActive": 0,
     "CF_Mdps_ToiUnavail": 1,   # 1
     "CF_Mdps_MsgCount2": cnt,
     "CF_Mdps_Chksum2": 0,
