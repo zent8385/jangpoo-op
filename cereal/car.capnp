@@ -163,8 +163,8 @@ struct CarState {
   readdistancelines @36 :Float32;
   lkMode @35 :Bool;
   
-  lcaLeft @36 :Bool;
-  lcaRight @37 :Bool;
+  lcaLeft @39 :Bool;
+  lcaRight @40 :Bool;
 
 
 
