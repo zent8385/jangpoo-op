@@ -43,7 +43,7 @@ def dmonitoringd_thread(sm=None, pm=None):
 
   # 10Hz <- dmonitoringmodeld
   while True:
-    tm.sleep(0.01)
+    tm.sleep(0.1)
     
     sm.update()
 

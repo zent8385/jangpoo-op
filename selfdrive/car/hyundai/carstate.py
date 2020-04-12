@@ -107,6 +107,7 @@ def get_can_parser(CP):
       ("SCCInfoDisplay", "SCC11", 0),
       ("ACC_ObjDist", "SCC11", 0),
       ("TauGapSet", "SCC11", 0),
+      ("Navi_SCC_Camera_Act", "SCC11", 0),
 
       ("ACCMode", "SCC12", 0),
       ("CF_VSM_Prefill", "SCC12", 0),
@@ -191,6 +192,7 @@ def get_can2_parser(CP):
       ("SCCInfoDisplay", "SCC11", 0),
       ("ACC_ObjDist", "SCC11", 0),
       ("TauGapSet", "SCC11", 0),
+      ("Navi_SCC_Camera_Act", "SCC11", 0),
 
       ("ACCMode", "SCC12", 0),
       ("CF_VSM_Prefill", "SCC12", 0),
@@ -252,6 +254,7 @@ def get_camera_parser(CP):
       ("SCCInfoDisplay", "SCC11", 0),
       ("ACC_ObjDist", "SCC11", 0),
       ("TauGapSet", "SCC11", 0),
+      ("Navi_SCC_Camera_Act", "SCC11", 0),
 
       ("ACCMode", "SCC12", 0),
       ("CF_VSM_Prefill", "SCC12", 0),
@@ -331,6 +334,9 @@ class CarState():
     self.brake_pressed = cp.vl["TCS13"]['DriverBraking']
     self.esp_disabled = cp.vl["TCS15"]['ESC_Off_Step']
     self.park_brake = cp.vl["CGW1"]['CF_Gway_ParkBrakeSw']
+
+    self.Navi_HDA = cp.vl["SCC11"]['Navi_SCC_Camera_Act']   #  Cam Area 2,  Highway 1, normal 0
+
 
     self.main_on = (cp_scc.vl["SCC11"]["MainMode_ACC"] != 0) if not self.no_radar else \
                                             cp.vl['EMS16']['CRUISE_LAMP_M']

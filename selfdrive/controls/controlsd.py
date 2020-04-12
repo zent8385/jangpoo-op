@@ -328,8 +328,8 @@ def data_send(sm, pm, CS, CI, CP, VM, state, events, actuators, v_cruise_kph, rk
 
   #trace1.printf( 'L:{:.3f} R:{:.3f}'.format( left_lane_visible, right_lane_visible ) )
 
-  CC.hudControl.rightLaneVisible = bool(right_lane_visible > 0.5)
-  CC.hudControl.leftLaneVisible = bool(left_lane_visible > 0.5)
+  CC.hudControl.rightLaneVisible = bool(right_lane_visible > 0.4)
+  CC.hudControl.leftLaneVisible = bool(left_lane_visible > 0.4)
 
   # not use  
   CC.hudControl.leftLaneDepart = False

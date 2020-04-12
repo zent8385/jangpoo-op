@@ -31,7 +31,7 @@ def accel_hysteresis(accel, accel_steady):
 
   return accel, accel_steady
 
-def process_hud_alert(enabled, button_on, visual_alert, left_line, right_line ):
+def process_hud_alert( enabled, button_on, visual_alert, left_line, right_line, CS ):
   hud_alert = 0
   if visual_alert == VisualAlert.steerRequired:
     hud_alert = 3
@@ -50,6 +50,11 @@ def process_hud_alert(enabled, button_on, visual_alert, left_line, right_line ):
     lane_visible = 5      # left lan icon
   elif right_line:
     lane_visible = 6      # right lan icon
+
+  if enabled and CS.Navi_HDA >= 1:  # highway Area
+    if CS.v_ego > 40 * CV.KPH_TO_MS:
+      lane_visible = 4
+
 
    # 7 : hud can't display,   panel :  LKA, handle icon. 
   return hud_alert, lane_visible 
@@ -92,9 +97,8 @@ class CarController():
 
 
 
-  def update(self, enabled, CS, frame, actuators, 
-              pcm_cancel_cmd, visual_alert,
-              left_line, right_line ):
+  def update(self, enabled, CS, frame, actuators, pcm_cancel_cmd, 
+              visual_alert, left_line, right_line ):
 
     # *** compute control surfaces ***
 
@@ -173,7 +177,7 @@ class CarController():
     #elif self.low_speed_car and not CS.mdps_bus:
         #lkas_active = 0
 
-               
+
     if not lkas_active:
       apply_steer = 0
 
@@ -182,7 +186,7 @@ class CarController():
       self.lkas_active_timer2 = 0 
     else:  
       self.lkas_active_timer2 += 1
-      if  self.lkas_active_timer2 > 2:
+      if  self.lkas_active_timer2 > 3:
         steer_req = 0
 
     #steer_req = 1 if apply_steer else 0
@@ -192,15 +196,15 @@ class CarController():
        self.lkas_active_timer1 = 0
     else:
       self.lkas_active_timer1 += 1
-      if  self.lkas_active_timer1 < 100:
+      if  self.lkas_active_timer1 < 200:
           apply_steer = self.limit_ctrl( apply_steer, 20 )
-      elif self.lkas_active_timer1 < 200:
+      elif self.lkas_active_timer1 < 500:
           apply_steer = self.limit_ctrl( apply_steer, 70 )
       else:
-          self.lkas_active_timer1 = 250
+          self.lkas_active_timer1 = 600
 
 
-    trace1.printf( 'A:{} Toq:{} yaw:{:.3f}'.format( steer_req, apply_steer, CS.yaw_rate ) )
+    trace1.printf( 'A:{} Toq:{} apply_accel={} new_steer={}'.format( steer_req, apply_steer, apply_accel,  new_steer ) )
 
     self.apply_accel_last = apply_accel
     self.apply_steer_last = apply_steer
@@ -218,7 +222,7 @@ class CarController():
       self.hud_timer_right -= 1
 
 
-    hud_alert, lane_visible = process_hud_alert(lkas_active, self.lkas_button, visual_alert, self.hud_timer_left, self.hud_timer_right )    
+    hud_alert, lane_visible = process_hud_alert(lkas_active, self.lkas_button, visual_alert, self.hud_timer_left, self.hud_timer_right, CS )    
 
     clu11_speed = CS.clu11["CF_Clu_Vanz"]
     enabled_speed = 38 if CS.is_set_speed_in_mph  else 60
@@ -252,7 +256,7 @@ class CarController():
     if pcm_cancel_cmd and self.longcontrol:
       can_sends.append(create_clu11(self.packer, CS.scc_bus, CS.clu11, Buttons.CANCEL, clu11_speed, self.clu11_cnt))
     else: # send mdps12 to LKAS to prevent LKAS error if no cancel cmd
-      can_sends.append(create_mdps12(self.packer, self.car_fingerprint, self.mdps12_cnt, CS.mdps12))
+      can_sends.append(create_mdps12(self.packer, self.car_fingerprint, self.mdps12_cnt, CS.mdps12, steer_req))
 
     if CS.scc_bus and self.longcontrol and frame % 2: # send scc12 to car if SCC not on bus 0 and longcontrol enabled
       can_sends.append(create_scc12(self.packer, apply_accel, enabled, self.scc12_cnt, CS.scc12))
