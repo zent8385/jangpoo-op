@@ -313,7 +313,7 @@ def get_AVM_parser(CP):
   checks += [
     ("AVM_HU_PE_00", 50),
   ]
-  return CANParser(DBC[CP.carFingerprint]['pt'], signals, checks, 2)
+  return CANParser(DBC[CP.carFingerprint]['pt'], signals, checks, 0)
 
 class CarState():
 
