@@ -60,7 +60,7 @@ class CarController():
     self.car_fingerprint = car_fingerprint
     self.accel_steady = 0
     self.apply_steer_last = 0
-    self.steer_rate_limited = False
+    #self.steer_rate_limited = False
     self.lkas11_cnt = 0
     self.scc12_cnt = 0
     self.resume_cnt = 0
@@ -107,7 +107,7 @@ class CarController():
     ### Steering Torque
     new_steer = actuators.steer * SteerLimitParams.STEER_MAX
     apply_steer = apply_std_steer_torque_limits(new_steer, self.apply_steer_last, CS.steer_torque_driver, SteerLimitParams)
-    self.steer_rate_limited = new_steer != apply_steer
+    #self.steer_rate_limited = new_steer != apply_steer
 
     #print( 'stree ={} pcm_cancel_cmd={} pcm_cancel_cmd={}'.format( actuators.steer, apply_steer, pcm_cancel_cmd ) )
 
@@ -178,30 +178,27 @@ class CarController():
       apply_steer = 0
 
 
-
-
-
-
-    if  -0.1 < CS.yaw_rate and CS.yaw_rate < 0.1:
+    if apply_steer: 
+      steer_req = 1
+      self.lkas_active_timer2 = 0 
+    else:  
       self.lkas_active_timer2 += 1
-      if self.lkas_active_timer2 > 50:
-          apply_steer = 0
-    else:
-      self.lkas_active_timer2 = 0
+      if  self.lkas_active_timer2 > 2:
+        steer_req = 0
 
-    steer_req = 1 if apply_steer else 0    
+    #steer_req = 1 if apply_steer else 0
 
 
     if apply_steer == 0:
        self.lkas_active_timer1 = 0
     else:
       self.lkas_active_timer1 += 1
-      if  self.lkas_active_timer1 < 50:
+      if  self.lkas_active_timer1 < 100:
           apply_steer = self.limit_ctrl( apply_steer, 20 )
-      elif self.lkas_active_timer1 < 100:
+      elif self.lkas_active_timer1 < 200:
           apply_steer = self.limit_ctrl( apply_steer, 70 )
       else:
-          self.lkas_active_timer1 = 200
+          self.lkas_active_timer1 = 250
 
 
     trace1.printf( 'A:{} Toq:{} yaw:{:.3f}'.format( steer_req, apply_steer, CS.yaw_rate ) )

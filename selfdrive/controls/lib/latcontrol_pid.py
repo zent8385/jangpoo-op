@@ -45,6 +45,7 @@ class LatControlPID():
     if v_ego < 0.3 or not active:
       output_steer = 0.0
       pid_log.active = False
+      self.angle_steers_des = 0.0
       self.pid.reset()
     else:
       self.angle_steers_des = path_plan.angleSteers  # get from MPC/PathPlanner
