@@ -504,4 +504,22 @@ class CarState():
     self.avm = cp_avm.vl["AVM_HU_PE_00"]
     
     self.traceAVM.add( self.avm )
-    trace1.printf( 'avm={} {} {} {}'.format( self.AVM_View, self.AVM_ParkAssist_btn, self.AVM_Disp_Msg, self.AVM_Popup_Msg  ))
+
+
+    b1 = self.AVM_View, 
+    b2 = self.AVM_ParkAssist_btn, 
+    b3 = self.AVM_Disp_Msg, 
+    b4 = self.AVM_Popup_Msg, 
+    b5 = self.AVM_Ready, 
+    b6 = self.AVM_ParkAssit_step, 
+    b7 = self.AVM_FrontBtn
+    a1 = self.AVM_Option
+    a2 = self.AVM_HU_FrontView
+    a3 = self.AVM_HU_RearView
+    a4 = self.AVM_HU_FrontView
+    a5 = self.AVM_Version
+    trace1.printf( 'b={:.0f},{:0.f},{:0.f},{:0.f},{:0.f},{:0.f},{:0.f}a={:0.f},{:0.f},{:0.f},{:0.f},{:0.f}'.format( b1, b2, b3, b4, b5, b6, b7, a1, a2, a3, a4, a5  ))
+
+
+    
+
