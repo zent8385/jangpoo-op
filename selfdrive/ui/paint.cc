@@ -699,7 +699,7 @@ static void bb_ui_draw_measures_right(UIState *s, int bb_x, int bb_y, int bb_w )
 
   //add  desired steering angle
   if (true) {
-    char val_str[16];
+    char val_str[50];
     char uom_str[6];
     NVGcolor val_color = nvgRGBA(255, 255, 255, 200);
     if (scene->engaged) {
