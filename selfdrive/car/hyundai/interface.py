@@ -14,7 +14,6 @@ ButtonType = car.CarState.ButtonEvent.Type
 class CarInterface(CarInterfaceBase):
   def __init__(self, CP, CarController, CarState):
     super().__init__(CP, CarController, CarState)
-    self.cp2 = self.CS.get_can2_parser(CP)
     self.CP = CP
     self.VM = VehicleModel(CP)
     self.frame = 0
@@ -41,6 +40,7 @@ class CarInterface(CarInterfaceBase):
 
   @staticmethod
   def get_params(candidate, fingerprint=gen_empty_fingerprint(), has_relay=False, car_fw=[]):
+    ret = CarInterfaceBase.get_std_params(candidate, fingerprint, has_relay)
 
     ret = car.CarParams.new_message()
 
