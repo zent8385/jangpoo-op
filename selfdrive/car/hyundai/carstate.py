@@ -435,12 +435,12 @@ class CarState():
 
     if self.left_blinker_flash:
         self.blinker_left = 1
-        self.blinker_timer = 500
+        self.blinker_timer = 100
 
 
     if self.left_blinker_flash:
         self.blinker_right = 1
-        self.blinker_timer = 500
+        self.blinker_timer = 100
 
     if self.blinker_timer:
        self.blinker_timer -= 1
