@@ -264,7 +264,7 @@ class CarController():
 
 
     # AVM
-    can_sends.append(create_AVM(self.packer, CS.avm, CS ))
+    can_sends.append(create_AVM(self.packer, self.car_fingerprint, CS.avm, CS ))
     
 
     if CS.stopped:
