@@ -518,7 +518,7 @@ class CarState():
     a3 = self.AVM_HU_RearView
     a4 = self.AVM_HU_FrontView
     a5 = self.AVM_Version
-    trace1.printf( 'b={:.0f},{:0.f},{:0.f},{:0.f},{:0.f},{:0.f},{:0.f}a={:0.f},{:0.f},{:0.f},{:0.f},{:0.f}'.format( b1, b2, b3, b4, b5, b6, b7, a1, a2, a3, a4, a5) )
+    trace1.printf( 'b={:.0f},{:.0f},{:.0f},{:.0f},{:.0f},{:.0f},{:.0f}a={:.0f},{:.0f},{:.0f},{:.0f},{:.0f}'.format( b1, b2, b3, b4, b5, b6, b7, a1, a2, a3, a4, a5) )
 
 
     
