@@ -166,7 +166,7 @@ class CarController():
         apply_steer = self.limit_ctrl( apply_steer, 30 )
     elif CS.v_ego < 20 * CV.KPH_TO_MS:
         apply_steer = self.limit_ctrl( apply_steer, 70 )
-    elif CS.v_ego < 40 * CV.KPH_TO_MS:
+    elif CS.v_ego < 30 * CV.KPH_TO_MS:
         apply_steer = self.limit_ctrl( apply_steer, 100 )
 
     # disable lkas 
@@ -204,7 +204,7 @@ class CarController():
           self.lkas_active_timer1 = 600
 
 
-    trace1.printf( 'A:{} Toq:{}  acc={:.1f} ns={} H={}'.format( steer_req, apply_steer, apply_accel,  new_steer, CS.Navi_HDA ) )
+    trace1.printf( 'A:{} Toq:{}  acc={:.1f} ns={} H={:.1f}'.format( steer_req, apply_steer, apply_accel,  new_steer, CS.Navi_HDA ) )
 
     self.apply_accel_last = apply_accel
     self.apply_steer_last = apply_steer
