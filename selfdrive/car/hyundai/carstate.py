@@ -5,6 +5,8 @@ from selfdrive.config import Conversions as CV
 from common.kalman.simple_kalman import KF1D
 from common.realtime import DT_CTRL
 
+import common.log as trace1
+
 GearShifter = car.CarState.GearShifter
 
 def get_can_parser(CP):
@@ -285,6 +287,34 @@ def get_camera_parser(CP):
     ]
   return CANParser(DBC[CP.carFingerprint]['pt'], signals, checks, 2)
 
+
+
+
+def get_AVM_parser(CP):
+
+  signals = [
+    # sig_name, sig_address, default
+    ("AVM_View", "AVM_HU_PE_00", 0),
+    ("AVM_ParkingAssist_BtnSts", "AVM_HU_PE_00", 0),
+    ("AVM_Display_Message", "AVM_HU_PE_00", 0),
+    ("AVM_Popup_Msg", "AVM_HU_PE_00", 0),
+    ("AVM_Ready", "AVM_HU_PE_00", 0),
+    ("AVM_ParkingAssist_Step", "AVM_HU_PE_00", 0),
+    ("AVM_FrontBtn_Type", "AVM_HU_PE_00", 0),
+    ("AVM_Option", "AVM_HU_PE_00", 0),
+    ("AVM_HU_FrontViewPointOpt", "AVM_HU_PE_00", 0),
+    ("AVM_HU_RearView_Option", "AVM_HU_PE_00", 0),
+    ("AVM_HU_FrontView_Option", "AVM_HU_PE_00", 0),
+    ("AVM_Version", "AVM_HU_PE_00", 0),
+  ]
+
+  checks = []
+
+  checks += [
+    ("AVM_HU_PE_00", 50),
+  ]
+  return CANParser(DBC[CP.carFingerprint]['pt'], signals, checks, 2)
+
 class CarState():
 
   def __init__(self, CP):
@@ -302,6 +332,8 @@ class CarState():
     self.sas_bus = CP.sasBus
     self.scc_bus = CP.sccBus
 
+    self.traceAVM= trace1.Loger("AVM")
+
     # Q = np.matrix([[10.0, 0.0], [0.0, 100.0]])
     # R = 1e3
     self.v_ego_kf = KF1D(x0=[[0.0], [0.0]],
@@ -316,7 +348,7 @@ class CarState():
     v_ego_x = self.v_ego_kf.update(v_ego_raw)
     return float(v_ego_x[0]), float(v_ego_x[1])
 	
-  def update(self, cp, cp2, cp_cam):
+  def update(self, cp, cp2, cp_cam, cp_avm ):
 
     cp_mdps = cp2 if self.mdps_bus else cp
     cp_sas = cp2 if self.sas_bus else cp
@@ -336,6 +368,24 @@ class CarState():
     self.park_brake = cp.vl["CGW1"]['CF_Gway_ParkBrakeSw']
 
     self.Navi_HDA = cp.vl["SCC11"]['Navi_SCC_Camera_Act']   #  Cam Area 2,  Highway 1, normal 0
+
+
+    # AVM
+    self.AVM_View = cp_avm.vl["AVM_HU_PE_00"]["AVM_View"]
+    self.AVM_ParkAssist_btn = cp_avm.vl["AVM_HU_PE_00"]["AVM_ParkingAssist_BtnSts"]
+    self.AVM_Disp_Msg = cp_avm.vl["AVM_HU_PE_00"]["AVM_Display_Message"]
+    self.AVM_Popup_Msg = cp_avm.vl["AVM_HU_PE_00"]["AVM_Popup_Msg"]
+    self.AVM_Ready= cp_avm.vl["AVM_HU_PE_00"]["AVM_Ready"]
+    self.AVM_ParkAssit_step = cp_avm.vl["AVM_HU_PE_00"]["AVM_ParkingAssist_Step"]
+    self.AVM_FrontBtn = cp_avm.vl["AVM_HU_PE_00"]["AVM_FrontBtn_Type"]
+    self.AVM_Option = cp_avm.vl["AVM_HU_PE_00"]["AVM_Option"]
+    self.AVM_HU_FrontView = cp_avm.vl["AVM_HU_PE_00"]["AVM_HU_FrontViewPointOpt"]
+    self.AVM_HU_RearView = cp_avm.vl["AVM_HU_PE_00"]["AVM_HU_RearView_Option"]
+    self.AVM_HU_FrontView = cp_avm.vl["AVM_HU_PE_00"]["AVM_HU_FrontView_Option"]
+    self.AVM_Version = cp_avm.vl["AVM_HU_PE_00"]["AVM_Version"]
+
+
+
 
 
     self.main_on = (cp_scc.vl["SCC11"]["MainMode_ACC"] != 0) if not self.no_radar else \
@@ -451,4 +501,7 @@ class CarState():
     self.scc12 = cp_scc.vl["SCC12"]
     self.mdps12 = cp_mdps.vl["MDPS12"]
     self.cgw1 = cp.vl["CGW1"]
+    self.avm = cp_avm.vl["AVM_HU_PE_00"]
     
+    self.traceAVM.add( self.avm )
+    trace1.printf( 'avm={} {} {} {}'.format( self.AVM_View, self.AVM_ParkAssist_btn, self.AVM_Disp_Msg, self.AVM_Popup_Msg  ))

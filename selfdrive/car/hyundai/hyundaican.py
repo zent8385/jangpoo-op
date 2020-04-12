@@ -114,3 +114,24 @@ def create_mdps12(packer, car_fingerprint, cnt, mdps12, steer_req):
   values["CF_Mdps_Chksum2"] = checksum
 
   return packer.make_can_msg("MDPS12", 2, values)
+
+
+def create_AVM(packer, car_fingerprint, avm_hu):
+  values = {
+    "AVM_View": avm_hu["AVM_View"],
+    "AVM_ParkingAssist_BtnSts": avm_hu["AVM_ParkingAssist_BtnSts"],
+    "AVM_Display_Message": avm_hu["AVM_Display_Message"],
+    "AVM_Popup_Msg": avm_hu["AVM_Popup_Msg"],   # 1
+    "AVM_Ready": avm_hu["AVM_Ready"],
+    "AVM_ParkingAssist_Step": avm_hu["AVM_ParkingAssist_Step"],
+    "AVM_FrontBtn_Type": avm_hu["AVM_FrontBtn_Type"],
+    "AVM_Option": avm_hu["AVM_Option"],
+    "AVM_HU_FrontViewPointOpt": avm_hu["AVM_HU_FrontViewPointOpt"],
+    "AVM_HU_RearView_Option": avm_hu["AVM_HU_RearView_Option"],
+    "AVM_HU_FrontView_Option": avm_hu["AVM_HU_FrontView_Option"],
+    "AVM_Version": avm_hu["AVM_Version"],
+  }
+
+  dat = packer.make_can_msg("AVM_HU_PE_00", 2, values)[2]
+
+  return packer.make_can_msg("AVM_HU_PE_00", 2, values)

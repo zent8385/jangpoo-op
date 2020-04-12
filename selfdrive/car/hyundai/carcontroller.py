@@ -3,7 +3,7 @@ from common.numpy_fast import clip
 from selfdrive.config import Conversions as CV
 from selfdrive.car import apply_std_steer_torque_limits
 from selfdrive.car.hyundai.hyundaican import create_lkas11, create_clu11, \
-                                             create_scc12, create_mdps12
+                                             create_scc12, create_mdps12, create_AVM
 from selfdrive.car.hyundai.values import Buttons, SteerLimitParams, LaneChangeParms, CAR
 from opendbc.can.packer import CANPacker
 
@@ -204,7 +204,7 @@ class CarController():
           self.lkas_active_timer1 = 600
 
 
-    trace1.printf( 'H={} A:{} Toq:{}  acc={:.1f} ns={:.1f} '.format( CS.Navi_HDA , steer_req, apply_steer, apply_accel,  new_steer) )
+    #trace1.printf( 'H={:.0f} A:{} Toq:{}  acc={:.1f} '.format( CS.Navi_HDA , steer_req, apply_steer, apply_accel) )
 
     self.apply_accel_last = apply_accel
     self.apply_steer_last = apply_steer
@@ -261,6 +261,11 @@ class CarController():
     if CS.scc_bus and self.longcontrol and frame % 2: # send scc12 to car if SCC not on bus 0 and longcontrol enabled
       can_sends.append(create_scc12(self.packer, apply_accel, enabled, self.scc12_cnt, CS.scc12))
       self.scc12_cnt += 1
+
+
+    # AVM
+    #can_sends.append(create_AVM(self.packer, CS.avm ))
+    
 
     if CS.stopped:
       # run only first time when the car stopped

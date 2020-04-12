@@ -938,7 +938,7 @@ static void ui_draw_debug(UIState *s)
   const int viz_speed_w = 280;
   const int viz_speed_x = ui_viz_rx+((ui_viz_rw/2)-(viz_speed_w/2));
 
-  char speed_str[32];
+  char speed_str[64];
 
   int  y_pos = 0;
   int  x_pos = 0;
@@ -958,7 +958,7 @@ static void ui_draw_debug(UIState *s)
   nvgText(s->vg, x_pos, y_pos+150, speed_str, NULL);
 
   snprintf(speed_str, sizeof(speed_str), "%s", scene->status.alert_text );
-  nvgText(s->vg, x_pos, y_pos+200, speed_str, NULL);
+  nvgText(s->vg, x_pos, y_pos+250, speed_str, NULL);
 
 
 
