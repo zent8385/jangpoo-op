@@ -177,9 +177,8 @@ class CarController():
     if not lkas_active:
       apply_steer = 0
 
-
+    steer_req = 1
     if apply_steer: 
-      steer_req = 1
       self.lkas_active_timer2 = 0 
     else:  
       self.lkas_active_timer2 += 1
