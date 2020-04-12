@@ -119,21 +119,28 @@ def create_mdps12(packer, car_fingerprint, cnt, mdps12, steer_req):
 def create_AVM(packer, car_fingerprint, avm_hu, CS):
 
   popup = avm_hu["AVM_Popup_Msg"]
-
+  disp  = avm_hu["AVM_Display_Message"]
+  view = avm_hu["AVM_View"]
 
   if not popup:
     left = CS.left_blinker_flash
     right = CS.right_blinker_flash
     if left or right:
         popup = 1
+        disp = 61
+        if left:
+          popup = 5
+        elif right:
+          popup = 7
+
   
 
 
 
   values = {
-    "AVM_View": avm_hu["AVM_View"],
+    "AVM_View": view,
     "AVM_ParkingAssist_BtnSts": avm_hu["AVM_ParkingAssist_BtnSts"],
-    "AVM_Display_Message": avm_hu["AVM_Display_Message"],
+    "AVM_Display_Message": disp,
     "AVM_Popup_Msg": popup,   # 1
     "AVM_Ready": avm_hu["AVM_Ready"],
     "AVM_ParkingAssist_Step": avm_hu["AVM_ParkingAssist_Step"],
