@@ -302,7 +302,7 @@ def state_control(frame, rcv_frame, plan, path_plan, CS, CP, state, events, v_cr
 
   trace1.printf( 'read_only={:.0f} E={},A={} cruise_kph={}'.format(read_only1,enabled, active, v_cruise_kph) )    
 
-  return actuators, v_cruise_kph, v_acc_sol, a_acc_sol, lac_log, last_blinker_frame, read_only1
+  return actuators, v_cruise_kph, v_acc_sol, a_acc_sol, lac_log, last_blinker_frame
 
 
 def data_send(sm, pm, CS, CI, CP, VM, state, events, actuators, v_cruise_kph, rk, AM,
@@ -587,7 +587,7 @@ def controlsd_thread(sm=None, pm=None, can_sock=None):
       prof.checkpoint("State transition")
 
     # Compute actuators (runs PID loops and lateral MPC)
-    actuators, v_cruise_kph, v_acc, a_acc, lac_log, last_blinker_frame, read_only = \
+    actuators, v_cruise_kph, v_acc, a_acc, lac_log, last_blinker_frame = \
       state_control(sm.frame, sm.rcv_frame, sm['plan'], sm['pathPlan'], CS, CP, state, events, v_cruise_kph, v_cruise_kph_last, AM, rk,
                     LaC, LoC, read_only, is_metric, cal_perc, last_blinker_frame)
 
