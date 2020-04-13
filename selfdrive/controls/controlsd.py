@@ -539,6 +539,10 @@ def controlsd_thread(sm=None, pm=None, can_sock=None):
     # Sample data and compute car events
     CS, events, cal_perc, mismatch_counter, can_error_counter = data_sample(CI, CC, sm, can_sock, state, mismatch_counter, can_error_counter, params)
 
+    if read_only:
+      hyundai_lkas = read_only
+    elif CS.cruiseState.enabled:
+      hyundai_lkas = False  
 
     prof.checkpoint("Sample")
 
@@ -589,9 +593,6 @@ def controlsd_thread(sm=None, pm=None, can_sock=None):
 
     prof.checkpoint("State Control")
 
-
-
-
     # Publish data
     CC, events_prev = data_send(sm, pm, CS, CI, CP, VM, state, events, actuators, v_cruise_kph, rk, AM, LaC,
                                 LoC, hyundai_lkas, start_time, v_acc, a_acc, lac_log, events_prev, last_blinker_frame,
@@ -603,10 +604,8 @@ def controlsd_thread(sm=None, pm=None, can_sock=None):
 
     trace1.printf( 'hyundai_lkas={:.0f}  cruse={},  cruise_kph={:.0f}'.format(hyundai_lkas,  CS.cruiseState.enabled,  v_cruise_kph) )    
 
-    #if CS.cruiseState.enabled:
-    #   hyundai_lkas = False
-    #else:
-    #   hyundai_lkas = True
+    if not CS.cruiseState.enabled:
+       hyundai_lkas = True
 
 def main(sm=None, pm=None, logcan=None):
   controlsd_thread(sm, pm, logcan)
