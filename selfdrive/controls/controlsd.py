@@ -231,8 +231,6 @@ def state_control(frame, rcv_frame, plan, path_plan, CS, CP, state, events, v_cr
                   AM, rk, LaC, LoC, read_only, is_metric, cal_perc, last_blinker_frame):
   """Given the state, this function returns an actuators packet"""
 
-  read_only1 = read_only
-
   actuators = car.CarControl.Actuators.new_message()
 
   enabled = isEnabled(state)
@@ -300,7 +298,6 @@ def state_control(frame, rcv_frame, plan, path_plan, CS, CP, state, events, v_cr
 
 
 
-  trace1.printf( 'read_only={:.0f} E={}, A={} cruise_kph={:.0f}'.format(read_only1,enabled, active, v_cruise_kph) )    
 
   return actuators, v_cruise_kph, v_acc_sol, a_acc_sol, lac_log, last_blinker_frame
 
@@ -541,9 +538,6 @@ def controlsd_thread(sm=None, pm=None, can_sock=None):
     CS, events, cal_perc, mismatch_counter, can_error_counter = data_sample(CI, CC, sm, can_sock, state, mismatch_counter, can_error_counter, params)
 
 
-
-    #trace1.printf( 'main_on={:.0f} '.format( CS.main_on ) )
-    #CS.cruiseControl.enable
     prof.checkpoint("Sample")
 
     # Create alerts
@@ -605,10 +599,10 @@ def controlsd_thread(sm=None, pm=None, can_sock=None):
     rk.monitor_time()
     prof.display()
 
-    enabled = isEnabled(state)
-    if enabled != read_only:
-      read_only = enabled    
+    trace1.printf( 'read_only={:.0f}  cruse={},  cruise_kph={:.0f}'.format(read_only,  CS.cruiseState.enabled,  v_cruise_kph) )    
 
+    if CS.cruiseState.enabled != read_only:
+       read_only = CS.cruiseState.enabled
 
 def main(sm=None, pm=None, logcan=None):
   controlsd_thread(sm, pm, logcan)
