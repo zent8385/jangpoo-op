@@ -538,7 +538,7 @@ def controlsd_thread(sm=None, pm=None, can_sock=None):
     #  read_only = True
 
 
-    trace1.printf( 'main_on={:.0f} '.format( CS.main_on ) )
+    #trace1.printf( 'main_on={:.0f} '.format( CS.main_on ) )
     #CS.cruiseControl.enable
     prof.checkpoint("Sample")
 
