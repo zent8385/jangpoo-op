@@ -298,6 +298,10 @@ def state_control(frame, rcv_frame, plan, path_plan, CS, CP, state, events, v_cr
         extra_text_2 = str(int(round(Filter.MIN_SPEED * CV.MS_TO_MPH))) + " mph"
     AM.add(frame, str(e) + "Permanent", enabled, extra_text_1=extra_text_1, extra_text_2=extra_text_2)
 
+
+
+  trace1.printf( 'read_only={:.0f} E={},A={} cruise_kph={}'.format(read_only1,enabled, active, v_cruise_kph) )    
+
   return actuators, v_cruise_kph, v_acc_sol, a_acc_sol, lac_log, last_blinker_frame, read_only1
 
 
@@ -589,7 +593,6 @@ def controlsd_thread(sm=None, pm=None, can_sock=None):
 
     prof.checkpoint("State Control")
 
-    trace1.printf( 'read_only={:.0f}  v_cruise_kph={}'.format(read_only, v_cruise_kph) )    
 
     # Publish data
     CC, events_prev = data_send(sm, pm, CS, CI, CP, VM, state, events, actuators, v_cruise_kph, rk, AM, LaC,
