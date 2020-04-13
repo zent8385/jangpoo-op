@@ -300,7 +300,7 @@ def state_control(frame, rcv_frame, plan, path_plan, CS, CP, state, events, v_cr
 
 
 
-  trace1.printf( 'read_only={:.0f} E={},A={} cruise_kph={}'.format(read_only1,enabled, active, v_cruise_kph) )    
+  trace1.printf( 'read_only={:.0f} E={}, A={} cruise_kph={:.0f}'.format(read_only1,enabled, active, v_cruise_kph) )    
 
   return actuators, v_cruise_kph, v_acc_sol, a_acc_sol, lac_log, last_blinker_frame
 
@@ -594,6 +594,8 @@ def controlsd_thread(sm=None, pm=None, can_sock=None):
     prof.checkpoint("State Control")
 
 
+
+
     # Publish data
     CC, events_prev = data_send(sm, pm, CS, CI, CP, VM, state, events, actuators, v_cruise_kph, rk, AM, LaC,
                                 LoC, read_only, start_time, v_acc, a_acc, lac_log, events_prev, last_blinker_frame,
@@ -602,6 +604,10 @@ def controlsd_thread(sm=None, pm=None, can_sock=None):
 
     rk.monitor_time()
     prof.display()
+
+    enabled = isEnabled(state)
+    if enabled != read_only:
+      read_only = enabled    
 
 
 def main(sm=None, pm=None, logcan=None):
