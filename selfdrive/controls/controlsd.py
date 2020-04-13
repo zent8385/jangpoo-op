@@ -530,6 +530,8 @@ def controlsd_thread(sm=None, pm=None, can_sock=None):
 
   prof = Profiler(False)  # off by default
 
+
+  hyundai_lkas = read_only
   while True:
     start_time = sec_since_boot()
     prof.checkpoint("Ratekeeper", ignore=True)
@@ -574,7 +576,7 @@ def controlsd_thread(sm=None, pm=None, can_sock=None):
 #    if CS.brakePressed and sm['plan'].vTargetFuture >= STARTING_TARGET_SPEED and not CP.radarOffCan and CS.vEgo < 0.3:
 #      events.append(create_event('noTarget', [ET.NO_ENTRY, ET.IMMEDIATE_DISABLE]))
 
-    if not read_only:
+    if not hyundai_lkas:
       # update control state
       state, soft_disable_timer, v_cruise_kph, v_cruise_kph_last = \
         state_transition(sm.frame, CS, CP, state, events, soft_disable_timer, v_cruise_kph, AM)
@@ -583,7 +585,7 @@ def controlsd_thread(sm=None, pm=None, can_sock=None):
     # Compute actuators (runs PID loops and lateral MPC)
     actuators, v_cruise_kph, v_acc, a_acc, lac_log, last_blinker_frame = \
       state_control(sm.frame, sm.rcv_frame, sm['plan'], sm['pathPlan'], CS, CP, state, events, v_cruise_kph, v_cruise_kph_last, AM, rk,
-                    LaC, LoC, read_only, is_metric, cal_perc, last_blinker_frame)
+                    LaC, LoC, hyundai_lkas, is_metric, cal_perc, last_blinker_frame)
 
     prof.checkpoint("State Control")
 
@@ -592,17 +594,19 @@ def controlsd_thread(sm=None, pm=None, can_sock=None):
 
     # Publish data
     CC, events_prev = data_send(sm, pm, CS, CI, CP, VM, state, events, actuators, v_cruise_kph, rk, AM, LaC,
-                                LoC, read_only, start_time, v_acc, a_acc, lac_log, events_prev, last_blinker_frame,
+                                LoC, hyundai_lkas, start_time, v_acc, a_acc, lac_log, events_prev, last_blinker_frame,
                                 is_ldw_enabled, can_error_counter)
     prof.checkpoint("Sent")
 
     rk.monitor_time()
     prof.display()
 
-    trace1.printf( 'read_only={:.0f}  cruse={},  cruise_kph={:.0f}'.format(read_only,  CS.cruiseState.enabled,  v_cruise_kph) )    
+    trace1.printf( 'hyundai_lkas={:.0f}  cruse={},  cruise_kph={:.0f}'.format(hyundai_lkas,  CS.cruiseState.enabled,  v_cruise_kph) )    
 
-    if CS.cruiseState.enabled != read_only:
-       read_only = CS.cruiseState.enabled
+    if CS.cruiseState.enabled:
+       hyundai_lkas = False
+    else:
+       hyundai_lkas = True
 
 def main(sm=None, pm=None, logcan=None):
   controlsd_thread(sm, pm, logcan)
