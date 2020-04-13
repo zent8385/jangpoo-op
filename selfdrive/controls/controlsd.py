@@ -231,6 +231,8 @@ def state_control(frame, rcv_frame, plan, path_plan, CS, CP, state, events, v_cr
                   AM, rk, LaC, LoC, read_only, is_metric, cal_perc, last_blinker_frame):
   """Given the state, this function returns an actuators packet"""
 
+  read_only1 = read_only
+
   actuators = car.CarControl.Actuators.new_message()
 
   enabled = isEnabled(state)
@@ -296,7 +298,7 @@ def state_control(frame, rcv_frame, plan, path_plan, CS, CP, state, events, v_cr
         extra_text_2 = str(int(round(Filter.MIN_SPEED * CV.MS_TO_MPH))) + " mph"
     AM.add(frame, str(e) + "Permanent", enabled, extra_text_1=extra_text_1, extra_text_2=extra_text_2)
 
-  return actuators, v_cruise_kph, v_acc_sol, a_acc_sol, lac_log, last_blinker_frame
+  return actuators, v_cruise_kph, v_acc_sol, a_acc_sol, lac_log, last_blinker_frame, read_only1
 
 
 def data_send(sm, pm, CS, CI, CP, VM, state, events, actuators, v_cruise_kph, rk, AM,
@@ -326,14 +328,15 @@ def data_send(sm, pm, CS, CI, CP, VM, state, events, actuators, v_cruise_kph, rk
   right_lane_visible = sm['pathPlan'].rProb
   left_lane_visible = sm['pathPlan'].lProb
 
-  trace1.printf( 'L:{:.3f} R:{:.3f}'.format( left_lane_visible, right_lane_visible ) )
+  #trace1.printf( 'L:{:.3f} R:{:.3f}'.format( left_lane_visible, right_lane_visible ) )
+  lane_visible = right_lane_visible + left_lane_visible
 
-  CC.hudControl.rightLaneVisible = bool(right_lane_visible > 0.4)
-  CC.hudControl.leftLaneVisible = bool(left_lane_visible > 0.4)
-
-  # not use  
-  CC.hudControl.leftLaneDepart = False
-  CC.hudControl.rightLaneDepart = False
+  if lane_visible > 1:
+    CC.hudControl.rightLaneVisible = True
+    CC.hudControl.leftLaneVisible = True
+  else:    
+    CC.hudControl.rightLaneVisible = bool(right_lane_visible > 0.4)
+    CC.hudControl.leftLaneVisible = bool(left_lane_visible > 0.4)
 
   AM.process_alerts(sm.frame)
   CC.hudControl.visualAlert = AM.visual_alert   # steer hand check. 
@@ -534,9 +537,6 @@ def controlsd_thread(sm=None, pm=None, can_sock=None):
     CS, events, cal_perc, mismatch_counter, can_error_counter = data_sample(CI, CC, sm, can_sock, state, mismatch_counter, can_error_counter, params)
 
 
-    #if not CS.main_on:
-    #  read_only = True
-
 
     #trace1.printf( 'main_on={:.0f} '.format( CS.main_on ) )
     #CS.cruiseControl.enable
@@ -583,11 +583,13 @@ def controlsd_thread(sm=None, pm=None, can_sock=None):
       prof.checkpoint("State transition")
 
     # Compute actuators (runs PID loops and lateral MPC)
-    actuators, v_cruise_kph, v_acc, a_acc, lac_log, last_blinker_frame = \
+    actuators, v_cruise_kph, v_acc, a_acc, lac_log, last_blinker_frame, read_only = \
       state_control(sm.frame, sm.rcv_frame, sm['plan'], sm['pathPlan'], CS, CP, state, events, v_cruise_kph, v_cruise_kph_last, AM, rk,
                     LaC, LoC, read_only, is_metric, cal_perc, last_blinker_frame)
 
     prof.checkpoint("State Control")
+
+    trace1.printf( 'read_only={:.0f}  v_cruise_kph={}'.format(read_only, v_cruise_kph) )    
 
     # Publish data
     CC, events_prev = data_send(sm, pm, CS, CI, CP, VM, state, events, actuators, v_cruise_kph, rk, AM, LaC,
