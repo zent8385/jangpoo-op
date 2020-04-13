@@ -279,8 +279,8 @@ class CarController():
 
     # AVM
     #if CS.mdps_bus:
-    if not CS.cp_AVM.can_valid:
-      can_sends.append(create_AVM(self.packer, self.car_fingerprint, CS.avm, CS ))
+    #if not CS.cp_AVM.can_valid:
+    can_sends.append(create_AVM(self.packer, self.car_fingerprint, CS.avm, CS ))
     
 
     if CS.stopped:
