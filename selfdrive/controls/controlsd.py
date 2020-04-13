@@ -534,8 +534,8 @@ def controlsd_thread(sm=None, pm=None, can_sock=None):
     CS, events, cal_perc, mismatch_counter, can_error_counter = data_sample(CI, CC, sm, can_sock, state, mismatch_counter, can_error_counter, params)
 
 
-    if not CS.main_on:
-      read_only = True
+    #if not CS.main_on:
+    #  read_only = True
 
 
     trace1.printf( 'main_on={:.0f} '.format( CS.main_on ) )
