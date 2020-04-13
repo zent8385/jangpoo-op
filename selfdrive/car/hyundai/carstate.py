@@ -334,8 +334,8 @@ class CarState():
 
 
     self.blinker_timer = 0
-    self.blinker_left = 0
-    self.blinker_right = 0
+    self.blinker_status = 0
+
 
     self.traceAVM= trace1.Loger("AVM")
 
@@ -432,21 +432,26 @@ class CarState():
 
 
     
+    blinker_status = 0
+    if self.left_blinker_flash and self.right_blinker_flash:
+        blinker_status = 3
+    elif self.left_blinker_flash:
+        blinker_status = 2
+    elif self.right_blinker_flash:
+        blinker_status = 1
 
-    if self.left_blinker_flash:
-        self.blinker_left = 1
-        self.blinker_timer = 100
+        
 
 
-    if self.left_blinker_flash:
-        self.blinker_right = 1
-        self.blinker_timer = 100
+    if blinker_status:
+        self.blinker_status = blinker_status
+        self.blinker_timer = 200
 
     if self.blinker_timer:
        self.blinker_timer -= 1
     else:
-        self.blinker_left = 0
-        self.blinker_right = 0
+       self.blinker_status = 0
+
 
 
 

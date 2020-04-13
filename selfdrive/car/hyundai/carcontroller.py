@@ -108,9 +108,23 @@ class CarController():
     apply_accel, self.accel_steady = accel_hysteresis(apply_accel, self.accel_steady)
     apply_accel = clip(apply_accel * ACCEL_SCALE, ACCEL_MIN, ACCEL_MAX)
 
+    param = SteerLimitParams
+
+    abs_angle_steers = abs(CS.angle_steers)
+    if abs_angle_steers < 2:
+        param.STEER_DELTA_UP  = 1
+        param.STEER_DELTA_DOWN = 1
+    elif abs_angle_steers < 3:
+        param.STEER_DELTA_UP  = 2
+        param.STEER_DELTA_DOWN = 2
+    elif abs_angle_steers < 5:
+        param.STEER_DELTA_UP  = 3
+        param.STEER_DELTA_DOWN = 4
+
+
     ### Steering Torque
-    new_steer = actuators.steer * SteerLimitParams.STEER_MAX
-    apply_steer = apply_std_steer_torque_limits(new_steer, self.apply_steer_last, CS.steer_torque_driver, SteerLimitParams)
+    new_steer = actuators.steer * param.STEER_MAX
+    apply_steer = apply_std_steer_torque_limits(new_steer, self.apply_steer_last, CS.steer_torque_driver, param)
     #self.steer_rate_limited = new_steer != apply_steer
 
     #print( 'stree ={} pcm_cancel_cmd={} pcm_cancel_cmd={}'.format( actuators.steer, apply_steer, pcm_cancel_cmd ) )
@@ -256,7 +270,7 @@ class CarController():
     if pcm_cancel_cmd and self.longcontrol:
       can_sends.append(create_clu11(self.packer, CS.scc_bus, CS.clu11, Buttons.CANCEL, clu11_speed, self.clu11_cnt))
     else: # send mdps12 to LKAS to prevent LKAS error if no cancel cmd
-      can_sends.append(create_mdps12(self.packer, self.car_fingerprint, self.mdps12_cnt, CS.mdps12, steer_req))
+      can_sends.append(create_mdps12(self.packer, self.car_fingerprint, self.mdps12_cnt, CS.mdps12))
 
     if CS.scc_bus and self.longcontrol and frame % 2: # send scc12 to car if SCC not on bus 0 and longcontrol enabled
       can_sends.append(create_scc12(self.packer, apply_accel, enabled, self.scc12_cnt, CS.scc12))
@@ -264,7 +278,9 @@ class CarController():
 
 
     # AVM
-    can_sends.append(create_AVM(self.packer, self.car_fingerprint, CS.avm, CS ))
+    #if CS.mdps_bus:
+    if not CS.cp_AVM.can_valid:
+      can_sends.append(create_AVM(self.packer, self.car_fingerprint, CS.avm, CS ))
     
 
     if CS.stopped:

@@ -96,12 +96,12 @@ def create_scc12(packer, apply_accel, enabled, cnt, scc12):
 
   return packer.make_can_msg("SCC12", 0, values)
 
-def create_mdps12(packer, car_fingerprint, cnt, mdps12, steer_req):
+def create_mdps12(packer, car_fingerprint, cnt, mdps12 ):
   values = {
     "CR_Mdps_StrColTq": mdps12["CR_Mdps_StrColTq"],
     "CF_Mdps_Def": mdps12["CF_Mdps_Def"],
     "CF_Mdps_ToiActive": 0,
-    "CF_Mdps_ToiUnavail": 1,   # 1
+    "CF_Mdps_ToiUnavail": 1,
     "CF_Mdps_MsgCount2": cnt,
     "CF_Mdps_Chksum2": 0,
     "CF_Mdps_ToiFlt": mdps12["CF_Mdps_ToiFlt"],
@@ -121,22 +121,22 @@ def create_mdps12(packer, car_fingerprint, cnt, mdps12, steer_req):
 def create_AVM(packer, car_fingerprint, avm_hu, CS):
 
   popup = avm_hu["AVM_Popup_Msg"]
-  disp  = avm_hu["AVM_Display_Message"]
-  view = avm_hu["AVM_View"]
+  disp  = avm_hu["AVM_Display_Message"]   # 61: Disp,  1:Normal
+  view = avm_hu["AVM_View"]    # 3: fwd, 2:bwd,  5:left,  7:right
 
-  left = CS.blinker_left
-  right = CS.blinker_right
+  left = CS.blinker_status == 2
+  right = CS.blinker_status == 1
 
   if not popup:
     if left or right:
         popup = 1
         disp = 61
         if left:
-          popup = 5
+          view = 5
         elif right:
-          popup = 7
+          view = 7
 
-  trace1.printf( 'popup={:.0f},disp={:.0f},view={:.0f} L:{:.0f}R:{:.0f}'.format(popup, disp,view, left, right) )
+  trace1.printf( 'popup={:.0f},disp={:.0f},view={:.0f} L:{:.0f}R:{:.0f}'.format(popup, disp, view, left, right) )
 
   values = {
     "AVM_View": view,

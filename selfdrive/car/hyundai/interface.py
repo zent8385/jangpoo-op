@@ -277,7 +277,7 @@ class CarInterface(CarInterfaceBase):
     # create message
     ret = car.CarState.new_message()
 
-    ret.canValid = self.cp.can_valid and self.cp_cam.can_valid and self.cp_AVM.can_valid
+    ret.canValid = self.cp.can_valid and self.cp_cam.can_valid   #and self.cp_AVM.can_valid
 
     # speeds
     ret.vEgo = self.CS.v_ego
@@ -325,26 +325,19 @@ class CarInterface(CarInterfaceBase):
     #  self.CS.left_blinker_on = self.CS.left_blinker_flash or self.CS.prev_left_blinker_on and self.CC.turning_signal_timer
     #  self.CS.right_blinker_on = self.CS.right_blinker_flash or self.CS.prev_right_blinker_on and self.CC.turning_signal_timer
 
+    blinker_status = 0
+    if  self.CS.left_blinker_flash or self.CS.right_blinker_flash:
+      blinker_status = self.CS.blinker_status
+      self.blinker_timer = 50
 
-    if  self.CS.left_blinker_flash and  self.CS.right_blinker_flash:  # EMG
-      self.blinker_status = 3
-      self.blinker_timer = 50
-    elif self.CS.left_blinker_flash:
-      self.blinker_status = -1
-      self.blinker_timer = 50
-    elif self.CS.right_blinker_flash:
-      self.blinker_status = 1
-      self.blinker_timer = 50
-    elif not self.blinker_timer:
-      self.blinker_status = 0 
 
-    if self.blinker_status == 3:
+    if blinker_status == 3:
       ret.leftBlinker = bool(self.blinker_timer)
       ret.rightBlinker = bool(self.blinker_timer)
-    elif self.blinker_status == 1:
+    elif blinker_status == 1:
       ret.leftBlinker = False
       ret.rightBlinker = bool(self.blinker_timer)
-    elif self.blinker_status == -1:
+    elif blinker_status == 2:
       ret.leftBlinker = bool(self.blinker_timer)
       ret.rightBlinker = False
     else:
@@ -443,10 +436,10 @@ class CarInterface(CarInterfaceBase):
 
 
     #TODO Varible for min Speed for LCA
-    #if ret.rightBlinker and ret.lcaRight and self.CS.v_ego > LaneChangeParms.LANE_CHANGE_SPEED_MIN: 
-    #  events.append(create_event('rightLCAbsm', [ET.WARNING]))
-    #if ret.leftBlinker and ret.lcaLeft and self.CS.v_ego > LaneChangeParms.LANE_CHANGE_SPEED_MIN: 
-    #  events.append(create_event('leftLCAbsm', [ET.WARNING]))
+    if ret.rightBlinker and ret.lcaRight and self.CS.v_ego > LaneChangeParms.LANE_CHANGE_SPEED_MIN: 
+      events.append(create_event('rightLCAbsm', [ET.WARNING]))
+    if ret.leftBlinker and ret.lcaLeft and self.CS.v_ego > LaneChangeParms.LANE_CHANGE_SPEED_MIN: 
+      events.append(create_event('leftLCAbsm', [ET.WARNING]))
 
     ret.events = events
 

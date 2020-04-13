@@ -295,7 +295,7 @@ ALERTS = [
       "핸들을 잡아주세요",
       "도로 상황 불안으로 차선변경이 취소되었습니다",
       AlertStatus.critical, AlertSize.full,
-      Priority.HIGH, VisualAlert.none, AudibleAlert.chimeWarningRepeat, .4, 3., 3.,),
+      Priority.MID, VisualAlert.none, AudibleAlert.none, 0., 0.4, .3),
 
 
   Alert(
