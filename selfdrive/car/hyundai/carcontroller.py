@@ -46,7 +46,7 @@ def process_hud_alert( enabled, button_on, visual_alert, left_line, right_line, 
       lane_visible = 3  # handle icon, lane icon
     else:
       lane_visible = 4   # lane icon
-  elif left_line:
+  elif left_line :
     lane_visible = 5      # left lan icon
   elif right_line:
     lane_visible = 6      # right lan icon
@@ -224,15 +224,14 @@ class CarController():
     self.apply_steer_last = apply_steer
 
     if left_line:
-      self.hud_timer_left = 50
-
-    if right_line:
-      self.hud_timer_right = 50      
-
-    if self.hud_timer_left:
+      self.hud_timer_left = 100
+    elif self.hud_timer_left:
       self.hud_timer_left -= 1
 
-    if self.hud_timer_right:
+
+    if right_line:
+      self.hud_timer_right = 100      
+    elif self.hud_timer_right:
       self.hud_timer_right -= 1
 
 
