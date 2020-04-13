@@ -136,7 +136,7 @@ def create_AVM(packer, car_fingerprint, avm_hu, CS):
         elif right:
           view = 7
 
-  trace1.printf( 'popup={:.0f},disp={:.0f},view={:.0f} L:{:.0f}R:{:.0f}'.format(popup, disp, view, left, right) )
+  #trace1.printf( 'popup={:.0f},disp={:.0f},view={:.0f} L:{:.0f}R:{:.0f}'.format(popup, disp, view, left, right) )
 
   values = {
     "AVM_View": view,

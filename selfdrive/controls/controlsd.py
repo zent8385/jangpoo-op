@@ -326,7 +326,7 @@ def data_send(sm, pm, CS, CI, CP, VM, state, events, actuators, v_cruise_kph, rk
   right_lane_visible = sm['pathPlan'].rProb
   left_lane_visible = sm['pathPlan'].lProb
 
-  #trace1.printf( 'L:{:.3f} R:{:.3f}'.format( left_lane_visible, right_lane_visible ) )
+  trace1.printf( 'L:{:.3f} R:{:.3f}'.format( left_lane_visible, right_lane_visible ) )
 
   CC.hudControl.rightLaneVisible = bool(right_lane_visible > 0.4)
   CC.hudControl.leftLaneVisible = bool(left_lane_visible > 0.4)
