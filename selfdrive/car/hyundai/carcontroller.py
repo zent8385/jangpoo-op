@@ -20,44 +20,6 @@ ACCEL_MAX = 1.5  # 1.5 m/s2
 ACCEL_MIN = -3.0 # 3   m/s2
 ACCEL_SCALE = max(ACCEL_MAX, -ACCEL_MIN)
 
-def accel_hysteresis(accel, accel_steady):
-
-  # for small accel oscillations within ACCEL_HYST_GAP, don't change the accel command
-  if accel > accel_steady + ACCEL_HYST_GAP:
-    accel_steady = accel - ACCEL_HYST_GAP
-  elif accel < accel_steady - ACCEL_HYST_GAP:
-    accel_steady = accel + ACCEL_HYST_GAP
-  accel = accel_steady
-
-  return accel, accel_steady
-
-def process_hud_alert( enabled, button_on, visual_alert, left_line, right_line, CS ):
-  hud_alert = 0
-  if visual_alert == VisualAlert.steerRequired:
-    hud_alert = 3
-
-  # initialize to no line visible
-  
-  lane_visible = 1    # Lkas_LdwsSysState   LDWS
-  if not button_on:
-    lane_visible = 0
-  elif left_line and right_line:   #or hud_alert:  #HUD alert only display when LKAS status is active
-    if enabled:
-      lane_visible = 3  # handle icon, lane icon
-    else:
-      lane_visible = 4   # lane icon
-  elif left_line :
-    lane_visible = 5      # left lan icon
-  elif right_line:
-    lane_visible = 6      # right lan icon
-
-  if enabled and CS.Navi_HDA >= 1:  # highway Area
-    if CS.v_ego > 40 * CV.KPH_TO_MS:
-      lane_visible = 4
-
-
-   # 7 : hud can't display,   panel :  LKA, handle icon. 
-  return hud_alert, lane_visible 
 
 class CarController():
   def __init__(self, dbc_name, car_fingerprint):
@@ -96,6 +58,44 @@ class CarController():
 
 
 
+  def accel_hysteresis(self, accel, accel_steady):
+
+    # for small accel oscillations within ACCEL_HYST_GAP, don't change the accel command
+    if accel > accel_steady + ACCEL_HYST_GAP:
+      accel_steady = accel - ACCEL_HYST_GAP
+    elif accel < accel_steady - ACCEL_HYST_GAP:
+      accel_steady = accel + ACCEL_HYST_GAP
+    accel = accel_steady
+
+    return accel, accel_steady
+
+  def process_hud_alert( self, enabled, button_on, visual_alert, left_line, right_line, CS ):
+    hud_alert = 0
+    if visual_alert == VisualAlert.steerRequired:
+      hud_alert = 3
+
+    # initialize to no line visible
+    
+    lane_visible = 1    # Lkas_LdwsSysState   LDWS
+    if not button_on:
+      lane_visible = 0
+    elif left_line and right_line:   #or hud_alert:  #HUD alert only display when LKAS status is active
+      if enabled:
+        lane_visible = 3  # handle icon, lane icon
+      else:
+        lane_visible = 4   # lane icon
+    elif left_line :
+      lane_visible = 5      # left lan icon
+    elif right_line:
+      lane_visible = 6      # right lan icon
+
+    if enabled and CS.Navi_HDA >= 1:  # highway Area
+      if CS.v_ego > 40 * CV.KPH_TO_MS:
+        lane_visible = 4
+
+
+    # 7 : hud can't display,   panel :  LKA, handle icon. 
+    return hud_alert, lane_visible 
 
   def update(self, enabled, CS, frame, actuators, pcm_cancel_cmd, 
               visual_alert, left_line, right_line ):
@@ -279,7 +279,7 @@ class CarController():
     # AVM
     #if CS.mdps_bus:
     #if not CS.cp_AVM.can_valid:
-    can_sends.append(create_AVM(self.packer, self.car_fingerprint, CS.avm, CS ))
+    #can_sends.append(create_AVM(self.packer, self.car_fingerprint, CS.avm, CS ))
     
 
     if CS.stopped:
