@@ -946,6 +946,9 @@ static void ui_draw_debug(UIState *s)
   x_pos = viz_speed_x - 250;
   y_pos = 150; 
   
+
+  nvgTextAlign(s->vg, NVG_ALIGN_LEFT | NVG_ALIGN_BASELINE);
+
   snprintf(speed_str, sizeof(speed_str), "P:%.5f", scene->pid.p );
   nvgText(s->vg, x_pos, y_pos+0, speed_str, NULL);
   snprintf(speed_str, sizeof(speed_str), "I:%.5f", scene->pid.i );
@@ -958,7 +961,7 @@ static void ui_draw_debug(UIState *s)
   nvgText(s->vg, x_pos, y_pos+150, speed_str, NULL);
 
   snprintf(speed_str, sizeof(speed_str), "%s", scene->status.alert_text );
-  nvgText(s->vg, viz_speed_x, 700, speed_str, NULL);
+  nvgText(s->vg, 0, 800, speed_str, NULL);
 
 }
 

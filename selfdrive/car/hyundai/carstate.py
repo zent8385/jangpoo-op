@@ -234,7 +234,6 @@ def get_camera_parser(CP):
     ("CF_Lkas_SysWarning", "LKAS11", 0),
     ("CF_Lkas_LdwsLHWarning", "LKAS11", 0),
     ("CF_Lkas_LdwsRHWarning", "LKAS11", 0),
-    ("CR_Lkas_StrToqReq", "LKAS11", 0),
     ("CF_Lkas_HbaLamp", "LKAS11", 0),
     ("CF_Lkas_FcwBasReq", "LKAS11", 0),
     ("CF_Lkas_ToiFlt", "LKAS11", 0),
@@ -458,7 +457,7 @@ class CarState():
     else:
       self.gear_shifter = GearShifter.drive # fixed by KYD to resolve "Gear not D" issue
 
-    self.lkas_StrToqReq = cp_cam.vl["LKAS11"]["CR_Lkas_StrToqReq"]
+
     self.lkas_LdwsLHWarning = cp_cam.vl["LKAS11"]["CF_Lkas_LdwsLHWarning"]
     self.lkas_LdwsRHWarning = cp_cam.vl["LKAS11"]["CF_Lkas_LdwsRHWarning"]
     self.lkas_LdwsSysState = cp_cam.vl["LKAS11"]["CF_Lkas_LdwsSysState"]   # 16 over steer
@@ -480,9 +479,6 @@ class CarState():
     self.cgw1 = cp.vl["CGW1"]
     self.avm = cp_avm.vl["AVM_HU_PE_00"]  
   
-
-    trace1.printf( 'B={} gear={:.1f} TD={:.1f} TM={:.1f} ST={:.1f}'.format( self.lkas_button_on, gear, self.steer_torque_driver, self.steer_torque_motor, self.lkas_StrToqReq ) )
-
     # blinker process
     blinker_status = 0
     if self.left_blinker_flash and self.right_blinker_flash:

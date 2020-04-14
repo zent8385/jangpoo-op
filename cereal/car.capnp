@@ -97,7 +97,8 @@ struct CarEvent @0x9b1657f34caf3ad3 {
     rightLCAbsm @71;
     leftLCAbsm @72;
     preventLCA @73;
-    preStoped @74;  
+    preStoped @74;
+    steerTorqueOver @75;
   }
 }
 
