@@ -97,7 +97,7 @@ class CarController():
               visual_alert, left_line, right_line ):
 
     # *** compute control surfaces ***
-    v_ego_kph = CS.v_ego * CV.KPH_TO_MS
+    v_ego_kph = CS.v_ego * CV.MS_TO_KPH
 
     # gas and brake
     apply_accel = actuators.gas - actuators.brake
@@ -107,11 +107,11 @@ class CarController():
 
     param = SteerLimitParams
 
-    abs_angle_steers = abs(CS.angle_steers)
-    if abs_angle_steers < 2  or v_ego_kph < 20:
+    abs_angle_steers =  abs(actuators.steerAngle) # abs(CS.angle_steers)
+    if abs_angle_steers < 2:
         param.STEER_DELTA_UP  = 1
         param.STEER_DELTA_DOWN = 1
-    elif abs_angle_steers < 3 or v_ego_kph < 30:
+    elif abs_angle_steers < 3:
         param.STEER_DELTA_UP  = 2
         param.STEER_DELTA_DOWN = 2
     elif abs_angle_steers < 5:
@@ -189,7 +189,7 @@ class CarController():
     if self.low_speed_car:
         apply_steer = self.limit_ctrl( apply_steer, 30 )
     elif v_ego_kph < 10:
-        apply_steer = self.limit_ctrl( apply_steer, 70 )
+        apply_steer = self.limit_ctrl( apply_steer, 50 )
     elif v_ego_kph < 20:
         apply_steer = self.limit_ctrl( apply_steer, 100 )
 
@@ -218,19 +218,19 @@ class CarController():
     steer_req = 1 if apply_steer else 0
 
 
-    if lkas_active:
-       self.lkas_active_timer1 = 0
-    else:
-      self.lkas_active_timer1 += 1
-      if  self.lkas_active_timer1 < 100:
-          apply_steer = self.limit_ctrl( apply_steer, 20 )
-      elif self.lkas_active_timer1 < 200:
-          apply_steer = self.limit_ctrl( apply_steer, 90 )
-      else:
-          self.lkas_active_timer1 = 600
+    #if lkas_active:
+    #   self.lkas_active_timer1 = 0
+    #else:
+    #  self.lkas_active_timer1 += 1
+    #  if  self.lkas_active_timer1 < 100:
+    #      apply_steer = self.limit_ctrl( apply_steer, 20 )
+    #  elif self.lkas_active_timer1 < 200:
+    #      apply_steer = self.limit_ctrl( apply_steer, 90 )
+    #  else:
+    #      self.lkas_active_timer1 = 600
 
 
-    trace1.printf( 'A:{:.0f} Toq:{:5.1f} H={:.0f}   acc={:5.1f} s_te={:5.1f} s={:.3f} a={:.3f}'.format( lkas_active,  apply_steer, CS.Navi_HDA,  apply_accel , CS.steer_torque_driver, actuators.steer, actuators.steerAngle ) )
+    trace1.printf( 'V:{:.1f} Toq:{:5.1f} H={:.0f}   acc={:5.1f} s_t={:6.1f} s={:.1f} a={:.1f}'.format( v_ego_kph,  apply_steer, CS.Navi_HDA,  apply_accel , CS.steer_torque_driver, actuators.steer, actuators.steerAngle ) )
 
     self.apply_accel_last = apply_accel
     self.apply_steer_last = apply_steer
