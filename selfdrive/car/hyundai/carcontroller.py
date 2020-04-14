@@ -127,8 +127,10 @@ class CarController():
 
 
     if abs( CS.steer_torque_driver ) > 270:
-        self.steer_torque_over = True
-        self.steer_torque_over_timer = 200
+        self.steer_torque_over_timer += 1
+        if self.steer_torque_over_timer > 5:
+          self.steer_torque_over = True
+          self.steer_torque_over_timer = 200
     elif self.steer_torque_over_timer:
         self.steer_torque_over_timer -= 1
     else:
