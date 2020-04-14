@@ -462,8 +462,8 @@ class CarState():
     self.lkas_LdwsLHWarning = cp_cam.vl["LKAS11"]["CF_Lkas_LdwsLHWarning"]
     self.lkas_LdwsRHWarning = cp_cam.vl["LKAS11"]["CF_Lkas_LdwsRHWarning"]
     self.lkas_LdwsSysState = cp_cam.vl["LKAS11"]["CF_Lkas_LdwsSysState"]   # 16 over steer
-    self.lkas_button_on = 7 > lkas_LdwsSysState != 0
-    self.lkas_error = lkas_LdwsSysState == 7
+    self.lkas_button_on = 7 > self.lkas_LdwsSysState != 0
+    self.lkas_error = self.lkas_LdwsSysState == 7
 
     # Blind Spot Detection and Lane Change Assist signals
     self.lca_state = cp.vl["LCA11"]["CF_Lca_Stat"]
