@@ -225,12 +225,12 @@ class CarController():
       if  self.lkas_active_timer1 < 100:
           apply_steer = self.limit_ctrl( apply_steer, 20 )
       elif self.lkas_active_timer1 < 200:
-          apply_steer = self.limit_ctrl( apply_steer, 70 )
+          apply_steer = self.limit_ctrl( apply_steer, 90 )
       else:
           self.lkas_active_timer1 = 600
 
 
-    trace1.printf( 'A:{:.0f} Toq:{:5.1f} H={:.0f}   acc={:5.1f} steer_torque={:5.1f} s={:.3f} a={:.3f}'.format( lkas_active,  apply_steer, CS.Navi_HDA,  apply_accel , CS.steer_torque_driver, actuators.steer, actuators.steerAngle ) )
+    trace1.printf( 'A:{:.0f} Toq:{:5.1f} H={:.0f}   acc={:5.1f} s_te={:5.1f} s={:.3f} a={:.3f}'.format( lkas_active,  apply_steer, CS.Navi_HDA,  apply_accel , CS.steer_torque_driver, actuators.steer, actuators.steerAngle ) )
 
     self.apply_accel_last = apply_accel
     self.apply_steer_last = apply_steer
