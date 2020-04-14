@@ -961,7 +961,7 @@ static void ui_draw_debug(UIState *s)
   nvgText(s->vg, x_pos, y_pos+150, speed_str, NULL);
 
   snprintf(speed_str, sizeof(speed_str), "%s", scene->status.alert_text );
-  nvgText(s->vg, 0, 1000, speed_str, NULL);
+  nvgText(s->vg, 0, 1100, speed_str, NULL);
 
 }
 
