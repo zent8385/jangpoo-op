@@ -126,7 +126,7 @@ class CarController():
     #print( 'stree ={} pcm_cancel_cmd={} pcm_cancel_cmd={}'.format( actuators.steer, apply_steer, pcm_cancel_cmd ) )
 
 
-    if abs( CS.steer_torque_driver ) > 250:
+    if abs( CS.steer_torque_driver ) > 270:
         self.steer_torque_over = True
         self.steer_torque_over_timer = 200
     elif self.steer_torque_over_timer:
@@ -228,7 +228,7 @@ class CarController():
           self.lkas_active_timer1 = 600
 
 
-    trace1.printf( 'A:{}  H={:.0f} Toq:{:5.1f}  acc={:5.1f} steer_torque={:5.1f}'.format( lkas_active, CS.Navi_HDA,  apply_steer, apply_accel , CS.steer_torque_driver) )
+    trace1.printf( 'A:{:0.f}  H={:.0f} Toq:{:5.1f}  acc={:5.1f} steer_torque={:5.1f}'.format( lkas_active, CS.Navi_HDA,  apply_steer, apply_accel , CS.steer_torque_driver) )
 
     self.apply_accel_last = apply_accel
     self.apply_steer_last = apply_steer
