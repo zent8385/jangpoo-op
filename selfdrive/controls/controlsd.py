@@ -542,7 +542,7 @@ def controlsd_thread(sm=None, pm=None, can_sock=None):
     if read_only:
       hyundai_lkas = read_only
     elif CS.cruiseState.enabled:
-      hyundai_lkas = False  
+      hyundai_lkas = False
 
     prof.checkpoint("Sample")
 
@@ -602,7 +602,7 @@ def controlsd_thread(sm=None, pm=None, can_sock=None):
     rk.monitor_time()
     prof.display()
 
-    trace1.printf( 'hyundai_lkas={:.0f}  cruse={},  cruise_kph={:.0f}'.format(hyundai_lkas,  CS.cruiseState.enabled,  v_cruise_kph) )    
+    #trace1.printf( 'hyundai_lkas={:.0f}  cruse={},  cruise_kph={:.0f}'.format(hyundai_lkas,  CS.cruiseState.enabled,  v_cruise_kph) )    
 
     if not CS.cruiseState.enabled:
        hyundai_lkas = True

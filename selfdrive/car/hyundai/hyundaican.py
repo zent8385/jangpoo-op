@@ -124,17 +124,17 @@ def create_AVM(packer, car_fingerprint, avm_hu, CS):
   disp  = avm_hu["AVM_Display_Message"]   # 61: Disp,  1:Normal
   view = avm_hu["AVM_View"]    # 3: fwd, 2:bwd,  5:left,  7:right
 
-  left = CS.blinker_status == 2
-  right = CS.blinker_status == 1
+  #left = CS.blinker_status == 2
+  #right = CS.blinker_status == 1
 
-  if not popup:
-    if left or right:
-        popup = 1
-        disp = 61
-        if left:
-          view = 5
-        elif right:
-          view = 7
+  #if not popup:
+  #  if left or right:
+  #      popup = 1
+  #      disp = 61
+  #      if left:
+  #        view = 5
+  #      elif right:
+  #        view = 7
 
   #trace1.printf( 'popup={:.0f},disp={:.0f},view={:.0f} L:{:.0f}R:{:.0f}'.format(popup, disp, view, left, right) )
 

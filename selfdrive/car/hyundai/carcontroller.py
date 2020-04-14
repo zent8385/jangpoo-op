@@ -27,7 +27,7 @@ class CarController():
     self.car_fingerprint = car_fingerprint
     self.accel_steady = 0
     self.apply_steer_last = 0
-    #self.steer_rate_limited = False
+    self.steer_rate_limited = False
     self.lkas11_cnt = 0
     self.scc12_cnt = 0
     self.resume_cnt = 0
@@ -46,6 +46,7 @@ class CarController():
 
     self.lkas_active_timer1 = 0
     self.lkas_active_timer2 = 0
+    self.steer_torque_over_timer = 0
 
 
   def limit_ctrl(self, value, limit ):
@@ -53,20 +54,16 @@ class CarController():
           value = limit
       elif  value < -limit:
           value = -limit
-
       return value
 
 
-
   def accel_hysteresis(self, accel, accel_steady):
-
     # for small accel oscillations within ACCEL_HYST_GAP, don't change the accel command
     if accel > accel_steady + ACCEL_HYST_GAP:
       accel_steady = accel - ACCEL_HYST_GAP
     elif accel < accel_steady - ACCEL_HYST_GAP:
       accel_steady = accel + ACCEL_HYST_GAP
     accel = accel_steady
-
     return accel, accel_steady
 
   def process_hud_alert( self, enabled, button_on, visual_alert, left_line, right_line, CS ):
@@ -93,7 +90,6 @@ class CarController():
       if CS.v_ego > 40 * CV.KPH_TO_MS:
         lane_visible = 4
 
-
     # 7 : hud can't display,   panel :  LKA, handle icon. 
     return hud_alert, lane_visible 
 
@@ -101,6 +97,7 @@ class CarController():
               visual_alert, left_line, right_line ):
 
     # *** compute control surfaces ***
+    v_ego_kph = CS.v_ego * CV.KPH_TO_MS
 
     # gas and brake
     apply_accel = actuators.gas - actuators.brake
@@ -111,10 +108,10 @@ class CarController():
     param = SteerLimitParams
 
     abs_angle_steers = abs(CS.angle_steers)
-    if abs_angle_steers < 2:
+    if abs_angle_steers < 2  or v_ego_kph < 20:
         param.STEER_DELTA_UP  = 1
         param.STEER_DELTA_DOWN = 1
-    elif abs_angle_steers < 3:
+    elif abs_angle_steers < 3 or v_ego_kph < 30:
         param.STEER_DELTA_UP  = 2
         param.STEER_DELTA_DOWN = 2
     elif abs_angle_steers < 5:
@@ -125,9 +122,19 @@ class CarController():
     ### Steering Torque
     new_steer = actuators.steer * param.STEER_MAX
     apply_steer = apply_std_steer_torque_limits(new_steer, self.apply_steer_last, CS.steer_torque_driver, param)
-    #self.steer_rate_limited = new_steer != apply_steer
-
+    self.steer_rate_limited = new_steer != apply_steer
     #print( 'stree ={} pcm_cancel_cmd={} pcm_cancel_cmd={}'.format( actuators.steer, apply_steer, pcm_cancel_cmd ) )
+
+
+    if abs( CS.steer_torque_driver ) > 200:
+        self.steer_torque_over = True
+        self.steer_torque_over_timer = 200
+    elif self.steer_torque_over_timer:
+        self.steer_torque_over_timer -= 1
+    else:
+        self.steer_torque_over = False
+
+
 
     ### LKAS button to temporarily disable steering
     if not CS.lkas_error:
@@ -176,14 +183,17 @@ class CarController():
         self.turning_signal_timer -= 1 
 
 
+
     if self.low_speed_car:
         apply_steer = self.limit_ctrl( apply_steer, 30 )
-    elif CS.v_ego < 20 * CV.KPH_TO_MS:
+    elif v_ego_kph < 20:
         apply_steer = self.limit_ctrl( apply_steer, 70 )
-    elif CS.v_ego < 30 * CV.KPH_TO_MS:
+    elif v_ego_kph < 30:
         apply_steer = self.limit_ctrl( apply_steer, 100 )
 
     # disable lkas 
+    if self.steer_torque_over:
+        lkas_active = 0
     if self.streer_angle_over and not CS.mdps_bus:
         lkas_active = 0
     elif self.turning_indicator:

@@ -308,7 +308,7 @@ class CarInterface(CarInterfaceBase):
 
     ret.steeringTorque = self.CS.steer_torque_driver
     ret.steeringPressed = self.CS.steer_override
-
+    ret.steeringRateLimited = self.CC.steer_rate_limited if self.CC is not None else False
     # cruise state
     # most HKG cars has no long control, it is safer and easier to engage by main on
     ret.cruiseState.enabled = (self.CS.pcm_acc_status != 0) if self.CC.longcontrol else bool(self.CS.main_on)
@@ -349,8 +349,6 @@ class CarInterface(CarInterfaceBase):
 
     #ret.leftBlinker = bool(self.CS.left_blinker_flash)
     #ret.rightBlinker = bool(self.CS.right_blinker_flash)
-
-
 
     ret.lcaLeft = self.CS.lca_left != 0
     ret.lcaRight = self.CS.lca_right != 0
@@ -403,12 +401,12 @@ class CarInterface(CarInterfaceBase):
       events.append(create_event('reverseGear', [ET.NO_ENTRY, ET.USER_DISABLE]))      
     elif not ret.gearShifter == GearShifter.drive:
       events.append(create_event('wrongGear', [ET.NO_ENTRY, ET.USER_DISABLE]))
-    elif self.steer_angle_over_alert:
-      events.append(create_event('steerTempUnavailable', [ET.NO_ENTRY, ET.WARNING]))
-    elif self.CS.steer_error:
+    elif self.steer_angle_over_alert or self.CS.steer_error:
       events.append(create_event('steerTempUnavailable', [ET.NO_ENTRY, ET.WARNING]))
     elif self.lkas_button_alert:
-      events.append(create_event('lkasButtonOff', [ET.WARNING]))    
+      events.append(create_event('lkasButtonOff', [ET.WARNING]))
+    elif self.CS.lkas_LdwsLHWarning or self.CS.lkas_LdwsRHWarning:
+      events.append(create_event('ldwPermanent', [ET.WARNING]))
     elif ret.cruiseState.enabled != self.cruise_enabled_prev:
         if ret.cruiseState.enabled:
             events.append(create_event('pcmEnable', [ET.ENABLE]))
@@ -416,6 +414,8 @@ class CarInterface(CarInterfaceBase):
             events.append(create_event('pcmDisable', [ET.USER_DISABLE]))
         self.cruise_enabled_prev = ret.cruiseState.enabled
     elif  ret.cruiseState.enabled:
+        if self.CC.steer_torque_over:
+          events.append(create_event('steerSaturated', [ET.WARNING]))
         if self.turning_indicator_alert:
           events.append(create_event('turningIndicatorOn', [ET.WARNING]))
         elif self.CS.stopped:
@@ -423,9 +423,8 @@ class CarInterface(CarInterfaceBase):
             events.append(create_event('resumeRequired', [ET.WARNING]))
           else:
             events.append(create_event('preStoped', [ET.WARNING]))
-        elif self.low_speed_alert and not self.CS.mdps_bus:
-          events.append(create_event('belowSteerSpeed', [ET.WARNING]))
-
+        #elif self.low_speed_alert and not self.CS.mdps_bus:
+        #  events.append(create_event('belowSteerSpeed', [ET.WARNING]))
 
     # disable on pedals rising edge or when brake is pressed and speed isn't zero
     if self.CC.longcontrol:

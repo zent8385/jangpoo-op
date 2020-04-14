@@ -234,6 +234,7 @@ def get_camera_parser(CP):
     ("CF_Lkas_SysWarning", "LKAS11", 0),
     ("CF_Lkas_LdwsLHWarning", "LKAS11", 0),
     ("CF_Lkas_LdwsRHWarning", "LKAS11", 0),
+    ("CR_Lkas_StrToqReq", "LKAS11", 0),
     ("CF_Lkas_HbaLamp", "LKAS11", 0),
     ("CF_Lkas_FcwBasReq", "LKAS11", 0),
     ("CF_Lkas_ToiFlt", "LKAS11", 0),
@@ -336,8 +337,10 @@ class CarState():
     self.blinker_timer = 0
     self.blinker_status = 0
 
+    self.lkas_LdwsSysState = 0
+    self.lkas_LdwsLHWarning = 0
+    self.lkas_LdwsRHWarning = 0
 
-    self.traceAVM= trace1.Loger("AVM")
 
     # Q = np.matrix([[10.0, 0.0], [0.0, 100.0]])
     # R = 1e3
@@ -390,9 +393,6 @@ class CarState():
     self.AVM_Version = cp_avm.vl["AVM_HU_PE_00"]["AVM_Version"]
 
 
-
-
-
     self.main_on = (cp_scc.vl["SCC11"]["MainMode_ACC"] != 0) if not self.no_radar else \
                                             cp.vl['EMS16']['CRUISE_LAMP_M']
     self.acc_active = (cp_scc.vl["SCC12"]['ACCMode'] != 0) if not self.no_radar else \
@@ -414,6 +414,10 @@ class CarState():
                                          (cp.vl["LVR12"]["CF_Lvr_CruiseSet"] * speed_conv)
     self.standstill = not self.v_ego_raw > 0.1
 
+
+    self.steer_torque_driver = cp_mdps.vl["MDPS12"]['CR_Mdps_StrColTq']
+    self.steer_torque_motor = cp_mdps.vl["MDPS12"]['CR_Mdps_OutTq']
+
     self.angle_steers = cp_sas.vl["SAS11"]['SAS_Angle']
     self.angle_steers_rate = cp_sas.vl["SAS11"]['SAS_Speed']
     self.yaw_rate = cp.vl["ESP12"]['YAW_RATE']
@@ -421,38 +425,14 @@ class CarState():
     self.left_blinker_flash = cp.vl["CGW1"]['CF_Gway_TurnSigLh']
     self.right_blinker_on = cp.vl["CGW1"]['CF_Gway_TSigRHSw']
     self.right_blinker_flash = cp.vl["CGW1"]['CF_Gway_TurnSigRh']
-    self.steer_override = abs(cp_mdps.vl["MDPS12"]['CR_Mdps_StrColTq']) > STEER_THRESHOLD
+    self.steer_override = abs(self.steer_torque_driver) > STEER_THRESHOLD
     self.steer_state = cp_mdps.vl["MDPS12"]['CF_Mdps_ToiActive'] #0 NOT ACTIVE, 1 ACTIVE
     self.steer_error = cp_mdps.vl["MDPS12"]['CF_Mdps_ToiUnavail']
     self.brake_error = 0
-    self.steer_torque_driver = cp_mdps.vl["MDPS12"]['CR_Mdps_StrColTq']
-    self.steer_torque_motor = cp_mdps.vl["MDPS12"]['CR_Mdps_OutTq']
+
+
     self.stopped = cp_scc.vl["SCC11"]['SCCInfoDisplay'] == 4. if not self.no_radar else False
     self.lead_distance = cp_scc.vl["SCC11"]['ACC_ObjDist'] if not self.no_radar else 0
-
-
-    
-    blinker_status = 0
-    if self.left_blinker_flash and self.right_blinker_flash:
-        blinker_status = 3
-    elif self.left_blinker_flash:
-        blinker_status = 2
-    elif self.right_blinker_flash:
-        blinker_status = 1
-
-        
-
-
-    if blinker_status:
-        self.blinker_status = blinker_status
-        self.blinker_timer = 200
-
-    if self.blinker_timer:
-       self.blinker_timer -= 1
-    else:
-       self.blinker_status = 0
-
-
 
 
     self.user_brake = 0
@@ -465,58 +445,25 @@ class CarState():
       self.pedal_gas = cp.vl["EMS12"]['TPS']
     self.car_gas = cp.vl["EMS12"]['TPS']
 
-    # Gear Selection via Cluster - For those Kia/Hyundai which are not fully discovered, we can use the Cluster Indicator for Gear Selection, as this seems to be standard over all cars, but is not the preferred method.
-    if self.car_fingerprint in FEATURES["use_cluster_gears"]:
-      if cp.vl["CLU15"]["CF_Clu_InhibitD"] == 1:
-        self.gear_shifter = GearShifter.drive
-      elif cp.vl["CLU15"]["CF_Clu_InhibitN"] == 1:
-        self.gear_shifter = GearShifter.neutral
-      elif cp.vl["CLU15"]["CF_Clu_InhibitP"] == 1:
-        self.gear_shifter = GearShifter.park
-      elif cp.vl["CLU15"]["CF_Clu_InhibitR"] == 1:
-        self.gear_shifter = GearShifter.reverse
-      else:
-        self.gear_shifter = GearShifter.drive # fixed by KYD to resolve "Gear not D" issue
-    # Gear Selecton via TCU12
-    elif self.car_fingerprint in FEATURES["use_tcu_gears"]:
-      gear = cp.vl["TCU12"]["CUR_GR"]
-      if gear == 0:
-        self.gear_shifter = GearShifter.park
-      elif gear == 14:
-        self.gear_shifter = GearShifter.reverse
-      elif gear > 0 and gear < 9:    # unaware of anything over 8 currently
-        self.gear_shifter = GearShifter.drive
-      else:
-        self.gear_shifter = GearShifter.drive # fixed by KYD to resolve "Gear not D" issue
-    # Gear Selecton - This is only compatible with optima hybrid 2017
-    elif self.car_fingerprint in FEATURES["use_elect_gears"]:
-      gear = cp.vl["ELECT_GEAR"]["Elect_Gear_Shifter"]
-      if gear in (5, 8): # 5: D, 8: sport mode
-        self.gear_shifter = GearShifter.drive
-      elif gear == 6:
-        self.gear_shifter = GearShifter.neutral
-      elif gear == 0:
-        self.gear_shifter = GearShifter.park
-      elif gear == 7:
-        self.gear_shifter = GearShifter.reverse
-      else:
-        self.gear_shifter = GearShifter.drive # fixed by KYD to resolve "Gear not D" issue
-    # Gear Selecton - This is not compatible with all Kia/Hyundai's, But is the best way for those it is compatible with
+    # gear  shifter
+    gear = cp.vl["ELECT_GEAR"]["Elect_Gear_Shifter"]
+    if gear in (5, 8): # 5: D, 8: sport mode
+      self.gear_shifter = GearShifter.drive
+    elif gear == 6:
+      self.gear_shifter = GearShifter.neutral
+    elif gear == 0:
+      self.gear_shifter = GearShifter.park
+    elif gear == 7:
+      self.gear_shifter = GearShifter.reverse
     else:
-      gear = cp.vl["LVR12"]["CF_Lvr_Gear"]
-      if gear in (5, 8): # 5: D, 8: sport mode
-        self.gear_shifter = GearShifter.drive
-      elif gear == 6:
-        self.gear_shifter = GearShifter.neutral
-      elif gear == 0:
-        self.gear_shifter = GearShifter.park
-      elif gear == 7:
-        self.gear_shifter = GearShifter.reverse
-      else:
-        self.gear_shifter = GearShifter.drive # fixed by KYD to resolve "Gear not D" issue
+      self.gear_shifter = GearShifter.drive # fixed by KYD to resolve "Gear not D" issue
 
-    self.lkas_button_on = 7 > cp_cam.vl["LKAS11"]["CF_Lkas_LdwsSysState"] != 0
-    self.lkas_error = cp_cam.vl["LKAS11"]["CF_Lkas_LdwsSysState"] == 7
+    self.lkas_StrToqReq = cp_cam.vl["LKAS11"]["CR_Lkas_StrToqReq"]
+    self.lkas_LdwsLHWarning = cp_cam.vl["LKAS11"]["CF_Lkas_LdwsLHWarning"]
+    self.lkas_LdwsRHWarning = cp_cam.vl["LKAS11"]["CF_Lkas_LdwsRHWarning"]
+    self.lkas_LdwsSysState = cp_cam.vl["LKAS11"]["CF_Lkas_LdwsSysState"]   # 16 over steer
+    self.lkas_button_on = 7 > lkas_LdwsSysState != 0
+    self.lkas_error = lkas_LdwsSysState == 7
 
     # Blind Spot Detection and Lane Change Assist signals
     self.lca_state = cp.vl["LCA11"]["CF_Lca_Stat"]
@@ -531,25 +478,25 @@ class CarState():
     self.scc12 = cp_scc.vl["SCC12"]
     self.mdps12 = cp_mdps.vl["MDPS12"]
     self.cgw1 = cp.vl["CGW1"]
-    self.avm = cp_avm.vl["AVM_HU_PE_00"]
-    
-    #self.traceAVM.add( self.avm )
+    self.avm = cp_avm.vl["AVM_HU_PE_00"]  
+  
+
+    trace1.printf( 'B={} gear={:.1f} TD={:.1f} TM={:.1f} ST={:.1f}'.format( self.lkas_button_on, gear, self.steer_torque_driver, self.steer_torque_motor, self.lkas_StrToqReq ) )
+
+    # blinker process
+    blinker_status = 0
+    if self.left_blinker_flash and self.right_blinker_flash:
+        blinker_status = 3
+    elif self.left_blinker_flash:
+        blinker_status = 2
+    elif self.right_blinker_flash:
+        blinker_status = 1
 
 
-    #b1 = self.AVM_View
-    #b2 = self.AVM_ParkAssist_btn
-    #b3 = self.AVM_Disp_Msg
-    #b4 = self.AVM_Popup_Msg 
-    #b5 = self.AVM_Ready
-    #b6 = self.AVM_ParkAssit_step
-    #b7 = self.AVM_FrontBtn
-    #a1 = self.AVM_Option
-    #a2 = self.AVM_HU_FrontView
-    #a3 = self.AVM_HU_RearView
-    #a4 = self.AVM_HU_FrontView
-    #a5 = self.AVM_Version
-    #trace1.printf( 'b={:.0f},{:.0f},{:.0f},{:.0f},{:.0f},{:.0f},{:.0f}a={:.0f},{:.0f},{:.0f},{:.0f},{:.0f}'.format( b1, b2, b3, b4, b5, b6, b7, a1, a2, a3, a4, a5) )
-
-
-    
-
+    if blinker_status:
+        self.blinker_status = blinker_status
+        self.blinker_timer = 200
+    elif self.blinker_timer:
+       self.blinker_timer -= 1
+    else:
+       self.blinker_status = 0
