@@ -190,7 +190,7 @@ class CarController():
         apply_steer = self.limit_ctrl( apply_steer, 30 )
     elif v_ego_kph < 10:
         apply_steer = self.limit_ctrl( apply_steer, 50 )
-    elif v_ego_kph < 30:
+    elif v_ego_kph < 20:
         apply_steer = self.limit_ctrl( apply_steer, 100 )
 
     # disable lkas 
@@ -222,10 +222,10 @@ class CarController():
        self.lkas_active_timer1 = 0
     else:
       self.lkas_active_timer1 += 1
-      if  self.lkas_active_timer1 < 100:
+      if  self.lkas_active_timer1 < 80:
           apply_steer = self.limit_ctrl( apply_steer, 20 )
-      elif self.lkas_active_timer1 < 200:
-          apply_steer = self.limit_ctrl( apply_steer, 90 )
+      elif self.lkas_active_timer1 < 150:
+          apply_steer = self.limit_ctrl( apply_steer, 100 )
       else:
           self.lkas_active_timer1 = 600
 
