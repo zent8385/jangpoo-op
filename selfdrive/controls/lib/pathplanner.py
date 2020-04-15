@@ -323,8 +323,8 @@ class PathPlanner():
     #trace1.printf2( 'path steer={:.3f} A:{:.3f}  D:{:.3f} R:{:.3f}'.format( self.angle_steers_des_mpc, active, delta_desired, rate_desired ) )
 
 
-    log_str = 'path steer={:.3f} A:{:.3f}  D:{:.3f} R:{:.3f}'.format( self.angle_steers_des_mpc, active, delta_desired, rate_desired )
-    tracePP.add( log_str )  
+    #log_str = 'path steer={:.3f} A:{:.3f}  D:{:.3f} R:{:.3f}'.format( self.angle_steers_des_mpc, active, delta_desired, rate_desired )
+    #tracePP.add( log_str )  
 
 
     #  Check for infeasable MPC solution
