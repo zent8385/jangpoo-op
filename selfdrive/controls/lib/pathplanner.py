@@ -278,7 +278,7 @@ class PathPlanner():
           self.lane_change_timer3 = 0
           self.lane_change_BSM = LaneChangeBSM.off
 
-    trace1.printf( 'R:{:.3f} L:{:.3f}'.format( self.LP.l_lane_change_prob, self.LP.r_lane_change_prob ) )
+    trace1.printf2( 'R:{:.3f} L:{:.3f}'.format( self.LP.l_lane_change_prob, self.LP.r_lane_change_prob ) )
     desire = DESIRES[self.lane_change_direction][self.lane_change_state]
 
     # Turn off lanes during lane change
