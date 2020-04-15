@@ -57,13 +57,13 @@ class LatControlPID():
     else:
       #self.angle_steers_des = path_plan.angleSteers  # get from MPC/PathPlanner      
       if v_ego_kph < 10:
-        self.angle_steers_des = self.movAvg( path_plan.angleSteers, 200 )
+        self.angle_steers_des = self.movAvg.get_data( path_plan.angleSteers, 200 )
       elif v_ego_kph < 20:
-        self.angle_steers_des = self.movAvg( path_plan.angleSteers, 100 )
+        self.angle_steers_des = self.movAvg.get_data( path_plan.angleSteers, 100 )
       elif v_ego_kph < 30:
-        self.angle_steers_des = self.movAvg( path_plan.angleSteers, 50 )
+        self.angle_steers_des = self.movAvg.get_data( path_plan.angleSteers, 50 )
       else:
-        self.angle_steers_des = self.movAvg( path_plan.angleSteers, 10 )
+        self.angle_steers_des = self.movAvg.get_data( path_plan.angleSteers, 10 )
 
 
       
