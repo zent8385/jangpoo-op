@@ -408,7 +408,7 @@ class CarState():
     self.low_speed_lockout = self.v_ego_raw < 1.0
 
 
-    
+    self.clu_Vanz = cp.vl["CLU11"]["CF_Clu_Vanz"]
     self.clu_CruiseSwState = cp.vl["CLU11"]["CF_Clu_CruiseSwState"]
     self.is_set_speed_in_mph = int(cp.vl["CLU11"]["CF_Clu_SPEED_UNIT"])
     speed_conv = CV.MPH_TO_MS if self.is_set_speed_in_mph else CV.KPH_TO_MS
@@ -499,3 +499,6 @@ class CarState():
        self.blinker_timer -= 1
     else:
        self.blinker_status = 0
+
+
+    trace1.printf( 'C:{:.0f} yaw:{:5.1f} V={:.1f}  sw={:.0f} gear={:.0f} seat={:.0f}'.format( self.main_on,  self.yaw_rate, self.clu_Vanz, self.clu_CruiseSwState, self.gear_shifter, self.seatbelt ) )
