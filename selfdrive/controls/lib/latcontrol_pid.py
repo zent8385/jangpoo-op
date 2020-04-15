@@ -94,6 +94,6 @@ class LatControlPID():
       pid_log.saturated = bool(self.pid.saturated)
 
     delta = self.angle_steers_des - path_plan.angleSteers
-    trace1.printf2( 'pid steer:{:.1f} dst:{:.1f} delta={:.1f} cnt={:.0f} '.format( self.angle_steers_des, path_plan.angleSteers, delta, self.movAvg.data_cnt ) )
+    #trace1.printf2( 'pid steer:{:.1f} dst:{:.1f} delta={:.1f} cnt={:.0f} '.format( self.angle_steers_des, path_plan.angleSteers, delta, self.movAvg.data_cnt ) )
 
     return output_steer, float(self.angle_steers_des), pid_log
