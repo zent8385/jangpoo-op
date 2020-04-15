@@ -962,10 +962,10 @@ static void ui_draw_debug(UIState *s)
 
 
   snprintf(speed_str, sizeof(speed_str), "%s", scene->status.alert_text1 );
-  nvgText(s->vg, 0, 1000, speed_str, NULL);  
+  nvgText(s->vg, 0, 1010, speed_str, NULL);  
 
   snprintf(speed_str, sizeof(speed_str), "%s", scene->status.alert_text2 );
-  nvgText(s->vg, 0, 1050, speed_str, NULL);
+  nvgText(s->vg, 0, 1070, speed_str, NULL);
 
 }
 
