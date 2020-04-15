@@ -457,8 +457,7 @@ def controlsd_thread(sm=None, pm=None, can_sock=None):
     pm = messaging.PubMaster(['sendcan', 'controlsState', 'carState', 'carControl', 'carEvents', 'carParams'])
 
   if sm is None:
-    sm = messaging.SubMaster(['thermal', 'health', 'liveCalibration', 'dMonitoringState', 'plan', 'pathPlan', \
-                              'model'])
+    sm = messaging.SubMaster(['thermal', 'health', 'liveCalibration', 'dMonitoringState', 'plan', 'pathPlan', 'model'])
 
 
   if can_sock is None:
@@ -532,6 +531,7 @@ def controlsd_thread(sm=None, pm=None, can_sock=None):
 
 
   hyundai_lkas = read_only
+  hyundai_timer1 = 0
   while True:
     start_time = sec_since_boot()
     prof.checkpoint("Ratekeeper", ignore=True)
@@ -543,6 +543,7 @@ def controlsd_thread(sm=None, pm=None, can_sock=None):
       hyundai_lkas = read_only
     elif CS.cruiseState.enabled:
       hyundai_lkas = False
+      hyundai_timer1 = 0
 
     prof.checkpoint("Sample")
 
@@ -604,8 +605,10 @@ def controlsd_thread(sm=None, pm=None, can_sock=None):
 
     #trace1.printf( 'hyundai_lkas={:.0f}  cruse={},  cruise_kph={:.0f}'.format(hyundai_lkas,  CS.cruiseState.enabled,  v_cruise_kph) )    
 
-    if not CS.cruiseState.enabled:
-       hyundai_lkas = True
+    if not CS.cruiseState.enabled and not hyundai_lkas:
+        hyundai_timer1 += 1
+        if hyundai_timer1 > 50:
+          hyundai_lkas = True
 
 def main(sm=None, pm=None, logcan=None):
   controlsd_thread(sm, pm, logcan)
