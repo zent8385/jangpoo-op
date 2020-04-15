@@ -165,7 +165,8 @@ typedef struct UIScene {
   struct _STATUS_
   {
       int  nCanError;
-      char alert_text[1024]; 
+      char alert_text1[512];
+      char alert_text2[512];
   } status;
 
 } UIScene;

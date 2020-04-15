@@ -320,6 +320,9 @@ class PathPlanner():
 
     self.angle_steers_des_mpc = float(math.degrees(delta_desired * self.steerRatio) + angle_offset)
 
+    trace1.printf2( 'steer={:.3f} A:{:.3f}  D:{:.3f} R:{:.3f}'.format( self.angle_steers_des_mpc, active, delta_desired, rate_desired ) )
+
+
     #  Check for infeasable MPC solution
     mpc_nans = any(math.isnan(x) for x in self.mpc_solution[0].delta)
     t = sec_since_boot()
