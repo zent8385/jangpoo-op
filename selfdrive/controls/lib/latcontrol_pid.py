@@ -57,13 +57,15 @@ class LatControlPID():
     else:
       #self.angle_steers_des = path_plan.angleSteers  # get from MPC/PathPlanner      
       if v_ego_kph < 10:
-        self.angle_steers_des = self.movAvg.get_data( path_plan.angleSteers, 200 )
+        self.angle_steers_des = self.movAvg.get_data( path_plan.angleSteers, 500 )
       elif v_ego_kph < 20:
-        self.angle_steers_des = self.movAvg.get_data( path_plan.angleSteers, 100 )
+        self.angle_steers_des = self.movAvg.get_data( path_plan.angleSteers, 300 )
       elif v_ego_kph < 30:
-        self.angle_steers_des = self.movAvg.get_data( path_plan.angleSteers, 50 )
+        self.angle_steers_des = self.movAvg.get_data( path_plan.angleSteers, 200 )
+      elif v_ego_kph < 40:
+        self.angle_steers_des = self.movAvg.get_data( path_plan.angleSteers, 100 )
       else:
-        self.angle_steers_des = self.movAvg.get_data( path_plan.angleSteers, 10 )
+        self.angle_steers_des = self.movAvg.get_data( path_plan.angleSteers, 50 )
 
 
       
@@ -73,8 +75,8 @@ class LatControlPID():
       self.pid.neg_limit = -steers_max
       steer_feedforward = self.angle_steers_des   # feedforward desired angle
 
-
-      trace1.printf( 'steer:{:.1f} PL:{:.1f} NL={:.1f}'.format( self.angle_steers_des,  self.pid.pos_limit, self.pid.neg_limit ) )
+      delta = self.angle_steers_des - path_plan.angleSteers
+      trace1.printf( 'steer:{:.1f} dst:{:.1f} delta={:.1f} cnt={:.1f}'.format( self.angle_steers_des, path_plan.angleSteers, delta, self.movAvg.data_cnt ) )
 
       if CP.steerControlType == car.CarParams.SteerControlType.torque:
         # TODO: feedforward something based on path_plan.rateSteers
