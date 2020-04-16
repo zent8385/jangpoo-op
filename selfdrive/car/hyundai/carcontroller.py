@@ -1,4 +1,4 @@
-from cereal import car
+from cereal import car, log
 from common.numpy_fast import clip
 from selfdrive.config import Conversions as CV
 from selfdrive.car import apply_std_steer_torque_limits
@@ -11,7 +11,7 @@ from opendbc.can.packer import CANPacker
 import common.log as trace1
 
 VisualAlert = car.CarControl.HUDControl.VisualAlert
-
+LaneChangeState = log.PathPlan.LaneChangeState
 
 
 # Accel limits
@@ -47,6 +47,7 @@ class CarController():
     self.lkas_active_timer1 = 0
     self.lkas_active_timer2 = 0
     self.steer_torque_over_timer = 0
+    self.steer_timer = 0
 
 
   def limit_ctrl(self, value, limit ):
@@ -94,7 +95,7 @@ class CarController():
     return hud_alert, lane_visible 
 
   def update(self, enabled, CS, frame, actuators, pcm_cancel_cmd, 
-              visual_alert, left_line, right_line ):
+              visual_alert, left_line, right_line, path_plan ):
 
     # *** compute control surfaces ***
     v_ego_kph = CS.v_ego * CV.MS_TO_KPH
@@ -123,7 +124,6 @@ class CarController():
     new_steer = actuators.steer * param.STEER_MAX
     apply_steer = apply_std_steer_torque_limits(new_steer, self.apply_steer_last, CS.steer_torque_driver, param)
     self.steer_rate_limited = new_steer != apply_steer
-    #print( 'stree ={} pcm_cancel_cmd={} pcm_cancel_cmd={}'.format( actuators.steer, apply_steer, pcm_cancel_cmd ) )
 
 
     if abs( CS.steer_torque_driver ) > 270:
@@ -154,7 +154,7 @@ class CarController():
     elif CS.stopped:
         low_speed = False
     elif CS.v_ego > (CS.CP.minSteerSpeed + 0.7):
-        low_speed = False        
+        low_speed = False
     elif CS.v_ego < (CS.CP.minSteerSpeed + 0.2):
         low_speed = True
 
@@ -164,19 +164,20 @@ class CarController():
         self.low_speed_car = low_speed
 
     # streer over check
+    delta_angle_steer = CS.angle_steers - actuators.steerAngle
     if enabled and abs(CS.angle_steers) > 90. and self.lkas_button or  CS.steer_error:
       self.streer_angle_over =  True
-    elif abs(CS.angle_steers) < 1.5:
+      self.steer_timer = 500
+    elif abs( delta_angle_steer) < 1.5 or not self.steer_timer:
       self.streer_angle_over =  False
-
+    elif self.steer_timer:
+      self.steer_timer -= 1
 
     # Disable steering while turning blinker on and speed below 60 kph
     if CS.left_blinker_on or CS.right_blinker_on:
-      #if self.car_fingerprint not in [CAR.K5, CAR.K5_HYBRID, CAR.GRANDEUR_HYBRID, CAR.KONA_EV, CAR.STINGER, CAR.SONATA_TURBO, CAR.IONIQ_EV, CAR.SORENTO, CAR.GRANDEUR, CAR.K7_HYBRID, CAR.NEXO]:
         self.turning_signal_timer = 500  # Disable for 5.0 Seconds after blinker turned off
     elif CS.left_blinker_flash or CS.right_blinker_flash:
         self.turning_signal_timer = 500
-
 
    # turning indicator alert logic
     self.turning_indicator = self.turning_signal_timer and CS.v_ego <  LaneChangeParms.LANE_CHANGE_SPEED_MIN
@@ -184,14 +185,30 @@ class CarController():
     if self.turning_signal_timer:
         self.turning_signal_timer -= 1 
 
+    if left_line:
+      self.hud_timer_left = 100
+    elif self.hud_timer_left:
+      self.hud_timer_left -= 1
 
 
-    if self.low_speed_car:
-        apply_steer = self.limit_ctrl( apply_steer, 30 )
-    elif v_ego_kph < 10:
-        apply_steer = self.limit_ctrl( apply_steer, 50 )
-    elif v_ego_kph < 20:
-        apply_steer = self.limit_ctrl( apply_steer, 100 )
+    if right_line:
+      self.hud_timer_right = 100      
+    elif self.hud_timer_right:
+      self.hud_timer_right -= 1
+
+
+    if not self.hud_timer_left  and  not self.hud_timer_right:
+      self.lkas_active_timer1 = 140  #  apply_steer = 70
+      #apply_steer = self.limit_ctrl( apply_steer, 70 )
+    elif path_plan.laneChangeState != LaneChangeState.off:
+      self.lkas_active_timer1 = 140 
+      #apply_steer = self.limit_ctrl( apply_steer, 70 )
+
+    if v_ego_kph < 40:
+        ratio_steer = (v_ego_kph / 40) * 100
+        if ratio_steer < 20:
+            ratio_steer = 20
+        apply_steer = self.limit_ctrl( apply_steer, ratio_steer * 100 )
 
     # disable lkas 
     if self.steer_torque_over:
@@ -207,44 +224,24 @@ class CarController():
     if not lkas_active:
       apply_steer = 0
 
-    #steer_req = 1
-    #if apply_steer: 
-    #  self.lkas_active_timer2 = 0 
-    #else:  
-    #  self.lkas_active_timer2 += 1
-    #  if  self.lkas_active_timer2 > 3:
-    #    steer_req = 0
-
     steer_req = 1 if apply_steer else 0
 
-
-    if lkas_active:
+    if not lkas_active:
        self.lkas_active_timer1 = 0
-    else:
+    elif self.lkas_active_timer1 < 400: 
       self.lkas_active_timer1 += 1
-      if  self.lkas_active_timer1 < 80:
-          apply_steer = self.limit_ctrl( apply_steer, 20 )
-      elif self.lkas_active_timer1 < 150:
-          apply_steer = self.limit_ctrl( apply_steer, 100 )
-      else:
-          self.lkas_active_timer1 = 600
+      ratio_steer = self.lkas_active_timer1 / 400
+      if ratio_steer < 1:
+          val_steer = ratio_steer * 200
+          if val_steer < 2:
+             val_steer = 2
+          apply_steer = self.limit_ctrl( apply_steer, val_steer )
 
 
-    #trace1.printf( 'V:{:.1f} Toq:{:5.1f} H={:.0f}  sw={} gear={} seat={}'.format( v_ego_kph,  apply_steer, CS.Navi_HDA, CS.clu_CruiseSwState, CS.gear_shifter, CS.seatbelt ) )
+    trace1.printf2( 'V:{:.1f} Toq:{:5.1f} angle={:.1f} new_steer={:.2f} {:.2f}'.format( v_ego_kph,  apply_steer, actuators.steerAngle, new_steer, actuators.steer ) )
 
     self.apply_accel_last = apply_accel
     self.apply_steer_last = apply_steer
-
-    if left_line:
-      self.hud_timer_left = 100
-    elif self.hud_timer_left:
-      self.hud_timer_left -= 1
-
-
-    if right_line:
-      self.hud_timer_right = 100      
-    elif self.hud_timer_right:
-      self.hud_timer_right -= 1
 
 
     hud_alert, lane_visible = self.process_hud_alert(lkas_active, self.lkas_button, visual_alert, self.hud_timer_left, self.hud_timer_right, CS )    
