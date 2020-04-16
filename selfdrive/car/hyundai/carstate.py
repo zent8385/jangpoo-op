@@ -410,6 +410,11 @@ class CarState():
 
     self.clu_Vanz = cp.vl["CLU11"]["CF_Clu_Vanz"]
     self.clu_CruiseSwState = cp.vl["CLU11"]["CF_Clu_CruiseSwState"]
+    self.clu_CruiseSwMain = cp.vl["CLU11"]["CF_Clu_CruiseSwMain"]
+    self.clu_SldMainSW = cp.vl["CLU11"]["CF_Clu_SldMainSW"]
+
+
+
     self.is_set_speed_in_mph = int(cp.vl["CLU11"]["CF_Clu_SPEED_UNIT"])
     speed_conv = CV.MPH_TO_MS if self.is_set_speed_in_mph else CV.KPH_TO_MS
     self.cruise_set_speed = cp_scc.vl["SCC11"]['VSetDis'] * speed_conv if not self.no_radar else \
@@ -433,7 +438,8 @@ class CarState():
     self.brake_error = 0
 
 
-    self.stopped = cp_scc.vl["SCC11"]['SCCInfoDisplay'] == 4. if not self.no_radar else False
+    self.sccInfoDisp = cp_scc.vl["SCC11"]['SCCInfoDisplay']
+    self.stopped = self.sccInfoDisp == 4. if not self.no_radar else False
     self.lead_distance = cp_scc.vl["SCC11"]['ACC_ObjDist'] if not self.no_radar else 0
 
 
@@ -501,4 +507,7 @@ class CarState():
        self.blinker_status = 0
 
 
-    trace1.printf( 'C:{:.0f} yaw:{:5.1f} V={:.1f}  sw={:.0f} gear={:.0f} seat={:.0f}'.format( self.main_on,  self.yaw_rate, self.clu_Vanz, self.clu_CruiseSwState, self.gear_shifter, self.seatbelt ) )
+    str1 = 'C:{:.0f} yaw:{:5.1f} V={:.1f}'.format( self.main_on,  self.yaw_rate, self.clu_Vanz )
+    str2 = 'sw={:.0f}/{:.0f}/{:.0f} gear={:.0f} scc={:0.f}'.format( self.clu_CruiseSwState, self.clu_CruiseSwMain, self.clu_SldMainSW, self.gear_shifter, self.sccInfoDisp )
+
+    trace1.printf( '{} {}'.format( str1, str2 ) )
