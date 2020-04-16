@@ -80,10 +80,10 @@ class PathPlanner():
     self.steerRateCost_prev = self.steerRateCost
     self.setup_mpc()
 
-                                                                
+    self.alc_nudge_less = bool(int(kegman.conf['ALCnudgeLess']))
+    self.alc_min_speed = float(kegman.conf['ALCminSpeed'])
+    self.alc_timer = float(kegman.conf['ALCtimer'])
                                                           
-                                                   
-
     self.lane_change_state = LaneChangeState.off
     self.lane_change_direction = LaneChangeDirection.none
     self.lane_change_timer = 0.0
