@@ -13,6 +13,7 @@ ButtonType = car.CarState.ButtonEvent.Type
 
 class CarInterface(CarInterfaceBase):
   def __init__(self, CP, CarController, CarState):
+    super().__init__(CP, CarController, CarState)
     self.CP = CP
     self.VM = VehicleModel(CP)
     self.frame = 0
