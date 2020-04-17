@@ -1,5 +1,8 @@
 import os
 import math
+import common.log as trace1
+
+
 from common.realtime import sec_since_boot, DT_MDL
 from selfdrive.swaglog import cloudlog
 from selfdrive.controls.lib.lateral_mpc import libmpc_py
@@ -12,9 +15,8 @@ from common.numpy_fast import interp
 from cereal import log
 
 import cereal.messaging as messaging
-#import common.log as trace1
 
-from common.log import global_alertTextMsg1
+
 
 
 LaneChangeState = log.PathPlan.LaneChangeState
@@ -324,9 +326,7 @@ class PathPlanner():
     self.angle_steers_des_mpc = float(math.degrees(delta_desired * self.steerRatio) + angle_offset)
 
     log_str = 'SR:{:.1f}  steer={:.1f} rate={:.2f} d={:.2f}'.format( self.steerRatio, self.angle_steers_des_mpc, rate_desired, self.LP.d_poly[3]  )
-
-    global global_alertTextMsg1
-    global_alertTextMsg1 = log_str
+    trace1.printf( log_str )
 
     #if active:
     #   log_str = 'v_ego={:.1f} {}'.format( v_ego * CV.MS_TO_KPH, log_str )
