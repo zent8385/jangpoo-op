@@ -15,6 +15,7 @@ if [ ! -f "/data/KRset" ]; then
 	
 	setprop persist.sys.locale ko-KR
 	setprop persist.sys.local ko-KR
+	setprop persist.sys.timezone Asia/Seoul
 
 	/usr/bin/touch /data/KRset
 fi
