@@ -386,16 +386,21 @@ class CarInterface(CarInterfaceBase):
     self.steer_angle_over_alert = self.CC.streer_angle_over
 
 
+    debug_str = 'empty'
+
     events = []
 
     if not self.CS.main_on:
       events.append(create_event('wrongCarMode', [ET.NO_ENTRY, ET.USER_DISABLE])) 
 
     if self.CS.esp_disabled:
+      debug_str = 'espDisabled'
       events.append(create_event('espDisabled', [ET.NO_ENTRY, ET.SOFT_DISABLE])) 
     elif ret.doorOpen:
-      events.append(create_event('doorOpen', [ET.NO_ENTRY, ET.SOFT_DISABLE]))      
+      debug_str = 'doorOpen'
+      events.append(create_event('doorOpen', [ET.NO_ENTRY, ET.SOFT_DISABLE]))
     elif ret.seatbeltUnlatched:
+      debug_str = 'seatbeltNotLatched'
       events.append(create_event('seatbeltNotLatched', [ET.NO_ENTRY, ET.SOFT_DISABLE]))
     elif ret.gearShifter == GearShifter.reverse:
       events.append(create_event('reverseGear', [ET.NO_ENTRY, ET.USER_DISABLE]))      
@@ -445,6 +450,8 @@ class CarInterface(CarInterfaceBase):
     self.gas_pressed_prev = ret.gasPressed
     self.brake_pressed_prev = ret.brakePressed
 
+
+    trace1.printf( debug_str )
     #self.log_update( can_strings )
 
     return ret.as_reader()
