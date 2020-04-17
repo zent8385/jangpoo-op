@@ -336,7 +336,7 @@ def data_send(sm, pm, CS, CI, CP, VM, state, events, actuators, v_cruise_kph, rk
 
 
 
-  trace1.printf( 'L:{:.3f} R:{:.3f} {} {} {}'.format( left_lane_visible, right_lane_visible, lane_width, lane_dPoly, lane_lPoly ) )
+  trace1.printf( 'L:{:.1f} R:{:.1f} {:.1f} {} {}'.format( left_lane_visible, right_lane_visible, lane_width, lane_dPoly, lane_lPoly ) )
   lane_visible = right_lane_visible + left_lane_visible
 
   if lane_visible > 1:
