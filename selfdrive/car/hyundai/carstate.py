@@ -412,7 +412,7 @@ class CarState():
     self.clu_CruiseSwState = cp.vl["CLU11"]["CF_Clu_CruiseSwState"]
     self.clu_CruiseSwMain = cp.vl["CLU11"]["CF_Clu_CruiseSwMain"]
     self.clu_SldMainSW = cp.vl["CLU11"]["CF_Clu_SldMainSW"]
-    self.v_ego = self.clu_Vanz
+    self.v_ego = self.clu_Vanz * CV.KPH_TO_MS
 
 
     self.is_set_speed_in_mph = int(cp.vl["CLU11"]["CF_Clu_SPEED_UNIT"])
