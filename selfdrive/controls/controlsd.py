@@ -40,6 +40,9 @@ LaneChangeState = log.PathPlan.LaneChangeState
 LaneChangeDirection = log.PathPlan.LaneChangeDirection
 LaneChangeBSM = log.PathPlan.LaneChangeBSM
 
+
+traceCS = trace1.Loger("control")
+
 def add_lane_change_event(events, path_plan):
   if path_plan.laneChangeState == LaneChangeState.preLaneChange:
     if path_plan.laneChangeDirection == LaneChangeDirection.left:
@@ -335,8 +338,10 @@ def data_send(sm, pm, CS, CI, CP, VM, state, events, actuators, v_cruise_kph, rk
   lane_rPloy = sm['pathPlan'].rPoly
 
 
+  str_log = 'L:{:.1f} R:{:.1f} {:.1f} {} {}'.format( left_lane_visible, right_lane_visible, lane_width, lane_dPoly, lane_lPoly )
+  trace1.printf( str_log )
+  traceCS.add( str_log  )
 
-  trace1.printf( 'L:{:.1f} R:{:.1f} {:.1f} {} {}'.format( left_lane_visible, right_lane_visible, lane_width, lane_dPoly, lane_lPoly ) )
   lane_visible = right_lane_visible + left_lane_visible
 
   if lane_visible > 1:
