@@ -338,7 +338,7 @@ def data_send(sm, pm, CS, CI, CP, VM, state, events, actuators, v_cruise_kph, rk
   lane_rPloy = sm['pathPlan'].rPoly
 
 
-  str_log = 'L:{:.1f}/{:.1f} w:{:.1f} d3:{}'.format( left_lane_visible, right_lane_visible, lane_width, lane_dPoly )
+  str_log = 'L:{:.1f}/{:.1f} w:{:.1f} d3:{}'.format( left_lane_visible, right_lane_visible, lane_width, lane_dPoly[2] )
   trace1.printf( str_log )
   traceCS.add( str_log  )
 
