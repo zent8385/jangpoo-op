@@ -408,7 +408,8 @@ class CarInterface(CarInterfaceBase):
       events.append(create_event('lkasButtonOff', [ET.WARNING]))
     elif self.CS.lkas_LdwsLHWarning or self.CS.lkas_LdwsRHWarning:
       events.append(create_event('ldwPermanent', [ET.WARNING]))
-    elif ret.cruiseState.enabled != self.cruise_enabled_prev:
+    
+    if ret.cruiseState.enabled != self.cruise_enabled_prev:
         if ret.cruiseState.enabled:
             events.append(create_event('pcmEnable', [ET.ENABLE]))
         else:
