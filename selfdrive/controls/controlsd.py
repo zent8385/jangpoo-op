@@ -332,13 +332,13 @@ def data_send(sm, pm, CS, CI, CP, VM, state, events, actuators, v_cruise_kph, rk
   right_lane_visible = sm['pathPlan'].rProb
   left_lane_visible = sm['pathPlan'].lProb
 
-  lane_dPoly = sm['pathPlan'].dPoly[3]
+  lane_dPoly = sm['pathPlan'].dPoly
   lane_width = sm['pathPlan'].laneWidth
   lane_lPoly = sm['pathPlan'].lPoly
   lane_rPloy = sm['pathPlan'].rPoly
 
 
-  str_log = 'L:{:.1f} R:{:.1f} w:{:.1f} d3:{:.3f}'.format( left_lane_visible, right_lane_visible, lane_width, lane_dPoly )
+  str_log = 'L:{:.1f}/{:.1f} w:{:.1f} d3:{}'.format( left_lane_visible, right_lane_visible, lane_width, lane_dPoly )
   trace1.printf( str_log )
   traceCS.add( str_log  )
 
