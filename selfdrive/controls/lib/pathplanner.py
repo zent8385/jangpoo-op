@@ -237,7 +237,7 @@ class PathPlanner():
 
       self.mpc_frame = 0
 
-    if v_ego < 10 * CV.KPH_TO_MS or abs(angle_steers) < 1:
+    if v_ego < 10 * CV.KPH_TO_MS:
       self.steerRatio = self.sR[0] * 0.5
     elif v_ego > 40 * CV.KPH_TO_MS:  # 11.111:
       # boost steerRatio by boost amount if desired steer angle is high
