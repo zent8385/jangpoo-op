@@ -329,7 +329,14 @@ def data_send(sm, pm, CS, CI, CP, VM, state, events, actuators, v_cruise_kph, rk
   right_lane_visible = sm['pathPlan'].rProb
   left_lane_visible = sm['pathPlan'].lProb
 
-  #trace1.printf( 'L:{:.3f} R:{:.3f}'.format( left_lane_visible, right_lane_visible ) )
+  lane_dPoly = sm['pathPlan'].dPoly
+  lane_width = sm['pathPlan'].laneWidth
+  lane_lPoly = sm['pathPlan'].lPoly
+  lane_rPloy = sm['pathPlan'].rPoly
+
+
+
+  trace1.printf( 'L:{:.3f} R:{:.3f} {} {} {}'.format( left_lane_visible, right_lane_visible, lane_width, lane_dPoly, lane_lPoly ) )
   lane_visible = right_lane_visible + left_lane_visible
 
   if lane_visible > 1:

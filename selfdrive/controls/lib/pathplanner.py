@@ -325,8 +325,8 @@ class PathPlanner():
     self.cur_state[0].delta = delta_desired
     self.angle_steers_des_mpc = float(math.degrees(delta_desired * self.steerRatio) + angle_offset)
 
-    log_str = 'SR:{:.1f}  steer={:.1f} rate={:.2f} d={:.2f}'.format( self.steerRatio, self.angle_steers_des_mpc, rate_desired, self.LP.d_poly[3]  )
-    trace1.printf( log_str )
+    #log_str = 'SR:{:.1f}  steer={:.1f} rate={:.2f} d={:.2f}'.format( self.steerRatio, self.angle_steers_des_mpc, rate_desired, self.LP.d_poly[3]  )
+    #trace1.printf( log_str )
 
     #if active:
     #   log_str = 'v_ego={:.1f} {}'.format( v_ego * CV.MS_TO_KPH, log_str )
