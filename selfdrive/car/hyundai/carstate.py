@@ -510,4 +510,4 @@ class CarState():
     str1 = 'C:{:.0f} yaw:{:5.1f} V={:.1f}'.format( self.main_on,  self.yaw_rate, self.clu_Vanz )
     str2 = 'sw={:.0f}/{:.0f}/{:.0f} gear={:.0f} scc={:.0f}'.format( self.clu_CruiseSwState, self.clu_CruiseSwMain, self.clu_SldMainSW, self.gear_shifter, self.sccInfoDisp )
 
-    trace1.printf( '{} {}'.format( str1, str2 ) )
+    #trace1.printf( '{} {}'.format( str1, str2 ) )

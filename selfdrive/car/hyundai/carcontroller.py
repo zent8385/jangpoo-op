@@ -109,13 +109,16 @@ class CarController():
     param = SteerLimitParams
 
     abs_angle_steers =  abs(actuators.steerAngle) # abs(CS.angle_steers)
-    if abs_angle_steers < 2:
+    if abs_angle_steers < 2 or v_ego_kph < 20:
+        param.STEER_MAX = 180
         param.STEER_DELTA_UP  = 1
         param.STEER_DELTA_DOWN = 1
     elif abs_angle_steers < 3:
+        param.STEER_MAX = 210
         param.STEER_DELTA_UP  = 2
         param.STEER_DELTA_DOWN = 2
     elif abs_angle_steers < 5:
+        param.STEER_MAX = 230
         param.STEER_DELTA_UP  = 3
         param.STEER_DELTA_DOWN = 4
 
@@ -196,19 +199,17 @@ class CarController():
     elif self.hud_timer_right:
       self.hud_timer_right -= 1
 
-
+    apply_steer_limit = 200
     if not self.hud_timer_left  and  not self.hud_timer_right:
       self.lkas_active_timer1 = 140  #  apply_steer = 70
-      #apply_steer = self.limit_ctrl( apply_steer, 70 )
     elif path_plan.laneChangeState != LaneChangeState.off:
       self.lkas_active_timer1 = 140 
-      #apply_steer = self.limit_ctrl( apply_steer, 70 )
 
     if v_ego_kph < 40:
-        ratio_steer = (v_ego_kph / 40) * 100
-        if ratio_steer < 20:
-            ratio_steer = 20
-        apply_steer = self.limit_ctrl( apply_steer, ratio_steer * 100 )
+        apply_steer_limit = (v_ego_kph / 40) * 100
+        if apply_steer_limit < 20:
+            apply_steer_limit = 20
+        apply_steer = self.limit_ctrl( apply_steer, apply_steer_limit )
 
     # disable lkas 
     if self.steer_torque_over:
@@ -232,13 +233,13 @@ class CarController():
       self.lkas_active_timer1 += 1
       ratio_steer = self.lkas_active_timer1 / 400
       if ratio_steer < 1:
-          val_steer = ratio_steer * 200
-          if val_steer < 2:
-             val_steer = 2
-          apply_steer = self.limit_ctrl( apply_steer, val_steer )
+          apply_steer_limit = ratio_steer * 200
+          if apply_steer_limit < 2:
+             apply_steer_limit = 2
+          apply_steer = self.limit_ctrl( apply_steer, apply_steer_limit )
 
-
-    trace1.printf2( 'V:{:.1f} Toq:{:5.1f} angle={:.1f} new_steer={:.2f} {:.2f}'.format( v_ego_kph,  apply_steer, actuators.steerAngle, new_steer, actuators.steer ) )
+    
+    trace1.printf2( 'angle={:5.1f} delta={:5.1f}  Toq:{:5.1f} limit={:5.1f} new={:5.1f} {:5.3f}'.format( actuators.steerAngle, delta_angle_steer, apply_steer, apply_steer_limit,  new_steer, actuators.steer ) )
 
     self.apply_accel_last = apply_accel
     self.apply_steer_last = apply_steer

@@ -222,7 +222,7 @@ class PathPlanner():
 
     # Get steerRatio and steerRateCost from kegman.json every x seconds
     self.mpc_frame += 1
-    if self.mpc_frame % 5000 == 0:
+    if self.mpc_frame % 500 == 0:
       # live tuning through /data/openpilot/tune.py overrides interface.py settings
       kegman = kegman_conf()
       if kegman.conf['tuneGernby'] == "1":
@@ -237,7 +237,9 @@ class PathPlanner():
 
       self.mpc_frame = 0
 
-    if v_ego > 40 * CV.KPH_TO_MS:  # 11.111:
+    if v_ego < 10 * CV.KPH_TO_MS or abs(angle_steers) < 1:
+      self.steerRatio = self.sR[0] * 0.5
+    elif v_ego > 40 * CV.KPH_TO_MS:  # 11.111:
       # boost steerRatio by boost amount if desired steer angle is high
       self.steerRatio_new = interp(abs(angle_steers), self.sRBP, self.sR)
 
@@ -246,7 +248,7 @@ class PathPlanner():
         if self.steerRatio_new > self.steerRatio:
           self.steerRatio = self.steerRatio_new
       else:
-        self.steerRatio = self.steerRatio_new
+        self.steerRatio = (self.steerRatio_new + self.steerRatio) * 0.5
         self.sR_delay_counter = 0
     else:
       self.steerRatio = self.sR[0]
@@ -278,7 +280,7 @@ class PathPlanner():
           self.lane_change_timer3 = 0
           self.lane_change_BSM = LaneChangeBSM.off
 
-    #trace1.printf2( 'R:{:.3f} L:{:.3f}'.format( self.LP.l_lane_change_prob, self.LP.r_lane_change_prob ) )
+
     desire = DESIRES[self.lane_change_direction][self.lane_change_state]
 
     # Turn off lanes during lane change
@@ -317,14 +319,21 @@ class PathPlanner():
       rate_desired = 0.0
 
     self.cur_state[0].delta = delta_desired
-
     self.angle_steers_des_mpc = float(math.degrees(delta_desired * self.steerRatio) + angle_offset)
 
-    #trace1.printf2( 'path steer={:.3f} A:{:.3f}  D:{:.3f} R:{:.3f}'.format( self.angle_steers_des_mpc, active, delta_desired, rate_desired ) )
+    log_str = 'SR:{:.1f}  steer={:.1f} rate={:.2f} d={:.2f}'.format( self.steerRatio, self.angle_steers_des_mpc, rate_desired, self.LP.d_poly[3]  )
 
+    global trace1
+    trace1.printf( log_str )
 
-    #log_str = 'path steer={:.3f} A:{:.3f}  D:{:.3f} R:{:.3f}'.format( self.angle_steers_des_mpc, active, delta_desired, rate_desired )
-    #tracePP.add( log_str )  
+    #if active:
+    #   log_str = 'v_ego={:.1f} {}'.format( v_ego * CV.MS_TO_KPH, log_str )
+    #   tracePP.add( log_str )
+
+    if self.angle_steers_des_mpc > 90:
+      self.angle_steers_des_mpc = 90
+    elif self.angle_steers_des_mpc < -90:
+      self.angle_steers_des_mpc = -90
 
 
     #  Check for infeasable MPC solution
