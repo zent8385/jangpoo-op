@@ -403,7 +403,7 @@ class CarState():
     self.v_wheel_rl = cp.vl["WHL_SPD11"]['WHL_SPD_RL'] * CV.KPH_TO_MS
     self.v_wheel_rr = cp.vl["WHL_SPD11"]['WHL_SPD_RR'] * CV.KPH_TO_MS
     self.v_ego_raw = (self.v_wheel_fl + self.v_wheel_fr + self.v_wheel_rl + self.v_wheel_rr) / 4.
-    self.v_ego, self.a_ego = self.update_speed_kf(self.v_ego_raw)
+    v_ego, self.a_ego = self.update_speed_kf(self.v_ego_raw)
 
     self.low_speed_lockout = self.v_ego_raw < 1.0
 
@@ -412,7 +412,7 @@ class CarState():
     self.clu_CruiseSwState = cp.vl["CLU11"]["CF_Clu_CruiseSwState"]
     self.clu_CruiseSwMain = cp.vl["CLU11"]["CF_Clu_CruiseSwMain"]
     self.clu_SldMainSW = cp.vl["CLU11"]["CF_Clu_SldMainSW"]
-
+    self.v_ego = self.clu_Vanz
 
 
     self.is_set_speed_in_mph = int(cp.vl["CLU11"]["CF_Clu_SPEED_UNIT"])
