@@ -12,7 +12,9 @@ from common.numpy_fast import interp
 from cereal import log
 
 import cereal.messaging as messaging
-import common.log as trace1
+#import common.log as trace1
+
+from common.log import global_alertTextMsg1
 
 
 LaneChangeState = log.PathPlan.LaneChangeState
@@ -21,7 +23,7 @@ LaneChangeBSM = log.PathPlan.LaneChangeBSM
 
 LOG_MPC = os.environ.get('LOG_MPC', True)
 
-tracePP = trace1.Loger("pathPlanner")
+#tracePP = trace1.Loger("pathPlanner")
 
 DESIRES = {
   LaneChangeDirection.none: {
@@ -238,7 +240,7 @@ class PathPlanner():
       self.mpc_frame = 0
 
     if v_ego < 10 * CV.KPH_TO_MS:
-      self.steerRatio = self.sR[0] * 0.5
+      self.steerRatio = self.sR[0] * 0.6
     elif v_ego > 40 * CV.KPH_TO_MS:  # 11.111:
       # boost steerRatio by boost amount if desired steer angle is high
       self.steerRatio_new = interp(abs(angle_steers), self.sRBP, self.sR)
@@ -323,8 +325,8 @@ class PathPlanner():
 
     log_str = 'SR:{:.1f}  steer={:.1f} rate={:.2f} d={:.2f}'.format( self.steerRatio, self.angle_steers_des_mpc, rate_desired, self.LP.d_poly[3]  )
 
-    global trace1
-    trace1.printf( log_str )
+    global global_alertTextMsg1
+    global_alertTextMsg1 = log_str
 
     #if active:
     #   log_str = 'v_ego={:.1f} {}'.format( v_ego * CV.MS_TO_KPH, log_str )

@@ -233,7 +233,9 @@ class CarController():
       self.lkas_active_timer1 += 1
       ratio_steer = self.lkas_active_timer1 / 400
       if ratio_steer < 1:
-          apply_steer_limit = ratio_steer * 200
+          steer_limit = ratio_steer * 200
+          if apply_steer_limit > steer_limit:
+              apply_steer_limit = steer_limit
           if apply_steer_limit < 2:
              apply_steer_limit = 2
           apply_steer = self.limit_ctrl( apply_steer, apply_steer_limit )
