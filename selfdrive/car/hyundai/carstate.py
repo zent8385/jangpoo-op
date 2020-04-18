@@ -508,7 +508,7 @@ class CarState():
        self.blinker_status = 0
 
 
-    str1 = 'C:{:.0f} yaw:{:5.1f} acc status={:.1f} set_speed{}'.format( self.main_on,  self.yaw_rate, self.pcm_acc_status,  self.cruise_set_speed )
+    str1 = 'C:{:.0f} yaw:{:5.1f} acc status={:.1f} set_speed{:.1f}'.format( self.main_on,  self.yaw_rate, self.pcm_acc_status,  self.cruise_set_speed )
     str2 = 'sw={:.0f}/{:.0f}/{:.0f} gear={:.0f} scc={:.0f}'.format( self.clu_CruiseSwState, self.clu_CruiseSwMain, self.clu_SldMainSW, self.gear_shifter, self.sccInfoDisp )
 
     trace1.printf( '{} {}'.format( str1, str2 ) )
