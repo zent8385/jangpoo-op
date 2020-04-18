@@ -48,8 +48,9 @@ class CarController():
 
     self.lkas_active_timer1 = 0
     self.lkas_active_timer2 = 0
-    self.steer_torque_over_timer = 0
     self.steer_timer = 0
+    self.steer_torque_over_timer = 0
+    self.steer_torque_over = False
 
     self.long_active_timer = 0
 
