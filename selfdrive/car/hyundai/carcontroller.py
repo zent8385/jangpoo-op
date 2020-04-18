@@ -313,23 +313,23 @@ class CarController():
       self.scc12_cnt += 1
 
     
-      acc_mode = self.long_speed_cntrl( v_ego_kph, CS, actuators )
-      if v_ego_kph > 30:
-        if acc_mode == 1:
-          btn_type = Buttons.RES_ACCEL
-        elif acc_mode == -1:
-          btn_type = Buttons.SET_DECEL
-        else:
-          btn_type = Buttons.NONE
-          self.resume_cnt = 0
+    acc_mode = self.long_speed_cntrl( v_ego_kph, CS, actuators )
+    if v_ego_kph > 30:
+      if acc_mode == 1:
+        btn_type = Buttons.RES_ACCEL
+      elif acc_mode == -1:
+        btn_type = Buttons.SET_DECEL
+      else:
+        btn_type = Buttons.NONE
+        self.resume_cnt = 0
 
-        if btn_type != Buttons.NONE and (frame - self.last_resume_frame) > 5:
-          can_sends.append(create_clu11(self.packer, CS.scc_bus, CS.clu11, btn_type, clu11_speed, self.resume_cnt))
-          self.resume_cnt += 1
-          # interval after 6 msgs
-          if self.resume_cnt > 5:
-            self.last_resume_frame = frame
-            self.resume_cnt = 0           
+      if btn_type != Buttons.NONE and (frame - self.last_resume_frame) > 5:
+        can_sends.append(create_clu11(self.packer, CS.scc_bus, CS.clu11, btn_type, clu11_speed, self.resume_cnt))
+        self.resume_cnt += 1
+        # interval after 6 msgs
+        if self.resume_cnt > 5:
+          self.last_resume_frame = frame
+          self.resume_cnt = 0           
 
     # AVM
     #if CS.mdps_bus:
