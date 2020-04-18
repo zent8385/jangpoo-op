@@ -1601,7 +1601,7 @@ static void ui_draw_blank(UIState *s) {
 void ui_draw(UIState *s) {
   if (s->vision_connected && s->active_app == cereal_UiLayoutState_App_home && s->status != STATUS_STOPPED) {
     ui_draw_sidebar(s);
-    //ui_draw_vision(s);
+    ui_draw_vision(s);
   } else {
     ui_draw_blank(s);
     if (!s->scene.uilayout_sidebarcollapsed) {
