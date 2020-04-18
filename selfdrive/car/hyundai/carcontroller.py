@@ -107,7 +107,7 @@ class CarController():
     if CS.pcm_acc_status and CS.AVM_Popup_Msg == 1:
       self.long_active_timer += 1
       if self.long_active_timer < 10:
-        acc_mode = 1
+        acc_mode = -1
     else:
       self.long_active_timer = 0
 
@@ -355,6 +355,8 @@ class CarController():
     # reset lead distnce after the car starts moving
     elif self.last_lead_distance != 0:
       self.last_lead_distance = 0  
+
+
 
     self.lkas11_cnt += 1
 
