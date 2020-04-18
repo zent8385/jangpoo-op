@@ -59,7 +59,8 @@ class LatControlPID():
       if v_ego_kph < 40:
         xp = [10,20,30,40]
         fp = [200,100,50,10]
-        self.angle_steers_des = interp( path_plan.angleSteers, xp, fp  )
+        filter_val = interp( v_ego_kph, xp, fp  )
+        self.angle_steers_des = self.movAvg.get_data( path_plan.angleSteers, filter_val )
       else:
         self.angle_steers_des = self.movAvg.get_data( path_plan.angleSteers, 5 )
 
