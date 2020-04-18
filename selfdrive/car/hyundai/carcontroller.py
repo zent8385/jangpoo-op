@@ -111,7 +111,7 @@ class CarController():
       self.long_active_timer = 0
 
     str1 = 'lead_dis={} VSet={} Vanz={}  cmd={}'.format( CS.lead_distance, CS.VSetDis, CS.clu_Vanz, acc_mode )
-    str2 = 'set speed={:.1f} acc_status{} btn={}'.format( CS.cruise_set_speed, CS.pcm_acc_status, CS.AVM_ParkAssist_btn )
+    str2 = 'set={:.1f} acc{} btn={}'.format( CS.cruise_set_speed, CS.pcm_acc_status, CS.AVM_ParkAssist_btn )
     
     trace1.printf2( '{} {}'.format( str1, str2) )
     return acc_mode
