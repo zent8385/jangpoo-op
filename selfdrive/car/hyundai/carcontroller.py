@@ -107,7 +107,7 @@ class CarController():
     if CS.pcm_acc_status and CS.AVM_Popup_Msg == 1:
       self.long_active_timer += 1
       if self.long_active_timer < 10:
-        acc_mode = -1
+        acc_mode = 1
     else:
       self.long_active_timer = 0
 
@@ -319,7 +319,7 @@ class CarController():
       if acc_mode == 1:
         btn_type = Buttons.RES_ACCEL
       elif acc_mode == -1:
-        btn_type = Buttons.CANCEL   #SET_DECEL
+        btn_type = Buttons.SET_DECEL   #SET_DECEL
       else:
         btn_type = Buttons.NONE
         self.resume_cnt = 0
