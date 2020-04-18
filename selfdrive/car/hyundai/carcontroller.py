@@ -107,7 +107,7 @@ class CarController():
     if CS.pcm_acc_status and CS.AVM_Popup_Msg == 1:
       self.long_active_timer += 1
       if self.long_active_timer < 10:
-        acc_mode = 1
+        acc_mode = -1
     else:
       self.long_active_timer = 0
 
@@ -115,7 +115,7 @@ class CarController():
     str2 = 'set={:.1f} acc{} btn={:.0f}'.format( CS.cruise_set_speed, CS.pcm_acc_status, CS.AVM_Popup_Msg )
     
     trace1.printf2( '{} {}'.format( str1, str2) )
-    return acc_mode
+    return acc_mode, CS.clu_Vanz
 
   def update(self, enabled, CS, frame, actuators, pcm_cancel_cmd, 
               visual_alert, left_line, right_line, path_plan ):
@@ -314,18 +314,18 @@ class CarController():
       self.scc12_cnt += 1
 
     
-    acc_mode = self.long_speed_cntrl( v_ego_kph, CS, actuators )
+    acc_mode, clu_speed = self.long_speed_cntrl( v_ego_kph, CS, actuators )
     if v_ego_kph > 30:
       if acc_mode == 1:
         btn_type = Buttons.RES_ACCEL
       elif acc_mode == -1:
-        btn_type = Buttons.SET_DECEL
+        btn_type = Buttons.CANCEL   #SET_DECEL
       else:
         btn_type = Buttons.NONE
         self.resume_cnt = 0
 
       if btn_type != Buttons.NONE and (frame - self.last_resume_frame) > 5:
-        can_sends.append(create_clu11(self.packer, CS.scc_bus, CS.clu11, btn_type, clu11_speed, self.resume_cnt))
+        can_sends.append(create_clu11(self.packer, CS.scc_bus, CS.clu11, btn_type, clu_speed, self.resume_cnt))
         self.resume_cnt += 1
         # interval after 6 msgs
         if self.resume_cnt > 5:
