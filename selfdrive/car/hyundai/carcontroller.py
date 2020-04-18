@@ -104,14 +104,14 @@ class CarController():
   def long_speed_cntrl( self, v_ego_kph, CS, actuators ):
     acc_mode = 0
 
-    if CS.AVM_Popup_Msg == 1:
+    if CS.pcm_acc_status and CS.AVM_Popup_Msg == 1:
       self.long_active_timer += 1
       if self.long_active_timer < 10:
-        acc_mode = -1
+        acc_mode = 1
     else:
       self.long_active_timer = 0
 
-    str1 = 'lead_dis={:.1f} VSet={:.1f} Vanz={:.1f}  cmd={:.0f}'.format( CS.lead_distance, CS.VSetDis, CS.clu_Vanz, acc_mode )
+    str1 = 'dis={:.1f} VSet={:.1f} Vanz={:.1f}  cmd={:.0f}'.format( CS.lead_distance, CS.VSetDis, CS.clu_Vanz, acc_mode )
     str2 = 'set={:.1f} acc{} btn={:.0f}'.format( CS.cruise_set_speed, CS.pcm_acc_status, CS.AVM_Popup_Msg )
     
     trace1.printf2( '{} {}'.format( str1, str2) )
