@@ -57,16 +57,16 @@ const int vwp_h = 1080;
 const int nav_w = 640;
 const int nav_ww= 760;
 const int sbr_w = 300;
-const int bdr_s = 0; 
+const int bdr_s = 30; 
 const int bdr_is = 30;
-const int box_x = sbr_w+bdr_is;
-const int box_y = bdr_is;
-const int box_w = vwp_w-sbr_w-(bdr_is*0);
-const int box_h = vwp_h-(bdr_is*2);
-const int viz_w = vwp_w-(bdr_is*2);
+const int box_x = sbr_w+bdr_s;
+const int box_y = bdr_s;
+const int box_w = vwp_w-sbr_w-(bdr_s*2);
+const int box_h = vwp_h-(bdr_s*2);
+const int viz_w = vwp_w-(bdr_s*2);
 const int header_h = 420;
 const int footer_h = 280;
-const int footer_y = vwp_h-bdr_is-footer_h;
+const int footer_y = vwp_h-bdr_s-footer_h;
 const int settings_btn_h = 117;
 const int settings_btn_w = 200;
 const int settings_btn_x = 50;
@@ -120,6 +120,9 @@ typedef struct UIScene {
   bool map_valid;
   bool brakeLights;
 
+  bool leftBlinker;
+  bool rightBlinker;
+  int blinker_blinkingrate;
 
   float curvature;
   int engaged;
