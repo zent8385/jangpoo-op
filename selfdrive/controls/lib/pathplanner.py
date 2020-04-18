@@ -251,8 +251,8 @@ class PathPlanner():
 
       self.sR_delay_counter += 1
       delta_angle = abs_angle_steers - self.steerAngle_new
-      if delta_angle < -1.0 and self.sR_delay_counter > 1:
-          self.sR_delay_counter += 5
+      if delta_angle < -2.0 and self.sR_delay_counter > 5:
+          self.sR_delay_counter += 2
 
       if self.sR_delay_counter < self.sR_time:
         if self.steerRatio_new > self.steerRatio:

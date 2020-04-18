@@ -51,6 +51,8 @@ class CarController():
     self.steer_torque_over_timer = 0
     self.steer_timer = 0
 
+    self.long_active_timer = 0
+
 
   def limit_ctrl(self, value, limit ):
       if value > limit:
@@ -94,7 +96,25 @@ class CarController():
         lane_visible = 4
 
     # 7 : hud can't display,   panel :  LKA, handle icon. 
-    return hud_alert, lane_visible 
+    return hud_alert, lane_visible
+
+
+
+  def long_speed_cntrl( self, v_ego_kph, CS, actuators ):
+    acc_mode = 0
+
+    if CS.AVM_ParkAssist_btn == 7:
+      self.long_active_timer += 1
+      if self.long_active_timer < 10:
+        acc_mode = -1
+    else:
+      self.long_active_timer = 0
+
+    str1 = 'lead_dis={} VSet={} Vanz={}  cmd={}'.format( CS.lead_distance, CS.VSetDis, CS.clu_Vanz, acc_mode )
+    str2 = 'set speed={:.1f} acc_status{} btn={}'.format( CS.cruise_set_speed, CS.pcm_acc_status, CS.AVM_ParkAssist_btn )
+    
+    trace1.printf2( '{} {}'.format( str1, str2) )
+    return acc_mode
 
   def update(self, enabled, CS, frame, actuators, pcm_cancel_cmd, 
               visual_alert, left_line, right_line, path_plan ):
@@ -246,7 +266,7 @@ class CarController():
           apply_steer = self.limit_ctrl( apply_steer, apply_steer_limit )
 
     
-    trace1.printf2( 'angle={:5.1f} delta={:5.1f}  Toq:{:5.1f} limit={:5.1f} new={:5.1f} {:5.3f}'.format( actuators.steerAngle, delta_angle_steer, apply_steer, apply_steer_limit,  new_steer, actuators.steer ) )
+    #trace1.printf2( 'angle={:5.1f} delta={:5.1f}  Toq:{:5.1f} limit={:5.1f} new={:5.1f} {:5.3f}'.format( actuators.steerAngle, delta_angle_steer, apply_steer, apply_steer_limit,  new_steer, actuators.steer ) )
 
     self.apply_accel_last = apply_accel
     self.apply_steer_last = apply_steer
@@ -292,6 +312,24 @@ class CarController():
       can_sends.append(create_scc12(self.packer, apply_accel, enabled, self.scc12_cnt, CS.scc12))
       self.scc12_cnt += 1
 
+    
+      acc_mode = self.long_speed_cntrl( v_ego_kph, CS, actuators )
+      if v_ego_kph > 30:
+        if acc_mode == 1:
+          btn_type = Buttons.RES_ACCEL
+        elif acc_mode == -1:
+          btn_type = Buttons.SET_DECEL
+        else:
+          btn_type = Buttons.NONE
+          self.resume_cnt = 0
+
+        if btn_type != Buttons.NONE and (frame - self.last_resume_frame) > 5:
+          can_sends.append(create_clu11(self.packer, CS.scc_bus, CS.clu11, btn_type, clu11_speed, self.resume_cnt))
+          self.resume_cnt += 1
+          # interval after 6 msgs
+          if self.resume_cnt > 5:
+            self.last_resume_frame = frame
+            self.resume_cnt = 0           
 
     # AVM
     #if CS.mdps_bus:

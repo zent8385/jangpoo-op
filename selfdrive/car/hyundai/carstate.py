@@ -414,10 +414,11 @@ class CarState():
     self.clu_SldMainSW = cp.vl["CLU11"]["CF_Clu_SldMainSW"]
     self.v_ego = self.clu_Vanz * CV.KPH_TO_MS
 
+    self.VSetDis = cp_scc.vl["SCC11"]['VSetDis']
 
     self.is_set_speed_in_mph = int(cp.vl["CLU11"]["CF_Clu_SPEED_UNIT"])
     speed_conv = CV.MPH_TO_MS if self.is_set_speed_in_mph else CV.KPH_TO_MS
-    self.cruise_set_speed = cp_scc.vl["SCC11"]['VSetDis'] * speed_conv if not self.no_radar else \
+    self.cruise_set_speed = self.VSetDis * speed_conv if not self.no_radar else \
                                          (cp.vl["LVR12"]["CF_Lvr_CruiseSet"] * speed_conv)
     self.standstill = not self.v_ego_raw > 0.1
 
@@ -507,7 +508,7 @@ class CarState():
        self.blinker_status = 0
 
 
-    str1 = 'C:{:.0f} yaw:{:5.1f} V={:.1f}'.format( self.main_on,  self.yaw_rate, self.clu_Vanz )
+    str1 = 'C:{:.0f} yaw:{:5.1f} acc status={:.1f} set_speed{}'.format( self.main_on,  self.yaw_rate, self.pcm_acc_status,  self.cruise_set_speed )
     str2 = 'sw={:.0f}/{:.0f}/{:.0f} gear={:.0f} scc={:.0f}'.format( self.clu_CruiseSwState, self.clu_CruiseSwMain, self.clu_SldMainSW, self.gear_shifter, self.sccInfoDisp )
 
-    #trace1.printf( '{} {}'.format( str1, str2 ) )
+    trace1.printf( '{} {}'.format( str1, str2 ) )
