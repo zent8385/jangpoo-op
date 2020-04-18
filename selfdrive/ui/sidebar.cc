@@ -4,7 +4,7 @@
 #include "ui.hpp"
 
 static void ui_draw_sidebar_background(UIState *s, bool hasSidebar) {
-  int sbr_x = hasSidebar ? 0 : -(sbr_w) + bdr_s * 2;
+  int sbr_x = hasSidebar ? 0 : -(sbr_w) + bdr_is * 2;
 
   nvgBeginPath(s->vg);
   nvgRect(s->vg, sbr_x, 0, sbr_w, vwp_h);
