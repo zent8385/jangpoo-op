@@ -69,6 +69,7 @@ class PathPlanner():
       self.mpc_frame = 0
       self.sR_delay_counter = 0
       self.steerRatio_new = 0.0
+      self.steerAngle_new = 0.0
       self.sR_time = 1
       self.nCommand = 0
 
@@ -245,17 +246,25 @@ class PathPlanner():
       self.steerRatio = self.sR[0] * 0.6
     elif v_ego > 40 * CV.KPH_TO_MS:  # 11.111:
       # boost steerRatio by boost amount if desired steer angle is high
-      self.steerRatio_new = interp(abs(angle_steers), self.sRBP, self.sR)
+      abs_angle_steers = abs(angle_steers)
+      self.steerRatio_new = interp( abs_angle_steers, self.sRBP, self.sR)
 
       self.sR_delay_counter += 1
-      if self.sR_delay_counter % self.sR_time != 0:
+      delta_angle = abs_angle_steers - self.steerAngle_new
+      if delta_angle < -1.0 and self.sR_delay_counter > 1:
+          self.sR_delay_counter += 5
+
+      if self.sR_delay_counter < self.sR_time:
         if self.steerRatio_new > self.steerRatio:
           self.steerRatio = self.steerRatio_new
+          self.steerAngle_new = abs_angle_steers
       else:
         self.steerRatio = (self.steerRatio_new + self.steerRatio) * 0.5
         self.sR_delay_counter = 0
+        self.steerAngle_new = 0
     else:
       self.steerRatio = self.sR[0]
+      self.steerAngle_new = 0
 
 
     #print("steerRatio = ", self.steerRatio)
@@ -332,10 +341,10 @@ class PathPlanner():
     #   log_str = 'v_ego={:.1f} {}'.format( v_ego * CV.MS_TO_KPH, log_str )
     #   tracePP.add( log_str )
 
-    if self.angle_steers_des_mpc > 90:
-      self.angle_steers_des_mpc = 90
-    elif self.angle_steers_des_mpc < -90:
-      self.angle_steers_des_mpc = -90
+    if self.angle_steers_des_mpc > 95:
+      self.angle_steers_des_mpc = 95
+    elif self.angle_steers_des_mpc < -95:
+      self.angle_steers_des_mpc = -95
 
 
     #  Check for infeasable MPC solution

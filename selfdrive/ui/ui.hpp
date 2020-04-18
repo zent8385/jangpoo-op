@@ -93,6 +93,7 @@ typedef struct UIScene {
   bool world_objects_visible;
   mat4 extrinsic_matrix;      // Last row is 0 so we can use mat4.
 
+
   float v_cruise;
   uint64_t v_cruise_update_ts;
   float v_ego;
@@ -164,6 +165,7 @@ typedef struct UIScene {
 
   struct _STATUS_
   {
+      float vCurvature; 
       int  nCanError;
       char alert_text1[512];
       char alert_text2[512];

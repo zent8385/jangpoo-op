@@ -960,6 +960,11 @@ static void ui_draw_debug(UIState *s)
   snprintf(speed_str, sizeof(speed_str), "%d", scene->status.nCanError );
   nvgText(s->vg, x_pos, y_pos+150, speed_str, NULL);
 
+  snprintf(speed_str, sizeof(speed_str), "C:%.5f", scene->status.vCurvature );
+  nvgText(s->vg, x_pos, y_pos+200, speed_str, NULL);
+
+  
+
 
   snprintf(speed_str, sizeof(speed_str), "%s", scene->status.alert_text1 );
   nvgText(s->vg, 0, 1020, speed_str, NULL);  

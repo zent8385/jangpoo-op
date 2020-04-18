@@ -3,7 +3,7 @@ from selfdrive.controls.lib.drive_helpers import get_steer_max
 from cereal import car
 from cereal import log
 from selfdrive.kegman_conf import kegman_conf
-
+from common.numpy_fast import interp
 import common.log as  trace1
 import common.MoveAvg as  moveavg1
 from selfdrive.config import Conversions as CV
@@ -56,16 +56,13 @@ class LatControlPID():
       self.pid.reset()
       self.angle_steers_des = self.movAvg.get_data( path_plan.angleSteers, 500 )
     else:
-      if v_ego_kph < 10:
-        self.angle_steers_des = self.movAvg.get_data( path_plan.angleSteers, 200 )
-      elif v_ego_kph < 20:
-        self.angle_steers_des = self.movAvg.get_data( path_plan.angleSteers, 100 )
-      elif v_ego_kph < 30:
-        self.angle_steers_des = self.movAvg.get_data( path_plan.angleSteers, 50 )
-      elif v_ego_kph < 40:
-        self.angle_steers_des = self.movAvg.get_data( path_plan.angleSteers, 10 )
+      if v_ego_kph < 40:
+        xp = [10,20,30,40]
+        fp = [200,100,50,10]
+        self.angle_steers_des = interp( path_plan.angleSteers, xp, fp  )
       else:
         self.angle_steers_des = self.movAvg.get_data( path_plan.angleSteers, 5 )
+
 
 
       

@@ -7,6 +7,8 @@ from selfdrive.car.hyundai.hyundaican import create_lkas11, create_clu11, \
 from selfdrive.car.hyundai.values import Buttons, SteerLimitParams, LaneChangeParms, CAR
 from opendbc.can.packer import CANPacker
 
+from common.numpy_fast import interp
+
 
 import common.log as trace1
 
@@ -109,16 +111,19 @@ class CarController():
     param = SteerLimitParams
 
     abs_angle_steers =  abs(actuators.steerAngle) # abs(CS.angle_steers)
+
+    if abs_angle_steers < 5:
+        xp = [2,3,4,5]
+        fp = [180,210,230,param.STEER_MAX]
+        param.STEER_MAX = interp( abs_angle_steers, xp, fp )
+
     if abs_angle_steers < 2 or v_ego_kph < 20:
-        param.STEER_MAX = 180
         param.STEER_DELTA_UP  = 1
         param.STEER_DELTA_DOWN = 1
     elif abs_angle_steers < 3:
-        param.STEER_MAX = 210
         param.STEER_DELTA_UP  = 2
         param.STEER_DELTA_DOWN = 2
     elif abs_angle_steers < 5:
-        param.STEER_MAX = 230
         param.STEER_DELTA_UP  = 3
         param.STEER_DELTA_DOWN = 4
 

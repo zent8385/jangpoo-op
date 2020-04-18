@@ -295,6 +295,8 @@ void handle_message(UIState *s, Message * msg) {
     if (datad.vCruise != s->scene.v_cruise) {
       s->scene.v_cruise_update_ts = eventd.logMonoTime;
     }
+
+
     s->scene.v_cruise = datad.vCruise;
     s->scene.v_ego = datad.vEgo;
     s->scene.angleSteers = datad.angleSteers;
@@ -317,6 +319,7 @@ void handle_message(UIState *s, Message * msg) {
     s->scene.pid.f = datad.ufAccelCmd;
 
 // debug Message
+    s->scene.status.vCurvature = datad.vCurvature;
     s->scene.status.nCanError = datad.canErrorCounter;
     if (datad.alertTextMsg1.str) 
     {
