@@ -33,6 +33,9 @@ class CarInterface(CarInterfaceBase):
     if CarController is not None:
       self.CC = CarController(self.cp.dbc_name, CP.carFingerprint)
 
+    self.blinker_status = 0
+    self.blinker_timer = 0
+
   @staticmethod
   def compute_gb(accel, speed):
     return float(accel) / 3.0
@@ -200,6 +203,13 @@ class CarInterface(CarInterfaceBase):
       ret.steerRatio = 12.5
       ret.lateralTuning.pid.kiBP, ret.lateralTuning.pid.kpBP = [[0.], [0.]]
       ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.25], [0.05]]
+    elif candidate == CAR.SELTOS:
+      ret.lateralTuning.pid.kf = 0.00005
+      ret.mass = 1470. + STD_CARGO_KG
+      ret.wheelbase = 2.63
+      ret.steerRatio = 13.0
+      ret.lateralTuning.pid.kiBP, ret.lateralTuning.pid.kpBP = [[0.], [0.]]
+      ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.25], [0.05]]
 
     ret.minEnableSpeed = -1.   # enable is done by stock ACC, so ignore this
 
@@ -303,9 +313,40 @@ class CarInterface(CarInterfaceBase):
     ret.cruiseState.standstill = False
     
     # Some HKG cars only have blinker flash signal
-    if self.CP.carFingerprint in [CAR.K5, CAR.K5_HYBRID, CAR.GRANDEUR_HYBRID, CAR.KONA_EV, CAR.STINGER, CAR.SONATA_TURBO, CAR.IONIQ_EV, CAR.SORENTO, CAR.GRANDEUR, CAR.K7, CAR.K7_HYBRID, CAR.NEXO, CAR.NIRO, CAR.NIRO_EV, CAR.SANTAFE]:
+    if self.CP.carFingerprint not in [CAR.IONIQ, CAR.KONA]:
       self.CS.left_blinker_on = self.CS.left_blinker_flash or self.CS.prev_left_blinker_on and self.CC.turning_signal_timer
       self.CS.right_blinker_on = self.CS.right_blinker_flash or self.CS.prev_right_blinker_on and self.CC.turning_signal_timer
+
+    if self.CS.left_blinker_flash and self.CS.right_blinker_flash:
+      self.blinker_status = 3
+      self.blinker_timer = 50
+    elif self.CS.left_blinker_flash:
+      self.blinker_status = 2
+      self.blinker_timer = 50
+    elif self.CS.right_blinker_flash:
+      self.blinker_status = 1
+      self.blinker_timer = 50
+    elif not self.blinker_timer:
+      self.blinker_status = 0
+
+    if self.blinker_status == 3:
+      ret.leftBlinker = bool(self.blinker_timer)
+      ret.rightBlinker = bool(self.blinker_timer)
+    elif self.blinker_status == 2:
+      ret.rightBlinker = False
+      ret.leftBlinker = bool(self.blinker_timer)
+    elif self.blinker_status == 1:
+      ret.leftBlinker = False
+      ret.rightBlinker = bool(self.blinker_timer)
+    else:
+      ret.leftBlinker = False
+      ret.rightBlinker = False
+
+    if self.blinker_timer:
+      self.blinker_timer -= 1
+
+    #ret.leftBlinker = bool(self.CS.left_blinker_on)
+    #ret.rightBlinker = bool(self.CS.right_blinker_on)
 
     ret.lcaLeft = self.CS.lca_left != 0
     ret.lcaRight = self.CS.lca_right != 0
@@ -326,8 +367,6 @@ class CarInterface(CarInterfaceBase):
       buttonEvents.append(be)
       
     ret.buttonEvents = buttonEvents
-    ret.leftBlinker = bool(self.CS.left_blinker_on)
-    ret.rightBlinker = bool(self.CS.right_blinker_on)
 
     ret.doorOpen = not self.CS.door_all_closed
     ret.seatbeltUnlatched = not self.CS.seatbelt

@@ -37,7 +37,7 @@ def process_hud_alert(enabled, button_on, fingerprint, visual_alert, left_line,
                        right_line, left_lane_depart, right_lane_depart):
   hud_alert = 0
   if visual_alert == VisualAlert.steerRequired:
-    hud_alert = 4 if fingerprint in [CAR.GENESIS , CAR.GENESIS_G90, CAR.GENESIS_G80] else 3
+    hud_alert = 4 if fingerprint in [CAR.GENESIS, CAR.GENESIS_G90, CAR.GENESIS_G80] else 3
 
   # initialize to no line visible
   
@@ -58,9 +58,9 @@ def process_hud_alert(enabled, button_on, fingerprint, visual_alert, left_line,
   left_lane_warning = 0
   right_lane_warning = 0
   if left_lane_depart:
-    left_lane_warning = 1 if fingerprint in [CAR.GENESIS , CAR.GENESIS_G90, CAR.GENESIS_G80] else 2
+    left_lane_warning = 1 if fingerprint in [CAR.GENESIS, CAR.GENESIS_G90, CAR.GENESIS_G80] else 2
   if right_lane_depart:
-    right_lane_warning = 1 if fingerprint in [CAR.GENESIS , CAR.GENESIS_G90, CAR.GENESIS_G80] else 2
+    right_lane_warning = 1 if fingerprint in [CAR.GENESIS, CAR.GENESIS_G90, CAR.GENESIS_G80] else 2
 
   return hud_alert, lane_visible, left_lane_warning, right_lane_warning
 
@@ -116,7 +116,7 @@ class CarController():
       
     # Disable steering while turning blinker on and speed below 60 kph
     if CS.left_blinker_on or CS.right_blinker_on:
-      if self.car_fingerprint not in [CAR.K5, CAR.K5_HYBRID, CAR.GRANDEUR_HYBRID, CAR.KONA_EV, CAR.STINGER, CAR.SONATA_TURBO, CAR.IONIQ_EV, CAR.SORENTO, CAR.GRANDEUR, CAR.K7, CAR.K7_HYBRID, CAR.NEXO, CAR.NIRO, CAR.NIRO_EV, CAR.SANTAFE]:
+      if self.car_fingerprint in [CAR.IONIQ, CAR.KONA]:
         self.turning_signal_timer = 100  # Disable for 1.0 Seconds after blinker turned off
       elif CS.left_blinker_flash or CS.right_blinker_flash:
         self.turning_signal_timer = 100
