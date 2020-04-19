@@ -44,14 +44,14 @@ def calc_cruise_accel_limits(v_ego, following):
 
 
 
-def limit_accel_in_turns(v_ego, angle_steers, a_target, CP):
+def limit_accel_in_turns(v_ego, angle_steers, a_target, steerRatio , wheelbase):
   """
   This function returns a limited long acceleration allowed, depending on the existing lateral acceleration
   this should avoid accelerating when losing the target in turns
   """
 
   a_total_max = interp(v_ego, _A_TOTAL_MAX_BP, _A_TOTAL_MAX_V)
-  a_y = v_ego**2 * angle_steers * CV.DEG_TO_RAD / (CP.steerRatio * CP.wheelbase)
+  a_y = v_ego**2 * angle_steers * CV.DEG_TO_RAD / (steerRatio * wheelbase)
   a_x_allowed = math.sqrt(max(a_total_max**2 - a_y**2, 0.))
 
   return [a_target[0], min(a_target[1], a_x_allowed)]
@@ -67,9 +67,10 @@ class SpdController():
     self.a_acc_start = 0.0
     self.path_x = np.arange(192)
 
-
     self.traceSC = trace1.Loger("SPD_CTRL")
 
+    self.wheelbase = 2.845
+    self.steerRatio = 12.5  #12.5
 
   def reset(self):
     self.long_active_timer = 0
@@ -107,7 +108,7 @@ class SpdController():
     following = CS.lead_distance < 70.0
     accel_limits = [float(x) for x in calc_cruise_accel_limits(v_ego, following)]
     jerk_limits = [min(-0.1, accel_limits[0]), max(0.1, accel_limits[1])]  # TODO: make a separate lookup for jerk tuning
-    accel_limits_turns = limit_accel_in_turns(v_ego, CS.angle_steers, accel_limits, self.CP)
+    accel_limits_turns = limit_accel_in_turns(v_ego, CS.angle_steers, accel_limits, self.steerRatio, self.wheelbase )
 
     # if required so, force a smooth deceleration
     accel_limits_turns[1] = min(accel_limits_turns[1], AWARENESS_DECEL)
