@@ -6,6 +6,8 @@ from selfdrive.config import Conversions as CV
 from selfdrive.car.hyundai.values import Buttons, SteerLimitParams, LaneChangeParms
 from common.numpy_fast import clip, interp
 
+from selfdrive.config import RADAR_TO_CAMERA
+
 import common.log as trace1
 
 MAX_SPEED = 255.0
@@ -72,15 +74,23 @@ class SpdController():
     self.wheelbase = 2.845
     self.steerRatio = 12.5  #12.5
 
+    self.v_model = 0
+    self.a_model = 0
+    self.v_cruise = 0
+    self.a_cruise = 0
+
+
+
   def reset(self):
     self.long_active_timer = 0
+    self.v_model = 0
+    self.a_model = 0
+    self.v_cruise = 0
+    self.a_cruise = 0    
 
 
-  def update(self, v_ego_kph, CS, sm, actuators ):
-    btn_type = Buttons.NONE
-    #lead_1 = sm['radarState'].leadOne
-    v_ego = CS.v_ego
-
+  def calc_va(self, sm, CS ):
+    v_ego = CS.v_ego    
     if len(sm['model'].path.poly):
       path = list(sm['model'].path.poly)
 
@@ -127,38 +137,58 @@ class SpdController():
                                                   2*jerk_limits[1], jerk_limits[0],
                                                   LON_MPC_STEP)
 
+    return model_speed
+
+
+  def get_lead(self, sm, CS ):
+    if len(sm['model'].lead):
+        lead_msg = sm['model'].lead
+        dRel = float(lead_msg.dist - RADAR_TO_CAMERA)
+        yRel = float(lead_msg.relY)
+        vRel = float(lead_msg.relVel)
+        vLead = float(CS.v_ego + lead_msg.relVel)
+    else:
+        dRel = 150
+        yRel = 0
+        vRel = 0
+
+    return dRel, yRel, vRel 
+
+  def update(self, v_ego_kph, CS, sm, actuators ):
+    btn_type = Buttons.NONE
+    #lead_1 = sm['radarState'].leadOne
+
+    model_speed = self.calc_va( sm, CS )
 
     v_delta = 0
-    if CS.pcm_acc_status and CS.AVM_Popup_Msg == 1:
+    if CS.VSetDis > 30 and CS.pcm_acc_status and CS.AVM_Popup_Msg == 1:
       v_delta = CS.VSetDis - CS.clu_Vanz
 
-      if CS.lead_distance < 90:
-        if self.long_active_timer == 0 and v_delta <= -2:
+      if self.long_wait_timer:
+          self.long_wait_timer -= 1
+      elif CS.lead_distance < 90:
+        if v_delta <= -2:
           pass
         else:
-          self.long_active_timer += 1
-          if self.long_active_timer < 10:
-              self.long_wait_timer = 0
-              btn_type = Buttons.SET_DECEL   # Vuttons.RES_ACCEL
-          else:
-              self.long_wait_timer += 1
-              if self.long_wait_timer > 10:
-                self.long_active_timer = 0
+          self.long_wait_timer = 15
+          btn_type = Buttons.SET_DECEL   # Vuttons.RES_ACCEL
       else:
-        self.long_active_timer = 0
         self.long_wait_timer = 0
 
-    else:
-      self.long_active_timer = 0
+    dRel, yRel, vRel = self.get_lead( sm, CS )
 
     # CS.driverOverride   # 1 Acc,  2 bracking, 0 Normal
 
-    str1 = 'VD={:.0f}  dis={:.1f} VS={:.0f} ss={:.1f}'.format( v_delta, CS.lead_distance, CS.VSetDis, CS.cruise_set_speed_kph )
-    str2 = 'btn={:.0f} btn_type={}'.format(  CS.AVM_View, btn_type )
-    #str3 = 'max{:.1f} d{} v{} a{} v{} a{}'.format( model_speed, lead_1.dRel, lead_1.vLeadK, lead_1.aLeadK, self.v_model, self.a_model )
-    str3 = 'mx{:.0f} v{:.1f} a{:.1f} v{:.1f} a{:.1f}'.format( model_speed, self.v_model, self.a_model, self.v_cruise, self.a_cruise )
+    str1 = 'VD={:.0f}  dis={:.1f}/{:.1f} VS={:.0f} ss={:.0f}'.format( v_delta, CS.lead_distance, CS.lead_objspd, CS.VSetDis, CS.cruise_set_speed_kph )
+    str3 = 'mx{:.0f} v{:.1f} a{:.1f} v{:.1f} a{:.1f}'.format( model_speed, self.v_model, self.a_model, dRel, vRel ) # self.v_cruise, self.a_cruise )
 
 
-    self.traceSC.add( 'v_ego={:.1f}  {} {} {}'.format( v_ego_kph, str1, str2, str3 )  )
+
     trace1.printf2( '{} {}'.format( str1, str3) )
+  
+    if CS.pcm_acc_status and CS.AVM_Popup_Msg == 1:
+      str2 = 'btn={:.0f} btn_type={}'.format(  CS.AVM_View, btn_type )
+      #str3 = 'max{:.1f} d{} v{} a{} v{} a{}'.format( model_speed, lead_1.dRel, lead_1.vLeadK, lead_1.aLeadK, self.v_model, self.a_model )      
+      self.traceSC.add( 'v_ego={:.1f}  {} {} {}'.format( v_ego_kph, str1, str2, str3 )  ) 
+    
     return btn_type, CS.clu_Vanz

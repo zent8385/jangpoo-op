@@ -108,7 +108,8 @@ def get_can_parser(CP):
       ("VSetDis", "SCC11", 0),
       ("SCCInfoDisplay", "SCC11", 0),
       ("ACC_ObjDist", "SCC11", 0),
-      ("TauGapSet", "SCC11", 0),
+      ("ACC_ObjRelSpd", "SCC11", 0),
+       ("TauGapSet", "SCC11", 0),
       ("Navi_SCC_Camera_Act", "SCC11", 0),
 
       ("ACCMode", "SCC12", 0),
@@ -193,6 +194,7 @@ def get_can2_parser(CP):
       ("VSetDis", "SCC11", 0),
       ("SCCInfoDisplay", "SCC11", 0),
       ("ACC_ObjDist", "SCC11", 0),
+      ("ACC_ObjRelSpd", "SCC11", 0),
       ("TauGapSet", "SCC11", 0),
       ("Navi_SCC_Camera_Act", "SCC11", 0),
 
@@ -255,6 +257,7 @@ def get_camera_parser(CP):
       ("VSetDis", "SCC11", 0),
       ("SCCInfoDisplay", "SCC11", 0),
       ("ACC_ObjDist", "SCC11", 0),
+      ("ACC_ObjRelSpd", "SCC11", 0),
       ("TauGapSet", "SCC11", 0),
       ("Navi_SCC_Camera_Act", "SCC11", 0),
 
@@ -471,6 +474,7 @@ class CarState():
     self.sccInfoDisp = cp_scc.vl["SCC11"]['SCCInfoDisplay']
     self.stopped = self.sccInfoDisp == 4. if not self.no_radar else False
     self.lead_distance = cp_scc.vl["SCC11"]['ACC_ObjDist'] if not self.no_radar else 0
+    self.lead_objspd = cp_scc.vl["SCC11"]['ACC_ObjRelSpd'] if not self.no_radar else 0
 
 
     self.user_brake = 0

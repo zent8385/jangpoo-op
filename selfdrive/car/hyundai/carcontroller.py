@@ -53,8 +53,11 @@ class CarController():
     self.steer_torque_over_timer = 0
     self.steer_torque_over = False
 
-    self.long_active_timer = 0
+
     self.SC = SpdController()
+    self.sc_active_timer = 0 
+    self.sc_active_timer2 = 0     
+    self.sc_btn_type = Buttons.NONE
 
 
   def limit_ctrl(self, value, limit ):
@@ -254,7 +257,7 @@ class CarController():
           apply_steer = self.limit_ctrl( apply_steer, apply_steer_limit )
 
     
-    trace1.printf( 'angle={:5.1f} delta={:5.1f}  Toq:{:5.1f} limit={:5.1f} steer={:5.3f}'.format( actuators.steerAngle, delta_angle_steer, apply_steer, apply_steer_limit,  actuators.steer ) )
+    trace1.printf( 'angle={:5.1f} delta={:5.1f}  toq:{:5.1f} limit={:5.1f} steer={:5.3f} md={:.1f} sc={:.1f}'.format( actuators.steerAngle, delta_angle_steer, apply_steer, apply_steer_limit,  actuators.steer, CS.mdps_bus, CS.scc_bus ) )
 
     self.apply_accel_last = apply_accel
     self.apply_steer_last = apply_steer
@@ -328,17 +331,28 @@ class CarController():
       self.last_lead_distance = 0  
     else:
       #acc_mode, clu_speed = self.long_speed_cntrl( v_ego_kph, CS, actuators )
-      btn_type, clu_speed = self.SC.update( v_ego_kph, CS, sm, actuators )
-      if v_ego_kph > 30 and btn_type != Buttons.NONE:
-        if (frame - self.last_resume_frame) > 5:
-          can_sends.append(create_clu11(self.packer, CS.scc_bus, CS.clu11, btn_type, clu_speed, self.resume_cnt))
-          self.resume_cnt += 1
-          # interval after 6 msgs
-          if self.resume_cnt > 5:
-            self.last_resume_frame = frame
-            self.resume_cnt = 0
-      else:
-        self.resume_cnt = 0
+      btn_type, clu_speed = self.SC.update( v_ego_kph, CS, sm, actuators )   # speed controller spdcontroller.py
+
+      if v_ego_kph < 30:
+          self.sc_active_timer = 0
+          self.sc_btn_type = Buttons.NONE
+      elif self.sc_btn_type != Buttons.NONE:
+          pass
+      elif self.sc_active_timer2:
+          self.sc_active_timer2 -= 1
+      elif btn_type != Buttons.NONE:
+          self.sc_btn_type = btn_type
+
+
+      if self.sc_btn_type != Buttons.NONE:
+        if self.sc_active_timer < 5:
+          self.sc_active_timer += 1
+          self.sc_active_timer2 = 5
+          can_sends.append(create_clu11(self.packer, CS.scc_bus, CS.clu11, self.sc_btn_type, clu_speed, self.resume_cnt))
+        else:
+          self.sc_active_timer = 0
+          self.sc_btn_type = Buttons.NONE
+
   
 
     self.lkas11_cnt += 1
