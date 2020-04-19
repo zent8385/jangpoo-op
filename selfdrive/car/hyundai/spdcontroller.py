@@ -107,7 +107,7 @@ class SpdController():
     following = CS.lead_distance < 70.0
     accel_limits = [float(x) for x in calc_cruise_accel_limits(v_ego, following)]
     jerk_limits = [min(-0.1, accel_limits[0]), max(0.1, accel_limits[1])]  # TODO: make a separate lookup for jerk tuning
-    accel_limits_turns = limit_accel_in_turns(v_ego, sm['carState'].steeringAngle, accel_limits, self.CP)
+    accel_limits_turns = limit_accel_in_turns(v_ego, CS.angle_steers, accel_limits, self.CP)
 
     # if required so, force a smooth deceleration
     accel_limits_turns[1] = min(accel_limits_turns[1], AWARENESS_DECEL)
