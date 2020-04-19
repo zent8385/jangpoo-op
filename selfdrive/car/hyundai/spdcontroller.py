@@ -153,7 +153,7 @@ class SpdController():
   #      yRel = 0
   #      vRel = 0
 
-    return dRel, yRel, vRel 
+  #  return dRel, yRel, vRel 
 
   def update(self, v_ego_kph, CS, sm, actuators ):
     btn_type = Buttons.NONE
