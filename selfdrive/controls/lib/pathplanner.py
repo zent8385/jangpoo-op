@@ -98,6 +98,13 @@ class PathPlanner():
       self.lane_change_BSM = LaneChangeBSM.off
 
 
+  def limit_ctrl(self, value, limit ):
+      if value > limit:
+          value = limit
+      elif  value < -limit:
+          value = -limit
+      return value
+
   def setup_mpc(self):
       self.libmpc = libmpc_py.libmpc
       self.libmpc.init(MPC_COST_LAT.PATH, MPC_COST_LAT.LANE, MPC_COST_LAT.HEADING, self.steer_rate_cost)
@@ -220,6 +227,8 @@ class PathPlanner():
     lca_left = sm['carState'].lcaLeft
     lca_right = sm['carState'].lcaRight
 
+    v_ego_kph = v_ego * CV.MS_TO_KPH
+
     # Run MPC
     self.angle_steers_des_prev = self.angle_steers_des_mpc
     VM.update_params(sm['liveParameters'].stiffnessFactor, sm['liveParameters'].steerRatio)
@@ -242,9 +251,9 @@ class PathPlanner():
 
       self.mpc_frame = 0
 
-    if v_ego < 10 * CV.KPH_TO_MS:
+    if v_ego_kph < 10:
       self.steerRatio = self.sR[0] * 0.6
-    elif v_ego > 40 * CV.KPH_TO_MS:  # 11.111:
+    elif v_ego_kph > 40:  # 11.111:
       # boost steerRatio by boost amount if desired steer angle is high
       abs_angle_steers = abs(angle_steers)
       self.steerRatio_new = interp( abs_angle_steers, self.sRBP, self.sR)
@@ -272,7 +281,7 @@ class PathPlanner():
     self.LP.parse_model(sm['model'])
 
     # Lane change logic
-    below_lane_change_speed = v_ego < 60 * CV.KPH_TO_MS
+    below_lane_change_speed = v_ego_kph < 60
 
     if (not active) or below_lane_change_speed or (self.lane_change_timer1 > 10.0):  # 5 sec
         self.nCommand = 0 
@@ -334,17 +343,26 @@ class PathPlanner():
     self.cur_state[0].delta = delta_desired
     self.angle_steers_des_mpc = float(math.degrees(delta_desired * self.steerRatio) + angle_offset)
 
-    #log_str = 'SR:{:.1f}  steer={:.1f} rate={:.2f} d={:.2f}'.format( self.steerRatio, self.angle_steers_des_mpc, rate_desired, self.LP.d_poly[3]  )
-    #trace1.printf( log_str )
+
+    if v_ego_kph < 30:
+        xp = [0,10,20,30]
+        fp1 = [0,0.25,0.5,1]
+        des_ratio = interp( v_ego_kph, xp, fp1 )
+
+        fp2 = [2,3,7,10]
+        limit_ratio = interp( v_ego_kph, xp, fp2 )
+        self.angle_steers_des_mpc = self.angle_steers_des_mpc * des_ratio
+        self.angle_steers_des_mpc = self.limit_ctrl( self.angle_steers_des_mpc, limit_ratio )
+    else:
+        self.angle_steers_des_mpc = self.limit_ctrl( self.angle_steers_des_mpc, 90 )
+
 
     #if active:
     #   log_str = 'v_ego={:.1f} {}'.format( v_ego * CV.MS_TO_KPH, log_str )
     #   tracePP.add( log_str )
 
-    if self.angle_steers_des_mpc > 95:
-      self.angle_steers_des_mpc = 95
-    elif self.angle_steers_des_mpc < -95:
-      self.angle_steers_des_mpc = -95
+    
+
 
 
     #  Check for infeasable MPC solution

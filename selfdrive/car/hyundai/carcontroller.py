@@ -9,7 +9,7 @@ from selfdrive.car.hyundai.values import Buttons, SteerLimitParams, LaneChangePa
 from opendbc.can.packer import CANPacker
 
 from common.numpy_fast import interp
-import common.MoveAvg as  moveavg1
+
 
 import common.log as trace1
 
@@ -55,7 +55,7 @@ class CarController():
 
     self.long_active_timer = 0
     self.SC = SpdController()
-    self.movAvg = moveavg1.MoveAvg()
+
 
   def limit_ctrl(self, value, limit ):
       if value > limit:
@@ -104,8 +104,9 @@ class CarController():
 
 
   def update(self, enabled, CS, frame, actuators, pcm_cancel_cmd, 
-              visual_alert, left_line, right_line, path_plan ):
+              visual_alert, left_line, right_line, sm ):
 
+    path_plan = sm['pathPlan']
     # *** compute control surfaces ***
     v_ego_kph = CS.v_ego * CV.MS_TO_KPH
 
@@ -139,7 +140,7 @@ class CarController():
     new_steer = actuators.steer * param.STEER_MAX
     apply_steer = apply_std_steer_torque_limits(new_steer, self.apply_steer_last, CS.steer_torque_driver, param)
     self.steer_rate_limited = new_steer != apply_steer
-    apply_steer = self.movAvg.get_data( apply_steer, 2 )
+
 
     if abs( CS.steer_torque_driver ) > 270:
         self.steer_torque_over_timer += 1
@@ -253,7 +254,7 @@ class CarController():
           apply_steer = self.limit_ctrl( apply_steer, apply_steer_limit )
 
     
-    #trace1.printf2( 'angle={:5.1f} delta={:5.1f}  Toq:{:5.1f} limit={:5.1f} new={:5.1f} {:5.3f}'.format( actuators.steerAngle, delta_angle_steer, apply_steer, apply_steer_limit,  new_steer, actuators.steer ) )
+    trace1.printf( 'angle={:5.1f} delta={:5.1f}  Toq:{:5.1f} limit={:5.1f} steer={:5.3f}'.format( actuators.steerAngle, delta_angle_steer, apply_steer, apply_steer_limit,  actuators.steer ) )
 
     self.apply_accel_last = apply_accel
     self.apply_steer_last = apply_steer
@@ -327,7 +328,7 @@ class CarController():
       self.last_lead_distance = 0  
     else:
       #acc_mode, clu_speed = self.long_speed_cntrl( v_ego_kph, CS, actuators )
-      btn_type, clu_speed = self.SC.update( v_ego_kph, CS, actuators )
+      btn_type, clu_speed = self.SC.update( v_ego_kph, CS, sm, actuators )
       if v_ego_kph > 30 and btn_type != Buttons.NONE:
         if (frame - self.last_resume_frame) > 5:
           can_sends.append(create_clu11(self.packer, CS.scc_bus, CS.clu11, btn_type, clu_speed, self.resume_cnt))

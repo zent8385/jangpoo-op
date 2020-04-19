@@ -340,6 +340,9 @@ class CarState():
     self.lkas_LdwsLHWarning = 0
     self.lkas_LdwsRHWarning = 0
 
+    self.acc_first_flag = 0
+    self.cruise_set_speed = 0
+    self.cruise_set_speed_kph = 0
 
     # Q = np.matrix([[10.0, 0.0], [0.0, 100.0]])
     # R = 1e3
@@ -407,6 +410,7 @@ class CarState():
 
     self.low_speed_lockout = self.v_ego_raw < 1.0
 
+    old_clu_CruiseSwState = self.clu_CruiseSwState
 
     self.clu_Vanz = cp.vl["CLU11"]["CF_Clu_Vanz"]
     self.clu_CruiseSwState = cp.vl["CLU11"]["CF_Clu_CruiseSwState"]
@@ -418,8 +422,29 @@ class CarState():
 
     self.is_set_speed_in_mph = int(cp.vl["CLU11"]["CF_Clu_SPEED_UNIT"])
     speed_conv = CV.MPH_TO_MS if self.is_set_speed_in_mph else CV.KPH_TO_MS
-    self.cruise_set_speed = self.VSetDis * speed_conv if not self.no_radar else \
-                                         (cp.vl["LVR12"]["CF_Lvr_CruiseSet"] * speed_conv)
+    #self.cruise_set_speed = self.VSetDis * speed_conv if not self.no_radar else \
+    #                                     (cp.vl["LVR12"]["CF_Lvr_CruiseSet"] * speed_conv)
+
+    if self.pcm_acc_status:
+      v_set_speed = self.VSetDis
+      if self.acc_first_flag < 3:
+          self.acc_first_flag += 1        
+          self.cruise_set_speed_kph = v_set_speed
+      elif old_clu_CruiseSwState != self.clu_CruiseSwState:
+          if self.clu_CruiseSwState == 1:   # up
+            self.cruise_set_speed_kph += 1
+          elif self.clu_CruiseSwState == 2:  # dn
+            self.cruise_set_speed_kph -= 1
+
+      if self.cruise_set_speed_kph < 30:
+          self.cruise_set_speed_kph = 30
+  
+    else:
+      self.acc_first_flag = 0
+      self.cruise_set_speed_kph = self.VSetDis
+
+    self.cruise_set_speed = self.cruise_set_speed_kph * speed_conv
+
     self.standstill = not self.v_ego_raw > 0.1
 
 
@@ -510,7 +535,7 @@ class CarState():
        self.blinker_status = 0
 
 
-    str1 = 'C:{:.0f}  as={:.1f} set{:.1f}'.format( self.main_on,  self.pcm_acc_status,  self.cruise_set_speed )
-    str2 = 'sw={:.0f}/{:.0f}/{:.0f} gear={:.0f} scc={:.0f}'.format( self.clu_CruiseSwState, self.clu_CruiseSwMain, self.clu_SldMainSW, self.gear_shifter, self.sccInfoDisp )
+    #str1 = 'C:{:.0f}  as={:.1f} set{:.1f}'.format( self.main_on,  self.pcm_acc_status,  self.cruise_set_speed )
+    #str2 = 'sw={:.0f}/{:.0f}/{:.0f} gear={:.0f} scc={:.0f}'.format( self.clu_CruiseSwState, self.clu_CruiseSwMain, self.clu_SldMainSW, self.gear_shifter, self.sccInfoDisp )
 
-    trace1.printf( '{} {}'.format( str1, str2 ) )
+    #trace1.printf( '{} {}'.format( str1, str2 ) )
