@@ -54,7 +54,7 @@ class SpdController():
     self.a_acc_start = 0.0
     self.path_x = np.arange(192)
 
-    
+
     self.traceSC = trace1.Loger("SPD_CTRL")
 
 
@@ -133,7 +133,7 @@ class SpdController():
     # CS.driverOverride   # 1 Acc,  2 bracking, 0 Normal
 
     str1 = 'VD={:.1f}  dis={:.1f} VSet={:.0f} set_spd={:.1f}'.format( v_delta, CS.lead_distance, CS.VSetDis, CS.cruise_set_speed_kph )
-    str2 = 'btn={:.0f} btn_type={}'.format(  CS.AVM_Viewm, btn_type )
+    str2 = 'btn={:.0f} btn_type={}'.format(  CS.AVM_View, btn_type )
     #str3 = 'max{:.1f} d{} v{} a{} v{} a{}'.format( model_speed, lead_1.dRel, lead_1.vLeadK, lead_1.aLeadK, self.v_model, self.a_model )
     str3 = 'max{:.1f}  v{} a{}'.format( model_speed, self.v_model, self.a_model )
 
