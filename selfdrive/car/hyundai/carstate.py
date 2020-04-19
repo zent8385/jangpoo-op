@@ -340,6 +340,8 @@ class CarState():
     self.lkas_LdwsLHWarning = 0
     self.lkas_LdwsRHWarning = 0
 
+    self.clu_CruiseSwState = 0
+
     self.acc_first_flag = 0
     self.cruise_set_speed = 0
     self.cruise_set_speed_kph = 0
