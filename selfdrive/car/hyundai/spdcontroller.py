@@ -135,7 +135,7 @@ class SpdController():
     str1 = 'VD={:.1f}  dis={:.1f} VSet={:.0f} set_spd={:.1f}'.format( v_delta, CS.lead_distance, CS.VSetDis, CS.cruise_set_speed_kph )
     str2 = 'btn={:.0f} btn_type={}'.format(  CS.AVM_View, btn_type )
     #str3 = 'max{:.1f} d{} v{} a{} v{} a{}'.format( model_speed, lead_1.dRel, lead_1.vLeadK, lead_1.aLeadK, self.v_model, self.a_model )
-    str3 = 'max{:.1f}  v{} a{}'.format( model_speed, self.v_model, self.a_model )
+    str3 = 'max{:.1f}  v{:.1f} a{:.1f}'.format( model_speed, self.v_model, self.a_model )
 
 
     self.traceSC.add( '{} {} {}'.format( str1, str2, str3 )  )
