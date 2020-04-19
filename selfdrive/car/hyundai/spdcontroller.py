@@ -62,7 +62,7 @@ class SpdController():
 
   def update(self, v_ego_kph, CS, sm, actuators ):
     btn_type = Buttons.NONE
-    lead_1 = sm['radarState'].leadOne
+    #lead_1 = sm['radarState'].leadOne
     v_ego = CS.v_ego
 
     if len(sm['model'].path.poly):
@@ -85,7 +85,9 @@ class SpdController():
     else:
       model_speed = MAX_SPEED
 
-    following = lead_1.status and lead_1.dRel < 45.0 and lead_1.vLeadK > v_ego and lead_1.aLeadK > 0.0
+    #following = lead_1.status and lead_1.dRel < 45.0 and lead_1.vLeadK > v_ego and lead_1.aLeadK > 0.0
+
+    following = CS.lead_distance < 70.0
     accel_limits = [float(x) for x in calc_cruise_accel_limits(v_ego, following)]
     jerk_limits = [min(-0.1, accel_limits[0]), max(0.1, accel_limits[1])]  # TODO: make a separate lookup for jerk tuning
     #accel_limits_turns = limit_accel_in_turns(v_ego, sm['carState'].steeringAngle, accel_limits, self.CP)
@@ -130,7 +132,8 @@ class SpdController():
 
     str1 = 'VD={:.1f}  dis={:.1f} VSet={:.0f} set_spd={:.1f}'.format( v_delta, CS.lead_distance, CS.VSetDis, CS.cruise_set_speed_kph )
     str2 = 'btn={:.0f} btn_type={}'.format(  CS.AVM_Viewm, btn_type )
-    str3 = 'max{:.1f} d{} v{} a{} v{} a{}'.format( model_speed, lead_1.dRel, lead_1.vLeadK, lead_1.aLeadK, self.v_model, self.a_model )
+    #str3 = 'max{:.1f} d{} v{} a{} v{} a{}'.format( model_speed, lead_1.dRel, lead_1.vLeadK, lead_1.aLeadK, self.v_model, self.a_model )
+    str3 = 'max{:.1f}  v{} a{}'.format( model_speed, self.v_model, self.a_model )
 
 
     self.traceSC.add( '{} {} {}'.format( str1, str2, str3 )  )
