@@ -158,6 +158,6 @@ class SpdController():
     str3 = 'max{:.1f}  m=v{:.1f} a{:.1f}  c=v{:.1f} a{:.1f}'.format( model_speed, self.v_model, self.a_model, self.v_cruise, self.a_cruise )
 
 
-    self.traceSC.add( '{} {} {}'.format( str1, str2, str3 )  )
+    self.traceSC.add( 'v_ego={:.1f}  {} {} {}'.format( v_ego_kph, str1, str2, str3 )  )
     trace1.printf2( '{} {}'.format( str1, str3) )
     return btn_type, CS.clu_Vanz
