@@ -2,13 +2,14 @@ from cereal import car, log
 from common.numpy_fast import clip
 from selfdrive.config import Conversions as CV
 from selfdrive.car import apply_std_steer_torque_limits
+from selfdrive.car.hyundai.spdcontroller  import SpdController
 from selfdrive.car.hyundai.hyundaican import create_lkas11, create_clu11, \
                                              create_scc12, create_mdps12, create_AVM
 from selfdrive.car.hyundai.values import Buttons, SteerLimitParams, LaneChangeParms, CAR
 from opendbc.can.packer import CANPacker
 
 from common.numpy_fast import interp
-
+import common.MoveAvg as  moveavg1
 
 import common.log as trace1
 
@@ -53,7 +54,8 @@ class CarController():
     self.steer_torque_over = False
 
     self.long_active_timer = 0
-
+    self.SC = SpdController()
+    self.movAvg = moveavg1.MoveAvg()
 
   def limit_ctrl(self, value, limit ):
       if value > limit:
@@ -101,22 +103,6 @@ class CarController():
 
 
 
-  def long_speed_cntrl( self, v_ego_kph, CS, actuators ):
-    acc_mode = 0
-
-    if CS.pcm_acc_status and CS.AVM_Popup_Msg == 1:
-      self.long_active_timer += 1
-      if self.long_active_timer < 10:
-        acc_mode = -1
-    else:
-      self.long_active_timer = 0
-
-    str1 = 'dis={:.1f} VSet={:.1f} Vanz={:.1f}  cmd={:.0f}'.format( CS.lead_distance, CS.VSetDis, CS.clu_Vanz, acc_mode )
-    str2 = 'acc{} btn={:.0f}'.format(  CS.pcm_acc_status, CS.AVM_Popup_Msg )
-    
-    trace1.printf2( '{} {}'.format( str1, str2) )
-    return acc_mode, CS.clu_Vanz
-
   def update(self, enabled, CS, frame, actuators, pcm_cancel_cmd, 
               visual_alert, left_line, right_line, path_plan ):
 
@@ -133,9 +119,9 @@ class CarController():
 
     abs_angle_steers =  abs(actuators.steerAngle) # abs(CS.angle_steers)
 
-    if abs_angle_steers < 5:
-        xp = [2,3,4,5]
-        fp = [180,210,230,param.STEER_MAX]
+    if abs_angle_steers < 4:
+        xp = [0,1,2,3,4]
+        fp = [100,160,200,230,param.STEER_MAX]
         param.STEER_MAX = interp( abs_angle_steers, xp, fp )
 
     if abs_angle_steers < 2 or v_ego_kph < 20:
@@ -153,7 +139,7 @@ class CarController():
     new_steer = actuators.steer * param.STEER_MAX
     apply_steer = apply_std_steer_torque_limits(new_steer, self.apply_steer_last, CS.steer_torque_driver, param)
     self.steer_rate_limited = new_steer != apply_steer
-
+    apply_steer = self.movAvg.get_data( apply_steer, 5 )
 
     if abs( CS.steer_torque_driver ) > 270:
         self.steer_torque_over_timer += 1
@@ -225,7 +211,7 @@ class CarController():
     elif self.hud_timer_right:
       self.hud_timer_right -= 1
 
-    apply_steer_limit = 200
+    apply_steer_limit = 250
     if not self.hud_timer_left  and  not self.hud_timer_right:
       self.lkas_active_timer1 = 140  #  apply_steer = 70
     elif path_plan.laneChangeState != LaneChangeState.off:
@@ -314,23 +300,7 @@ class CarController():
       self.scc12_cnt += 1
 
     
-    acc_mode, clu_speed = self.long_speed_cntrl( v_ego_kph, CS, actuators )
-    if v_ego_kph > 30:
-      if acc_mode == 1:
-        btn_type = Buttons.RES_ACCEL
-      elif acc_mode == -1:
-        btn_type = Buttons.SET_DECEL   #SET_DECEL
-      else:
-        btn_type = Buttons.NONE
-        self.resume_cnt = 0
-
-      if btn_type != Buttons.NONE and (frame - self.last_resume_frame) > 5:
-        can_sends.append(create_clu11(self.packer, CS.scc_bus, CS.clu11, btn_type, clu_speed, self.resume_cnt))
-        self.resume_cnt += 1
-        # interval after 6 msgs
-        if self.resume_cnt > 5:
-          self.last_resume_frame = frame
-          self.resume_cnt = 0           
+         
 
     # AVM
     #if CS.mdps_bus:
@@ -355,8 +325,20 @@ class CarController():
     # reset lead distnce after the car starts moving
     elif self.last_lead_distance != 0:
       self.last_lead_distance = 0  
-
-
+    else:
+      #acc_mode, clu_speed = self.long_speed_cntrl( v_ego_kph, CS, actuators )
+      btn_type, clu_speed = self.SC.update( v_ego_kph, CS, actuators )
+      if v_ego_kph > 30 and btn_type != Buttons.NONE:
+        if (frame - self.last_resume_frame) > 5:
+          can_sends.append(create_clu11(self.packer, CS.scc_bus, CS.clu11, btn_type, clu_speed, self.resume_cnt))
+          self.resume_cnt += 1
+          # interval after 6 msgs
+          if self.resume_cnt > 5:
+            self.last_resume_frame = frame
+            self.resume_cnt = 0
+      else:
+        self.resume_cnt = 0
+  
 
     self.lkas11_cnt += 1
 

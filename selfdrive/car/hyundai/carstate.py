@@ -439,6 +439,8 @@ class CarState():
     self.brake_error = 0
 
 
+    self.driverOverride = cp.vl["TCS13"]["DriverOverride"]     # 1 Acc,  2 bracking, 0 Normal
+
     self.sccInfoDisp = cp_scc.vl["SCC11"]['SCCInfoDisplay']
     self.stopped = self.sccInfoDisp == 4. if not self.no_radar else False
     self.lead_distance = cp_scc.vl["SCC11"]['ACC_ObjDist'] if not self.no_radar else 0
@@ -448,7 +450,7 @@ class CarState():
 
     self.brake_pressed = cp.vl["TCS13"]['DriverBraking']
     self.brake_lights = bool(cp.vl["TCS13"]['BrakeLight'] or self.brake_pressed)
-    if (cp.vl["TCS13"]["DriverOverride"] == 0 and cp.vl["TCS13"]['ACC_REQ'] == 1):
+    if (self.driverOverride == 0 and cp.vl["TCS13"]['ACC_REQ'] == 1):
       self.pedal_gas = 0
     else:
       self.pedal_gas = cp.vl["EMS12"]['TPS']
