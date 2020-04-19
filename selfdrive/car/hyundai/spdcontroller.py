@@ -52,7 +52,9 @@ class SpdController():
 
     self.v_acc_start = 0.0
     self.a_acc_start = 0.0
+    self.path_x = np.arange(192)
 
+    
     self.traceSC = trace1.Loger("SPD_CTRL")
 
 
