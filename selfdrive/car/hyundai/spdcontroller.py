@@ -26,7 +26,7 @@ class SpdController():
 
     # CS.driverOverride   # 1 Acc,  2 bracking, 0 Normal
 
-    str1 = 'dis={:.1f} VSet={:.1f} Vanz={:.1f}  cmd={:.0f}'.format( CS.lead_distance, CS.VSetDis, CS.clu_Vanz, acc_mode )
+    str1 = 'dis={:.1f} VSet={:.1f} Vanz={:.1f}'.format( CS.lead_distance, CS.VSetDis, CS.clu_Vanz )
     str2 = 'acc{} btn={:.0f}'.format(  CS.pcm_acc_status, CS.AVM_Popup_Msg )
     
     trace1.printf2( '{} {}'.format( str1, str2) )
