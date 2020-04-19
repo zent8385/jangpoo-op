@@ -1,8 +1,18 @@
 import math
 import numpy as np
 
-from selfdrive.controls.lib.speed_smoother import speed_smoother
+from cereal import log
+import cereal.messaging as messaging
+
+
+from cereal import log
+import cereal.messaging as messaging
 from selfdrive.config import Conversions as CV
+from selfdrive.controls.lib.planner import calc_cruise_accel_limits
+from selfdrive.controls.lib.speed_smoother import speed_smoother
+from selfdrive.controls.lib.long_mpc import LongitudinalMpc
+
+
 from selfdrive.car.hyundai.values import Buttons, SteerLimitParams, LaneChangeParms
 from common.numpy_fast import clip, interp
 
@@ -34,15 +44,6 @@ _A_TOTAL_MAX_BP = [20., 40.]
 # 75th percentile
 SPEED_PERCENTILE_IDX = 7
 
-
-def calc_cruise_accel_limits(v_ego, following):
-  a_cruise_min = interp(v_ego, _A_CRUISE_MIN_BP, _A_CRUISE_MIN_V)
-
-  if following:
-    a_cruise_max = interp(v_ego, _A_CRUISE_MAX_BP, _A_CRUISE_MAX_V_FOLLOWING)
-  else:
-    a_cruise_max = interp(v_ego, _A_CRUISE_MAX_BP, _A_CRUISE_MAX_V)
-  return np.vstack([a_cruise_min, a_cruise_max])
 
 
 
@@ -140,17 +141,17 @@ class SpdController():
     return model_speed
 
 
-  def get_lead(self, sm, CS ):
-    if len(sm['model'].lead):
-        lead_msg = sm['model'].lead
-        dRel = float(lead_msg.dist - RADAR_TO_CAMERA)
-        yRel = float(lead_msg.relY)
-        vRel = float(lead_msg.relVel)
-        vLead = float(CS.v_ego + lead_msg.relVel)
-    else:
-        dRel = 150
-        yRel = 0
-        vRel = 0
+  #def get_lead(self, sm, CS ):
+  #  if len(sm['model'].lead):
+  #      lead_msg = sm['model'].lead
+  #      dRel = float(lead_msg.dist - RADAR_TO_CAMERA)
+  #      yRel = float(lead_msg.relY)
+  #      vRel = float(lead_msg.relVel)
+  #      vLead = float(CS.v_ego + lead_msg.relVel)
+  #  else:
+  #      dRel = 150
+  #      yRel = 0
+  #      vRel = 0
 
     return dRel, yRel, vRel 
 
@@ -175,12 +176,12 @@ class SpdController():
       else:
         self.long_wait_timer = 0
 
-    dRel, yRel, vRel = self.get_lead( sm, CS )
+    #dRel, yRel, vRel = self.get_lead( sm, CS )
 
     # CS.driverOverride   # 1 Acc,  2 bracking, 0 Normal
 
     str1 = 'VD={:.0f}  dis={:.1f}/{:.1f} VS={:.0f} ss={:.0f}'.format( v_delta, CS.lead_distance, CS.lead_objspd, CS.VSetDis, CS.cruise_set_speed_kph )
-    str3 = 'mx{:.0f} v{:.1f} a{:.1f} v{:.1f} a{:.1f}'.format( model_speed, self.v_model, self.a_model, dRel, vRel ) # self.v_cruise, self.a_cruise )
+    str3 = 'mx{:.0f} v{:.1f} a{:.1f} v{:.1f} a{:.1f}'.format( model_speed, self.v_model, self.a_model, self.v_cruise, self.a_cruise )
 
 
 
