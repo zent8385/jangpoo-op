@@ -139,7 +139,7 @@ class CarController():
     new_steer = actuators.steer * param.STEER_MAX
     apply_steer = apply_std_steer_torque_limits(new_steer, self.apply_steer_last, CS.steer_torque_driver, param)
     self.steer_rate_limited = new_steer != apply_steer
-    apply_steer = self.movAvg.get_data( apply_steer, 5 )
+    apply_steer = self.movAvg.get_data( apply_steer, 2 )
 
     if abs( CS.steer_torque_driver ) > 270:
         self.steer_torque_over_timer += 1
