@@ -80,6 +80,8 @@ class SpdController():
     self.v_cruise = 0
     self.a_cruise = 0
 
+    self.l_poly = []
+    self.r_poly = []
 
 
   def reset(self):
@@ -91,9 +93,17 @@ class SpdController():
 
 
   def calc_va(self, sm, CS ):
-    v_ego = CS.v_ego    
-    if len(sm['model'].path.poly):
-      path = list(sm['model'].path.poly)
+    v_ego = CS.v_ego
+    md = sm['model']    
+    if len(md.path.poly):
+      path = list(md.path.poly)
+
+      self.l_poly = np.array(md.leftLane.poly)
+      self.r_poly = np.array(md.rightLane.poly)
+      self.p_poly = np.array(md.path.poly)
+
+      #self.l_poly[3] += CAMERA_OFFSET
+      #self.r_poly[3] += CAMERA_OFFSET
 
       # Curvature of polynomial https://en.wikipedia.org/wiki/Curvature#Curvature_of_the_graph_of_a_function
       # y = a x^3 + b x^2 + c x + d, y' = 3 a x^2 + 2 b x + c, y'' = 6 a x + 2 b
@@ -106,7 +116,7 @@ class SpdController():
       a_y_max = 2.975 - v_ego * 0.0375  # ~1.85 @ 75mph, ~2.6 @ 25mph
       v_curvature = np.sqrt(a_y_max / np.clip(np.abs(curv), 1e-4, None))
       model_speed = np.min(v_curvature)
-      model_speed = max(20.0 * CV.MPH_TO_MS, model_speed) # Don't slow down below 20mph
+      model_speed = max(30.0 * CV.MPH_TO_MS, model_speed) # Don't slow down below 20mph
 
       model_speed = model_speed * CV.MS_TO_KPH
       if model_speed > MAX_SPEED:
@@ -116,7 +126,7 @@ class SpdController():
 
     #following = lead_1.status and lead_1.dRel < 45.0 and lead_1.vLeadK > v_ego and lead_1.aLeadK > 0.0
 
-    following = CS.lead_distance < 70.0
+    following = CS.lead_distance < 90.0
     accel_limits = [float(x) for x in calc_cruise_accel_limits(v_ego, following)]
     jerk_limits = [min(-0.1, accel_limits[0]), max(0.1, accel_limits[1])]  # TODO: make a separate lookup for jerk tuning
     accel_limits_turns = limit_accel_in_turns(v_ego, CS.angle_steers, accel_limits, self.steerRatio, self.wheelbase )
@@ -180,7 +190,7 @@ class SpdController():
     # CS.driverOverride   # 1 Acc,  2 bracking, 0 Normal
 
     str1 = 'VD={:.0f}  dis={:.1f}/{:.1f} VS={:.0f} ss={:.0f}'.format( v_delta, CS.lead_distance, CS.lead_objspd, CS.VSetDis, CS.cruise_set_speed_kph )
-    str3 = 'mx{:.0f} '.format( model_speed )
+    str3 = 'max={:.0f} L={:.3f} R={:.3f}'.format( model_speed, self.l_poly[3], self._r_poly[3] )
 
 
     trace1.printf2( '{} {}'.format( str1, str3) )
