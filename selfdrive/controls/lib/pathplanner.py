@@ -16,7 +16,7 @@ from cereal import log
 
 import cereal.messaging as messaging
 
-
+import common.MoveAvg as  moveavg1
 
 
 LaneChangeState = log.PathPlan.LaneChangeState
@@ -96,6 +96,9 @@ class PathPlanner():
       self.lane_change_timer2 = 0
       self.lane_change_timer3 = 0
       self.lane_change_BSM = LaneChangeBSM.off
+
+      self.movAvg = moveavg1.MoveAvg()
+
 
 
   def limit_ctrl(self, value, limit ):
@@ -344,8 +347,8 @@ class PathPlanner():
     self.angle_steers_des_mpc = float(math.degrees(delta_desired * self.steerRatio) + angle_offset)
 
 
-    if v_ego_kph < 30:
-        xp = [0,10,20,30]
+    if v_ego_kph < 20:
+        xp = [0,5,10,20]
         fp1 = [0,0.25,0.5,1]
         des_ratio = interp( v_ego_kph, xp, fp1 )
 
@@ -357,13 +360,20 @@ class PathPlanner():
         self.angle_steers_des_mpc = self.limit_ctrl( self.angle_steers_des_mpc, 90 )
 
 
+    if v_ego_kph < 10:
+        self.angle_steers_des_mpc = self.movAvg.get_data( self.angle_steers_des_mpc, 200 )
+    elif v_ego_kph < 20:
+      self.angle_steers_des_mpc = self.movAvg.get_data( self.angle_steers_des_mpc, 100 )
+    elif v_ego_kph < 30:
+      self.angle_steers_des_mpc = self.movAvg.get_data( self.angle_steers_des_mpc, 50 )
+    elif v_ego_kph < 40:
+      self.angle_steers_des_mpc = self.movAvg.get_data( self.angle_steers_des_mpc, 10 )      
+    else:
+      self.angle_steers_des_mpc = self.movAvg.get_data( self.angle_steers_des_mpc, 5 )
+
     #if active:
     #   log_str = 'v_ego={:.1f} {}'.format( v_ego * CV.MS_TO_KPH, log_str )
     #   tracePP.add( log_str )
-
-    
-
-
 
     #  Check for infeasable MPC solution
     mpc_nans = any(math.isnan(x) for x in self.mpc_solution[0].delta)

@@ -5,7 +5,7 @@ from cereal import log
 from selfdrive.kegman_conf import kegman_conf
 from common.numpy_fast import interp
 import common.log as  trace1
-import common.MoveAvg as  moveavg1
+
 from selfdrive.config import Conversions as CV
 
 class LatControlPID():
@@ -18,7 +18,6 @@ class LatControlPID():
     self.angle_steers_des = 0.
     self.mpc_frame = 0
 
-    self.movAvg = moveavg1.MoveAvg()
 
   def reset(self):
     self.pid.reset()
@@ -47,27 +46,16 @@ class LatControlPID():
     pid_log.steerAngle = float(angle_steers)
     pid_log.steerRate = float(angle_steers_rate)
 
-    v_ego_kph = v_ego * CV.MS_TO_KPH
+
 
     if v_ego < 0.3 or not active:
       output_steer = 0.0
       pid_log.active = False
       #self.angle_steers_des = 0.0
       self.pid.reset()
-      self.angle_steers_des = self.movAvg.get_data( path_plan.angleSteers, 500 )
+      self.angle_steers_des = path_plan.angleSteers
     else:
-      if v_ego_kph < 10:
-        self.angle_steers_des = self.movAvg.get_data( path_plan.angleSteers, 200 )
-      elif v_ego_kph < 20:
-        self.angle_steers_des = self.movAvg.get_data( path_plan.angleSteers, 100 )
-      elif v_ego_kph < 30:
-        self.angle_steers_des = self.movAvg.get_data( path_plan.angleSteers, 50 )
-      elif v_ego_kph < 40:
-        self.angle_steers_des = self.movAvg.get_data( path_plan.angleSteers, 10 )      
-      else:
-        self.angle_steers_des = self.movAvg.get_data( path_plan.angleSteers, 5 )
-
-
+      self.angle_steers_des = path_plan.angleSteers
 
       
 
@@ -95,6 +83,6 @@ class LatControlPID():
       pid_log.saturated = bool(self.pid.saturated)
 
     delta = self.angle_steers_des - path_plan.angleSteers
-    #trace1.printf( 'pid steer:{:.1f} dst:{:.1f} delta={:.1f} cnt={:.0f} '.format( self.angle_steers_des, path_plan.angleSteers, delta, self.movAvg.data_cnt ) )
+    #trace1.printf( 'pid steer:{:.1f} dst:{:.1f} delta={:.1f}'.format( self.angle_steers_des, path_plan.angleSteers ) )
 
     return output_steer, float(self.angle_steers_des), pid_log

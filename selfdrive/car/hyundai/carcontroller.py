@@ -128,16 +128,16 @@ class CarController():
 
     if abs_angle_steers < 4:
         xp = [0,1,2,3,4]
-        fp = [100,160,200,230,param.STEER_MAX]
+        fp = [190,220,240,250,param.STEER_MAX]
         param.STEER_MAX = interp( abs_angle_steers, xp, fp )
 
-    if abs_angle_steers < 2 or v_ego_kph < 20:
+    if abs_angle_steers < 1 or v_ego_kph < 10:
         param.STEER_DELTA_UP  = 1
         param.STEER_DELTA_DOWN = 1
-    elif abs_angle_steers < 3:
+    elif abs_angle_steers < 2:
         param.STEER_DELTA_UP  = 2
         param.STEER_DELTA_DOWN = 2
-    elif abs_angle_steers < 5:
+    elif abs_angle_steers < 3:
         param.STEER_DELTA_UP  = 3
         param.STEER_DELTA_DOWN = 4
 
@@ -219,10 +219,10 @@ class CarController():
       self.hud_timer_right -= 1
 
     apply_steer_limit = 250
-    if not self.hud_timer_left  and  not self.hud_timer_right:
+    if not self.hud_timer_left and  not self.hud_timer_right:
       self.lkas_active_timer1 = 140  #  apply_steer = 70
     elif path_plan.laneChangeState != LaneChangeState.off:
-      self.lkas_active_timer1 = 140 
+      self.lkas_active_timer1 = 200 
 
     if v_ego_kph < 40:
         apply_steer_limit = (v_ego_kph / 40) * 100
