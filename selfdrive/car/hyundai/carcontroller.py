@@ -58,6 +58,9 @@ class CarController():
     self.sc_active_timer = 0 
     self.sc_active_timer2 = 0     
     self.sc_btn_type = Buttons.NONE
+    self.sc_clu_speed = 0
+
+    self.traceCC = trace1.Loger("CarCtrl")
 
 
   def limit_ctrl(self, value, limit ):
@@ -334,6 +337,7 @@ class CarController():
       btn_type, clu_speed = self.SC.update( v_ego_kph, CS, sm, actuators )   # speed controller spdcontroller.py
 
       if v_ego_kph < 30:
+          self.resume_cnt = 0
           self.sc_active_timer = 0
           self.sc_btn_type = Buttons.NONE
       elif self.sc_btn_type != Buttons.NONE:
@@ -342,14 +346,19 @@ class CarController():
           self.sc_active_timer2 -= 1
       elif btn_type != Buttons.NONE:
           self.sc_btn_type = btn_type
+          self.sc_clu_speed = clu_speed
 
 
       if self.sc_btn_type != Buttons.NONE:
         if self.sc_active_timer < 5:
           self.sc_active_timer += 1
           self.sc_active_timer2 = 5
-          can_sends.append(create_clu11(self.packer, CS.scc_bus, CS.clu11, self.sc_btn_type, clu_speed, self.resume_cnt))
+          self.traceCC.add( 'sc_btn_type={}  clu_speed={}  cnt={}'.format( self.sc_btn_type, self.sc_clu_speed, self.sc_active_timer ) )
+          can_sends.append(create_clu11(self.packer, CS.scc_bus, CS.clu11, self.sc_btn_type, self.sc_clu_speed, self.resume_cnt))
+          self.resume_cnt += 1
         else:
+          self.traceCC.add( 'Buttons.NONE' )
+          self.resume_cnt = 0
           self.sc_active_timer = 0
           self.sc_btn_type = Buttons.NONE
 

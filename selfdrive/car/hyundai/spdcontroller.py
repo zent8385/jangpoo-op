@@ -167,7 +167,7 @@ class SpdController():
 
       if self.long_wait_timer:
           self.long_wait_timer -= 1
-      elif CS.lead_distance < 90:
+      elif CS.lead_distance < 90 and CS.lead_objspd < 0:
         if v_delta <= -2:
           pass
         else:
@@ -177,19 +177,15 @@ class SpdController():
         self.long_wait_timer = 0
 
     #dRel, yRel, vRel = self.get_lead( sm, CS )
-
     # CS.driverOverride   # 1 Acc,  2 bracking, 0 Normal
 
     str1 = 'VD={:.0f}  dis={:.1f}/{:.1f} VS={:.0f} ss={:.0f}'.format( v_delta, CS.lead_distance, CS.lead_objspd, CS.VSetDis, CS.cruise_set_speed_kph )
-    str3 = 'mx{:.0f} v{:.1f} a{:.1f} v{:.1f} a{:.1f}'.format( model_speed, self.v_model, self.a_model, self.v_cruise, self.a_cruise )
-
+    str3 = 'mx{:.0f} '.format( model_speed )
 
 
     trace1.printf2( '{} {}'.format( str1, str3) )
-  
-    if CS.pcm_acc_status and CS.AVM_Popup_Msg == 1:
-      str2 = 'btn={:.0f} btn_type={}'.format(  CS.AVM_View, btn_type )
-      #str3 = 'max{:.1f} d{} v{} a{} v{} a{}'.format( model_speed, lead_1.dRel, lead_1.vLeadK, lead_1.aLeadK, self.v_model, self.a_model )      
+    if CS.pcm_acc_status and CS.AVM_Popup_Msg == 1 and CS.VSetDis > 30  and CS.lead_distance < 90:
+      str2 = 'btn={:.0f} btn_type={}  v{:.5f} a{:.5f}  v{:.5f} a{:.5f}'.format(  CS.AVM_View, btn_type, self.v_model, self.a_model, self.v_cruise, self.a_cruise )
       self.traceSC.add( 'v_ego={:.1f}  {} {} {}'.format( v_ego_kph, str1, str2, str3 )  ) 
-    
+
     return btn_type, CS.clu_Vanz
