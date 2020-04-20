@@ -178,10 +178,10 @@ class SpdController():
       if self.long_wait_timer:
           self.long_wait_timer -= 1
       elif CS.lead_distance < 90 and CS.lead_objspd < 0:
-        if v_delta <= -2:
+        if v_delta <= -5:
           pass
         else:
-          self.long_wait_timer = 15
+          self.long_wait_timer = 30
           btn_type = Buttons.SET_DECEL   # Vuttons.RES_ACCEL
       else:
         self.long_wait_timer = 0
@@ -196,6 +196,6 @@ class SpdController():
     trace1.printf2( '{} {}'.format( str1, str3) )
     if CS.pcm_acc_status and CS.AVM_Popup_Msg == 1 and CS.VSetDis > 30  and CS.lead_distance < 90:
       str2 = 'btn={:.0f} btn_type={}  v{:.5f} a{:.5f}  v{:.5f} a{:.5f}'.format(  CS.AVM_View, btn_type, self.v_model, self.a_model, self.v_cruise, self.a_cruise )
-      self.traceSC.add( 'v_ego={:.1f}  {} {} {}'.format( v_ego_kph, str1, str2, str3 )  ) 
+      self.traceSC.add( 'v_ego={:.1f} angle={:.1f}  {} {} {}'.format( v_ego_kph, CS.angle_steers, str1, str2, str3 )  ) 
 
-    return btn_type, CS.clu_Vanz
+    return btn_type, CS.VSetDis

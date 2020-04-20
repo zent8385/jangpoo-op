@@ -348,6 +348,7 @@ class CarState():
     self.acc_first_flag = 0
     self.cruise_set_speed = 0
     self.cruise_set_speed_kph = 0
+    self.cruise_set_timer1 = 0
 
     # Q = np.matrix([[10.0, 0.0], [0.0, 100.0]])
     # R = 1e3
@@ -439,7 +440,12 @@ class CarState():
           if self.clu_CruiseSwState == 1:   # up
             self.cruise_set_speed_kph += 1
           elif self.clu_CruiseSwState == 2:  # dn
-            self.cruise_set_speed_kph -= 1
+            if cruise_set_timer1:
+              self.cruise_set_speed_kph -= 1
+            else:
+              self.cruise_set_speed_kph = v_set_speed
+
+            self.cruise_set_timer1 = 100
 
       if self.cruise_set_speed_kph < 30:
           self.cruise_set_speed_kph = 30
@@ -447,6 +453,9 @@ class CarState():
     else:
       self.acc_first_flag = 0
       self.cruise_set_speed_kph = self.VSetDis
+
+    if self.cruise_set_timer1:
+      self.cruise_set_timer1 -= 1      
 
     self.cruise_set_speed = self.cruise_set_speed_kph * speed_conv
 

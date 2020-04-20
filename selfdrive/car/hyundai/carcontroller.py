@@ -131,13 +131,13 @@ class CarController():
         fp = [190,220,240,250,param.STEER_MAX]
         param.STEER_MAX = interp( abs_angle_steers, xp, fp )
 
-    if abs_angle_steers < 1 or v_ego_kph < 10:
+    if abs_angle_steers < 0.5 or v_ego_kph < 10:
         param.STEER_DELTA_UP  = 1
         param.STEER_DELTA_DOWN = 1
-    elif abs_angle_steers < 2:
+    elif abs_angle_steers < 1:
         param.STEER_DELTA_UP  = 2
         param.STEER_DELTA_DOWN = 2
-    elif abs_angle_steers < 3:
+    elif abs_angle_steers < 2:
         param.STEER_DELTA_UP  = 3
         param.STEER_DELTA_DOWN = 4
 
@@ -260,7 +260,7 @@ class CarController():
           apply_steer = self.limit_ctrl( apply_steer, apply_steer_limit )
 
     
-    trace1.printf( 'toq:{:5.1f} lm={:5.1f} steer={:5.1f} md={:.1f} sc={:.1f} lkas={}'.format( apply_steer, apply_steer_limit,  actuators.steer, CS.mdps_bus, CS.scc_bus, CS.lkas_LdwsSysState ) )
+    trace1.printf( 'toq:{:5.1f} lm={:5.1f} steer={:5.0f} md={:.1f} sc={:.1f} lkas={}'.format( apply_steer, apply_steer_limit,  CS.steer_torque_driver, CS.mdps_bus, CS.scc_bus, CS.lkas_LdwsSysState ) )
 
     self.apply_accel_last = apply_accel
     self.apply_steer_last = apply_steer

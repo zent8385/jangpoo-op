@@ -419,10 +419,10 @@ class CarInterface(CarInterfaceBase):
             events.append(create_event('pcmDisable', [ET.USER_DISABLE]))
         self.cruise_enabled_prev = ret.cruiseState.enabled
     elif  ret.cruiseState.enabled:
-        if self.CC.steer_torque_over:
-          events.append(create_event('steerTorqueOver', [ET.WARNING]))
-        elif self.turning_indicator_alert:
+        if self.turning_indicator_alert:
           events.append(create_event('turningIndicatorOn', [ET.WARNING]))
+        elif self.CC.steer_torque_over:
+          events.append(create_event('steerTorqueOver', [ET.WARNING]))          
         elif self.CS.stopped:
           if ret.cruiseState.standstill:
             events.append(create_event('resumeRequired', [ET.WARNING]))
