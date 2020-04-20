@@ -325,10 +325,13 @@ class CarInterface(CarInterfaceBase):
     #  self.CS.left_blinker_on = self.CS.left_blinker_flash or self.CS.prev_left_blinker_on and self.CC.turning_signal_timer
     #  self.CS.right_blinker_on = self.CS.right_blinker_flash or self.CS.prev_right_blinker_on and self.CC.turning_signal_timer
 
-    blinker_status = 0
+    blinker_status = self.CS.blinker_status
     if  self.CS.left_blinker_flash or self.CS.right_blinker_flash:
-      blinker_status = self.CS.blinker_status
       self.blinker_timer = 50
+    elif self.blinker_timer: 
+      self.blinker_timer -= 1
+    else:
+      blinker_status = 0
 
 
     if blinker_status == 3:
@@ -344,8 +347,8 @@ class CarInterface(CarInterfaceBase):
       ret.leftBlinker = False
       ret.rightBlinker = False
 
-    if self.blinker_timer:
-      self.blinker_timer -= 1
+    
+      
 
     #ret.leftBlinker = bool(self.CS.left_blinker_flash)
     #ret.rightBlinker = bool(self.CS.right_blinker_flash)
