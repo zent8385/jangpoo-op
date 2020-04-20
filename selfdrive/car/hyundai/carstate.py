@@ -440,7 +440,7 @@ class CarState():
           if self.clu_CruiseSwState == 1:   # up
             self.cruise_set_speed_kph += 1
           elif self.clu_CruiseSwState == 2:  # dn
-            if cruise_set_timer1:
+            if self.cruise_set_timer1:
               self.cruise_set_speed_kph -= 1
             else:
               self.cruise_set_speed_kph = v_set_speed
