@@ -20,6 +20,8 @@ from selfdrive.config import RADAR_TO_CAMERA
 
 import common.log as trace1
 
+import common.MoveAvg as  moveavg1
+
 MAX_SPEED = 255.0
 
 LON_MPC_STEP = 0.2  # first step is 0.2s
@@ -82,6 +84,8 @@ class SpdController():
 
     self.l_poly = []
     self.r_poly = []
+
+    self.movAvg = moveavg1.MoveAvg()   
 
 
   def reset(self):
@@ -147,6 +151,8 @@ class SpdController():
                                                   2*accel_limits[1], accel_limits[0],
                                                   2*jerk_limits[1], jerk_limits[0],
                                                   LON_MPC_STEP)
+
+    model_speed = self.movAvg.get_min( model_speed, 50 )
 
     return model_speed
 

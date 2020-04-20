@@ -124,7 +124,7 @@ class CarController():
 
     param = SteerLimitParams
 
-    abs_angle_steers =  abs(actuators.steerAngle) # abs(CS.angle_steers)
+    abs_angle_steers =  abs(actuators.steerAngle) #  abs(CS.angle_steers)  # 
 
     if abs_angle_steers < 4:
         xp = [0,1,2,3,4]
@@ -139,7 +139,7 @@ class CarController():
         param.STEER_DELTA_DOWN = 2
     elif abs_angle_steers < 2:
         param.STEER_DELTA_UP  = 3
-        param.STEER_DELTA_DOWN = 4
+        param.STEER_DELTA_DOWN = 3
 
 
     ### Steering Torque
@@ -148,7 +148,7 @@ class CarController():
     self.steer_rate_limited = new_steer != apply_steer
 
 
-    if abs( CS.steer_torque_driver ) > 270:
+    if abs( CS.steer_torque_driver ) > 200:
         self.steer_torque_over_timer += 1
         if self.steer_torque_over_timer > 5:
           self.steer_torque_over = True
@@ -186,11 +186,10 @@ class CarController():
         self.low_speed_car = low_speed
 
     # streer over check
-    delta_angle_steer = CS.angle_steers - actuators.steerAngle
     if enabled and abs(CS.angle_steers) > 90. and self.lkas_button or  CS.steer_error:
       self.streer_angle_over =  True
       self.steer_timer = 500
-    elif abs( delta_angle_steer) < 1.5 or not self.steer_timer:
+    elif abs(CS.angle_steers) < 2 or not self.steer_timer:
       self.streer_angle_over =  False
     elif self.steer_timer:
       self.steer_timer -= 1
@@ -226,8 +225,8 @@ class CarController():
 
     if v_ego_kph < 40:
         apply_steer_limit = (v_ego_kph / 40) * 100
-        if apply_steer_limit < 20:
-            apply_steer_limit = 20
+        if apply_steer_limit < 50:
+            apply_steer_limit = 50
         apply_steer = self.limit_ctrl( apply_steer, apply_steer_limit )
 
     # disable lkas 
@@ -260,7 +259,7 @@ class CarController():
           apply_steer = self.limit_ctrl( apply_steer, apply_steer_limit )
 
     
-    trace1.printf( 'toq:{:5.1f} lm={:5.1f} steer={:5.0f} md={:.1f} sc={:.1f} lkas={}'.format( apply_steer, apply_steer_limit,  CS.steer_torque_driver, CS.mdps_bus, CS.scc_bus, CS.lkas_LdwsSysState ) )
+    trace1.printf( 'sa:{:.1f} toq:{:5.1f} lm={:5.1f} st={:5.0f} md={:.0f} sc={:.0f} lkas={:.0f}'.format( actuators.steerAngle, apply_steer, apply_steer_limit,  CS.steer_torque_driver, CS.mdps_bus, CS.scc_bus, CS.lkas_LdwsSysState ) )
 
     self.apply_accel_last = apply_accel
     self.apply_steer_last = apply_steer

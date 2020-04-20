@@ -349,8 +349,8 @@ class PathPlanner():
     self.angle_steers_des_mpc = float(math.degrees(delta_desired * self.steerRatio) + angle_offset)
 
 
-    if v_ego_kph < 20:
-        xp = [0,5,10,20]
+    if v_ego_kph < 30:
+        xp = [0,5,20,30]
         fp1 = [0,0.25,0.5,1]
         des_ratio = interp( v_ego_kph, xp, fp1 )
 
@@ -358,20 +358,20 @@ class PathPlanner():
         limit_ratio = interp( v_ego_kph, xp, fp2 )
         self.angle_steers_des_mpc = self.angle_steers_des_mpc * des_ratio
         self.angle_steers_des_mpc = self.limit_ctrl( self.angle_steers_des_mpc, limit_ratio, angle_steers )
+
+        if v_ego_kph < 5:
+            self.angle_steers_des_mpc = self.movAvg.get_data( self.angle_steers_des_mpc, 200 )
+        elif v_ego_kph < 10:
+            self.angle_steers_des_mpc = self.movAvg.get_data( self.angle_steers_des_mpc, 50 )
+        elif v_ego_kph < 20:
+            self.angle_steers_des_mpc = self.movAvg.get_data( self.angle_steers_des_mpc, 10 )
+
     else:
-        self.angle_steers_des_mpc = self.limit_ctrl( self.angle_steers_des_mpc, 90, 0 )
+        self.angle_steers_des_mpc = self.limit_ctrl( self.angle_steers_des_mpc, 10, angle_steers )
 
 
-    #if v_ego_kph < 5:
-    #    self.angle_steers_des_mpc = self.movAvg.get_data( self.angle_steers_des_mpc, 200 )
-    #elif v_ego_kph < 10:
-    #  self.angle_steers_des_mpc = self.movAvg.get_data( self.angle_steers_des_mpc, 100 )
-    #elif v_ego_kph < 15:
-    #  self.angle_steers_des_mpc = self.movAvg.get_data( self.angle_steers_des_mpc, 50 )
-    #elif v_ego_kph < 20:
-    #  self.angle_steers_des_mpc = self.movAvg.get_data( self.angle_steers_des_mpc, 10 )
-    #else:
-    #  self.angle_steers_des_mpc = self.movAvg.get_data( self.angle_steers_des_mpc, 5 )
+    if self.LP.l_prob < 0.45 and self.LP.r_prob < 0.45:
+        self.angle_steers_des_mpc = self.limit_ctrl( self.angle_steers_des_mpc, 2, angle_steers )
 
     #if active:
     #   log_str = 'v_ego={:.1f} {}'.format( v_ego * CV.MS_TO_KPH, log_str )
