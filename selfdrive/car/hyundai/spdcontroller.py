@@ -175,6 +175,9 @@ class SpdController():
     btn_type = Buttons.NONE
     #lead_1 = sm['radarState'].leadOne
 
+    if CS.driverOverride:
+      return  btn_type
+
     model_speed = self.calc_va( sm, CS )
     set_speed = CS.VSetDis
     cur_speed = CS.clu_Vanz
