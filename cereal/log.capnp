@@ -296,8 +296,6 @@ struct ThermalData {
   memUsedPercent @19 :Int8;
   cpuPerc @20 :Int8;
 
-  ipAddr @25 :Text;
-  
   enum ThermalStatus {
     green @0;   # all processes run
     yellow @1;  # critical processes run (kill uploader), engage still allowed
