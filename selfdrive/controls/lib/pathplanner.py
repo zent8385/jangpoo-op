@@ -354,7 +354,7 @@ class PathPlanner():
         fp1 = [0,0.25,0.5,1]
         des_ratio = interp( v_ego_kph, xp, fp1 )
 
-        fp2 = [1,2,3,4]
+        fp2 = [0.1,0.2,0.5,1]
         limit_ratio = interp( v_ego_kph, xp, fp2 )
         self.angle_steers_des_mpc = self.angle_steers_des_mpc * des_ratio
         self.angle_steers_des_mpc = self.limit_ctrl( self.angle_steers_des_mpc, limit_ratio, angle_steers )
@@ -365,13 +365,12 @@ class PathPlanner():
             self.angle_steers_des_mpc = self.movAvg.get_data( self.angle_steers_des_mpc, 50 )
         elif v_ego_kph < 20:
             self.angle_steers_des_mpc = self.movAvg.get_data( self.angle_steers_des_mpc, 10 )
-
     else:
         self.angle_steers_des_mpc = self.limit_ctrl( self.angle_steers_des_mpc, 10, angle_steers )
 
 
     if self.LP.l_prob < 0.45 and self.LP.r_prob < 0.45:
-        self.angle_steers_des_mpc = self.limit_ctrl( self.angle_steers_des_mpc, 2, angle_steers )
+        self.angle_steers_des_mpc = self.limit_ctrl( self.angle_steers_des_mpc, 1, angle_steers )
 
     #if active:
     #   log_str = 'v_ego={:.1f} {}'.format( v_ego * CV.MS_TO_KPH, log_str )

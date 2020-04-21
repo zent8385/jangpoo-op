@@ -364,6 +364,41 @@ class CarState():
     v_ego_x = self.v_ego_kf.update(v_ego_raw)
     return float(v_ego_x[0]), float(v_ego_x[1])
 	
+
+  def update_cruiseSW( self, driverOverride ):
+    if driverOverride:
+      self.cruise_set_timer1 = 0
+
+    old_clu_CruiseSwState = self.clu_CruiseSwState    
+    if self.pcm_acc_status:
+      v_set_speed = self.VSetDis
+      if self.acc_first_flag < 3:
+          self.acc_first_flag += 1        
+          self.cruise_set_speed_kph = v_set_speed
+      elif old_clu_CruiseSwState != self.clu_CruiseSwState:
+          if self.clu_CruiseSwState == 1:   # up
+            if self.cruise_set_timer1:
+              self.cruise_set_speed_kph += 1
+            else:
+              self.cruise_set_speed_kph = v_set_speed
+          elif self.clu_CruiseSwState == 2:  # dn
+            if self.cruise_set_timer1:
+              self.cruise_set_speed_kph -= 1
+            else:
+              self.cruise_set_speed_kph = v_set_speed
+          self.cruise_set_timer1 = 100
+
+      if self.cruise_set_speed_kph < 30:
+          self.cruise_set_speed_kph = 30
+    else:
+      self.acc_first_flag = 0
+      self.cruise_set_speed_kph = self.VSetDis
+
+    if self.cruise_set_timer1:
+      self.cruise_set_timer1 -= 1
+    
+    return self.cruise_set_timer1
+
   def update(self, cp, cp2, cp_cam, cp_avm ):
 
     cp_mdps = cp2 if self.mdps_bus else cp
@@ -416,7 +451,7 @@ class CarState():
 
     self.low_speed_lockout = self.v_ego_raw < 1.0
 
-    old_clu_CruiseSwState = self.clu_CruiseSwState
+
 
     self.clu_Vanz = cp.vl["CLU11"]["CF_Clu_Vanz"]
     self.clu_CruiseSwState = cp.vl["CLU11"]["CF_Clu_CruiseSwState"]
@@ -431,31 +466,6 @@ class CarState():
     #self.cruise_set_speed = self.VSetDis * speed_conv if not self.no_radar else \
     #                                     (cp.vl["LVR12"]["CF_Lvr_CruiseSet"] * speed_conv)
 
-    if self.pcm_acc_status:
-      v_set_speed = self.VSetDis
-      if self.acc_first_flag < 3:
-          self.acc_first_flag += 1        
-          self.cruise_set_speed_kph = v_set_speed
-      elif old_clu_CruiseSwState != self.clu_CruiseSwState:
-          if self.clu_CruiseSwState == 1:   # up
-            self.cruise_set_speed_kph += 1
-          elif self.clu_CruiseSwState == 2:  # dn
-            if self.cruise_set_timer1:
-              self.cruise_set_speed_kph -= 1
-            else:
-              self.cruise_set_speed_kph = v_set_speed
-
-            self.cruise_set_timer1 = 100
-
-      if self.cruise_set_speed_kph < 30:
-          self.cruise_set_speed_kph = 30
-  
-    else:
-      self.acc_first_flag = 0
-      self.cruise_set_speed_kph = self.VSetDis
-
-    if self.cruise_set_timer1:
-      self.cruise_set_timer1 -= 1      
 
     self.cruise_set_speed = self.cruise_set_speed_kph * speed_conv
 
@@ -521,7 +531,7 @@ class CarState():
     self.lca_left = cp.vl["LCA11"]["CF_Lca_IndLeft"]
     self.lca_right = cp.vl["LCA11"]["CF_Lca_IndRight"]
 
-
+    self.update_cruiseSW( self.driverOverride )
 
     # save the entire LKAS11, CLU11, SCC12 and MDPS12
     self.lkas11 = cp_cam.vl["LKAS11"]

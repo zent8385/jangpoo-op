@@ -67,6 +67,7 @@ class CarInterface(CarInterfaceBase):
 
     tire_stiffness_factor = 0.7
 
+    #ret.radarOffCan = False
 
     if candidate in [CAR.SANTAFE, CAR.SANTAFE_1]:
       ret.lateralTuning.pid.kf = 0.00005
