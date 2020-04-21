@@ -174,13 +174,14 @@ class SpdController():
   def update(self, v_ego_kph, CS, sm, actuators ):
     btn_type = Buttons.NONE
     #lead_1 = sm['radarState'].leadOne
-
-    if CS.driverOverride:
-      return  btn_type
-
-    model_speed = self.calc_va( sm, CS )
     set_speed = CS.VSetDis
     cur_speed = CS.clu_Vanz
+
+    if CS.driverOverride:
+      return btn_type, set_speed
+
+    model_speed = self.calc_va( sm, CS )
+
 
     if set_speed > cur_speed:
         set_speed = cur_speed
