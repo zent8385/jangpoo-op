@@ -192,7 +192,7 @@ class SpdController():
       if self.long_wait_timer:
           self.long_wait_timer -= 1
       elif CS.lead_distance < 110 and CS.lead_objspd < 0:
-        if v_delta <= -10:
+        if v_delta <= -3:
           pass
         else:
           set_speed -= 1   # dec value
