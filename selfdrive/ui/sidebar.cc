@@ -1,6 +1,14 @@
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
+
+#include "common/util.h"
+#include "common/timing.h"
+#include "common/swaglog.h"
+#include "common/touch.h"
+#include "common/visionimg.h"
+#include "common/params.h"
+
 #include "ui.hpp"
 
 static void ui_draw_sidebar_background(UIState *s, bool hasSidebar) {
@@ -52,6 +60,20 @@ static void ui_draw_sidebar_network_strength(UIState *s, bool hasSidebar) {
   nvgFill(s->vg);
 }
 
+static void ui_draw_sidebar_ip_addr(UIState *s, bool hasSidebar) {
+  const int network_ip_w = 176;
+  const int network_ip_x = hasSidebar ? 58 : -(sbr_w);
+  const int network_ip_y = 255;
+
+  char network_ip_str[15];
+  snprintf(network_ip_str, sizeof(network_ip_str), "%s", s->scene.ipAddr);
+  nvgFillColor(s->vg, COLOR_WHITE);
+  nvgFontSize(s->vg, 32*0.85);
+  nvgFontFace(s->vg, "sans-regular");
+  nvgTextAlign(s->vg, NVG_ALIGN_CENTER | NVG_ALIGN_MIDDLE);
+  nvgTextBox(s->vg, network_ip_x, network_ip_y, network_ip_w, network_ip_str, NULL);
+}
+
 static void ui_draw_sidebar_battery_icon(UIState *s, bool hasSidebar) {
   const int battery_img_h = 36;
   const int battery_img_w = 76;
@@ -75,9 +97,24 @@ static void ui_draw_sidebar_battery_icon(UIState *s, bool hasSidebar) {
   nvgFill(s->vg);
 }
 
+static void ui_draw_sidebar_battery_text(UIState *s, bool hasSidebar) {
+  const int battery_img_h = 36;
+  const int battery_img_w = 96;
+  const int battery_img_x = hasSidebar ? 150 : -(sbr_w);
+  const int battery_img_y = 303;
+
+  char battery_str[7];
+  snprintf(battery_str, sizeof(battery_str), "%d%%%s", s->scene.batteryPercent, strcmp(s->scene.batteryStatus, "Charging") == 0 ? "+" : "-");
+  nvgFillColor(s->vg, COLOR_WHITE);
+  nvgFontSize(s->vg, 38);
+  nvgFontFace(s->vg, "sans-regular");
+  nvgTextAlign(s->vg, NVG_ALIGN_CENTER | NVG_ALIGN_MIDDLE);
+  nvgTextBox(s->vg, battery_img_x, battery_img_y, battery_img_w, battery_str, NULL);
+}
+
 static void ui_draw_sidebar_network_type(UIState *s, bool hasSidebar) {
   const int network_x = hasSidebar ? 50 : -(sbr_w);
-  const int network_y = 273;
+  const int network_y = 303;
   const int network_w = 100;
   const int network_h = 100;
   const char *network_types[6] = {"--", "WiFi", "2G", "3G", "4G", "5G"};
@@ -226,7 +263,8 @@ void ui_draw_sidebar(UIState *s) {
   ui_draw_sidebar_settings_button(s, hasSidebar);
   ui_draw_sidebar_home_button(s, hasSidebar);
   ui_draw_sidebar_network_strength(s, hasSidebar);
-  ui_draw_sidebar_battery_icon(s, hasSidebar);
+  ui_draw_sidebar_ip_addr(s, hasSidebar);
+  ui_draw_sidebar_battery_text(s, hasSidebar);
   ui_draw_sidebar_network_type(s, hasSidebar);
   ui_draw_sidebar_storage_metric(s, hasSidebar);
   ui_draw_sidebar_temp_metric(s, hasSidebar);

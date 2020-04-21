@@ -183,6 +183,7 @@ typedef struct UIScene {
   int batteryPercent;
   char batteryStatus[64];
   uint8_t thermalStatus;
+  char ipAddr[20];
   int paTemp;
   int hwType;
   int satelliteCount;

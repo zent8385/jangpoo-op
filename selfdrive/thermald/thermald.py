@@ -8,7 +8,7 @@ from smbus2 import SMBus
 from cereal import log
 from common.android import ANDROID, get_network_type, get_network_strength
 from common.basedir import BASEDIR
-from common.params import Params
+from common.params import Params, put_nonblocking
 from common.realtime import sec_since_boot, DT_TRML
 from common.numpy_fast import clip, interp
 from common.filter_simple import FirstOrderFilter
@@ -22,6 +22,10 @@ kegman = kegman_conf()
 from selfdrive.thermald.power_monitoring import PowerMonitoring, get_battery_capacity, get_battery_status, get_battery_current, get_battery_voltage, get_usb_present
 
 FW_SIGNATURE = get_expected_signature()
+
+import subprocess
+import re
+import time
 
 ThermalStatus = log.ThermalData.ThermalStatus
 NetworkType = log.ThermalData.NetworkType
@@ -212,7 +216,12 @@ def thermald_thread():
   params = Params()
   pm = PowerMonitoring(is_uno)
 
+  # ip addr
+  ts_last_ip = None
+  ip_addr = '255.255.255.255'
+  
   while 1:
+    ts = sec_since_boot()
     health = messaging.recv_sock(health_sock, wait=True)
     location = messaging.recv_sock(location_sock)
     location = location.gpsLocation if location else None
@@ -249,6 +258,17 @@ def thermald_thread():
     if is_uno:
       msg.thermal.batteryPercent = 100
       msg.thermal.batteryStatus = "Charging"
+
+    # update ip every 10 seconds
+    ts = sec_since_boot()
+    if ts_last_ip is None or ts - ts_last_ip >= 10.:
+      try:
+        result = subprocess.check_output(["ifconfig", "wlan0"], encoding='utf8')  # pylint: disable=unexpected-keyword-arg
+        ip_addr = re.findall(r"inet addr:((\d+\.){3}\d+)", result)[0][0]
+      except:
+        ip_addr = 'N/A'
+      ts_last_ip = ts
+    msg.thermal.ipAddr = ip_addr
 
     current_filter.update(msg.thermal.batteryCurrent / 1e6)
 
@@ -303,7 +323,7 @@ def thermald_thread():
 #
 #    update_failed_count = params.get("UpdateFailedCount")
 #    update_failed_count = 0 if update_failed_count is None else int(update_failed_count)
-
+#
 #    if dt.days > DAYS_NO_CONNECTIVITY_MAX and update_failed_count > 1:
 #      if current_connectivity_alert != "expired":
 #        current_connectivity_alert = "expired"
@@ -341,7 +361,7 @@ def thermald_thread():
     should_start = should_start and accepted_terms and completed_training and (not do_uninstall)
 
     # check for firmware mismatch
-    #should_start = should_start and fw_version_match
+    should_start = should_start and fw_version_match
 
     # check if system time is valid
     should_start = should_start and time_valid
