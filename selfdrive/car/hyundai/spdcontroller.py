@@ -185,9 +185,9 @@ class SpdController():
 
     if  CS.lead_objspd < -2:
       dec_delta = 3
-    elif  CS.lead_objspd < -1.5:
-      dec_delta = 2
     elif  CS.lead_objspd < -1:
+      dec_delta = 2
+    elif  CS.lead_objspd < 0:
       dec_delta = 1
 
 
@@ -211,7 +211,7 @@ class SpdController():
 
       if self.long_wait_timer:
           self.long_wait_timer -= 1
-      elif CS.lead_distance < dist_limit or dec_delta:
+      elif CS.lead_distance < dist_limit or dec_delta >= 2:
         if v_delta <= -dec_delta:
           pass
         elif CS.lead_objspd < 0:
