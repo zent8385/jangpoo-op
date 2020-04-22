@@ -177,6 +177,27 @@ class SpdController():
     set_speed = CS.VSetDis
     cur_speed = CS.clu_Vanz
 
+    dist_limit = 110
+    dec_delta = -1
+
+    if CS.lead_objspd < -2:
+      dec_delta = -5
+    elif  CS.lead_objspd < -1:
+      dec_delta = -4
+    elif  CS.lead_objspd < -0.5:
+      dec_delta = -3
+    elif  CS.lead_objspd < -0.2:
+      dec_delta = -2
+    else:
+      dec_delta = -1
+
+
+    if cur_speed < dist_limit:
+       dist_limit = cur_speed
+
+    if dist_limit < 60:
+      dist_limit = 60
+
     if CS.driverOverride:
       return btn_type, set_speed
 
@@ -192,8 +213,8 @@ class SpdController():
 
       if self.long_wait_timer:
           self.long_wait_timer -= 1
-      elif CS.lead_distance < 110 and CS.lead_objspd < 0:
-        if v_delta <= -1:
+      elif CS.lead_distance < dist_limit and CS.lead_objspd < 0:
+        if v_delta <= dec_delta:
           pass
         else:
           set_speed -= 1   # dec value
