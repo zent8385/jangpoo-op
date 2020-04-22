@@ -177,6 +177,9 @@ class SpdController():
     set_speed = CS.VSetDis
     cur_speed = CS.clu_Vanz
 
+    if CS.driverOverride:
+      return btn_type, set_speed 
+
     dist_limit = 110
     dec_delta = -1
 
@@ -198,8 +201,7 @@ class SpdController():
     if dist_limit < 60:
       dist_limit = 60
 
-    if CS.driverOverride:
-      return btn_type, set_speed
+
 
     model_speed = self.calc_va( sm, CS )
 
