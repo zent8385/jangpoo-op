@@ -417,6 +417,8 @@ def thermald_thread():
       if sound_trigger == 1 and msg.thermal.batteryStatus == "Discharging" and started_seen and (sec_since_boot() - off_ts) > 2:
         subprocess.Popen([mediaplayer + 'mediaplayer', '/data/openpilot/selfdrive/assets/sounds/eondetach.wav'], shell = False, stdin=None, stdout=None, stderr=None, env = env, close_fds=True)
         sound_trigger = 0
+      if sound_trigger == 0 and msg.thermal.batteryStatus == "Charging" and (sec_since_boot() == off_ts):
+        sound_trigger = 1
       # shutdown if the battery gets lower than 3%, it's discharging, we aren't running for
       # more than a minute but we were running
       if msg.thermal.batteryPercent < BATT_PERC_OFF and msg.thermal.batteryStatus == "Discharging" and \
