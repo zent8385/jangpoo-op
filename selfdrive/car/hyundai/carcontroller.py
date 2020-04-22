@@ -341,7 +341,7 @@ class CarController():
           self.sc_btn_type = Buttons.NONE
       elif self.sc_btn_type != Buttons.NONE:
           pass
-      elif CS.cruise_set_timer1:
+      elif CS.driverOverride:
           pass
       elif self.sc_active_timer2:
           self.sc_active_timer2 -= 1

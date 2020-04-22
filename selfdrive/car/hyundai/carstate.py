@@ -345,10 +345,10 @@ class CarState():
 
     self.clu_CruiseSwState = 0
 
-    self.acc_first_flag = 0
+
     self.cruise_set_speed = 0
     self.cruise_set_speed_kph = 0
-    self.cruise_set_timer1 = 0
+
 
     # Q = np.matrix([[10.0, 0.0], [0.0, 100.0]])
     # R = 1e3
@@ -365,37 +365,22 @@ class CarState():
     return float(v_ego_x[0]), float(v_ego_x[1])
 	
 
-  def update_cruiseSW( self, driverOverride ):
-    if driverOverride:
-      self.cruise_set_timer1 = 0
-
-    old_clu_CruiseSwState = self.clu_CruiseSwState    
+  def update_cruiseSW( self, old_clu_CruiseSwState ):
     if self.pcm_acc_status:
       v_set_speed = self.VSetDis
-      if self.acc_first_flag < 3:
-          self.acc_first_flag += 1        
-          self.cruise_set_speed_kph = v_set_speed
-      elif old_clu_CruiseSwState != self.clu_CruiseSwState:
+      if old_clu_CruiseSwState != self.clu_CruiseSwState:
           if self.clu_CruiseSwState == 1:   # up
               self.cruise_set_speed_kph = v_set_speed
           elif self.clu_CruiseSwState == 2:  # dn
               self.cruise_set_speed_kph = v_set_speed
-              
-          self.cruise_set_timer1 = 100
-
-      if self.cruise_set_speed_kph < 30:
-          self.cruise_set_speed_kph = 30
     else:
-      self.acc_first_flag = 0
       self.cruise_set_speed_kph = self.VSetDis
 
-    if self.cruise_set_timer1:
-      self.cruise_set_timer1 -= 1
-    
-    return self.cruise_set_timer1
+
 
   def update(self, cp, cp2, cp_cam, cp_avm ):
 
+    old_clu_CruiseSwState = self.clu_CruiseSwState
     cp_mdps = cp2 if self.mdps_bus else cp
     cp_sas = cp2 if self.sas_bus else cp
     cp_scc = cp2 if self.scc_bus == 1 else cp_cam if self.scc_bus == 2 else cp
@@ -526,7 +511,7 @@ class CarState():
     self.lca_left = cp.vl["LCA11"]["CF_Lca_IndLeft"]
     self.lca_right = cp.vl["LCA11"]["CF_Lca_IndRight"]
 
-    self.update_cruiseSW( self.driverOverride )
+    self.update_cruiseSW( old_clu_CruiseSwState )
 
     # save the entire LKAS11, CLU11, SCC12 and MDPS12
     self.lkas11 = cp_cam.vl["LKAS11"]
