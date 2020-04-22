@@ -181,18 +181,14 @@ class SpdController():
       return btn_type, set_speed 
 
     dist_limit = 110
-    dec_delta = -1
+    dec_delta = 0
 
-    if CS.lead_objspd < -2:
-      dec_delta = -5
+    if  CS.lead_objspd < -2:
+      dec_delta = 3
+    elif  CS.lead_objspd < -1.5:
+      dec_delta = 2
     elif  CS.lead_objspd < -1:
-      dec_delta = -4
-    elif  CS.lead_objspd < -0.5:
-      dec_delta = -3
-    elif  CS.lead_objspd < -0.2:
-      dec_delta = -2
-    else:
-      dec_delta = -1
+      dec_delta = 1
 
 
     if cur_speed < dist_limit:
@@ -215,11 +211,11 @@ class SpdController():
 
       if self.long_wait_timer:
           self.long_wait_timer -= 1
-      elif CS.lead_distance < dist_limit and CS.lead_objspd < 0:
-        if v_delta <= dec_delta:
+      elif CS.lead_distance < dist_limit or dec_delta:
+        if v_delta <= -dec_delta:
           pass
-        else:
-          set_speed -= 1   # dec value
+        elif CS.lead_objspd < 0:
+          set_speed -= max( 1, dec_delta )   # dec value
           self.long_wait_timer = 20
           btn_type = Buttons.SET_DECEL   # Vuttons.RES_ACCEL
       else:
