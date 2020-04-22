@@ -37,6 +37,7 @@ DAYS_NO_CONNECTIVITY_PROMPT = 4  # send an offroad prompt after 4 days with no i
 LEON = False
 last_eon_fan_val = None
 
+mediaplayer = '/data/openpilot/selfdrive/kyd/mediaplayer/'
 
 with open(BASEDIR + "/selfdrive/controls/lib/alerts_offroad.json") as json_file:
   OFFROAD_ALERTS = json.load(json_file)
@@ -218,8 +219,17 @@ def thermald_thread():
 
   # ip addr
   ts_last_ip = None
+  ts_last_update_vars = 0
+  ts_last_charging_ctrl = None
+  dp_last_modified = None
   ip_addr = '255.255.255.255'
   
+  # sound trigger
+  sound_trigger = 1
+
+  env = dict(os.environ)
+  env['LD_LIBRARY_PATH'] = mediaplayer
+
   while 1:
     ts = sec_since_boot()
     health = messaging.recv_sock(health_sock, wait=True)
@@ -404,10 +414,13 @@ def thermald_thread():
         off_ts = sec_since_boot()
         os.system('echo powersave > /sys/class/devfreq/soc:qcom,cpubw/governor')
 
+      if sound_trigger == 1 and msg.thermal.batteryStatus == "Discharging" and started_seen and (sec_since_boot() - off_ts) > 2:
+        subprocess.Popen([mediaplayer + 'mediaplayer', '/data/openpilot/selfdrive/assets/sounds/finish.wav'], shell = False, stdin=None, stdout=None, stderr=None, env = env, close_fds=True)
+        sound_trigger = 0
       # shutdown if the battery gets lower than 3%, it's discharging, we aren't running for
       # more than a minute but we were running
       if msg.thermal.batteryPercent < BATT_PERC_OFF and msg.thermal.batteryStatus == "Discharging" and \
-         started_seen and (sec_since_boot() - off_ts) > 60:
+         started_seen and (sec_since_boot() - off_ts) > 38:
         os.system('LD_LIBRARY_PATH="" svc power shutdown')
 
     charging_disabled = check_car_battery_voltage(should_start, health, charging_disabled, msg)
