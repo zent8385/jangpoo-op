@@ -263,7 +263,7 @@ class CarController():
           apply_steer = self.limit_ctrl( apply_steer, apply_steer_limit )
 
     
-    trace1.printf( 'sa:{:.1f} toq:{:5.1f} lm={:5.1f} st={:5.0f} md={:.0f} sc={:.0f} lkas={:.0f}'.format( actuators.steerAngle, apply_steer, apply_steer_limit,  CS.steer_torque_driver, CS.mdps_bus, CS.sasBus, CS.lkas_LdwsSysState ) )
+    trace1.printf( 'sa:{:.1f} toq:{:5.1f} lm={:5.1f} st={:5.0f}  lkas={:.0f}'.format( actuators.steerAngle, apply_steer, apply_steer_limit,  CS.steer_torque_driver,  CS.lkas_LdwsSysState ) )
 
     self.apply_accel_last = apply_accel
     self.apply_steer_last = apply_steer
