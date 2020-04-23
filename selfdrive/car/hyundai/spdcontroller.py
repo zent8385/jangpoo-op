@@ -176,9 +176,10 @@ class SpdController():
     #lead_1 = sm['radarState'].leadOne
     set_speed = CS.VSetDis
     cur_speed = CS.clu_Vanz
+    model_speed = 255
 
     if CS.driverOverride:
-      return btn_type, set_speed 
+      return btn_type, set_speed, model_speed
 
     dist_limit = 110
     dec_delta = 0
