@@ -367,7 +367,7 @@ class CarState():
 
   def update_cruiseSW( self, old_clu_CruiseSwState ):
     if self.pcm_acc_status:
-      v_set_speed = self.VSetDis
+      v_set_speed = self.clu_Vanz
       if old_clu_CruiseSwState != self.clu_CruiseSwState:
           if self.clu_CruiseSwState == 1:   # up
               self.cruise_set_speed_kph = v_set_speed
