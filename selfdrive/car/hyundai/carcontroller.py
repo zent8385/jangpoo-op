@@ -338,8 +338,9 @@ class CarController():
       self.last_lead_distance = 0  
     else:
       #acc_mode, clu_speed = self.long_speed_cntrl( v_ego_kph, CS, actuators )
-      btn_type, clu_speed, self.model_speed = self.SC.update( v_ego_kph, CS, sm, actuators )   # speed controller spdcontroller.py
+      btn_type, clu_speed, model_speed = self.SC.update( v_ego_kph, CS, sm, actuators )   # speed controller spdcontroller.py
 
+      self.model_speed = model_speed
       if v_ego_kph < 30:
           self.resume_cnt = 0
           self.sc_active_timer = 0
