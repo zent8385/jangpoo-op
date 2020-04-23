@@ -266,7 +266,7 @@ class PathPlanner():
       self.sR_delay_counter += 1
       delta_angle = abs_angle_steers - self.steerAngle_new
       if delta_angle < -1.0 and self.sR_delay_counter > 5:
-          self.sR_delay_counter += 5
+          self.sR_delay_counter += 20
 
       if self.sR_delay_counter < self.sR_time:
         if self.steerRatio_new > self.steerRatio:
@@ -351,7 +351,7 @@ class PathPlanner():
 
     if v_ego_kph < 30:
         xp = [0,5,20,30]
-        fp1 = [0,0.25,0.5,1]
+        fp1 = [0.1,0.25,0.5,1]
         des_ratio = interp( v_ego_kph, xp, fp1 )
 
         fp2 = [0.1,0.2,0.5,1]
@@ -360,13 +360,11 @@ class PathPlanner():
         self.angle_steers_des_mpc = self.limit_ctrl( self.angle_steers_des_mpc, limit_ratio, angle_steers )
 
         if v_ego_kph < 5:
-            self.angle_steers_des_mpc = self.movAvg.get_data( self.angle_steers_des_mpc, 200 )
-        elif v_ego_kph < 10:
-            self.angle_steers_des_mpc = self.movAvg.get_data( self.angle_steers_des_mpc, 50 )
-        elif v_ego_kph < 20:
             self.angle_steers_des_mpc = self.movAvg.get_data( self.angle_steers_des_mpc, 10 )
+        elif v_ego_kph < 10:
+            self.angle_steers_des_mpc = self.movAvg.get_data( self.angle_steers_des_mpc, 5 )
     else:
-        self.angle_steers_des_mpc = self.limit_ctrl( self.angle_steers_des_mpc, 10, angle_steers )
+        self.angle_steers_des_mpc = self.limit_ctrl( self.angle_steers_des_mpc, 5, angle_steers )
 
 
     if self.LP.l_prob < 0.45 and self.LP.r_prob < 0.45:

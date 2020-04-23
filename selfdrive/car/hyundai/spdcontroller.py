@@ -183,19 +183,24 @@ class SpdController():
     dist_limit = 110
     dec_delta = 0
 
-    if  CS.lead_objspd < -2:
-      dec_delta = 3
-    elif  CS.lead_objspd < -1:
-      dec_delta = 2
-    elif  CS.lead_objspd < 0:
-      dec_delta = 1
-
-
     if cur_speed < dist_limit:
        dist_limit = cur_speed
 
     if dist_limit < 60:
       dist_limit = 60
+
+    if  CS.lead_objspd < -2:
+      dec_delta = 2
+      dist_delta = CS.lead_distance - dist_limit
+      if dist_delta < -40:
+        dec_delta = 4
+      elif dist_delta < -30:
+        dec_delta = 3
+    elif  CS.lead_objspd < -1:
+      dec_delta = 1
+
+
+
 
 
 
@@ -215,7 +220,9 @@ class SpdController():
         if v_delta <= -dec_delta:
           pass
         elif CS.lead_objspd < 0:
-          set_speed -= max( 1, dec_delta )   # dec value
+          if dec_delta > 1:
+            set_speed -= (dec_delta - 1)
+             # dec value
           self.long_wait_timer = 20
           btn_type = Buttons.SET_DECEL   # Vuttons.RES_ACCEL
       else:
@@ -233,4 +240,4 @@ class SpdController():
       str2 = 'btn={:.0f} btn_type={}  v{:.5f} a{:.5f}  v{:.5f} a{:.5f}'.format(  CS.AVM_View, btn_type, self.v_model, self.a_model, self.v_cruise, self.a_cruise )
       self.traceSC.add( 'v_ego={:.1f} angle={:.1f}  {} {} {}'.format( v_ego_kph, CS.angle_steers, str1, str2, str3 )  ) 
 
-    return btn_type, set_speed
+    return btn_type, set_speed, model_speed

@@ -59,7 +59,7 @@ class CarController():
     self.sc_active_timer2 = 0     
     self.sc_btn_type = Buttons.NONE
     self.sc_clu_speed = 0
-
+    self.model_speed = 255
     self.traceCC = trace1.Loger("CarCtrl")
 
 
@@ -126,20 +126,21 @@ class CarController():
 
     abs_angle_steers =  abs(actuators.steerAngle) #  abs(CS.angle_steers)  # 
 
-    if abs_angle_steers < 4:
-        xp = [0,1,2,3,4]
-        fp = [190,220,240,250,param.STEER_MAX]
-        param.STEER_MAX = interp( abs_angle_steers, xp, fp )
+    if self.model_speed > 150:
+      if abs_angle_steers < 2:
+          xp = [0,0.5,1,1.5,2]
+          fp = [190,225,240,250,param.STEER_MAX]
+          param.STEER_MAX = interp( abs_angle_steers, xp, fp )
 
-    if abs_angle_steers < 0.5 or v_ego_kph < 10:
-        param.STEER_DELTA_UP  = 1
-        param.STEER_DELTA_DOWN = 1
-    elif abs_angle_steers < 1:
-        param.STEER_DELTA_UP  = 2
-        param.STEER_DELTA_DOWN = 2
-    elif abs_angle_steers < 2:
-        param.STEER_DELTA_UP  = 3
-        param.STEER_DELTA_DOWN = 3
+      if abs_angle_steers < 0.5 or v_ego_kph < 10:
+          param.STEER_DELTA_UP  = 1
+          param.STEER_DELTA_DOWN = 1
+      elif abs_angle_steers < 1:
+          param.STEER_DELTA_UP  = 2
+          param.STEER_DELTA_DOWN = 2
+      elif abs_angle_steers < 1.5:
+          param.STEER_DELTA_UP  = 3
+          param.STEER_DELTA_DOWN = 3
 
 
     ### Steering Torque
@@ -196,8 +197,10 @@ class CarController():
 
     # Disable steering while turning blinker on and speed below 60 kph
     if CS.left_blinker_on or CS.right_blinker_on:
+        self.steer_torque_over = False
         self.turning_signal_timer = 500  # Disable for 5.0 Seconds after blinker turned off
     elif CS.left_blinker_flash or CS.right_blinker_flash:
+        self.steer_torque_over = False
         self.turning_signal_timer = 500
 
    # turning indicator alert logic
@@ -221,10 +224,11 @@ class CarController():
     if not self.hud_timer_left and  not self.hud_timer_right:
       self.lkas_active_timer1 = 140  #  apply_steer = 70
     elif path_plan.laneChangeState != LaneChangeState.off:
-      self.lkas_active_timer1 = 200 
+      self.lkas_active_timer1 = 150 
+      self.steer_torque_over = False
 
     if v_ego_kph < 40:
-        apply_steer_limit = (v_ego_kph / 40) * 100
+        apply_steer_limit = (v_ego_kph / 40) * 200
         if apply_steer_limit < 50:
             apply_steer_limit = 50
         apply_steer = self.limit_ctrl( apply_steer, apply_steer_limit )
@@ -259,7 +263,7 @@ class CarController():
           apply_steer = self.limit_ctrl( apply_steer, apply_steer_limit )
 
     
-    trace1.printf( 'sa:{:.1f} toq:{:5.1f} lm={:5.1f} st={:5.0f} md={:.0f} sc={:.0f} lkas={:.0f}'.format( actuators.steerAngle, apply_steer, apply_steer_limit,  CS.steer_torque_driver, CS.mdps_bus, CS.scc_bus, CS.lkas_LdwsSysState ) )
+    trace1.printf( 'sa:{:.1f} toq:{:5.1f} lm={:5.1f} st={:5.0f} md={:.0f} sc={:.0f} lkas={:.0f}'.format( actuators.steerAngle, apply_steer, apply_steer_limit,  CS.steer_torque_driver, CS.mdps_bus, CS.sasBus, CS.lkas_LdwsSysState ) )
 
     self.apply_accel_last = apply_accel
     self.apply_steer_last = apply_steer
@@ -315,6 +319,7 @@ class CarController():
     
 
     if CS.stopped:
+      self.model_speed = 255
       # run only first time when the car stopped
       if self.last_lead_distance == 0:
         # get the lead distance from the Radar
@@ -333,7 +338,7 @@ class CarController():
       self.last_lead_distance = 0  
     else:
       #acc_mode, clu_speed = self.long_speed_cntrl( v_ego_kph, CS, actuators )
-      btn_type, clu_speed = self.SC.update( v_ego_kph, CS, sm, actuators )   # speed controller spdcontroller.py
+      btn_type, clu_speed, self.model_speed = self.SC.update( v_ego_kph, CS, sm, actuators )   # speed controller spdcontroller.py
 
       if v_ego_kph < 30:
           self.resume_cnt = 0
@@ -354,7 +359,7 @@ class CarController():
         if self.sc_active_timer < 5:
           self.sc_active_timer += 1
           self.sc_active_timer2 = 5
-          self.traceCC.add( 'sc_btn_type={}  clu_speed={}  cnt={}'.format( self.sc_btn_type, self.sc_clu_speed, self.sc_active_timer ) )
+         # self.traceCC.add( 'sc_btn_type={}  clu_speed={}  cnt={}'.format( self.sc_btn_type, self.sc_clu_speed, self.sc_active_timer ) )
           can_sends.append(create_clu11(self.packer, CS.scc_bus, CS.clu11, self.sc_btn_type, self.sc_clu_speed, self.resume_cnt))
           self.resume_cnt += 1
         else:
