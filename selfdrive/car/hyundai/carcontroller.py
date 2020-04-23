@@ -363,7 +363,7 @@ class CarController():
           can_sends.append(create_clu11(self.packer, CS.scc_bus, CS.clu11, self.sc_btn_type, self.sc_clu_speed, self.resume_cnt))
           self.resume_cnt += 1
         else:
-          self.traceCC.add( 'Buttons.NONE' )
+          #self.traceCC.add( 'Buttons.NONE' )
           self.resume_cnt = 0
           self.sc_active_timer = 0
           self.sc_btn_type = Buttons.NONE
