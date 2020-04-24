@@ -441,6 +441,8 @@ class CarState():
 
     self.VSetDis = cp_scc.vl["SCC11"]['VSetDis']
 
+    self.update_cruiseSW( old_clu_CruiseSwState )
+
     self.is_set_speed_in_mph = int(cp.vl["CLU11"]["CF_Clu_SPEED_UNIT"])
     speed_conv = CV.MPH_TO_MS if self.is_set_speed_in_mph else CV.KPH_TO_MS
     #self.cruise_set_speed = self.VSetDis * speed_conv if not self.no_radar else \
@@ -511,7 +513,7 @@ class CarState():
     self.lca_left = cp.vl["LCA11"]["CF_Lca_IndLeft"]
     self.lca_right = cp.vl["LCA11"]["CF_Lca_IndRight"]
 
-    self.update_cruiseSW( old_clu_CruiseSwState )
+
 
     # save the entire LKAS11, CLU11, SCC12 and MDPS12
     self.lkas11 = cp_cam.vl["LKAS11"]

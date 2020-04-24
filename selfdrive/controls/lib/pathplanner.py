@@ -364,11 +364,11 @@ class PathPlanner():
         elif v_ego_kph < 10:
             self.angle_steers_des_mpc = self.movAvg.get_data( self.angle_steers_des_mpc, 5 )
     else:
-        self.angle_steers_des_mpc = self.limit_ctrl( self.angle_steers_des_mpc, 5, angle_steers )
+        self.angle_steers_des_mpc = self.limit_ctrl( self.angle_steers_des_mpc, 2, angle_steers )
 
 
     if self.LP.l_prob < 0.45 and self.LP.r_prob < 0.45:
-        self.angle_steers_des_mpc = self.limit_ctrl( self.angle_steers_des_mpc, 1, angle_steers )
+        self.angle_steers_des_mpc = self.limit_ctrl( self.angle_steers_des_mpc, 0.5, angle_steers )
 
     #if active:
     #   log_str = 'v_ego={:.1f} {}'.format( v_ego * CV.MS_TO_KPH, log_str )
