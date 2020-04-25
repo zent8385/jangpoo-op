@@ -126,7 +126,7 @@ class CarController():
 
     abs_angle_steers =  abs(actuators.steerAngle) #  abs(CS.angle_steers)  # 
 
-    if self.model_speed > 150:
+    if self.model_speed > 180:
       if abs_angle_steers < 2:
           xp = [0,0.5,1,1.5,2]
           fp = [190,225,240,250,param.STEER_MAX]
@@ -148,6 +148,13 @@ class CarController():
     apply_steer = apply_std_steer_torque_limits(new_steer, self.apply_steer_last, CS.steer_torque_driver, param)
     self.steer_rate_limited = new_steer != apply_steer
 
+    # steer torque의 변화량 감시.
+    delta = apply_steer - self.apply_steer_last
+    if delta > 50:
+      apply_steer = self.apply_steer_last + 50
+    if delta < -50:
+      apply_steer = self.apply_steer_last - 50
+    
 
     if abs( CS.steer_torque_driver ) > 200:
         self.steer_torque_over_timer += 1
@@ -262,8 +269,10 @@ class CarController():
              apply_steer_limit = 20
           apply_steer = self.limit_ctrl( apply_steer, apply_steer_limit )
 
+
+
     
-    trace1.printf( 'sa:{:.1f} toq:{:5.1f} lm={:5.1f} st={:5.0f}  lkas={:.0f}'.format( actuators.steerAngle, apply_steer, apply_steer_limit,  CS.steer_torque_driver,  CS.lkas_LdwsSysState ) )
+    trace1.printf( 'toq:{:5.1f} limit={:5.1f} torque={:5.0f}  lkas={:.0f}'.format( apply_steer, apply_steer_limit,  CS.steer_torque_driver,  CS.lkas_LdwsSysState ) )
 
     self.apply_accel_last = apply_accel
     self.apply_steer_last = apply_steer
