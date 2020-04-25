@@ -256,11 +256,12 @@ class PathPlanner():
 
       self.mpc_frame = 0
 
+
+    abs_angle_steers = abs(angle_steers)
     if v_ego_kph < 10:
       self.steerRatio = self.sR[0] * 0.6
     elif v_ego_kph > 40:  # 11.111:
       # boost steerRatio by boost amount if desired steer angle is high
-      abs_angle_steers = abs(angle_steers)
       self.steerRatio_new = interp( abs_angle_steers, self.sRBP, self.sR)
 
       self.sR_delay_counter += 1
@@ -349,8 +350,8 @@ class PathPlanner():
     self.angle_steers_des_mpc = float(math.degrees(delta_desired * self.steerRatio) + angle_offset)
 
 
-    if v_ego_kph < 30:
-        xp = [0,5,20,30]
+    if v_ego_kph < 40:
+        xp = [0,5,20,40]
         fp1 = [0.1,0.25,0.5,1]
         des_ratio = interp( v_ego_kph, xp, fp1 )
 
@@ -363,8 +364,10 @@ class PathPlanner():
             self.angle_steers_des_mpc = self.movAvg.get_data( self.angle_steers_des_mpc, 10 )
         elif v_ego_kph < 10:
             self.angle_steers_des_mpc = self.movAvg.get_data( self.angle_steers_des_mpc, 5 )
+    elif abs_angle_steers > 3:
+        self.angle_steers_des_mpc = self.limit_ctrl( self.angle_steers_des_mpc, 5, angle_steers )
     else:
-        self.angle_steers_des_mpc = self.limit_ctrl( self.angle_steers_des_mpc, 1, angle_steers )
+        self.angle_steers_des_mpc = self.limit_ctrl( self.angle_steers_des_mpc, 1.5, angle_steers )
 
 
     if self.LP.l_prob < 0.45 and self.LP.r_prob < 0.45:
@@ -417,9 +420,7 @@ class PathPlanner():
     pm.send('pathPlan', plan_send)
 
 
-    # log
-    #log_str = ' curvature_factor={}'.Format( curvature_factor )
-    #tracePP.add( log_str )
+
 
     if LOG_MPC:
       dat = messaging.new_message()

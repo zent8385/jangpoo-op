@@ -348,7 +348,8 @@ class CarState():
 
     self.cruise_set_speed = 0
     self.cruise_set_speed_kph = 0
-
+    self.cruise_set_timer1 =0
+    self.prev_clu_CruiseSwState = 0
 
     # Q = np.matrix([[10.0, 0.0], [0.0, 100.0]])
     # R = 1e3
@@ -365,22 +366,11 @@ class CarState():
     return float(v_ego_x[0]), float(v_ego_x[1])
 	
 
-  def update_cruiseSW( self, old_clu_CruiseSwState ):
-    if self.pcm_acc_status:
-      v_set_speed = self.clu_Vanz
-      if old_clu_CruiseSwState != self.clu_CruiseSwState:
-          if self.clu_CruiseSwState == 1:   # up
-              self.cruise_set_speed_kph = v_set_speed
-          elif self.clu_CruiseSwState == 2:  # dn
-              self.cruise_set_speed_kph = v_set_speed
-    else:
-      self.cruise_set_speed_kph = self.VSetDis
-
 
 
   def update(self, cp, cp2, cp_cam, cp_avm ):
 
-    old_clu_CruiseSwState = self.clu_CruiseSwState
+
     cp_mdps = cp2 if self.mdps_bus else cp
     cp_sas = cp2 if self.sas_bus else cp
     cp_scc = cp2 if self.scc_bus == 1 else cp_cam if self.scc_bus == 2 else cp
@@ -441,12 +431,25 @@ class CarState():
 
     self.VSetDis = cp_scc.vl["SCC11"]['VSetDis']
 
-    self.update_cruiseSW( old_clu_CruiseSwState )
+
 
     self.is_set_speed_in_mph = int(cp.vl["CLU11"]["CF_Clu_SPEED_UNIT"])
     speed_conv = CV.MPH_TO_MS if self.is_set_speed_in_mph else CV.KPH_TO_MS
     #self.cruise_set_speed = self.VSetDis * speed_conv if not self.no_radar else \
     #                                     (cp.vl["LVR12"]["CF_Lvr_CruiseSet"] * speed_conv)
+
+    if self.pcm_acc_status:
+      if self.prev_clu_CruiseSwState != self.clu_CruiseSwState:
+        self.prev_clu_CruiseSwState = self.clu_CruiseSwState
+
+        if self.clu_CruiseSwState == 1:   # up
+            self.cruise_set_speed_kph = self.clu_Vanz
+        elif self.clu_CruiseSwState == 2:  # dn
+            self.cruise_set_speed_kph = self.clu_Vanz
+    else:
+      self.cruise_set_speed_kph = self.VSetDis
+      self.cruise_set_timer1 = 0
+
 
 
     self.cruise_set_speed = self.cruise_set_speed_kph * speed_conv

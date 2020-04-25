@@ -130,29 +130,12 @@ class SpdController():
 
     #following = lead_1.status and lead_1.dRel < 45.0 and lead_1.vLeadK > v_ego and lead_1.aLeadK > 0.0
 
-    following = CS.lead_distance < 100.0
-    accel_limits = [float(x) for x in calc_cruise_accel_limits(v_ego, following)]
-    jerk_limits = [min(-0.1, accel_limits[0]), max(0.1, accel_limits[1])]  # TODO: make a separate lookup for jerk tuning
-    accel_limits_turns = limit_accel_in_turns(v_ego, CS.angle_steers, accel_limits, self.steerRatio, self.wheelbase )
+    #following = CS.lead_distance < 100.0
+    #accel_limits = [float(x) for x in calc_cruise_accel_limits(v_ego, following)]
+    #jerk_limits = [min(-0.1, accel_limits[0]), max(0.1, accel_limits[1])]  # TODO: make a separate lookup for jerk tuning
+    #accel_limits_turns = limit_accel_in_turns(v_ego, CS.angle_steers, accel_limits, self.steerRatio, self.wheelbase )
 
-    # if required so, force a smooth deceleration
-    accel_limits_turns[1] = min(accel_limits_turns[1], AWARENESS_DECEL)
-    accel_limits_turns[0] = min(accel_limits_turns[0], accel_limits_turns[1])
-
-
-    self.v_cruise, self.a_cruise = speed_smoother(self.v_acc_start, self.a_acc_start,
-                                                  CS.cruise_set_speed,
-                                                  accel_limits_turns[1], accel_limits_turns[0],
-                                                  jerk_limits[1], jerk_limits[0],
-                                                  LON_MPC_STEP)
-
-    self.v_model, self.a_model = speed_smoother(self.v_acc_start, self.a_acc_start,
-                                                  model_speed,
-                                                  2*accel_limits[1], accel_limits[0],
-                                                  2*jerk_limits[1], jerk_limits[0],
-                                                  LON_MPC_STEP)
-
-    model_speed = self.movAvg.get_min( model_speed, 50 )
+    model_speed = self.movAvg.get_min( model_speed, 10 )
 
     return model_speed
 
@@ -190,23 +173,18 @@ class SpdController():
     if dist_limit < 60:
       dist_limit = 60
 
-    if  CS.lead_objspd < -2:
+    if  CS.lead_objspd < -3:
       dec_delta = 2
       dist_delta = CS.lead_distance - dist_limit
       if dist_delta < -40:
         dec_delta = 4
       elif dist_delta < -30:
         dec_delta = 3
-    elif  CS.lead_objspd < -1:
+    elif  CS.lead_objspd < -2:
       dec_delta = 1
 
 
-
-
-
-
     model_speed = self.calc_va( sm, CS )
-
 
     if set_speed > cur_speed:
         set_speed = cur_speed
@@ -232,8 +210,8 @@ class SpdController():
     #dRel, yRel, vRel = self.get_lead( sm, CS )
     # CS.driverOverride   # 1 Acc,  2 bracking, 0 Normal
 
-    str1 = 'VD={:.0f}  dis={:.1f}/{:.1f} VS={:.0f} ss={:.0f}'.format( v_delta, CS.lead_distance, CS.lead_objspd, CS.VSetDis, CS.cruise_set_speed_kph )
-    str3 = 'max={:.0f} L={:.1f} R={:.1f}'.format( model_speed, self.l_poly[3], self.r_poly[3] )
+    str1 = 'dis={:.0f}/{:.1f} VS={:.0f} ss={:.0f}'.format( CS.lead_distance, CS.lead_objspd, CS.VSetDis, CS.cruise_set_speed_kph )
+    str3 = 'curvature={:.0f} L={:.1f} R={:.1f}'.format( model_speed, self.l_poly[3], self.r_poly[3] )
 
 
     trace1.printf2( '{} {}'.format( str1, str3) )

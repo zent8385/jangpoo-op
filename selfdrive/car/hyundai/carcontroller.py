@@ -258,8 +258,8 @@ class CarController():
           steer_limit = ratio_steer * 200
           if apply_steer_limit > steer_limit:
               apply_steer_limit = steer_limit
-          if apply_steer_limit < 2:
-             apply_steer_limit = 2
+          if apply_steer_limit < 20:
+             apply_steer_limit = 20
           apply_steer = self.limit_ctrl( apply_steer, apply_steer_limit )
 
     
