@@ -92,6 +92,7 @@ struct CarEvent @0x9b1657f34caf3ad3 {
     carUnrecognized @66;
     radarCommIssue @67;
     driverMonitorLowAcc @68;
+    manualSteeringRequired @69;
     manualSteeringRequiredBlinkersOn @70;
 	  turningIndicatorOn @71;
     lkasButtonOff @72;
@@ -102,7 +103,6 @@ struct CarEvent @0x9b1657f34caf3ad3 {
     speedTooHigh @77;
     laneChangeBlocked @78;
     relayMalfunction @79;
-    manualSteeringRequired @80;
   }
 }
 
@@ -532,7 +532,6 @@ struct CarParams {
     fw @1;
     fixed @2;
   }
-}
 
   enum NetworkLocation {
     fwdCamera @0;  # Standard/default integration at LKAS camera
