@@ -1,14 +1,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
-
-#include "common/util.h"
-#include "common/timing.h"
-#include "common/swaglog.h"
-#include "common/touch.h"
-#include "common/visionimg.h"
-#include "common/params.h"
-
 #include "ui.hpp"
 
 static void ui_draw_sidebar_background(UIState *s) {
@@ -45,9 +37,9 @@ static void ui_draw_sidebar_network_strength(UIState *s) {
   ui_draw_image(s->vg, network_img_x, network_img_y, network_img_w, network_img_h, network_img, 1.0f);
 }
 
-static void ui_draw_sidebar_ip_addr(UIState *s, bool hasSidebar) {
+static void ui_draw_sidebar_ip_addr(UIState *s) {
   const int network_ip_w = 176;
-  const int network_ip_x = hasSidebar ? 58 : -(sbr_w);
+  const int network_ip_x = !s->scene.uilayout_sidebarcollapsed ? 58 : -(sbr_w);
   const int network_ip_y = 255;
 
   char network_ip_str[15];
@@ -59,7 +51,7 @@ static void ui_draw_sidebar_ip_addr(UIState *s, bool hasSidebar) {
   nvgTextBox(s->vg, network_ip_x, network_ip_y, network_ip_w, network_ip_str, NULL);
 }
 
-static void ui_draw_sidebar_battery_icon(UIState *s, bool hasSidebar) {
+static void ui_draw_sidebar_battery_icon(UIState *s) {
   const int battery_img_h = 36;
   const int battery_img_w = 76;
   const int battery_img_x = !s->scene.uilayout_sidebarcollapsed ? 160 : -(sbr_w);
@@ -77,10 +69,10 @@ static void ui_draw_sidebar_battery_icon(UIState *s, bool hasSidebar) {
   ui_draw_image(s->vg, battery_img_x, battery_img_y, battery_img_w, battery_img_h, battery_img, 1.0f);
 }
 
-static void ui_draw_sidebar_battery_text(UIState *s, bool hasSidebar) {
+static void ui_draw_sidebar_battery_text(UIState *s) {
   const int battery_img_h = 36;
   const int battery_img_w = 96;
-  const int battery_img_x = hasSidebar ? 150 : -(sbr_w);
+  const int battery_img_x = !s->scene.uilayout_sidebarcollapsed ? 150 : -(sbr_w);
   const int battery_img_y = 303;
 
   char battery_str[7];
@@ -92,8 +84,8 @@ static void ui_draw_sidebar_battery_text(UIState *s, bool hasSidebar) {
   nvgTextBox(s->vg, battery_img_x, battery_img_y, battery_img_w, battery_str, NULL);
 }
 
-static void ui_draw_sidebar_network_type(UIState *s, bool hasSidebar) {
-  const int network_x = hasSidebar ? 50 : -(sbr_w);
+static void ui_draw_sidebar_network_type(UIState *s) {
+  const int network_x = !s->scene.uilayout_sidebarcollapsed ? 50 : -(sbr_w);
   const int network_y = 303;
   const int network_w = 100;
   const int network_h = 100;
@@ -159,31 +151,7 @@ static void ui_draw_sidebar_metric(UIState *s, const char* label_str, const char
   }
 }
 
-static void ui_draw_sidebar_storage_metric(UIState *s, bool hasSidebar) {
-  int storage_severity;
-  char storage_label_str[32];
-  char storage_value_str[32];
-  char storage_value_unit[32];
-  const int storage_y_offset = 0;
-  const float storage_pct = ceilf((1.0 - s->scene.freeSpace) * 100);
-
-  if (storage_pct < 75.0) {
-    storage_severity = 0;
-  } else if (storage_pct >= 75.0 && storage_pct < 87.0) {
-    storage_severity = 1;
-  } else if (storage_pct >= 87.0) {
-    storage_severity = 2;
-  }
-
-  snprintf(storage_value_str, sizeof(storage_value_str), "%d", (int)storage_pct);
-  snprintf(storage_value_unit, sizeof(storage_value_unit), "%s", "%");
-  snprintf(storage_label_str, sizeof(storage_label_str), "%s", "저장공간");
-  strcat(storage_value_str, storage_value_unit);
-
-  ui_draw_sidebar_metric(s, storage_label_str, storage_value_str, storage_severity, storage_y_offset, NULL, hasSidebar);
-}
-
-static void ui_draw_sidebar_temp_metric(UIState *s, bool hasSidebar) {
+static void ui_draw_sidebar_temp_metric(UIState *s) {
   int temp_severity;
   char temp_label_str[32];
   char temp_value_str[32];
@@ -256,7 +224,6 @@ void ui_draw_sidebar(UIState *s) {
   ui_draw_sidebar_ip_addr(s);
   ui_draw_sidebar_battery_text(s);
   ui_draw_sidebar_network_type(s);
-  ui_draw_sidebar_storage_metric(s);
   ui_draw_sidebar_temp_metric(s);
   ui_draw_sidebar_panda_metric(s);
   ui_draw_sidebar_connectivity(s);
