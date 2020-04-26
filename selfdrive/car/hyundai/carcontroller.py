@@ -1,140 +1,84 @@
 from cereal import car
 from common.numpy_fast import clip
 from selfdrive.car import apply_std_steer_torque_limits
-from selfdrive.car.hyundai.hyundaican import create_lkas11, create_clu11, \
-                                             create_scc12, create_mdps12
-from selfdrive.car.hyundai.values import Buttons, CAR
+from selfdrive.car.hyundai.hyundaican import create_lkas11, create_clu11, create_lfa_mfa \
+                                             create_scc12, create_mdps12, 
+from selfdrive.car.hyundai.values import Buttons, SteerLimitParams, CAR
 from opendbc.can.packer import CANPacker
 
 VisualAlert = car.CarControl.HUDControl.VisualAlert
 
-class SteerLimitParams:
-  STEER_MAX = 365   # 409 is the max, 255 is stock
-  STEER_DELTA_UP = 3
-  STEER_DELTA_DOWN = 5
-  STEER_DRIVER_ALLOWANCE = 50
-  STEER_DRIVER_MULTIPLIER = 2
-  STEER_DRIVER_FACTOR = 1
 
-# Accel limits
-ACCEL_HYST_GAP = 0.02  # don't change accel command for small oscilalitons within this value
-ACCEL_MAX = 1.5  # 1.5 m/s2
-ACCEL_MIN = -3.0 # 3   m/s2
-ACCEL_SCALE = max(ACCEL_MAX, -ACCEL_MIN)
-
-def accel_hysteresis(accel, accel_steady):
-
-  # for small accel oscillations within ACCEL_HYST_GAP, don't change the accel command
-  if accel > accel_steady + ACCEL_HYST_GAP:
-    accel_steady = accel - ACCEL_HYST_GAP
-  elif accel < accel_steady - ACCEL_HYST_GAP:
-    accel_steady = accel + ACCEL_HYST_GAP
-  accel = accel_steady
-
-  return accel, accel_steady
-
-def process_hud_alert(enabled, button_on, fingerprint, visual_alert, left_line,
-                       right_line, left_lane_depart, right_lane_depart):
-  hud_alert = 0
-  if visual_alert == VisualAlert.steerRequired:
-    hud_alert = 4 if fingerprint in [CAR.GENESIS, CAR.GENESIS_G90, CAR.GENESIS_G80] else 3
+def process_hud_alert(enabled, fingerprint, visual_alert, left_lane,
+                      right_lane, left_lane_depart, right_lane_depart):
+  sys_warning = (visual_alert == VisualAlert.steerRequired)
 
   # initialize to no line visible
-  
-  lane_visible = 1
-  if not button_on:
-    lane_visible = 0
-  elif left_line and right_line or hud_alert: #HUD alert only display when LKAS status is active
-    if enabled or hud_alert:
-      lane_visible = 3
+  sys_state = 1
+  if left_lane and right_lane or sys_warning:  #HUD alert only display when LKAS status is active
+    if enabled or sys_warning:
+      sys_state = 3
     else:
-      lane_visible = 4
-  elif left_line:
-    lane_visible = 5
-  elif right_line:
-    lane_visible = 6
+      sys_state = 4
+  elif left_lane:
+    sys_state = 5
+  elif right_lane:
+    sys_state = 6
 
   # initialize to no warnings
   left_lane_warning = 0
   right_lane_warning = 0
   if left_lane_depart:
-    left_lane_warning = 1 if fingerprint in [CAR.GENESIS, CAR.GENESIS_G90, CAR.GENESIS_G80] else 2
+    left_lane_warning = 1 if fingerprint in [CAR.GENESIS_G90, CAR.GENESIS_G80] else 2
   if right_lane_depart:
-    right_lane_warning = 1 if fingerprint in [CAR.GENESIS, CAR.GENESIS_G90, CAR.GENESIS_G80] else 2
+    right_lane_warning = 1 if fingerprint in [CAR.GENESIS_G90, CAR.GENESIS_G80] else 2
 
-  return hud_alert, lane_visible, left_lane_warning, right_lane_warning
+  return sys_warning, sys_state, left_lane_warning, right_lane_warning
+
 
 class CarController():
-  def __init__(self, dbc_name, car_fingerprint):
+  def __init__(self, dbc_name, CP, VM):
+    self.apply_steer_last = 0
+    self.car_fingerprint = CP.carFingerprint
     self.packer = CANPacker(dbc_name)
     self.car_fingerprint = car_fingerprint
     self.accel_steady = 0
     self.apply_steer_last = 0
     self.steer_rate_limited = False
-    self.lkas11_cnt = 0
-    self.scc12_cnt = 0
     self.resume_cnt = 0
     self.last_resume_frame = 0
     self.last_lead_distance = 0
-    self.turning_signal_timer = 0
-    self.lkas_button = 1
-    self.lkas_button_last = 0
-    self.longcontrol = 0 #TODO: make auto
 
   def update(self, enabled, CS, frame, actuators, pcm_cancel_cmd, visual_alert,
-              left_line, right_line, left_lane_depart, right_lane_depart):
-
-    # *** compute control surfaces ***
-
-    # gas and brake
-    apply_accel = actuators.gas - actuators.brake
-
-    apply_accel, self.accel_steady = accel_hysteresis(apply_accel, self.accel_steady)
-    apply_accel = clip(apply_accel * ACCEL_SCALE, ACCEL_MIN, ACCEL_MAX)
-
-    ### Steering Torque
+             left_lane, right_lane, left_lane_depart, right_lane_depart):
+    # Steering Torque
     new_steer = actuators.steer * SteerLimitParams.STEER_MAX
     apply_steer = apply_std_steer_torque_limits(new_steer, self.apply_steer_last, CS.steer_torque_driver, SteerLimitParams)
     self.steer_rate_limited = new_steer != apply_steer
 
-    ### LKAS button to temporarily disable steering
-#    if not CS.lkas_error:
-#      if CS.lkas_button_on != self.lkas_button_last:
-#        self.lkas_button = not self.lkas_button
-#      self.lkas_button_last = CS.lkas_button_on
-
     # disable if steer angle reach 90 deg, otherwise mdps fault in some models
-    if self.car_fingerprint == CAR.GENESIS:
-      lkas_active = enabled and abs(CS.angle_steers) < 90. and self.lkas_button
-    else:
-#     lkas_active = enabled and self.lkas_button
-      lkas_active = enabled
+    lkas_active = enabled and abs(CS.out.steeringAngle) < 90.
 
-    # Fix for sharp turns mdps fault and Genesis hard fault at low speed
-    if CS.v_ego < 15.5 and self.car_fingerprint == CAR.GENESIS and not CS.mdps_bus:
-      self.turning_signal_timer = 100
-      
+    # fix for Genesis hard fault at low speed
+    if CS.out.vEgo < 16.7 and self.car_fingerprint == CAR.HYUNDAI_GENESIS:
+      lkas_active = 0
+
     # Disable steering while turning blinker on and speed below 60 kph
     if CS.left_blinker_on or CS.right_blinker_on:
       if self.car_fingerprint in [CAR.IONIQ, CAR.KONA]:
         self.turning_signal_timer = 100  # Disable for 1.0 Seconds after blinker turned off
       elif CS.left_blinker_flash or CS.right_blinker_flash:
         self.turning_signal_timer = 100
-    if self.turning_signal_timer and CS.v_ego < 16.666667:
-      lkas_active = 0
-    if self.turning_signal_timer:
-      self.turning_signal_timer -= 1
+
     if not lkas_active:
       apply_steer = 0
-      
-    steer_req = 1 if apply_steer else 0
 
     self.apply_accel_last = apply_accel
     self.apply_steer_last = apply_steer
 
-    hud_alert, lane_visible, left_lane_warning, right_lane_warning =\
-            process_hud_alert(lkas_active, self.lkas_button, self.car_fingerprint, visual_alert,
-            left_line, right_line,left_lane_depart, right_lane_depart)
+    sys_warning, sys_state, left_lane_warning, right_lane_warning =\
+      process_hud_alert(enabled, self.car_fingerprint, visual_alert,
+                        left_lane, right_lane, left_lane_depart, right_lane_depart)
 
     clu11_speed = CS.clu11["CF_Clu_Vanz"]
     enabled_speed = 38 if CS.is_set_speed_in_mph  else 60
@@ -142,6 +86,10 @@ class CarController():
       enabled_speed = clu11_speed
 
     can_sends = []
+    can_sends.append(create_lkas11(self.packer, frame, self.car_fingerprint, apply_steer, lkas_active,
+                                   CS.lkas11, sys_warning, sys_state, enabled,
+                                   left_lane, right_lane,
+                                   left_lane_warning, right_lane_warning))
 
     if frame == 0: # initialize counts from last received count signals
       self.lkas11_cnt = CS.lkas11["CF_Lkas_MsgCount"] + 1
@@ -153,10 +101,10 @@ class CarController():
     self.mdps12_cnt = frame % 0x100
 
     can_sends.append(create_lkas11(self.packer, self.car_fingerprint, 0, apply_steer, steer_req, self.lkas11_cnt, lkas_active,
-                                   CS.lkas11, hud_alert, lane_visible, left_lane_depart, right_lane_depart, keep_stock=True))
+                                   CS.lkas11, left_lane_depart, right_lane_depart, keep_stock=True))
     if CS.mdps_bus or CS.scc_bus == 1: # send lkas12 bus 1 if mdps or scc is on bus 1
       can_sends.append(create_lkas11(self.packer, self.car_fingerprint, 1, apply_steer, steer_req, self.lkas11_cnt, lkas_active,
-                                   CS.lkas11, hud_alert, lane_visible, left_lane_depart, right_lane_depart, keep_stock=True))
+                                   CS.lkas11, left_lane_depart, right_lane_depart, keep_stock=True))
     if CS.mdps_bus: # send clu11 to mdps if it is not on bus 0
       can_sends.append(create_clu11(self.packer, CS.mdps_bus, CS.clu11, Buttons.NONE, enabled_speed, self.clu11_cnt))
 
@@ -188,5 +136,9 @@ class CarController():
       self.last_lead_distance = 0  
 
     self.lkas11_cnt += 1
+
+    # 20 Hz LFA MFA message
+    if frame % 5 == 0 and self.car_fingerprint in [CAR.SONATA, CAR.PALISADE]:
+      can_sends.append(create_lfa_mfa(self.packer, frame, enabled))
 
     return can_sends

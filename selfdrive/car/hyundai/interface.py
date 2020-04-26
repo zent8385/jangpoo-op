@@ -52,6 +52,9 @@ class CarInterface(CarInterfaceBase):
     ret.safetyModel = car.CarParams.SafetyModel.hyundai
     ret.enableCruise = True  # stock acc
 
+    # Hyundai port is a community feature for now
+    ret.communityFeature = True
+
     ret.steerActuatorDelay = 0.1  # Default delay
     ret.steerRateCost = 0.45
     ret.steerLimitTimer = 0.8
