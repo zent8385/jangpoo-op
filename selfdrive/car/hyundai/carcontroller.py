@@ -126,11 +126,10 @@ class CarController():
 
     abs_angle_steers =  abs(actuators.steerAngle) #  abs(CS.angle_steers)  # 
 
-    if self.model_speed > 180:
-      if abs_angle_steers < 2:
-          xp = [0,0.5,1,1.5,2]
-          fp = [190,225,240,250,param.STEER_MAX]
-          param.STEER_MAX = interp( abs_angle_steers, xp, fp )
+    if self.model_speed > 200:
+      xp = [0,0.5,1,1.5,2]
+      fp = [190,225,240,250,param.STEER_MAX]
+      param.STEER_MAX = interp( abs_angle_steers, xp, fp )
 
       if abs_angle_steers < 0.5 or v_ego_kph < 10:
           param.STEER_DELTA_UP  = 1
@@ -140,7 +139,7 @@ class CarController():
           param.STEER_DELTA_DOWN = 2
       elif abs_angle_steers < 1.5:
           param.STEER_DELTA_UP  = 3
-          param.STEER_DELTA_DOWN = 3
+          param.STEER_DELTA_DOWN = 4
 
 
     ### Steering Torque
@@ -229,16 +228,16 @@ class CarController():
 
     apply_steer_limit = 250
     if not self.hud_timer_left and  not self.hud_timer_right:
-      self.lkas_active_timer1 = 140  #  apply_steer = 70
+      self.lkas_active_timer1 = 200  #  apply_steer = 70
     elif path_plan.laneChangeState != LaneChangeState.off:
-      self.lkas_active_timer1 = 150 
+      self.lkas_active_timer1 = 200 
       self.steer_torque_over = False
 
-    if v_ego_kph < 40:
-        apply_steer_limit = (v_ego_kph / 40) * 200
-        if apply_steer_limit < 50:
-            apply_steer_limit = 50
-        apply_steer = self.limit_ctrl( apply_steer, apply_steer_limit )
+    #if v_ego_kph < 40:
+    #    apply_steer_limit = (v_ego_kph / 40) * 200
+    #    if apply_steer_limit < 50:
+    #        apply_steer_limit = 50
+    #    apply_steer = self.limit_ctrl( apply_steer, apply_steer_limit )
 
     # disable lkas 
     if self.steer_torque_over:

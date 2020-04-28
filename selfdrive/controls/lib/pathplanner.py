@@ -25,7 +25,7 @@ LaneChangeBSM = log.PathPlan.LaneChangeBSM
 
 LOG_MPC = os.environ.get('LOG_MPC', True)
 
-#tracePP = trace1.Loger("pathPlanner")
+tracePP = trace1.Loger("pathPlanner")
 
 DESIRES = {
   LaneChangeDirection.none: {
@@ -67,6 +67,7 @@ class PathPlanner():
       self.path_offset_i = 0.0
 
       self.mpc_frame = 0
+      self.lane_change_ll_prob = 1.0
       self.sR_delay_counter = 0
       self.steerRatio_new = 0.0
       self.steerAngle_new = 0.0
@@ -102,12 +103,12 @@ class PathPlanner():
 
 
   def limit_ctrl(self, value, limit, offset ):
-      p_limit = limit + offset
-      m_limit = limit - offset
+      p_limit = offset + limit
+      m_limit = offset - limit
       if value > p_limit:
           value = p_limit
-      elif  value < -m_limit:
-          value = -m_limit
+      elif  value < m_limit:
+          value = m_limit
       return value
 
   def setup_mpc(self):
@@ -127,7 +128,7 @@ class PathPlanner():
       self.angle_steers_des_time = 0.0
 
 
-  def lane_change( self, sm, lca_left, lca_right, lane_change_prob ):
+  def lane_change_fun( self, sm, lca_left, lca_right, lane_change_prob ):
       if self.nCommand == 0:
           self.lane_change_timer1 = 0
           self.lane_change_timer2 = 0
@@ -173,36 +174,42 @@ class PathPlanner():
 
           if torque_applied:
               self.lane_change_timer2 = 0
+              self.lane_change_ll_prob = 1.0
               self.lane_change_state = LaneChangeState.laneChangeStarting
               self.nCommand=3
 
       elif self.nCommand == 3:   # laneChangeStarting
           cancel_applied = False
           if self.lane_change_direction == LaneChangeDirection.left:
-              if sm['carState'].rightBlinker:
-                  cancel_applied = True
-              else:
-                  cancel_applied = sm['carState'].steeringTorque < -50
+            if sm['carState'].rightBlinker:
+              cancel_applied = True
+            else:
+              cancel_applied = sm['carState'].steeringTorque < -50
           elif self.lane_change_direction == LaneChangeDirection.right:
-              if sm['carState'].leftBlinker:
-                  cancel_applied = True
-              else:
-                  cancel_applied = sm['carState'].steeringTorque > 50
+            if sm['carState'].leftBlinker:
+              cancel_applied = True
+            else:
+              cancel_applied = sm['carState'].steeringTorque > 50
 
           self.lane_change_timer2 += 1
           if cancel_applied:
-              self.nCommand=5  # cancel
-          elif lane_change_prob > 0.5 or self.lane_change_timer2 > 200:
-              self.lane_change_timer2 = 0
+            self.nCommand=5  # cancel
+          else:
+            # fade out lanelines over 1s
+            self.lane_change_ll_prob = max(self.lane_change_ll_prob - DT_MDL, 0.0)
+            # 98% certainty
+            if lane_change_prob < 0.02 and self.lane_change_ll_prob < 0.01 or self.lane_change_timer2 > 200:              
               self.lane_change_state = LaneChangeState.laneChangeFinishing
               self.nCommand=4
-          else:
-              self.lane_change_timer2 = 0
+
 
       elif self.nCommand == 4:   # laneChangeFinishing
           if sm['carState'].leftBlinker or sm['carState'].rightBlinker:
-              pass
-          elif lane_change_prob < 0.1:
+            pass
+          else:
+            # fade in laneline over 1s
+            self.lane_change_ll_prob = min(self.lane_change_ll_prob + DT_MDL, 1.0)
+            if self.lane_change_ll_prob > 0.99:
               self.lane_change_state = LaneChangeState.off
               self.nCommand=0
 
@@ -266,7 +273,7 @@ class PathPlanner():
 
       self.sR_delay_counter += 1
       delta_angle = abs_angle_steers - self.steerAngle_new
-      if delta_angle < -1.0 and self.sR_delay_counter > 5:
+      if delta_angle < -3.0 and self.sR_delay_counter > 5:
           self.sR_delay_counter += 20
 
       if self.sR_delay_counter < self.sR_time:
@@ -295,7 +302,7 @@ class PathPlanner():
         self.lane_change_direction = LaneChangeDirection.none
     else:
         lane_change_prob = self.LP.l_lane_change_prob + self.LP.r_lane_change_prob
-        self.lane_change( sm, lca_left, lca_right, lane_change_prob )
+        self.lane_change_fun( sm, lca_left, lca_right, lane_change_prob )
         
         if self.lane_change_state in [LaneChangeState.off, LaneChangeState.preLaneChange]:
           self.lane_change_timer1 = 0
@@ -313,8 +320,8 @@ class PathPlanner():
 
     # Turn off lanes during lane change
     if desire == log.PathPlan.Desire.laneChangeRight or desire == log.PathPlan.Desire.laneChangeLeft:
-      #self.LP.l_prob = 0.
-      #self.LP.r_prob = 0.
+      self.LP.l_prob *= self.lane_change_ll_prob
+      self.LP.r_prob *= self.lane_change_ll_prob
       self.libmpc.init_weights(MPC_COST_LAT.PATH / 10.0, MPC_COST_LAT.LANE, MPC_COST_LAT.HEADING, self.steer_rate_cost)
     else:
       self.libmpc.init_weights(MPC_COST_LAT.PATH, MPC_COST_LAT.LANE, MPC_COST_LAT.HEADING, self.steer_rate_cost)
@@ -347,35 +354,28 @@ class PathPlanner():
       rate_desired = 0.0
 
     self.cur_state[0].delta = delta_desired
-    self.angle_steers_des_mpc = float(math.degrees(delta_desired * self.steerRatio) + angle_offset)
-
+    old_angle_steers_des = self.angle_steers_des_mpc
+    org_angle_steers_des = float(math.degrees(delta_desired * self.steerRatio) + angle_offset)
+    self.angle_steers_des_mpc = org_angle_steers_des
 
     if v_ego_kph < 40:
         xp = [0,5,20,40]
-        fp1 = [0.1,0.25,0.5,1]
-        des_ratio = interp( v_ego_kph, xp, fp1 )
-
-        fp2 = [0.1,0.2,0.5,1]
+        fp2 = [0.2,0.5,1,1.5]
         limit_ratio = interp( v_ego_kph, xp, fp2 )
-        self.angle_steers_des_mpc = self.angle_steers_des_mpc * des_ratio
-        self.angle_steers_des_mpc = self.limit_ctrl( self.angle_steers_des_mpc, limit_ratio, angle_steers )
-
-        if v_ego_kph < 5:
-            self.angle_steers_des_mpc = self.movAvg.get_data( self.angle_steers_des_mpc, 10 )
-        elif v_ego_kph < 10:
-            self.angle_steers_des_mpc = self.movAvg.get_data( self.angle_steers_des_mpc, 5 )
-    elif abs_angle_steers > 3:
-        self.angle_steers_des_mpc = self.limit_ctrl( self.angle_steers_des_mpc, 5, angle_steers )
+        angle_steers_des = self.limit_ctrl( org_angle_steers_des, limit_ratio, angle_steers )
+        if v_ego_kph < 10:
+            self.angle_steers_des_mpc = self.movAvg.get_data( angle_steers_des, 5 )
+        else:
+            self.angle_steers_des_mpc = angle_steers_des
+    elif self.lane_change_state != LaneChangeState.off:
+        self.angle_steers_des_mpc = self.limit_ctrl( self.angle_steers_des_mpc, 3, angle_steers )
     else:
-        self.angle_steers_des_mpc = self.limit_ctrl( self.angle_steers_des_mpc, 1.5, angle_steers )
+        self.angle_steers_des_mpc = self.limit_ctrl( self.angle_steers_des_mpc, 5, angle_steers )
 
 
-    if self.LP.l_prob < 0.45 and self.LP.r_prob < 0.45:
-        self.angle_steers_des_mpc = self.limit_ctrl( self.angle_steers_des_mpc, 0.1, angle_steers )
-
-    #if active:
-    #   log_str = 'v_ego={:.1f} {}'.format( v_ego * CV.MS_TO_KPH, log_str )
-    #   tracePP.add( log_str )
+    if active:
+      log_str = 'v_ego={:.1f} model_spd={:.1f} cur_steer={:.1f} dst_steer={:.1f} org={:.1f}'.format( v_ego_kph, self.model_speed, angle_steers, self.angle_steers_des_mpc, org_angle_steers_des )
+      tracePP.add( log_str )
 
     #  Check for infeasable MPC solution
     mpc_nans = any(math.isnan(x) for x in self.mpc_solution[0].delta)

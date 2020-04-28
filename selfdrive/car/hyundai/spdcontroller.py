@@ -96,8 +96,7 @@ class SpdController():
     self.a_cruise = 0    
 
 
-  def calc_va(self, sm, CS ):
-    v_ego = CS.v_ego
+  def calc_va(self, sm, v_ego ):
     md = sm['model']    
     if len(md.path.poly):
       path = list(md.path.poly)
@@ -184,7 +183,7 @@ class SpdController():
       dec_delta = 1
 
 
-    model_speed = self.calc_va( sm, CS )
+    model_speed = self.calc_va( sm, CS.v_ego )
 
     if set_speed > cur_speed:
         set_speed = cur_speed
@@ -199,8 +198,8 @@ class SpdController():
         if v_delta <= -dec_delta:
           pass
         elif CS.lead_objspd < 0:
-          if dec_delta > 1:
-            set_speed -= (dec_delta - 1)
+          if dec_delta > 0:
+            set_speed -= dec_delta
              # dec value
           self.long_wait_timer = 20
           btn_type = Buttons.SET_DECEL   # Vuttons.RES_ACCEL
@@ -211,7 +210,7 @@ class SpdController():
     # CS.driverOverride   # 1 Acc,  2 bracking, 0 Normal
 
     str1 = 'dis={:.0f}/{:.1f} VS={:.0f} ss={:.0f}'.format( CS.lead_distance, CS.lead_objspd, CS.VSetDis, CS.cruise_set_speed_kph )
-    str3 = 'curvature={:.0f} L={:.1f} R={:.1f}'.format( model_speed, self.l_poly[3], self.r_poly[3] )
+    str3 = 'curvature={:.0f} '.format( model_speed )
 
 
     trace1.printf2( '{} {}'.format( str1, str3) )
