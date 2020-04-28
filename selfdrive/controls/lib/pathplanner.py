@@ -374,7 +374,7 @@ class PathPlanner():
 
 
     if active:
-      log_str = 'v_ego={:.1f} model_spd={:.1f} cur_steer={:.1f} dst_steer={:.1f} org={:.1f}'.format( v_ego_kph, self.model_speed, angle_steers, self.angle_steers_des_mpc, org_angle_steers_des )
+      log_str = 'v_ego={:.1f} cur_steer={:.1f} dst_steer={:.1f} org={:.1f}'.format( v_ego_kph, angle_steers, self.angle_steers_des_mpc, org_angle_steers_des )
       tracePP.add( log_str )
 
     #  Check for infeasable MPC solution
