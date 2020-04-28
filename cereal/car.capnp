@@ -410,11 +410,11 @@ struct CarParams {
   radarTimeStep @45: Float32 = 0.05;  # time delta between radar updates, 20Hz is very standard
   communityFeature @46: Bool;  # true if a community maintained feature is detected
   fingerprintSource @49: FingerprintSource;
-  mdpsBus @50: Int8;
-  sasBus @51: Int8;
-  sccBus @52: Int8;
-  autoLcaEnabled @53: Int8;
-  networkLocation @54 :NetworkLocation;  # Where Panda/C2 is integrated into the car's CAN network
+  networkLocation @50 :NetworkLocation;  # Where Panda/C2 is integrated into the car's CAN network
+  mdpsBus @51: Int8;
+  sasBus @52: Int8;
+  sccBus @53: Int8;
+  autoLcaEnabled @54: Int8;
 
   struct LateralParams {
     torqueBP @0 :List(Int32);
@@ -516,6 +516,7 @@ struct CarParams {
     gateway @10; # can gateway
     hud @11; # heads up display
     combinationMeter @12; # instrument cluster
+
     # Toyota only
     dsu @6;
     apgs @7;
