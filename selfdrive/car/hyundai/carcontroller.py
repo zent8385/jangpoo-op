@@ -38,8 +38,6 @@ def process_hud_alert(enabled, fingerprint, visual_alert, left_lane,
 
 class CarController():
   def __init__(self, dbc_name, car_fingerprint):
-    self.apply_steer_last = 0
-    self.car_fingerprint = CP.carFingerprint
     self.packer = CANPacker(dbc_name)
     self.car_fingerprint = car_fingerprint
     self.accel_steady = 0
