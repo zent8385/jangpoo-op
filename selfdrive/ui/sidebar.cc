@@ -183,17 +183,17 @@ static void ui_draw_sidebar_panda_metric(UIState *s) {
 
   if (s->scene.hwType == cereal_HealthData_HwType_unknown) {
     panda_severity = 2;
-    snprintf(panda_message_str, sizeof(panda_message_str), "%s", "PANDA 연결안됨");
+    snprintf(panda_message_str, sizeof(panda_message_str), "%s", "PANDA\n연결안됨");
   } else if (s->scene.hwType == cereal_HealthData_HwType_whitePanda) {
     panda_severity = 0;
-    snprintf(panda_message_str, sizeof(panda_message_str), "%s", "PANDA 연결됨");
+    snprintf(panda_message_str, sizeof(panda_message_str), "%s", "PANDA\n연결됨");
   } else if (
       (s->scene.hwType == cereal_HealthData_HwType_greyPanda) ||
       (s->scene.hwType == cereal_HealthData_HwType_blackPanda) ||
       (s->scene.hwType == cereal_HealthData_HwType_uno)) {
       if (s->scene.satelliteCount == -1) {
         panda_severity = 0;
-        snprintf(panda_message_str, sizeof(panda_message_str), "%s", "PANDA 연결됨");
+        snprintf(panda_message_str, sizeof(panda_message_str), "%s", "PANDA\n연결됨");
       } else if (s->scene.satelliteCount < 6) {
         panda_severity = 1;
         snprintf(panda_message_str, sizeof(panda_message_str), "%s", "PANDA\nGPS 없음");
@@ -208,11 +208,11 @@ static void ui_draw_sidebar_panda_metric(UIState *s) {
 
 static void ui_draw_sidebar_connectivity(UIState *s) {
   if (s->scene.athenaStatus == NET_DISCONNECTED) {
-    ui_draw_sidebar_metric(s, NULL, NULL, 1, 180+158, "ATHENA\nOFFLINE");
+    ui_draw_sidebar_metric(s, NULL, NULL, 1, 180+158, "ATHENA\n오프라인");
   } else if (s->scene.athenaStatus == NET_CONNECTED) {
-    ui_draw_sidebar_metric(s, NULL, NULL, 0, 180+158, "ATHENA\nONLINE");
+    ui_draw_sidebar_metric(s, NULL, NULL, 0, 180+158, "ATHENA\n온라인");
   } else {
-    ui_draw_sidebar_metric(s, NULL, NULL, 2, 180+158, "ATHENA\nERROR");
+    ui_draw_sidebar_metric(s, NULL, NULL, 2, 180+158, "ATHENA\n에러");
   }
 }
 
