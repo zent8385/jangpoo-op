@@ -42,9 +42,9 @@ def create_lkas11(packer, car_fingerprint, bus, apply_steer, steer_req, cnt, ena
     values["CF_Lkas_FcwOpt_USM"] = 2 if enabled else 1
     values["CF_Lkas_LdwsOpt_USM"] = 2
     values["CF_Lkas_SysWarning"] = 0
-#  if car_fingerprint in [CAR.SELTOS]:
-#    values["CF_Lkas_Bca_R"] = int(left_lane) + (int(right_lane) << 1)
-#    values["CF_Lkas_LdwsOpt_USM"] = 2
+  if car_fingerprint in [CAR.SELTOS]:
+    values["CF_Lkas_Bca_R"] = int(left_lane) + (int(right_lane) << 1)
+    values["CF_Lkas_LdwsOpt_USM"] = 2
 
     # FcwOpt_USM 5 = Orange blinking car + lanes
     # FcwOpt_USM 4 = Orange car + lanes
@@ -52,13 +52,13 @@ def create_lkas11(packer, car_fingerprint, bus, apply_steer, steer_req, cnt, ena
     # FcwOpt_USM 2 = Green car + lanes
     # FcwOpt_USM 1 = White car + lanes
     # FcwOpt_USM 0 = No car + lanes
-#    values["CF_Lkas_FcwOpt_USM"] = 2 if enabled else 1
+    values["CF_Lkas_FcwOpt_USM"] = 2 if enabled else 1
 
     # SysWarning 4 = keep hands on wheel
     # SysWarning 5 = keep hands on wheel (red)
     # SysWarning 6 = keep hands on wheel (red) + beep
     # Note: the warning is hidden while the blinkers are on
-#    values["CF_Lkas_SysWarning"] = 4 if sys_warning else 0
+    values["CF_Lkas_SysWarning"] = 4 if sys_warning else 0
 
   dat = packer.make_can_msg("LKAS11", 0, values)[2]
 
