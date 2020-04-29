@@ -361,8 +361,8 @@ class PathPlanner():
     if v_ego_kph < 40:
         xp = [0,5,20,40]
         fp2 = [0.2,0.5,1,1.5]
-        limit_ratio = interp( v_ego_kph, xp, fp2 )
-        angle_steers_des = self.limit_ctrl( org_angle_steers_des, limit_ratio, angle_steers )
+        limit_steers = interp( v_ego_kph, xp, fp2 )
+        angle_steers_des = self.limit_ctrl( org_angle_steers_des, limit_steers, angle_steers )
         if v_ego_kph < 10:
             self.angle_steers_des_mpc = self.movAvg.get_data( angle_steers_des, 5 )
         else:

@@ -131,7 +131,7 @@ class CarController():
       fp = [190,225,240,250,param.STEER_MAX]
       param.STEER_MAX = interp( abs_angle_steers, xp, fp )
 
-      if abs_angle_steers < 0.5 or v_ego_kph < 10:
+      if abs_angle_steers < 0.5 or v_ego_kph < 5:
           param.STEER_DELTA_UP  = 1
           param.STEER_DELTA_DOWN = 1
       elif abs_angle_steers < 1:
@@ -233,21 +233,19 @@ class CarController():
       self.lkas_active_timer1 = 200 
       self.steer_torque_over = False
 
-    #if v_ego_kph < 40:
-    #    apply_steer_limit = (v_ego_kph / 40) * 200
-    #    if apply_steer_limit < 50:
-    #        apply_steer_limit = 50
-    #    apply_steer = self.limit_ctrl( apply_steer, apply_steer_limit )
+    if v_ego_kph < 5:
+      self.lkas_active_timer1 = 100 
+
 
     # disable lkas 
-    if self.steer_torque_over:
+    if CS.stopped:
         lkas_active = 0
-    if self.streer_angle_over and not CS.mdps_bus:
+    elif self.steer_torque_over:
+        lkas_active = 0
+    if self.streer_angle_over:
         lkas_active = 0
     elif self.turning_indicator:
         lkas_active = 0
-    #elif self.low_speed_car and not CS.mdps_bus:
-        #lkas_active = 0
 
 
     if not lkas_active:
