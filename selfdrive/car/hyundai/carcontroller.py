@@ -37,7 +37,7 @@ def process_hud_alert(enabled, fingerprint, visual_alert, left_lane,
 
 
 class CarController():
-  def __init__(self, dbc_name, CP, VM):
+  def __init__(self, dbc_name, car_fingerprint, CP, VM):
     self.apply_steer_last = 0
     self.car_fingerprint = CP.carFingerprint
     self.packer = CANPacker(dbc_name)
@@ -45,9 +45,15 @@ class CarController():
     self.accel_steady = 0
     self.apply_steer_last = 0
     self.steer_rate_limited = False
+    self.lkas11_cnt = 0
+    self.scc12_cnt = 0
     self.resume_cnt = 0
     self.last_resume_frame = 0
     self.last_lead_distance = 0
+    self.turning_signal_timer = 0
+    self.lkas_button = 1
+    self.lkas_button_last = 0
+    self.longcontrol = 0 #TODO: make auto
 
   def update(self, enabled, CS, frame, actuators, pcm_cancel_cmd, visual_alert,
              left_lane, right_lane, left_lane_depart, right_lane_depart):
@@ -72,6 +78,8 @@ class CarController():
 
     if not lkas_active:
       apply_steer = 0
+
+    steer_req = 1 if apply_steer else 0
 
     self.apply_accel_last = apply_accel
     self.apply_steer_last = apply_steer
