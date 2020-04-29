@@ -31,7 +31,7 @@ class CarInterface(CarInterfaceBase):
 
     self.CC = None
     if CarController is not None:
-      self.CC = CarController(self.cp.dbc_name, CP.carFingerprin)
+      self.CC = CarController(self.cp.dbc_name, CP.carFingerprint)
 
     self.blinker_status = 0
     self.blinker_timer = 0
