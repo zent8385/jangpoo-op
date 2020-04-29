@@ -25,8 +25,9 @@ def accel_hysteresis(accel, accel_steady):
 
   return accel, accel_steady
 
-def process_hud_alert(enabled, fingerprint, visual_alert, left_lane,
+def process_hud_alert(enabled, button_on, fingerprint, visual_alert, left_lane,
                       right_lane, left_lane_depart, right_lane_depart):
+  hud_alert = 0
   sys_warning = (visual_alert == VisualAlert.steerRequired)
 
   # initialize to no line visible
@@ -70,7 +71,7 @@ class CarController():
     self.longcontrol = 0 #TODO: make auto
 
   def update(self, enabled, CS, frame, actuators, pcm_cancel_cmd, visual_alert,
-             left_lane, right_lane, left_lane_depart, right_lane_depart):
+              left_line, right_line, left_lane_depart, right_lane_depart):
 
     # *** compute control surfaces ***
 
@@ -85,31 +86,30 @@ class CarController():
     apply_steer = apply_std_steer_torque_limits(new_steer, self.apply_steer_last, CS.steer_torque_driver, SteerLimitParams)
     self.steer_rate_limited = new_steer != apply_steer
 
-    # disable if steer angle reach 90 deg, otherwise mdps fault in some models
-    lkas_active = enabled and abs(CS.out.steeringAngle) < 90.
+    lkas_active = enabled
 
-    # fix for Genesis hard fault at low speed
-    if CS.v_ego < 16.7 and self.car_fingerprint == CAR.GENESIS:
-      lkas_active = 0
-
+      
     # Disable steering while turning blinker on and speed below 60 kph
     if CS.left_blinker_on or CS.right_blinker_on:
       if self.car_fingerprint in [CAR.IONIQ, CAR.KONA]:
         self.turning_signal_timer = 100  # Disable for 1.0 Seconds after blinker turned off
       elif CS.left_blinker_flash or CS.right_blinker_flash:
         self.turning_signal_timer = 100
-
+    if self.turning_signal_timer and CS.v_ego < 16.666667:
+      lkas_active = 0
+    if self.turning_signal_timer:
+      self.turning_signal_timer -= 1
     if not lkas_active:
       apply_steer = 0
-
+      
     steer_req = 1 if apply_steer else 0
 
     self.apply_accel_last = apply_accel
     self.apply_steer_last = apply_steer
 
     sys_warning, sys_state, left_lane_warning, right_lane_warning =\
-      process_hud_alert(enabled, self.car_fingerprint, visual_alert,
-                        left_lane, right_lane, left_lane_depart, right_lane_depart)
+            process_hud_alert(lkas_active, self.lkas_button, self.car_fingerprint, visual_alert,
+            left_line, right_line, left_lane_depart, right_lane_depart)
 
     clu11_speed = CS.clu11["CF_Clu_Vanz"]
     enabled_speed = 38 if CS.is_set_speed_in_mph  else 60
@@ -117,10 +117,6 @@ class CarController():
       enabled_speed = clu11_speed
 
     can_sends = []
-    can_sends.append(create_lkas11(self.packer, frame, self.car_fingerprint, apply_steer, lkas_active,
-                                   CS.lkas11, sys_warning, sys_state, enabled,
-                                   left_lane, right_lane,
-                                   left_lane_warning, right_lane_warning, left_lane_depart, right_lane_depart))
 
     if frame == 0: # initialize counts from last received count signals
       self.lkas11_cnt = CS.lkas11["CF_Lkas_MsgCount"] + 1
@@ -132,10 +128,10 @@ class CarController():
     self.mdps12_cnt = frame % 0x100
 
     can_sends.append(create_lkas11(self.packer, self.car_fingerprint, 0, apply_steer, steer_req, self.lkas11_cnt, lkas_active,
-                                   CS.lkas11, left_lane, right_lane, left_lane_depart, right_lane_depart, keep_stock=True))
+                                   CS.lkas11, hud_alert, lane_visible, left_lane_depart, right_lane_depart, keep_stock=True))
     if CS.mdps_bus or CS.scc_bus == 1: # send lkas12 bus 1 if mdps or scc is on bus 1
       can_sends.append(create_lkas11(self.packer, self.car_fingerprint, 1, apply_steer, steer_req, self.lkas11_cnt, lkas_active,
-                                   CS.lkas11, left_lane, right_lane, left_lane_depart, right_lane_depart, keep_stock=True))
+                                   CS.lkas11, hud_alert, lane_visible, left_lane_depart, right_lane_depart, keep_stock=True))
     if CS.mdps_bus: # send clu11 to mdps if it is not on bus 0
       can_sends.append(create_clu11(self.packer, CS.mdps_bus, CS.clu11, Buttons.NONE, enabled_speed, self.clu11_cnt))
 
