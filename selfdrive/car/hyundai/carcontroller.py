@@ -64,7 +64,7 @@ class CarController():
     lkas_active = enabled and abs(CS.out.steeringAngle) < 90.
 
     # fix for Genesis hard fault at low speed
-    if CS.v_Ego < 16.7 and self.car_fingerprint == CAR.GENESIS:
+    if CS.v_ego < 16.7 and self.car_fingerprint == CAR.GENESIS:
       lkas_active = 0
 
     # Disable steering while turning blinker on and speed below 60 kph
