@@ -12,9 +12,8 @@ GearShifter = car.CarState.GearShifter
 ButtonType = car.CarState.ButtonEvent.Type
 
 class CarInterface(CarInterfaceBase):
-  def __init__(self, CP, CarController, CarState, VehicleModel):
+  def __init__(self, CP, CarController, CarState):
     self.CP = CP
-    self.VM = VehicleModel(CP)
     self.frame = 0
 
     self.gas_pressed_prev = False
@@ -31,7 +30,7 @@ class CarInterface(CarInterfaceBase):
 
     self.CC = None
     if CarController is not None:
-      self.CC = CarController(self.cp.dbc_name, CP.carFingerprint)
+      self.CC = CarController(self.cp.dbc_name, CP.carFingerprint, self.VM)
 
     self.blinker_status = 0
     self.blinker_timer = 0
