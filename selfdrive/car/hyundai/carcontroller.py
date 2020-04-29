@@ -132,10 +132,10 @@ class CarController():
     self.mdps12_cnt = frame % 0x100
 
     can_sends.append(create_lkas11(self.packer, self.car_fingerprint, 0, apply_steer, steer_req, self.lkas11_cnt, lkas_active,
-                                   CS.lkas11, left_lane_depart, right_lane_depart, keep_stock=True))
+                                   CS.lkas11, left_lane, right_lane, left_lane_depart, right_lane_depart, keep_stock=True))
     if CS.mdps_bus or CS.scc_bus == 1: # send lkas12 bus 1 if mdps or scc is on bus 1
       can_sends.append(create_lkas11(self.packer, self.car_fingerprint, 1, apply_steer, steer_req, self.lkas11_cnt, lkas_active,
-                                   CS.lkas11, left_lane_depart, right_lane_depart, keep_stock=True))
+                                   CS.lkas11, left_lane, right_lane, left_lane_depart, right_lane_depart, keep_stock=True))
     if CS.mdps_bus: # send clu11 to mdps if it is not on bus 0
       can_sends.append(create_clu11(self.packer, CS.mdps_bus, CS.clu11, Buttons.NONE, enabled_speed, self.clu11_cnt))
 
@@ -169,7 +169,7 @@ class CarController():
     self.lkas11_cnt += 1
 
     # 20 Hz LFA MFA message
-    if frame % 5 == 0 and self.car_fingerprint in [CAR.SONATA, CAR.PALISADE]:
+    if frame % 5 == 0 and self.car_fingerprint in [CAR.SELTOS]:
       can_sends.append(create_lfa_mfa(self.packer, frame, enabled))
 
     return can_sends
