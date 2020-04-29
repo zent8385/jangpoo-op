@@ -7,10 +7,10 @@ def create_lkas11(packer, car_fingerprint, bus, apply_steer, steer_req, cnt, ena
                                    sys_state, left_lane, right_lane, left_lane_depart, right_lane_depart, keep_stock=False):
   values = {
     "CF_Lkas_Bca_R": lkas11["CF_Lkas_Bca_R"] if keep_stock else 3,
-    "CF_Lkas_LdwsSysState": sys_state
-    "CF_Lkas_SysWarning": 3 if sys_warning else 0
-    "CF_Lkas_LdwsLHWarning": left_lane_depart
-    "CF_Lkas_LdwsRHWarning": right_lane_depart
+    "CF_Lkas_LdwsSysState": sys_state,
+    "CF_Lkas_SysWarning": 3 if sys_warning else 0,
+    "CF_Lkas_LdwsLHWarning": left_lane_depart,
+    "CF_Lkas_LdwsRHWarning": right_lane_depart,
     "CF_Lkas_HbaLamp": lkas11["CF_Lkas_HbaLamp"] if keep_stock else 0,
     "CF_Lkas_FcwBasReq": lkas11["CF_Lkas_FcwBasReq"] if keep_stock else 0,
     "CR_Lkas_StrToqReq": apply_steer,
