@@ -120,7 +120,7 @@ class CarController():
     can_sends.append(create_lkas11(self.packer, frame, self.car_fingerprint, apply_steer, lkas_active,
                                    CS.lkas11, sys_warning, sys_state, enabled,
                                    left_lane, right_lane,
-                                   left_lane_warning, right_lane_warning))
+                                   left_lane_warning, right_lane_warning, left_lane_depart, right_lane_depart))
 
     if frame == 0: # initialize counts from last received count signals
       self.lkas11_cnt = CS.lkas11["CF_Lkas_MsgCount"] + 1
