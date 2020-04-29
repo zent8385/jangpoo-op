@@ -55,6 +55,15 @@ class CarController():
 
   def update(self, enabled, CS, frame, actuators, pcm_cancel_cmd, visual_alert,
              left_lane, right_lane, left_lane_depart, right_lane_depart):
+
+    # *** compute control surfaces ***
+
+    # gas and brake
+    apply_accel = actuators.gas - actuators.brake
+
+    apply_accel, self.accel_steady = accel_hysteresis(apply_accel, self.accel_steady)
+    apply_accel = clip(apply_accel * ACCEL_SCALE, ACCEL_MIN, ACCEL_MAX)
+
     # Steering Torque
     new_steer = actuators.steer * SteerLimitParams.STEER_MAX
     apply_steer = apply_std_steer_torque_limits(new_steer, self.apply_steer_last, CS.steer_torque_driver, SteerLimitParams)
