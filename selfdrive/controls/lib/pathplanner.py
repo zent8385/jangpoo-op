@@ -373,9 +373,9 @@ class PathPlanner():
         self.angle_steers_des_mpc = self.limit_ctrl( self.angle_steers_des_mpc, 5, angle_steers )
 
 
-    if active:
-      log_str = 'v_ego={:.1f} cur_steer={:.1f} dst_steer={:.1f} org={:.1f}'.format( v_ego_kph, angle_steers, self.angle_steers_des_mpc, org_angle_steers_des )
-      tracePP.add( log_str )
+    #if active:
+    #  log_str = 'v_ego={:.1f} cur_steer={:.1f} dst_steer={:.1f} org={:.1f}'.format( v_ego_kph, angle_steers, self.angle_steers_des_mpc, org_angle_steers_des )
+    #  tracePP.add( log_str )
 
     #  Check for infeasable MPC solution
     mpc_nans = any(math.isnan(x) for x in self.mpc_solution[0].delta)
