@@ -53,6 +53,7 @@ while True:
   print ("")
   print ("1,3,5,7,r to incr 0.1,0.05,0.01,0.001,0.00001")
   print ("a,d,g,j,v to decr 0.1,0.05,0.01,0.001,0.00001")
+  print ("P,I,B,R to decr kp,ki,sR_boost,steerRatio")
   print ("0 / L to make the value 0 / 1")
   print ("press SPACE / m for next /prev parameter")
   print ("press z to quit")
