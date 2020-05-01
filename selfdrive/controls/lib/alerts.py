@@ -253,7 +253,7 @@ ALERTS = [
       "핸들을 잡아주세요",
       "차량속도가 낮아 조향제어가 일시적으로 비활성화 되었습니다",
       AlertStatus.userPrompt, AlertSize.mid,
-      Priority.MID, VisualAlert.steerRequired, AudibleAlert.none, 0., 0.4, .3),
+      Priority.MID, VisualAlert.none, AudibleAlert.none, 0., 0.4, .3),
 
   Alert(
       "debugAlert",
@@ -266,42 +266,42 @@ ALERTS = [
       "차선 변경을 위해 핸들을 좌측으로 살짝 돌리세요",
       "다른 차량에 주의하세요",
       AlertStatus.normal, AlertSize.mid,
-      Priority.LOW, VisualAlert.steerRequired, AudibleAlert.none, .0, .1, .1, alert_rate=0.75),
+      Priority.LOW, VisualAlert.none, AudibleAlert.none, .0, .1, .1, alert_rate=0.75),
 
   Alert(
       "preLaneChangeRight",
       "차선 변경을 위해 핸들을 우측으로 살짝 돌리세요",
       "다른 차량에 주의하세요",
       AlertStatus.normal, AlertSize.mid,
-      Priority.LOW, VisualAlert.steerRequired, AudibleAlert.none, .0, .1, .1, alert_rate=0.75),
+      Priority.LOW, VisualAlert.none, AudibleAlert.none, .0, .1, .1, alert_rate=0.75),
 
   Alert(
       "laneChange",
       "차선 변경 중",
       "다른 차량에 주의하세요",
       AlertStatus.normal, AlertSize.mid,
-      Priority.LOW, VisualAlert.steerRequired, AudibleAlert.none, .0, .1, .1),
+      Priority.LOW, VisualAlert.none, AudibleAlert.none, .0, .1, .1),
   
     Alert(
       "rightLCAbsm",
       "우측에 차량 접근 중",
       "차선 변경을 위해 잠시 대기합니다",
       AlertStatus.userPrompt, AlertSize.mid,
-      Priority.MID, VisualAlert.steerRequired, AudibleAlert.none, 0., 0.4, .3),
+      Priority.MID, VisualAlert.none, AudibleAlert.none, 0., 0.4, .3),
   
   Alert(
       "leftLCAbsm",
       "좌측에 차량 접근 중",
       "차선 변경을 위해 잠시 대기합니다",
       AlertStatus.userPrompt, AlertSize.mid,
-      Priority.MID, VisualAlert.steerRequired, AudibleAlert.none, 0., 0.4, .3),
+      Priority.MID, VisualAlert.none, AudibleAlert.none, 0., 0.4, .3),
   
   Alert(
       "preventLCA",
       "핸들을 잡아주세요",
       "도로 상황 불안으로 차선변경이 취소되었습니다",
       AlertStatus.critical, AlertSize.full,
-      Priority.HIGH, VisualAlert.none, AudibleAlert.chimeWarningRepeat, .4, 3., 3.,),
+      Priority.HIGH, VisualAlert.steerRequired, AudibleAlert.chimeWarningRepeat, .4, 3., 3.,),
 
 
   Alert(
