@@ -207,6 +207,7 @@ class SpdController():
 
     set_speed = self.long_dst_speed
     # 2. 커브 감속.
+    cuv_dst_speed = set_speed
     if CS.cruise_set_speed_kph >= 70:
       if model_speed < 80:
         long_wait_timer_cmd = 50
