@@ -365,7 +365,7 @@ class CarController():
         if self.sc_active_timer2 > 5:
           self.sc_wait_timer2 = 5
           self.resume_cnt = 0
-          self.sc_active_timer = 0
+          self.sc_active_timer2 = 0
           self.sc_btn_type = Buttons.NONE          
         else:
           # self.traceCC.add( 'sc_btn_type={}  clu_speed={}  cnt={}'.format( self.sc_btn_type, self.sc_clu_speed, self.sc_active_timer ) )
