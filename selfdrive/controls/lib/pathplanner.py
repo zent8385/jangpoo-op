@@ -323,8 +323,8 @@ class PathPlanner():
 
     # Turn off lanes during lane change
     if desire == log.PathPlan.Desire.laneChangeRight or desire == log.PathPlan.Desire.laneChangeLeft:
-      self.LP.l_prob *= self.lane_change_ll_prob
-      self.LP.r_prob *= self.lane_change_ll_prob
+      #self.LP.l_prob *= self.lane_change_ll_prob
+      #self.LP.r_prob *= self.lane_change_ll_prob
       self.libmpc.init_weights(MPC_COST_LAT.PATH / 10.0, MPC_COST_LAT.LANE, MPC_COST_LAT.HEADING, self.steer_rate_cost)
     else:
       self.libmpc.init_weights(MPC_COST_LAT.PATH, MPC_COST_LAT.LANE, MPC_COST_LAT.HEADING, self.steer_rate_cost)
@@ -371,7 +371,7 @@ class PathPlanner():
         else:
             self.angle_steers_des_mpc = angle_steers_des
     elif self.lane_change_state != LaneChangeState.off:
-        self.angle_steers_des_mpc = self.limit_ctrl( self.angle_steers_des_mpc, 3, angle_steers )
+        self.angle_steers_des_mpc = self.limit_ctrl( self.angle_steers_des_mpc, 2, angle_steers )
     else:
         self.angle_steers_des_mpc = self.limit_ctrl( self.angle_steers_des_mpc, 5, angle_steers )
 
