@@ -59,6 +59,16 @@ while True:
 
   char  = getch()
   write_json = False
+  if (char == "P"):
+    j = 0
+  elif (char == "I"):
+    j = 1
+  elif (char == "B"):
+    j = 6
+  elif (char == "R"):
+    j = 3
+
+
   if (char == "v"):
     kegman.conf[param[j]] = str(round((float(kegman.conf[param[j]]) - 0.00001),5))
     write_json = True
