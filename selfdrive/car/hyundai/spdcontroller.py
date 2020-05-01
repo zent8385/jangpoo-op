@@ -222,22 +222,25 @@ class SpdController():
       if set_speed < cuv_dst_speed:
         set_speed = cuv_dst_speed
 
-
+    if CS.cruise_set_speed_kph < set_speed:
+        set_speed = CS.cruise_set_speed_kph
     
     delta = int(set_speed) - int(CS.VSetDis)
     if self.long_wait_timer:
       self.long_wait_timer -= 1
     elif delta <= -1:
+      set_speed = CS.VSetDis - 1
       btn_type = Buttons.SET_DECEL
       self.long_wait_timer = long_wait_timer_cmd
-      #SC.add( 'Buttons.SET_DECEL  set speed={}'.format( set_speed ) )
+      SC.add( 'Buttons.SET_DECEL  set speed={}'.format( set_speed ) )
     elif  delta >= 1:
+      set_speed = CS.VSetDis + 1
       btn_type = Buttons.RES_ACCEL
       self.long_wait_timer = long_wait_timer_cmd
-      #SC.add( 'Buttons.RES_ACCEL  set speed={}'.format( set_speed ) )
+      SC.add( 'Buttons.RES_ACCEL  set speed={}'.format( set_speed ) )
 
     #str1 = 'ss={:.0f} dst={:0.f}'.format( set_speed,  self.long_dst_speed )
-    str3 = 'model_speed={:.0f}   dest={:.0f} delta={}'.format( model_speed,  set_speed, delta )
+    str3 = 'model_speed={:.0f}   dest={:.0f} delta={}  time={:.0f}'.format( model_speed,  set_speed, delta, self.long_wait_timer )
     trace1.printf2(  str3 )
     #SC.add( str3 )
 
@@ -245,5 +248,5 @@ class SpdController():
       #str2 = 'btn={:.0f} btn_type={}  v{:.5f} a{:.5f}  v{:.5f} a{:.5f}'.format(  CS.AVM_View, btn_type, self.v_model, self.a_model, self.v_cruise, self.a_cruise )
      # self.traceSC.add( 'v_ego={:.1f} angle={:.1f}  {} {} {}'.format( v_ego_kph, CS.angle_steers, str1, str2, str3 )  ) 
 
-    return btn_type, CS.VSetDis, model_speed
+    return btn_type, set_speed, model_speed
     #return btn_type, set_speed, model_speed
