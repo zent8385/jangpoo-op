@@ -449,10 +449,13 @@ class CarState():
             if self.cruise_set_timer1 < 5:
               self.cruise_set_speed_kph += 1
             else:
-              self.cruise_set_speed_kph += 10 #int(self.VSetDis)
+              self.cruise_set_speed_kph =  int(self.VSetDis)
             #self.cruise_set_speed_kph = int(self.VSetDis)
         elif self.prev_clu_CruiseSwState == 2:  # dn
-            self.cruise_set_speed_kph =  int(self.clu_Vanz)
+            if self.cruise_set_timer1 < 5:
+              self.cruise_set_speed_kph -= 1
+            else:
+              self.cruise_set_speed_kph =  int(self.clu_Vanz)
             #self.cruise_set_speed_kph =  int(self.VSetDis)  #int(self.clu_Vanz)
 
         self.prev_clu_CruiseSwState = self.clu_CruiseSwState
