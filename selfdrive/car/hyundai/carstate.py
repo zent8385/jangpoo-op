@@ -440,15 +440,25 @@ class CarState():
 
     if self.pcm_acc_status:
       if self.prev_clu_CruiseSwState != self.clu_CruiseSwState:
-        self.prev_clu_CruiseSwState = self.clu_CruiseSwState
+        if self.clu_CruiseSwState:
+          self.cruise_set_timer1 = 0
+        else:
+          self.cruise_set_timer1 += 1
 
-        if self.clu_CruiseSwState == 1:   # up
-            self.cruise_set_speed_kph += 1
-        elif self.clu_CruiseSwState == 2:  # dn
-            self.cruise_set_speed_kph = self.clu_Vanz
+        if self.prev_clu_CruiseSwState == 1:   # up
+            if self.cruise_set_timer1 < 5:
+              self.cruise_set_speed_kph += 1
+            else:
+              self.cruise_set_speed_kph += 10 #int(self.VSetDis)
+            #self.cruise_set_speed_kph = int(self.VSetDis)
+        elif self.prev_clu_CruiseSwState == 2:  # dn
+            self.cruise_set_speed_kph =  int(self.clu_Vanz)
+            #self.cruise_set_speed_kph =  int(self.VSetDis)  #int(self.clu_Vanz)
+
+        self.prev_clu_CruiseSwState = self.clu_CruiseSwState
     else:
       self.cruise_set_speed_kph = self.VSetDis
-      self.cruise_set_timer1 = 0
+      
 
     if self.cruise_set_speed_kph < 30:
       self.cruise_set_speed_kph = 30

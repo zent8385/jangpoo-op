@@ -267,6 +267,9 @@ class PathPlanner():
     abs_angle_steers = abs(angle_steers)
     if v_ego_kph < 10:
       self.steerRatio = self.sR[0] * 0.6
+    elif self.lane_change_state != LaneChangeState.off:
+      self.steerRatio = self.sR[0]
+      self.steerAngle_new = 0
     elif v_ego_kph > 40:  # 11.111:
       # boost steerRatio by boost amount if desired steer angle is high
       self.steerRatio_new = interp( abs_angle_steers, self.sRBP, self.sR)

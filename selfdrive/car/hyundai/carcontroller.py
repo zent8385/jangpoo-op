@@ -55,7 +55,7 @@ class CarController():
 
 
     self.SC = SpdController()
-    self.sc_active_timer = 0 
+    self.sc_wait_timer2 = 0
     self.sc_active_timer2 = 0     
     self.sc_btn_type = Buttons.NONE
     self.sc_clu_speed = 0
@@ -63,11 +63,13 @@ class CarController():
     self.traceCC = trace1.Loger("CarCtrl")
 
 
-  def limit_ctrl(self, value, limit ):
-      if value > limit:
-          value = limit
-      elif  value < -limit:
-          value = -limit
+  def limit_ctrl(self, value, limit, offset ):
+      p_limit = offset + limit
+      m_limit = offset - limit
+      if value > p_limit:
+          value = p_limit
+      elif  value < m_limit:
+          value = m_limit
       return value
 
 
@@ -123,10 +125,10 @@ class CarController():
     apply_accel = clip(apply_accel * ACCEL_SCALE, ACCEL_MIN, ACCEL_MAX)
 
     param = SteerLimitParams
-
-    abs_angle_steers =  abs(actuators.steerAngle) #  abs(CS.angle_steers)  # 
-
-    if self.model_speed > 200:
+    if path_plan.laneChangeState != LaneChangeState.off or self.model_speed == 300:
+      pass
+    elif self.model_speed > 200:
+      abs_angle_steers =  abs(actuators.steerAngle) #  abs(CS.angle_steers)  # 
       xp = [0,0.5,1,1.5,2]
       fp = [190,225,240,250,param.STEER_MAX]
       param.STEER_MAX = interp( abs_angle_steers, xp, fp )
@@ -148,14 +150,11 @@ class CarController():
     self.steer_rate_limited = new_steer != apply_steer
 
     # steer torque의 변화량 감시.
-    delta = apply_steer - self.apply_steer_last
-    if delta > 50:
-      apply_steer = self.apply_steer_last + 50
-    if delta < -50:
-      apply_steer = self.apply_steer_last - 50
+    apply_steer = self.limit_ctrl( apply_steer, 50, self.apply_steer_last )
+
     
 
-    if abs( CS.steer_torque_driver ) > 200:
+    if abs( CS.steer_torque_driver ) > 180:
         self.steer_torque_over_timer += 1
         if self.steer_torque_over_timer > 5:
           self.steer_torque_over = True
@@ -264,7 +263,7 @@ class CarController():
               apply_steer_limit = steer_limit
           if apply_steer_limit < 20:
              apply_steer_limit = 20
-          apply_steer = self.limit_ctrl( apply_steer, apply_steer_limit )
+          apply_steer = self.limit_ctrl( apply_steer, apply_steer_limit, 0 )
 
 
 
@@ -277,10 +276,10 @@ class CarController():
 
     hud_alert, lane_visible = self.process_hud_alert(lkas_active, self.lkas_button, visual_alert, self.hud_timer_left, self.hud_timer_right, CS )    
 
-    clu11_speed = CS.clu11["CF_Clu_Vanz"]
-    enabled_speed = 38 if CS.is_set_speed_in_mph  else 60
-    if clu11_speed > enabled_speed or not lkas_active:
-      enabled_speed = clu11_speed
+    #clu11_speed = CS.clu11["CF_Clu_Vanz"]
+    #enabled_speed = 38 if CS.is_set_speed_in_mph  else 60
+    #if clu11_speed > enabled_speed or not lkas_active:
+    #  enabled_speed = clu11_speed
 
     can_sends = []
 
@@ -303,17 +302,17 @@ class CarController():
                                    CS.lkas11, hud_alert, lane_visible, keep_stock=True))
 
     #  2. clu
-    if CS.mdps_bus: # send clu11 to mdps if it is not on bus 0
-      can_sends.append(create_clu11(self.packer, CS.mdps_bus, CS.clu11, Buttons.NONE, enabled_speed, self.clu11_cnt))
+    #if CS.mdps_bus: # send clu11 to mdps if it is not on bus 0
+    #  can_sends.append(create_clu11(self.packer, CS.mdps_bus, CS.clu11, Buttons.NONE, enabled_speed, self.clu11_cnt))
 
-    if pcm_cancel_cmd and self.longcontrol:
-      can_sends.append(create_clu11(self.packer, CS.scc_bus, CS.clu11, Buttons.CANCEL, clu11_speed, self.clu11_cnt))
-    else: # send mdps12 to LKAS to prevent LKAS error if no cancel cmd
-      can_sends.append(create_mdps12(self.packer, self.car_fingerprint, self.mdps12_cnt, CS.mdps12))
+    #if pcm_cancel_cmd and self.longcontrol:
+    #  can_sends.append(create_clu11(self.packer, CS.scc_bus, CS.clu11, Buttons.CANCEL, clu11_speed, self.clu11_cnt))
+    #else: # send mdps12 to LKAS to prevent LKAS error if no cancel cmd
+    can_sends.append(create_mdps12(self.packer, self.car_fingerprint, self.mdps12_cnt, CS.mdps12))
 
-    if CS.scc_bus and self.longcontrol and frame % 2: # send scc12 to car if SCC not on bus 0 and longcontrol enabled
-      can_sends.append(create_scc12(self.packer, apply_accel, enabled, self.scc12_cnt, CS.scc12))
-      self.scc12_cnt += 1
+    #if CS.scc_bus and self.longcontrol and frame % 2: # send scc12 to car if SCC not on bus 0 and longcontrol enabled
+    #  can_sends.append(create_scc12(self.packer, apply_accel, enabled, self.scc12_cnt, CS.scc12))
+    #  self.scc12_cnt += 1
 
     
          
@@ -325,7 +324,7 @@ class CarController():
     
 
     if CS.stopped:
-      self.model_speed = 255
+      self.model_speed = 300
       # run only first time when the car stopped
       if self.last_lead_distance == 0:
         # get the lead distance from the Radar
@@ -333,7 +332,7 @@ class CarController():
         self.resume_cnt = 0
       # when lead car starts moving, create 6 RES msgs
       elif CS.lead_distance > self.last_lead_distance and (frame - self.last_resume_frame) > 5:
-        can_sends.append(create_clu11(self.packer, CS.scc_bus, CS.clu11, Buttons.RES_ACCEL, clu11_speed, self.resume_cnt))
+        can_sends.append(create_clu11(self.packer, CS.scc_bus, CS.clu11, Buttons.RES_ACCEL, CS.clu_Vanz, self.resume_cnt))
         self.resume_cnt += 1
         # interval after 6 msgs
         if self.resume_cnt > 5:
@@ -341,39 +340,38 @@ class CarController():
           self.resume_cnt = 0
     # reset lead distnce after the car starts moving
     elif self.last_lead_distance != 0:
-      self.last_lead_distance = 0  
+      self.last_lead_distance = 0
+    elif CS.driverOverride or not CS.pcm_acc_status or CS.clu_CruiseSwState == 1 or CS.clu_CruiseSwState == 2:
+      self.model_speed = 300
+      self.resume_cnt = 0
+      self.sc_btn_type = Buttons.NONE
+      self.sc_wait_timer2 = 5
+      self.sc_active_timer2 = 0
+    elif self.sc_wait_timer2:
+      self.sc_wait_timer2 -= 1
     else:
       #acc_mode, clu_speed = self.long_speed_cntrl( v_ego_kph, CS, actuators )
       btn_type, clu_speed, model_speed = self.SC.update( v_ego_kph, CS, sm, actuators )   # speed controller spdcontroller.py
 
       self.model_speed = model_speed
-      if v_ego_kph < 30:
-          self.resume_cnt = 0
-          self.sc_active_timer = 0
-          self.sc_btn_type = Buttons.NONE
-      elif self.sc_btn_type != Buttons.NONE:
+      if self.sc_btn_type != Buttons.NONE:
           pass
-      elif CS.driverOverride:
-          pass
-      elif self.sc_active_timer2:
-          self.sc_active_timer2 -= 1
       elif btn_type != Buttons.NONE:
           self.sc_btn_type = btn_type
           self.sc_clu_speed = clu_speed
 
-
       if self.sc_btn_type != Buttons.NONE:
-        if self.sc_active_timer < 5:
-          self.sc_active_timer += 1
-          self.sc_active_timer2 = 5
-         # self.traceCC.add( 'sc_btn_type={}  clu_speed={}  cnt={}'.format( self.sc_btn_type, self.sc_clu_speed, self.sc_active_timer ) )
-          can_sends.append(create_clu11(self.packer, CS.scc_bus, CS.clu11, self.sc_btn_type, self.sc_clu_speed, self.resume_cnt))
-          self.resume_cnt += 1
-        else:
-          #self.traceCC.add( 'Buttons.NONE' )
+        self.sc_active_timer2 += 1
+        if self.sc_active_timer2 > 5:
+          self.sc_wait_timer2 = 5
           self.resume_cnt = 0
           self.sc_active_timer = 0
-          self.sc_btn_type = Buttons.NONE
+          self.sc_btn_type = Buttons.NONE          
+        else:
+          # self.traceCC.add( 'sc_btn_type={}  clu_speed={}  cnt={}'.format( self.sc_btn_type, self.sc_clu_speed, self.sc_active_timer ) )
+          can_sends.append(create_clu11(self.packer, CS.scc_bus, CS.clu11, self.sc_btn_type, self.sc_clu_speed, self.resume_cnt))
+          self.resume_cnt += 1
+
 
   
 

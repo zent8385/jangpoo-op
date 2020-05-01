@@ -13,7 +13,7 @@ from selfdrive.controls.lib.speed_smoother import speed_smoother
 from selfdrive.controls.lib.long_mpc import LongitudinalMpc
 
 
-from selfdrive.car.hyundai.values import Buttons, SteerLimitParams, LaneChangeParms
+from selfdrive.car.hyundai.values import Buttons, SteerLimitParams
 from common.numpy_fast import clip, interp
 
 from selfdrive.config import RADAR_TO_CAMERA
@@ -47,6 +47,7 @@ _A_TOTAL_MAX_BP = [20., 40.]
 SPEED_PERCENTILE_IDX = 7
 
 
+SC = trace1.Loger("spd")
 
 
 def limit_accel_in_turns(v_ego, angle_steers, a_target, steerRatio , wheelbase):
@@ -67,6 +68,8 @@ class SpdController():
     self.long_control_state = 0  # initialized to off
     self.long_active_timer = 0
     self.long_wait_timer = 0
+    self.long_curv_timer = 0
+    self.long_dst_speed = 0
 
     self.v_acc_start = 0.0
     self.a_acc_start = 0.0
@@ -156,66 +159,90 @@ class SpdController():
   def update(self, v_ego_kph, CS, sm, actuators ):
     btn_type = Buttons.NONE
     #lead_1 = sm['radarState'].leadOne
-    set_speed = CS.VSetDis
+
+    self.long_dst_speed = CS.cruise_set_speed_kph    
+    set_speed = CS.cruise_set_speed_kph
     cur_speed = CS.clu_Vanz
     model_speed = 255
+    long_wait_timer_cmd = 500
+   
 
-    if CS.driverOverride:
-      return btn_type, set_speed, model_speed
+    dst_lead_distance = 110
 
-    dist_limit = 110
-    dec_delta = 0
 
-    if cur_speed < dist_limit:
-       dist_limit = cur_speed
+    if cur_speed < dst_lead_distance:
+       dst_lead_distance = cur_speed
 
-    if dist_limit < 60:
-      dist_limit = 60
+    if dst_lead_distance < 60:
+      dst_lead_distance = 60
 
-    if  CS.lead_objspd < -3:
-      dec_delta = 2
-      dist_delta = CS.lead_distance - dist_limit
-      if dist_delta < -40:
-        dec_delta = 4
-      elif dist_delta < -30:
-        dec_delta = 3
-    elif  CS.lead_objspd < -2:
-      dec_delta = 1
+    v_delta = set_speed - cur_speed
+    d_delta = CS.lead_distance - dst_lead_distance
+
+    # 1. 거리 유지.
+    if d_delta < 0:
+      if CS.lead_objspd >= 0:
+        pass
+      elif CS.lead_objspd < -5:
+        long_wait_timer_cmd = 100
+        self.long_dst_speed = cur_speed - 2
+      elif CS.lead_objspd < -1:
+        long_wait_timer_cmd = 200
+        self.long_dst_speed = cur_speed - 2
+      elif CS.lead_objspd < 0:
+        long_wait_timer_cmd = 300
+        self.long_dst_speed = cur_speed - 1
+    else:
+      long_wait_timer_cmd = 300
+      self.long_dst_speed = cur_speed + 2
+
 
 
     model_speed = self.calc_va( sm, CS.v_ego )
+    
 
-    if set_speed > cur_speed:
-        set_speed = cur_speed
+    #xp = [0,5,20,40]
+    #fp2 = [2,3,4,5]
+    #limit_steers = interp( v_ego_kph, xp, fp2 )
 
-    v_delta = 0
-    if set_speed > 30 and CS.pcm_acc_status and CS.AVM_Popup_Msg == 1:
-      v_delta = set_speed - cur_speed
+    set_speed = self.long_dst_speed
+    # 2. 커브 감속.
+    if CS.cruise_set_speed_kph >= 70:
+      if model_speed < 80:
+        long_wait_timer_cmd = 50
+        cuv_dst_speed = CS.cruise_set_speed_kph - 15
+      elif model_speed < 100:
+        cuv_dst_speed = CS.cruise_set_speed_kph - 10
+        long_wait_timer_cmd = 100
+      elif model_speed < 150:
+        long_wait_timer_cmd = 200
+        cuv_dst_speed = CS.cruise_set_speed_kph - 5
 
-      if self.long_wait_timer:
-          self.long_wait_timer -= 1
-      elif CS.lead_distance < dist_limit or dec_delta >= 2:
-        if v_delta <= -dec_delta:
-          pass
-        elif CS.lead_objspd < 0:
-          if dec_delta > 0:
-            set_speed -= dec_delta
-             # dec value
-          self.long_wait_timer = 20
-          btn_type = Buttons.SET_DECEL   # Vuttons.RES_ACCEL
-      else:
-        self.long_wait_timer = 0
-
-    #dRel, yRel, vRel = self.get_lead( sm, CS )
-    # CS.driverOverride   # 1 Acc,  2 bracking, 0 Normal
-
-    str1 = 'dis={:.0f}/{:.1f} VS={:.0f} ss={:.0f}'.format( CS.lead_distance, CS.lead_objspd, CS.VSetDis, CS.cruise_set_speed_kph )
-    str3 = 'curvature={:.0f} '.format( model_speed )
+      if set_speed < cuv_dst_speed:
+        set_speed = cuv_dst_speed
 
 
-    trace1.printf2( '{} {}'.format( str1, str3) )
+    
+    delta = int(set_speed) - int(CS.VSetDis)
+    if self.long_wait_timer:
+      self.long_wait_timer -= 1
+    elif delta <= -1:
+      btn_type = Buttons.SET_DECEL
+      self.long_wait_timer = long_wait_timer_cmd
+      #SC.add( 'Buttons.SET_DECEL  set speed={}'.format( set_speed ) )
+    elif  delta >= 1:
+      btn_type = Buttons.RES_ACCEL
+      self.long_wait_timer = long_wait_timer_cmd
+      #SC.add( 'Buttons.RES_ACCEL  set speed={}'.format( set_speed ) )
+
+    #str1 = 'ss={:.0f} dst={:0.f}'.format( set_speed,  self.long_dst_speed )
+    str3 = 'model_speed={:.0f}   dest={:.0f} delta={}'.format( model_speed,  set_speed, delta )
+    trace1.printf2(  str3 )
+    #SC.add( str3 )
+
     #if CS.pcm_acc_status and CS.AVM_Popup_Msg == 1 and CS.VSetDis > 30  and CS.lead_distance < 90:
       #str2 = 'btn={:.0f} btn_type={}  v{:.5f} a{:.5f}  v{:.5f} a{:.5f}'.format(  CS.AVM_View, btn_type, self.v_model, self.a_model, self.v_cruise, self.a_cruise )
      # self.traceSC.add( 'v_ego={:.1f} angle={:.1f}  {} {} {}'.format( v_ego_kph, CS.angle_steers, str1, str2, str3 )  ) 
 
-    return btn_type, set_speed, model_speed
+    return btn_type, CS.VSetDis, model_speed
+    #return btn_type, set_speed, model_speed
