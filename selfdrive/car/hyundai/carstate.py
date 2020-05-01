@@ -439,20 +439,18 @@ class CarState():
     #                                     (cp.vl["LVR12"]["CF_Lvr_CruiseSet"] * speed_conv)
 
     if self.pcm_acc_status:
+      self.cruise_set_timer1 += 1
       if self.prev_clu_CruiseSwState != self.clu_CruiseSwState:
         if self.clu_CruiseSwState:
           self.cruise_set_timer1 = 0
-        else:
-          self.cruise_set_timer1 += 1
-
         if self.prev_clu_CruiseSwState == 1:   # up
-            if self.cruise_set_timer1 < 5:
+            if self.cruise_set_timer1 < 10:
               self.cruise_set_speed_kph += 1
             else:
               self.cruise_set_speed_kph =  int(self.VSetDis)
             #self.cruise_set_speed_kph = int(self.VSetDis)
         elif self.prev_clu_CruiseSwState == 2:  # dn
-            if self.cruise_set_timer1 < 5:
+            if self.cruise_set_timer1 < 10:
               self.cruise_set_speed_kph -= 1
             else:
               self.cruise_set_speed_kph =  int(self.clu_Vanz)
@@ -460,6 +458,7 @@ class CarState():
 
         self.prev_clu_CruiseSwState = self.clu_CruiseSwState
     else:
+      self.cruise_set_timer1 = 0
       self.cruise_set_speed_kph = self.VSetDis
       
 
