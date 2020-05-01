@@ -186,16 +186,16 @@ class SpdController():
       if CS.lead_objspd >= 0:
         pass
       elif CS.lead_objspd < -5:
-        long_wait_timer_cmd = 100
+        long_wait_timer_cmd = 10
         self.long_dst_speed = cur_speed - 2
       elif CS.lead_objspd < -1:
-        long_wait_timer_cmd = 200
+        long_wait_timer_cmd = 50
         self.long_dst_speed = cur_speed - 2
       elif CS.lead_objspd < 0:
-        long_wait_timer_cmd = 300
+        long_wait_timer_cmd = 100
         self.long_dst_speed = cur_speed - 1
     else:
-      long_wait_timer_cmd = 300
+      long_wait_timer_cmd = 200
       self.long_dst_speed = cur_speed + 2
 
 
@@ -212,14 +212,18 @@ class SpdController():
     cuv_dst_speed = set_speed
     if CS.cruise_set_speed_kph >= 70:
       if model_speed < 80:
-        long_wait_timer_cmd = 50
         cuv_dst_speed = CS.cruise_set_speed_kph - 15
+        if long_wait_timer_cmd > 10:
+          long_wait_timer_cmd = 10
       elif model_speed < 100:
         cuv_dst_speed = CS.cruise_set_speed_kph - 10
-        long_wait_timer_cmd = 100
+        if long_wait_timer_cmd > 100:
+          long_wait_timer_cmd = 100
       elif model_speed < 150:
-        long_wait_timer_cmd = 150
         cuv_dst_speed = CS.cruise_set_speed_kph - 5
+        if long_wait_timer_cmd > 150:
+          long_wait_timer_cmd = 150
+        
 
       if set_speed > cuv_dst_speed:
         set_speed = cuv_dst_speed
@@ -239,12 +243,12 @@ class SpdController():
       set_speed = CS.VSetDis - 1
       btn_type = Buttons.SET_DECEL
       self.long_wait_timer = long_wait_timer_cmd
-      SC.add( 'Buttons.SET_DECEL  set speed={}'.format( set_speed ) )
+      #SC.add( 'Buttons.SET_DECEL  set speed={}'.format( set_speed ) )
     elif  delta >= 1:
       set_speed = CS.VSetDis + 1
       btn_type = Buttons.RES_ACCEL
       self.long_wait_timer = long_wait_timer_cmd
-      SC.add( 'Buttons.RES_ACCEL  set speed={}'.format( set_speed ) )
+      #SC.add( 'Buttons.RES_ACCEL  set speed={}'.format( set_speed ) )
 
     #str1 = 'ss={:.0f} dst={:0.f}'.format( set_speed,  self.long_dst_speed )
     self.heart_time_cnt += 1

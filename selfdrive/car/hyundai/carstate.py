@@ -537,23 +537,27 @@ class CarState():
       if self.prev_clu_CruiseSwState != self.clu_CruiseSwState:
         if self.clu_CruiseSwState:
           self.cruise_set_timer1 = 0
-        if self.prev_clu_CruiseSwState == 1:   # up
-            if self.cruise_set_timer1 < 10:
-              self.cruise_set_speed_kph += 1
-            else:
-              self.cruise_set_speed_kph =  int(self.VSetDis)
+        elif self.prev_clu_CruiseSwState == 1:   # up
+          if self.cruise_set_timer1 < 10:
+            self.cruise_set_speed_kph += 1
+          else:
+            self.cruise_set_speed_kph =  int(self.VSetDis)
             #self.cruise_set_speed_kph = int(self.VSetDis)
         elif self.prev_clu_CruiseSwState == 2:  # dn
-            if self.curise_set_first:
-              self.curise_set_first = 0
-              self.cruise_set_speed_kph =  int(self.clu_Vanz)
-            elif self.cruise_set_timer1 < 10:
-              self.cruise_set_speed_kph -= 1
-            else:
-              self.cruise_set_speed_kph =  int(self.VSetDis)
+          if self.curise_set_first:
+            self.curise_set_first = 0
+            self.cruise_set_speed_kph =  int(self.clu_Vanz)
+          elif self.cruise_set_timer1 < 10:
+            self.cruise_set_speed_kph -= 1
+          else:
+            self.cruise_set_speed_kph =  int(self.VSetDis)
             #self.cruise_set_speed_kph =  int(self.VSetDis)  #int(self.clu_Vanz)
 
         self.prev_clu_CruiseSwState = self.clu_CruiseSwState
+      elif self.clu_CruiseSwState and self.cruise_set_timer1 > 10:
+        self.cruise_set_speed_kph =  int(self.VSetDis)
+
+
     else:
       self.curise_set_first = 1
       self.cruise_set_timer1 = 0
