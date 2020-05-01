@@ -238,8 +238,8 @@ while True:
   if float(kegman.conf['sR_BP1']) < 0:
     kegman.conf['sR_BP1'] = "0"
     
-  if float(kegman.conf['sR_time']) < 1:
-    kegman.conf['sR_time'] = "1"
+  if float(kegman.conf['sR_time']) < 0.1:
+    kegman.conf['sR_time'] = "0.1"
 
   #if float(kegman.conf['Kf']) < 0.00001:
   kegman.conf['Kf'] = str("{:.5f}".format(float(kegman.conf['Kf'])))
