@@ -71,6 +71,8 @@ class SpdController():
     self.long_curv_timer = 0
     self.long_dst_speed = 0
 
+    self.heart_time_cnt = 0
+
     self.v_acc_start = 0.0
     self.a_acc_start = 0.0
     self.path_x = np.arange(192)
@@ -240,7 +242,10 @@ class SpdController():
       SC.add( 'Buttons.RES_ACCEL  set speed={}'.format( set_speed ) )
 
     #str1 = 'ss={:.0f} dst={:0.f}'.format( set_speed,  self.long_dst_speed )
-    str3 = 'model_speed={:.0f}   dest={:.0f} delta={}  time={:.0f}'.format( model_speed,  set_speed, delta, self.long_wait_timer )
+    self.heart_time_cnt += 1
+    if self.heart_time_cnt > 100:
+      self.heart_time_cnt = 0
+    str3 = 'model_speed={:.0f}   dest={:.0f} delta={}  time={:.0f} heart={:.0f}'.format( model_speed,  set_speed, delta, self.long_wait_timer, self.heart_time_cnt )
     trace1.printf2(  str3 )
     #SC.add( str3 )
 
