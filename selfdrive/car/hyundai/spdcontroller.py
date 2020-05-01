@@ -213,8 +213,8 @@ class SpdController():
     if CS.cruise_set_speed_kph >= 70:
       if model_speed < 80:
         cuv_dst_speed = CS.cruise_set_speed_kph - 15
-        if long_wait_timer_cmd > 10:
-          long_wait_timer_cmd = 10
+        if long_wait_timer_cmd > 20:
+          long_wait_timer_cmd = 20
       elif model_speed < 100:
         cuv_dst_speed = CS.cruise_set_speed_kph - 10
         if long_wait_timer_cmd > 100:
