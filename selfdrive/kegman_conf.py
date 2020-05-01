@@ -43,6 +43,10 @@ class kegman_conf():
       with open('/data/kegman.json', 'r') as f:
         self.config = json.load(f)
 
+      if "cameraOffset" not in self.config:
+        self.config.update({"cameraOffset":"0.06"})
+        self.element_updated = True
+
       if "battPercOff" not in self.config:
         self.config.update({"battPercOff":"100"})
         self.config.update({"carVoltageMinEonShutdown":"11800"})
