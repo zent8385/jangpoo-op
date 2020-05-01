@@ -345,7 +345,7 @@ class CarController():
       self.model_speed = 300
       self.resume_cnt = 0
       self.sc_btn_type = Buttons.NONE
-      self.sc_wait_timer2 = 5
+      self.sc_wait_timer2 = 10
       self.sc_active_timer2 = 0
     elif self.sc_wait_timer2:
       self.sc_wait_timer2 -= 1

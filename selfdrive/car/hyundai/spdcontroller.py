@@ -218,7 +218,7 @@ class SpdController():
         cuv_dst_speed = CS.cruise_set_speed_kph - 10
         long_wait_timer_cmd = 100
       elif model_speed < 150:
-        long_wait_timer_cmd = 200
+        long_wait_timer_cmd = 150
         cuv_dst_speed = CS.cruise_set_speed_kph - 5
 
       if set_speed > cuv_dst_speed:
@@ -227,7 +227,12 @@ class SpdController():
     if CS.cruise_set_speed_kph < set_speed:
         set_speed = CS.cruise_set_speed_kph
     
+    
+
     delta = int(set_speed) - int(CS.VSetDis)
+    if abs(delta) <= 1:
+      long_wait_timer_cmd = 200
+
     if self.long_wait_timer:
       self.long_wait_timer -= 1
     elif delta <= -1:
@@ -243,7 +248,7 @@ class SpdController():
 
     #str1 = 'ss={:.0f} dst={:0.f}'.format( set_speed,  self.long_dst_speed )
     self.heart_time_cnt += 1
-    if self.heart_time_cnt > 100:
+    if self.heart_time_cnt > 50:
       self.heart_time_cnt = 0
     str3 = 'model_speed={:.0f}   dest={:.0f} delta={}  time={:.0f} heart={:.0f}'.format( model_speed,  set_speed, delta, self.long_wait_timer, self.heart_time_cnt )
     trace1.printf2(  str3 )
