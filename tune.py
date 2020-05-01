@@ -56,11 +56,14 @@ while True:
   print ("")
   print (print_letters(kegman.conf[param[j]]))
   print ("")
-  print ("w,1,3,5,7,r to incr 1,0.1,0.05,0.01,0.001,0.00001")
-  print ("x,a,d,g,j,v to decr 1,0.1,0.05,0.01,0.001,0.00001")
-  print ("0 / L to make the value 0 / 1")
-  print ("press SPACE / m for next /prev parameter")
-  print ("press z to quit")
+  print ("w: +1   1: +0.1   3: +0.05   5: +0.01   7: +0.001   r: +0.00001")
+  print ("x: -1   a: -0.1   d: -0.05   g: -0.01   j: -0.001   v: -0.00001")
+#  print ("w,1,3,5,7,r to incr 1,0.1,0.05,0.01,0.001,0.00001")
+#  print ("x,a,d,g,j,v to decr 1,0.1,0.05,0.01,0.001,0.00001")
+  print ("0: 0   L: 1")
+#  print ("0 / L to make the value 0 / 1")
+  print ("SPACE: next   m: prev")
+  print ("z: quit")
 
   char  = getch()
   write_json = False
@@ -251,8 +254,8 @@ while True:
   if float(kegman.conf['sR_BP1']) < 0:
     kegman.conf['sR_BP1'] = "0"
     
-#  if float(kegman.conf['sR_time']) < 1:
-#    kegman.conf['sR_time'] = "1"
+  if float(kegman.conf['sR_time']) < 0.1:
+    kegman.conf['sR_time'] = "0.1"
 
   #if float(kegman.conf['Kf']) < 0.00001:
   kegman.conf['Kf'] = str("{:.5f}".format(float(kegman.conf['Kf'])))
