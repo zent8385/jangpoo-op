@@ -256,7 +256,8 @@ class SpdController():
     self.heart_time_cnt += 1
     if self.heart_time_cnt > 50:
       self.heart_time_cnt = 0
-    str3 = 'curvature={:.0f}   dest={:.0f}  objspd={}  sccInfo={:.0f}  time={:.0f} heart={:.0f}'.format( model_speed,  self.long_dst_speed, CS.lead_objspd, CS.sccInfoDisp, self.long_wait_timer, self.heart_time_cnt )
+
+    str3 = 'curvature={:.0f} dest={:.0f}  time={:.0f} heart={:.0f}'.format( model_speed,  self.long_dst_speed,  self.long_wait_timer, self.heart_time_cnt )
     trace1.printf2(  str3 )
     #SC.add( str3 )
 
