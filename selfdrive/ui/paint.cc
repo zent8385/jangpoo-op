@@ -666,7 +666,7 @@ static void bb_ui_draw_measures_right(UIState *s, int bb_x, int bb_y, int bb_w )
     } else {
       snprintf(uom_str, sizeof(uom_str), "mph");
     }
-    bb_h +=bb_ui_draw_measure(s,  val_str, uom_str, "현재속도",
+    bb_h +=bb_ui_draw_measure(s,  val_str, uom_str, "상대속도",
         bb_rx, bb_ry, bb_uom_dx,
         val_color, lab_color, uom_color,
         value_fontSize, label_fontSize, uom_fontSize );
@@ -947,7 +947,9 @@ static void ui_draw_debug(UIState *s)
   y_pos = 150; 
   
 
+
   nvgTextAlign(s->vg, NVG_ALIGN_LEFT | NVG_ALIGN_BASELINE);
+  nvgFontSize(s->vg, 36*2);
 
   snprintf(speed_str, sizeof(speed_str), "P:%.5f", scene->pid.p );
   nvgText(s->vg, x_pos, y_pos+0, speed_str, NULL);

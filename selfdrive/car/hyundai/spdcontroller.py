@@ -162,7 +162,6 @@ class SpdController():
     btn_type = Buttons.NONE
     #lead_1 = sm['radarState'].leadOne
 
-    self.long_dst_speed = CS.cruise_set_speed_kph    
     set_speed = CS.cruise_set_speed_kph
     cur_speed = CS.clu_Vanz
     model_speed = 255
@@ -182,32 +181,31 @@ class SpdController():
     d_delta = CS.lead_distance - dst_lead_distance
 
     # 1. 거리 유지.
+    lead_dst_speed = set_speed
     if d_delta < 0:
       if CS.lead_objspd >= 0:
         pass
       elif CS.lead_objspd < -5:
         long_wait_timer_cmd = 10
-        self.long_dst_speed = cur_speed - 2
+        lead_dst_speed = cur_speed - 2
       elif CS.lead_objspd < -1:
         long_wait_timer_cmd = 50
-        self.long_dst_speed = cur_speed - 2
+        lead_dst_speed = cur_speed - 2
       elif CS.lead_objspd < 0:
         long_wait_timer_cmd = 100
-        self.long_dst_speed = cur_speed - 1
+        lead_dst_speed = cur_speed - 1
     else:
       long_wait_timer_cmd = 200
-      self.long_dst_speed = cur_speed + 2
-
+      lead_dst_speed = cur_speed + 2
 
 
     model_speed = self.calc_va( sm, CS.v_ego )
-    
 
     #xp = [0,5,20,40]
     #fp2 = [2,3,4,5]
     #limit_steers = interp( v_ego_kph, xp, fp2 )
 
-    set_speed = self.long_dst_speed
+    set_speed = lead_dst_speed
     # 2. 커브 감속.
     cuv_dst_speed = set_speed
     if CS.cruise_set_speed_kph >= 70:
@@ -231,30 +229,34 @@ class SpdController():
     if CS.cruise_set_speed_kph < set_speed:
         set_speed = CS.cruise_set_speed_kph
     
-    
+
 
     delta = int(set_speed) - int(CS.VSetDis)
     if abs(delta) <= 1:
       long_wait_timer_cmd = 200
 
     if self.long_wait_timer:
-      self.long_wait_timer -= 1
+      self.long_wait_timer -= 1      
+      if self.long_wait_timer > long_wait_timer_cmd:
+        self.long_wait_timer = long_wait_timer_cmd
     elif delta <= -1:
       set_speed = CS.VSetDis - 1
       btn_type = Buttons.SET_DECEL
       self.long_wait_timer = long_wait_timer_cmd
+      self.long_dst_speed = set_speed   
       #SC.add( 'Buttons.SET_DECEL  set speed={}'.format( set_speed ) )
     elif  delta >= 1:
       set_speed = CS.VSetDis + 1
       btn_type = Buttons.RES_ACCEL
       self.long_wait_timer = long_wait_timer_cmd
+      self.long_dst_speed = set_speed 
       #SC.add( 'Buttons.RES_ACCEL  set speed={}'.format( set_speed ) )
 
     #str1 = 'ss={:.0f} dst={:0.f}'.format( set_speed,  self.long_dst_speed )
     self.heart_time_cnt += 1
     if self.heart_time_cnt > 50:
       self.heart_time_cnt = 0
-    str3 = 'model_speed={:.0f}   dest={:.0f} delta={}  time={:.0f} heart={:.0f}'.format( model_speed,  set_speed, delta, self.long_wait_timer, self.heart_time_cnt )
+    str3 = 'curvature={:.0f}   dest={:.0f}  objspd={}  sccInfo={:.0f}  time={:.0f} heart={:.0f}'.format( model_speed,  self.long_dst_speed, CS.lead_objspd, CS.sccInfoDisp, self.long_wait_timer, self.heart_time_cnt )
     trace1.printf2(  str3 )
     #SC.add( str3 )
 
