@@ -348,9 +348,9 @@ class CarState():
 
     self.cruise_set_speed = 0
     self.cruise_set_speed_kph = 0
-    self.cruise_set_timer1 =0
     self.curise_set_first = 0
     self.prev_clu_CruiseSwState = 0
+    self.prev_VSetDis = 30
 
     # Q = np.matrix([[10.0, 0.0], [0.0, 100.0]])
     # R = 1e3
@@ -531,27 +531,28 @@ class CarState():
     else:
        self.blinker_status = 0
 
-
+    delta_vsetdis = 0
     if self.pcm_acc_status:
-      self.cruise_set_timer1 += 1
       if self.prev_clu_CruiseSwState != self.clu_CruiseSwState:
+        delta_vsetdis = abs(self.VSetDis - self.prev_VSetDis)
         if self.clu_CruiseSwState:
-          self.cruise_set_timer1 = 0
+          self.prev_VSetDis = int(self.VSetDis)
         elif self.prev_clu_CruiseSwState == 1:   # up
-          if self.cruise_set_timer1 < 10:
-            self.cruise_set_speed_kph += 1
+          if self.curise_set_first:
+            self.curise_set_first = 0
+            self.cruise_set_speed_kph =  int(self.clu_Vanz)
+          elif delta_vsetdis > 5:
+            self.cruise_set_speed_kph = self.VSetDis
           else:
-            self.cruise_set_speed_kph =  int(self.VSetDis)
-            #self.cruise_set_speed_kph = int(self.VSetDis)
+            self.cruise_set_speed_kph += 1
         elif self.prev_clu_CruiseSwState == 2:  # dn
           if self.curise_set_first:
             self.curise_set_first = 0
             self.cruise_set_speed_kph =  int(self.clu_Vanz)
-          elif self.cruise_set_timer1 < 10:
-            self.cruise_set_speed_kph -= 1
-          else:
+          elif delta_vsetdis > 5:
             self.cruise_set_speed_kph =  int(self.VSetDis)
-            #self.cruise_set_speed_kph =  int(self.VSetDis)  #int(self.clu_Vanz)
+          else:
+            self.cruise_set_speed_kph -= 1
 
         self.prev_clu_CruiseSwState = self.clu_CruiseSwState
       elif self.clu_CruiseSwState and self.cruise_set_timer1 > 10:
@@ -560,7 +561,6 @@ class CarState():
 
     else:
       self.curise_set_first = 1
-      self.cruise_set_timer1 = 0
       self.cruise_set_speed_kph = self.VSetDis
       
 
