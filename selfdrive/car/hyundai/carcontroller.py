@@ -266,9 +266,12 @@ class CarController():
           apply_steer = self.limit_ctrl( apply_steer, apply_steer_limit, 0 )
 
 
+    dRel, yRel, vRel = self.SC.get_lead( sm, CS )
 
     lead_objspd = CS.lead_objspd * CV.MS_TO_KPH
-    trace1.printf( 'toq:{:5.0f} limit={:5.0f} objInfo={:.1f}/{:.1f} steer={:5.0f} sccInfo={:.0f} lkas={:.0f}'.format( apply_steer, apply_steer_limit, CS.lead_distance, lead_objspd, CS.steer_torque_driver, CS.sccInfoDisp, CS.lkas_LdwsSysState ) )
+    str_log1 = 'torg:{:5.0f} limit={:5.0f} obj=[{:.1f}/{:.1f}][{:.1f}/{:.1f}]'.format( apply_steer, apply_steer_limit, CS.lead_distance, dRel, lead_objspd, vRel )
+    str_log2 = 'steer={:5.0f} sccInfo={:.0f} lkas={:.0f}'.format( CS.steer_torque_driver, CS.sccInfoDisp, CS.lkas_LdwsSysState )
+    trace1.printf( '{} {}'.format( str_log1, str_log2 ) )
 
     self.apply_accel_last = apply_accel
     self.apply_steer_last = apply_steer
