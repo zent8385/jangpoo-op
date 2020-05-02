@@ -275,7 +275,7 @@ class SpdController():
 
     dRel, yRel, vRel = self.get_lead( sm, CS )
 
-    str3 = 'curvature={:3.0f} dest={:3.0f}/{:3.0f}:{:3.0f} d:{:.1f} v:{:.1f} heart={:.0f} '.format( model_speed,  target_set_speed, self.long_dst_speed,  self.long_wait_timer, dRel, vRel, self.heart_time_cnt )
+    str3 = 'd:{:3.0f} v:{:.1f} curvature={:3.0f} dest={:3.0f}/{:3.0f}:{:3.0f}  heart={:.0f} '.format( dRel, vRel, model_speed,  target_set_speed, self.long_dst_speed,  self.long_wait_timer,  self.heart_time_cnt )
     trace1.printf2(  str3 )
     #SC.add( str3 )
 
