@@ -156,6 +156,8 @@ class SpdController():
       yRel = 0
       vRel = 0
 
+      vRel *= CV.MS_TO_KPH
+
     return dRel, yRel, vRel 
 
   def update(self, v_ego_kph, CS, sm, actuators ):
@@ -180,19 +182,19 @@ class SpdController():
 
     v_delta = set_speed - cur_speed
     d_delta = CS.lead_distance - dst_lead_distance
-
+    lead_objspd = CS.lead_objspd * CV.MS_TO_KPH
     # 1. 거리 유지.
     lead_dst_speed = set_speed
     if d_delta < 0:
-      if CS.lead_objspd >= 0:
+      if lead_objspd >= 0:
         lead_dst_speed = int(CS.VSetDis)
-      elif CS.lead_objspd < -3:
+      elif lead_objspd < -10:
         long_wait_timer_cmd = 10
         lead_dst_speed = cur_speed - 2
-      elif CS.lead_objspd < -1:
+      elif lead_objspd < -3:
         long_wait_timer_cmd = 50
         lead_dst_speed = cur_speed - 2
-      elif CS.lead_objspd < 0:
+      elif lead_objspd < 0:
         long_wait_timer_cmd = 100
         lead_dst_speed = cur_speed - 1
     else:
@@ -273,7 +275,7 @@ class SpdController():
 
     dRel, yRel, vRel = self.get_lead( sm, CS )
 
-    str3 = 'curvature={:3.0f} dest={:3.0f}/{:3.0f}:{:.0f} d:{:.1f} v:{:.1f} heart={:.0f} '.format( model_speed,  target_set_speed, self.long_dst_speed,  self.long_wait_timer, dRel, vRel, self.heart_time_cnt )
+    str3 = 'curvature={:3.0f} dest={:3.0f}/{:3.0f}:{:3.0f} d:{:.1f} v:{:.1f} heart={:.0f} '.format( model_speed,  target_set_speed, self.long_dst_speed,  self.long_wait_timer, dRel, vRel, self.heart_time_cnt )
     trace1.printf2(  str3 )
     #SC.add( str3 )
 
