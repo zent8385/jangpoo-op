@@ -144,23 +144,24 @@ class SpdController():
     return model_speed
 
 
-  #def get_lead(self, sm, CS ):
-  #  if len(sm['model'].lead):
-  #      lead_msg = sm['model'].lead
-  #      dRel = float(lead_msg.dist - RADAR_TO_CAMERA)
-  #      yRel = float(lead_msg.relY)
-  #      vRel = float(lead_msg.relVel)
-  #      vLead = float(CS.v_ego + lead_msg.relVel)
-  #  else:
-  #      dRel = 150
-  #      yRel = 0
-  #      vRel = 0
+  def get_lead(self, sm, CS ):
+    lead_msg = sm['model'].lead
+    if lead_msg.prob > 0.5:
+      dRel = float(lead_msg.dist - RADAR_TO_CAMERA)
+      yRel = float(lead_msg.relY)
+      vRel = float(lead_msg.relVel)
+      vLead = float(CS.v_ego + lead_msg.relVel)
+    else:
+      dRel = 150
+      yRel = 0
+      vRel = 0
 
-  #  return dRel, yRel, vRel 
+    return dRel, yRel, vRel 
 
   def update(self, v_ego_kph, CS, sm, actuators ):
     btn_type = Buttons.NONE
     #lead_1 = sm['radarState'].leadOne
+
 
     set_speed = CS.cruise_set_speed_kph
     cur_speed = CS.clu_Vanz
@@ -269,7 +270,10 @@ class SpdController():
     if self.heart_time_cnt > 50:
       self.heart_time_cnt = 0
 
-    str3 = 'curvature={:3.0f} dest={:3.0f}/{:3.0f}:{:.0f} heart={:.0f}'.format( model_speed,  target_set_speed, self.long_dst_speed,  self.long_wait_timer, self.heart_time_cnt )
+
+    dRel, yRel, vRel = self.get_lead( sm, CS )
+
+    str3 = 'curvature={:3.0f} dest={:3.0f}/{:3.0f}:{:.0f} heart={:.0f} {}{}'.format( model_speed,  target_set_speed, self.long_dst_speed,  self.long_wait_timer, self.heart_time_cnt, dRel, vRel )
     trace1.printf2(  str3 )
     #SC.add( str3 )
 

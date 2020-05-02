@@ -367,6 +367,45 @@ class CarState():
     return float(v_ego_x[0]), float(v_ego_x[1])
 	
 
+  def update_cruiseSW(self ):
+    cruise_set_speed_kph = self.cruise_set_speed_kph
+    delta_vsetdis = 0
+    if self.pcm_acc_status:
+      if self.prev_clu_CruiseSwState != self.clu_CruiseSwState:
+        delta_vsetdis = abs(self.VSetDis - self.prev_VSetDis)
+        if self.clu_CruiseSwState:
+          self.prev_VSetDis = int(self.VSetDis)
+        elif self.prev_clu_CruiseSwState == 1:   # up
+          if self.curise_set_first:
+            self.curise_set_first = 0
+            cruise_set_speed_kph =  int(self.clu_Vanz)
+          elif delta_vsetdis > 5:
+            cruise_set_speed_kph = self.VSetDis
+          else:
+            cruise_set_speed_kph += 1
+        elif self.prev_clu_CruiseSwState == 2:  # dn
+          if self.curise_set_first:
+            self.curise_set_first = 0
+            cruise_set_speed_kph =  int(self.clu_Vanz)
+          elif delta_vsetdis > 5:
+            cruise_set_speed_kph =  int(self.VSetDis)
+          else:
+            cruise_set_speed_kph -= 1
+
+        self.prev_clu_CruiseSwState = self.clu_CruiseSwState
+      elif self.clu_CruiseSwState and self.cruise_set_timer1 > 10:
+        cruise_set_speed_kph =  int(self.VSetDis)
+
+    else:
+      self.curise_set_first = 1
+      cruise_set_speed_kph = self.VSetDis
+      
+
+    if cruise_set_speed_kph < 30:
+      cruise_set_speed_kph = 30
+
+    return cruise_set_speed_kph
+
 
 
   def update(self, cp, cp2, cp_cam, cp_avm ):
@@ -531,44 +570,9 @@ class CarState():
     else:
        self.blinker_status = 0
 
-    delta_vsetdis = 0
-    if self.pcm_acc_status:
-      if self.prev_clu_CruiseSwState != self.clu_CruiseSwState:
-        delta_vsetdis = abs(self.VSetDis - self.prev_VSetDis)
-        if self.clu_CruiseSwState:
-          self.prev_VSetDis = int(self.VSetDis)
-        elif self.prev_clu_CruiseSwState == 1:   # up
-          if self.curise_set_first:
-            self.curise_set_first = 0
-            self.cruise_set_speed_kph =  int(self.clu_Vanz)
-          elif delta_vsetdis > 5:
-            self.cruise_set_speed_kph = self.VSetDis
-          else:
-            self.cruise_set_speed_kph += 1
-        elif self.prev_clu_CruiseSwState == 2:  # dn
-          if self.curise_set_first:
-            self.curise_set_first = 0
-            self.cruise_set_speed_kph =  int(self.clu_Vanz)
-          elif delta_vsetdis > 5:
-            self.cruise_set_speed_kph =  int(self.VSetDis)
-          else:
-            self.cruise_set_speed_kph -= 1
 
-        self.prev_clu_CruiseSwState = self.clu_CruiseSwState
-      elif self.clu_CruiseSwState and self.cruise_set_timer1 > 10:
-        self.cruise_set_speed_kph =  int(self.VSetDis)
-
-
-    else:
-      self.curise_set_first = 1
-      self.cruise_set_speed_kph = self.VSetDis
-      
-
-    if self.cruise_set_speed_kph < 30:
-      self.cruise_set_speed_kph = 30
-
+    self.cruise_set_speed_kph = self.update_cruiseSW()
     self.cruise_set_speed = self.cruise_set_speed_kph * speed_conv
-
     #str1 = 'C:{:.0f}  as={:.1f} set{:.1f}'.format( self.main_on,  self.pcm_acc_status,  self.cruise_set_speed )
     #str2 = 'sw={:.0f}/{:.0f}/{:.0f} gear={:.0f} scc={:.0f}'.format( self.clu_CruiseSwState, self.clu_CruiseSwMain, self.clu_SldMainSW, self.gear_shifter, self.sccInfoDisp )
 
