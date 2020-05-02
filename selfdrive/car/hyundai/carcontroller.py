@@ -267,8 +267,8 @@ class CarController():
 
 
 
-    
-    trace1.printf( 'toq:{:5.0f} limit={:5.0f} objInfo={:.1f}/{:.1f} steer={:5.0f} sccInfo={:.0f} lkas={:.0f}'.format( apply_steer, apply_steer_limit, CS.lead_distance, CS.lead_objspd, CS.steer_torque_driver, CS.sccInfoDisp, CS.lkas_LdwsSysState ) )
+    lead_objspd = CS.lead_objspd * CV.MS_TO_KPH
+    trace1.printf( 'toq:{:5.0f} limit={:5.0f} objInfo={:.1f}/{:.1f} steer={:5.0f} sccInfo={:.0f} lkas={:.0f}'.format( apply_steer, apply_steer_limit, CS.lead_distance, lead_objspd, CS.steer_torque_driver, CS.sccInfoDisp, CS.lkas_LdwsSysState ) )
 
     self.apply_accel_last = apply_accel
     self.apply_steer_last = apply_steer
