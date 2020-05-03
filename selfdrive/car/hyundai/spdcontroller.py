@@ -168,7 +168,7 @@ class SpdController():
     dst_lead_distance = 110
 
 
-    if CS.cruise_mode1 != 2:
+    if CS.cruise_set_mode != 2:
       return  long_wait_timer_cmd, set_speed
 
     #dRel, yRel, vRel = self.get_lead( sm, CS )
@@ -284,7 +284,7 @@ class SpdController():
       self.heart_time_cnt = 0
 
 
-    if CS.cruise_mode1 == 0:
+    if CS.cruise_set_mode == 0:
        btn_type = Buttons.NONE
 
     str3 = 'curvature={:3.0f} dest={:3.0f}/{:3.0f}  heart={:.0f} '.format( model_speed,  target_set_speed, self.long_wait_timer, self.heart_time_cnt )

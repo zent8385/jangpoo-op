@@ -958,7 +958,7 @@ static void ui_draw_debug(UIState *s)
   snprintf(speed_str, sizeof(speed_str), "F:%.5f", scene->pid.f );
   nvgText(s->vg, x_pos, y_pos+100, speed_str, NULL);
 
-  int   nCanError = scene->status.nCanError;
+  int   nCanError = scene->status.cruise_set_mode;
   snprintf(speed_str, sizeof(speed_str), "%d", nCanError );
 
 

@@ -353,7 +353,7 @@ class CarState():
 
     self.prev_VSetDis = 30
 
-    self.cruise_mode1 = 0
+    self.cruise_set_mode = 0
 
     # Q = np.matrix([[10.0, 0.0], [0.0, 100.0]])
     # R = 1e3
@@ -405,9 +405,9 @@ class CarState():
 
       if self.prev_clu_CruiseSwState != self.clu_CruiseSwState:
         if self.prev_clu_CruiseSwState == 4:
-          self.cruise_mode1 += 1
-          if self.cruise_mode1 > 2:
-            self.cruise_mode1 = 0
+          self.cruise_set_mode += 1
+          if self.cruise_set_mode > 2:
+            self.cruise_set_mode = 0
         self.prev_clu_CruiseSwState = self.clu_CruiseSwState
       
 
