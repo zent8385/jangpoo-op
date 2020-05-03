@@ -29,13 +29,12 @@ class LatControlPID():
       self.kegman = kegman_conf()
       if self.kegman.conf['tuneGernby'] == "1":
         self.steerKf = float(self.kegman.conf['Kf'])
-        #if abs(path_plan.angleSteers) > float(self.kegman.conf['sR_BP0']):
-        #  self.steerKpV = [float(self.kegman.conf['sR_Kp'])]
-        #  self.steerKiV = [float(self.kegman.conf['sR_Ki'])]
-        #else:
-        self.steerKpV = [float(self.kegman.conf['Kp'])]
-        self.steerKiV = [float(self.kegman.conf['Ki'])]          
-
+        if abs(path_plan.angleSteers) > float(self.kegman.conf['sR_BP0']):
+          self.steerKpV = [float(self.kegman.conf['sR_Kp'])]
+          self.steerKiV = [float(self.kegman.conf['sR_Ki'])]
+        else:
+          self.steerKpV = [float(self.kegman.conf['Kp'])]
+          self.steerKiV = [float(self.kegman.conf['Ki'])]          
 
         print('Kp={:.5f}  Ki={:.5f}'.format(self.steerKpV, self.steerKiV) )
 
