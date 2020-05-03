@@ -18,6 +18,13 @@ class LatControlPID():
     self.angle_steers_des = 0.
     self.mpc_frame = 0
 
+    self.BP0 = 4
+    self.steer_Kp = [0.18,0.25]
+    self.steer_Ki = [0.01,0.05]
+
+    self.pid_change_flag = 0
+    self.pre_pid_change_flag = 1
+
 
   def reset(self):
     self.pid.reset()
@@ -29,26 +36,33 @@ class LatControlPID():
       self.kegman = kegman_conf()
       if self.kegman.conf['tuneGernby'] == "1":
         self.steerKf = float(self.kegman.conf['Kf'])
-        if abs(path_plan.angleSteers) > float(self.kegman.conf['sR_BP0']):
-          self.steerKpV = [float(self.kegman.conf['sR_Kp'])]
-          self.steerKiV = [float(self.kegman.conf['sR_Ki'])]
-        else:
-          self.steerKpV = [float(self.kegman.conf['Kp'])]
-          self.steerKiV = [float(self.kegman.conf['Ki'])]          
 
-        str_msg = "Kp={:.5f}  Ki={:.5f}".format(self.steerKpV, self.steerKiV)
-        print( str_msg )
+        self.BP0 = float(self.kegman.conf['sR_BP0'])
+        self.steer_Kp = [ float(self.kegman.conf['Kp']), float(self.kegman.conf['sR_Kp']) ]
+        self.steer_Ki = [ float(self.kegman.conf['Ki']), float(self.kegman.conf['sR_Ki']) ]
 
-
-        self.pid = PIController((CP.lateralTuning.pid.kpBP, self.steerKpV),
-                            (CP.lateralTuning.pid.kiBP, self.steerKiV),
-                            k_f=self.steerKf, pos_limit=1.0)
         self.deadzone = float(self.kegman.conf['deadzone'])
+        self.mpc_frame = 0 
+
+    if abs(path_plan.angleSteers) > self.BP0:
+      self.steerKpV = [ self.steer_Kp[1] ]
+      self.steerKiV = [ self.steer_Ki[1] ]
+      self.pid_change_flag = 1
+    else:
+      self.steerKpV = [ self.steer_Kp[0] ]
+      self.steerKiV = [ self.steer_Ki[0] ]
+      self.pid_change_flag = 0
+
+    if self.pid_change_flag != self.pre_pid_change_flag:
+      self.pre_pid_change_flag = self.pid_change_flag
+      self.pid = PIController((CP.lateralTuning.pid.kpBP, self.steerKpV),
+                          (CP.lateralTuning.pid.kiBP, self.steerKiV),
+                          k_f=self.steerKf, pos_limit=1.0)
 
 
 
         
-      self.mpc_frame = 0    
+    
 
   def update(self, active, v_ego, angle_steers, angle_steers_rate, eps_torque, steer_override, rate_limited, CP, path_plan):
 
