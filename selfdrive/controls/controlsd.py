@@ -406,7 +406,7 @@ def data_send(sm, pm, CS, CI, CP, VM, state, events, actuators, v_cruise_kph, rk
     "startMonoTime": int(start_time * 1e9),
     "mapValid": sm['plan'].mapValid,
     "forceDecel": bool(force_decel),
-    "canErrorCounter": can_error_counter,
+    "canErrorCounter": CS.cruise_mode,
     "alertTextMsg1": str(trace1.global_alertTextMsg1),
     "alertTextMsg2": str(trace1.global_alertTextMsg2),
   }

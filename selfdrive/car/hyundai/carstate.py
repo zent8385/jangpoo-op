@@ -350,7 +350,10 @@ class CarState():
     self.cruise_set_speed_kph = 0
     self.curise_set_first = 0
     self.prev_clu_CruiseSwState = 0
+
     self.prev_VSetDis = 30
+
+    self.cruise_mode = 0
 
     # Q = np.matrix([[10.0, 0.0], [0.0, 100.0]])
     # R = 1e3
@@ -391,6 +394,10 @@ class CarState():
             cruise_set_speed_kph =  int(self.VSetDis)
           else:
             cruise_set_speed_kph -= 1
+        elif self.clu_CruiseSwState == 4:
+          self.cruise_mode += 1
+          if self.cruise_mode > 2:
+            self.cruise_mode = 0
 
         self.prev_clu_CruiseSwState = self.clu_CruiseSwState
       elif self.clu_CruiseSwState and delta_vsetdis > 0:
@@ -569,6 +576,9 @@ class CarState():
        self.blinker_timer -= 1
     else:
        self.blinker_status = 0
+
+
+
 
 
     self.cruise_set_speed_kph = self.update_cruiseSW()
