@@ -943,7 +943,7 @@ static void ui_draw_debug(UIState *s)
   int  y_pos = 0;
   int  x_pos = 0;
 
-  x_pos = viz_speed_x - 230;
+  x_pos = viz_speed_x - 200;
   y_pos = 150; 
   
 
@@ -969,10 +969,10 @@ static void ui_draw_debug(UIState *s)
 
 
   snprintf(speed_str, sizeof(speed_str), "%s", scene->status.alert_text1 );
-  nvgText(s->vg, 0, 1018, speed_str, NULL);  
+  nvgText(s->vg, 0, 1020, speed_str, NULL);  
 
   snprintf(speed_str, sizeof(speed_str), "%s", scene->status.alert_text2 );
-  nvgText(s->vg, 0, 1018, speed_str, NULL);
+  nvgText(s->vg, 0, 1020, speed_str, NULL);
 
 }
 
