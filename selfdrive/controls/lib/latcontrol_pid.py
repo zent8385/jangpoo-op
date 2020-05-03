@@ -36,7 +36,8 @@ class LatControlPID():
           self.steerKpV = [float(self.kegman.conf['Kp'])]
           self.steerKiV = [float(self.kegman.conf['Ki'])]          
 
-        print('Kp={:.5f}  Ki={:.5f}'.format(self.steerKpV, self.steerKiV) )
+        str_msg = "Kp={:.5f}  Ki={:.5f}".format(self.steerKpV, self.steerKiV)
+        print( str_msg )
 
 
         self.pid = PIController((CP.lateralTuning.pid.kpBP, self.steerKpV),
