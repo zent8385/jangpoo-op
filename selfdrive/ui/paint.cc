@@ -943,7 +943,7 @@ static void ui_draw_debug(UIState *s)
   int  y_pos = 0;
   int  x_pos = 0;
 
-  x_pos = viz_speed_x - 200;
+  x_pos = 200;
   y_pos = 150; 
   
 
@@ -976,12 +976,10 @@ static void ui_draw_debug(UIState *s)
     snprintf(speed_str, sizeof(speed_str), "%d", cruise_set_mode );
   }
     
+  nvgText(s->vg, x_pos, y_pos+170, speed_str, NULL);
 
-
-  nvgText(s->vg, x_pos, y_pos+150, speed_str, NULL);
-
-  snprintf(speed_str, sizeof(speed_str), "C:%.5f", scene->status.vCurvature );
-  nvgText(s->vg, x_pos, y_pos+200, speed_str, NULL);
+  //snprintf(speed_str, sizeof(speed_str), "C:%.5f", scene->status.vCurvature );
+  //nvgText(s->vg, x_pos, y_pos+200, speed_str, NULL);
 
   
 
