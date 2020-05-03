@@ -394,7 +394,7 @@ class CarState():
             cruise_set_speed_kph =  int(self.VSetDis)
           else:
             cruise_set_speed_kph -= 1
-        elif self.clu_CruiseSwState == 4:
+        elif self.prev_clu_CruiseSwState == 4:
           self.cruise_mode1 += 1
           if self.cruise_mode1 > 2:
             self.cruise_mode1 = 0
