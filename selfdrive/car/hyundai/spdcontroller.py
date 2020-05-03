@@ -160,49 +160,47 @@ class SpdController():
 
     return dRel, yRel, vRel
 
-  def update(self, v_ego_kph, CS, sm, actuators ):
-    btn_type = Buttons.NONE
-    #lead_1 = sm['radarState'].leadOne
 
-
+  def update_lead(self, CS ):
     set_speed = CS.cruise_set_speed_kph
     cur_speed = CS.clu_Vanz
-    model_speed = 255
-    long_wait_timer_cmd = 500
-   
 
+    #dRel, yRel, vRel = self.get_lead( sm, CS )
+
+    dRel = CS.lead_distance
+    vRel = CS.lead_objspd
+
+
+    long_wait_timer_cmd = 500    
     dst_lead_distance = 110
-
-
     if dst_lead_distance > cur_speed:
        dst_lead_distance = cur_speed
 
     if dst_lead_distance < 40:
       dst_lead_distance = 40
 
-    v_delta = set_speed - cur_speed
-    d_delta = CS.lead_distance - dst_lead_distance
-    lead_objspd = CS.lead_objspd * CV.MS_TO_KPH
+    d_delta = dRel - dst_lead_distance
+    lead_objspd = vRel
     # 1. 거리 유지.
-    lead_dst_speed = set_speed
+
     if d_delta < 0:
       if lead_objspd >= 0:
-        lead_dst_speed = int(CS.VSetDis)
+        set_speed = int(CS.VSetDis)
       elif lead_objspd < -10:
         long_wait_timer_cmd = 10
-        lead_dst_speed = cur_speed - 2
+        set_speed = cur_speed - 2
       elif lead_objspd < -5:
         long_wait_timer_cmd = 50
-        lead_dst_speed = cur_speed - 2
+        set_speed = cur_speed - 2
       elif lead_objspd < 0:
         long_wait_timer_cmd = 100
-        lead_dst_speed = cur_speed - 1
+        set_speed = cur_speed - 1
     else:
-      lead_dst_speed = cur_speed + 2
-      if CS.VSetDis > lead_dst_speed:
-        lead_dst_speed = CS.VSetDis + 1
+      set_speed = cur_speed + 2
+      if CS.VSetDis > set_speed:
+        set_speed = CS.VSetDis + 1
 
-      if CS.lead_distance == 150:
+      if dRel == 150:
         long_wait_timer_cmd = 100
       elif d_delta < 5:
         long_wait_timer_cmd = 80
@@ -215,8 +213,16 @@ class SpdController():
       else:
         long_wait_timer_cmd = 10
 
-      
+    return  long_wait_timer_cmd, set_speed
 
+
+  def update(self, v_ego_kph, CS, sm, actuators ):
+    btn_type = Buttons.NONE
+    #lead_1 = sm['radarState'].leadOne
+    long_wait_timer_cmd = 500
+    set_speed = CS.cruise_set_speed_kph
+
+    long_wait_timer_cmd, set_speed = self.update_lead( CS )
 
     model_speed = self.calc_va( sm, CS.v_ego )
 
@@ -224,7 +230,7 @@ class SpdController():
     #fp2 = [2,3,4,5]
     #limit_steers = interp( v_ego_kph, xp, fp2 )
 
-    set_speed = lead_dst_speed
+
     # 2. 커브 감속.
     cuv_dst_speed = set_speed
     if CS.cruise_set_speed_kph >= 70:
@@ -262,23 +268,21 @@ class SpdController():
       btn_type = Buttons.SET_DECEL
       self.long_wait_timer = long_wait_timer_cmd
       self.long_dst_speed = set_speed   
-      #SC.add( 'Buttons.SET_DECEL  set speed={}'.format( set_speed ) )
     elif  delta >= 1:
       set_speed = CS.VSetDis + 1
       btn_type = Buttons.RES_ACCEL
       self.long_wait_timer = long_wait_timer_cmd
       self.long_dst_speed = set_speed 
-      #SC.add( 'Buttons.RES_ACCEL  set speed={}'.format( set_speed ) )
 
-    #str1 = 'ss={:.0f} dst={:0.f}'.format( set_speed,  self.long_dst_speed )
+
     self.heart_time_cnt += 1
     if self.heart_time_cnt > 50:
       self.heart_time_cnt = 0
 
 
-    #dRel, yRel, vRel = self.get_lead( sm, CS )
 
-    str3 = 'curvature={:3.0f} dest={:3.0f}/{:3.0f}:{:3.0f}  heart={:.0f} '.format( model_speed,  target_set_speed, self.long_dst_speed,  self.long_wait_timer,  self.heart_time_cnt )
+
+    str3 = 'curvature={:3.0f} dest={:3.0f}/{:3.0f}  heart={:.0f} '.format( model_speed,  target_set_speed, self.long_wait_timer,  self.heart_time_cnt )
     trace1.printf2(  str3 )
     #SC.add( str3 )
 

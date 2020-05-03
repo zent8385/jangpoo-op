@@ -505,7 +505,7 @@ class CarState():
     self.stopped = self.sccInfoDisp == 4. if not self.no_radar else False
     self.lead_distance = cp_scc.vl["SCC11"]['ACC_ObjDist'] if not self.no_radar else 0
     self.lead_objspd = cp_scc.vl["SCC11"]['ACC_ObjRelSpd'] if not self.no_radar else 0
-
+    self.lead_objspd = self.lead_objspd * CV.MS_TO_KPH
 
     self.user_brake = 0
 
