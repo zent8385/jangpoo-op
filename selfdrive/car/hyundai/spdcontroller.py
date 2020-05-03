@@ -198,20 +198,24 @@ class SpdController():
         long_wait_timer_cmd = 100
         set_speed = cur_speed - 1
     else:
-      set_speed = cur_speed + 2
-      if CS.VSetDis > set_speed:
-        set_speed = CS.VSetDis + 1
-
-      if dRel == 150:
-        long_wait_timer_cmd = 50
-      elif d_delta < 5:
-        long_wait_timer_cmd = 50
-      elif d_delta < 10:
-        long_wait_timer_cmd = 30
-      elif d_delta < 30:
-        long_wait_timer_cmd = 20
+      if lead_objspd < 0:
+        long_wait_timer_cmd = 200
+        set_speed = cur_speed - 1
       else:
-        long_wait_timer_cmd = 10
+        set_speed = cur_speed + 2
+        if CS.VSetDis > set_speed:
+          set_speed = CS.VSetDis + 1
+
+        if dRel == 150:
+          long_wait_timer_cmd = 50
+        elif d_delta < 5:
+          long_wait_timer_cmd = 50
+        elif d_delta < 10:
+          long_wait_timer_cmd = 30
+        elif d_delta < 30:
+          long_wait_timer_cmd = 20
+        else:
+          long_wait_timer_cmd = 10
 
     return  long_wait_timer_cmd, set_speed
 
@@ -238,14 +242,14 @@ class SpdController():
         cuv_dst_speed = CS.cruise_set_speed_kph - 15
         if long_wait_timer_cmd > 20:
           long_wait_timer_cmd = 20
-      elif model_speed < 110:
+      elif model_speed < 120:  # 6도
         cuv_dst_speed = CS.cruise_set_speed_kph - 10
-        if long_wait_timer_cmd > 80:
-          long_wait_timer_cmd = 80
-      elif model_speed < 160:
-        cuv_dst_speed = CS.cruise_set_speed_kph - 5
         if long_wait_timer_cmd > 100:
           long_wait_timer_cmd = 100
+      elif model_speed < 160:  #  3 도
+        cuv_dst_speed = CS.cruise_set_speed_kph - 5
+        if long_wait_timer_cmd > 150:
+          long_wait_timer_cmd = 150
 
       if set_speed > cuv_dst_speed:
         set_speed = cuv_dst_speed
@@ -268,7 +272,7 @@ class SpdController():
       btn_type = Buttons.SET_DECEL
       self.long_wait_timer = long_wait_timer_cmd
       self.long_dst_speed = set_speed   
-    elif  delta >= 1:
+    elif  delta >= 1 and model_speed > 200:
       set_speed = CS.VSetDis + 1
       btn_type = Buttons.RES_ACCEL
       self.long_wait_timer = long_wait_timer_cmd
