@@ -394,10 +394,6 @@ class CarState():
             cruise_set_speed_kph =  int(self.VSetDis)
           else:
             cruise_set_speed_kph -= 1
-        elif self.prev_clu_CruiseSwState == 4:
-          self.cruise_mode1 += 1
-          if self.cruise_mode1 > 2:
-            self.cruise_mode1 = 0
 
         self.prev_clu_CruiseSwState = self.clu_CruiseSwState
       elif self.clu_CruiseSwState and delta_vsetdis > 0:
@@ -406,6 +402,13 @@ class CarState():
     else:
       self.curise_set_first = 1
       cruise_set_speed_kph = self.VSetDis
+
+      if self.prev_clu_CruiseSwState != self.clu_CruiseSwState:
+        if self.prev_clu_CruiseSwState == 4:
+          self.cruise_mode1 += 1
+          if self.cruise_mode1 > 2:
+            self.cruise_mode1 = 0
+        self.prev_clu_CruiseSwState = self.clu_CruiseSwState
       
 
     if cruise_set_speed_kph < 30:
