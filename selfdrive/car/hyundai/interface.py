@@ -375,6 +375,7 @@ class CarInterface(CarInterfaceBase):
     ret.buttonEvents = buttonEvents
 
 
+    ret.cruise_mode = self.CS.cruise_mode
     ret.doorOpen = not self.CS.door_all_closed
     ret.seatbeltUnlatched = not self.CS.seatbelt
 
