@@ -138,13 +138,9 @@ class SpdController():
     #accel_limits_turns = limit_accel_in_turns(v_ego, CS.angle_steers, accel_limits, self.steerRatio, self.wheelbase )
 
     model_speed = self.movAvg.get_min( model_speed, 10 )
-    curv_val = 0
-    if curv > 0:
-      curv_val = 1
-    else:
-      curv_val = -1
 
-    return model_speed, curv_val
+
+    return model_speed
 
 
   def get_lead(self, sm, CS ):
@@ -228,7 +224,7 @@ class SpdController():
 
     long_wait_timer_cmd, set_speed = self.update_lead( CS )
 
-    model_speed, curv_val = self.calc_va( sm, CS.v_ego )
+    model_speed = self.calc_va( sm, CS.v_ego )
 
     #xp = [0,5,20,40]
     #fp2 = [2,3,4,5]
@@ -287,7 +283,7 @@ class SpdController():
     if CS.cruise_set_mode == 0:
        btn_type = Buttons.NONE
 
-    str3 = 'curvature={:3.0f} dest={:3.0f}/{:3.0f} curv={:.0f} heart={:.0f} '.format( model_speed,  target_set_speed, self.long_wait_timer, curv_val, self.heart_time_cnt )
+    str3 = 'curvature={:3.0f} dest={:3.0f}/{:3.0f} heart={:.0f} '.format( model_speed,  target_set_speed, self.long_wait_timer,   self.heart_time_cnt )
     trace1.printf2(  str3 )
     #SC.add( str3 )
 
