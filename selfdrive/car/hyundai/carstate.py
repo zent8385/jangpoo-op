@@ -410,6 +410,7 @@ class CarState():
             self.cruise_set_mode = 0
         self.prev_clu_CruiseSwState = self.clu_CruiseSwState
       
+    trace1.cruise_set_mode = self.cruise_set_mode
 
     if cruise_set_speed_kph < 30:
       cruise_set_speed_kph = 30

@@ -320,7 +320,7 @@ class CarInterface(CarInterfaceBase):
     ret.cruiseState.available = bool(self.CS.main_on)
     ret.cruiseState.standstill = False
 
-    ret.cruise_set_mode = self.CS.cruise_set_mode
+    #ret.cruise_set_mode = self.CS.cruise_set_mode
     
     # Some HKG cars only have blinker flash signal
     # bhcho-debug  blinker signal debug
