@@ -166,7 +166,7 @@ struct CarState {
 
   lcaLeft @36 :Bool;
   lcaRight @37 :Bool;
-  cruise_set_mode @38 :Int8;
+
 
   # which packets this state came from
   canMonoTimes @12: List(UInt64);
