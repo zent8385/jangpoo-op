@@ -22,8 +22,9 @@ class LatControlPID():
     self.steer_Kp = [0.18,0.25]
     self.steer_Ki = [0.01,0.05]
 
+    self.steerKf = [ 0.000005 ]
     self.pid_change_flag = 0
-    self.pre_pid_change_flag = 1
+    self.pre_pid_change_flag = 0
 
 
   def reset(self):
@@ -43,15 +44,19 @@ class LatControlPID():
 
         self.deadzone = float(self.kegman.conf['deadzone'])
         self.mpc_frame = 0 
+        self.pid_change_flag = 1
 
-    if abs(path_plan.angleSteers) > self.BP0:
+
+    if self.pid_change_flag == 0:
+      pass
+    elif abs(path_plan.angleSteers) > self.BP0:
       self.steerKpV = [ self.steer_Kp[1] ]
       self.steerKiV = [ self.steer_Ki[1] ]
       self.pid_change_flag = 1
     else:
       self.steerKpV = [ self.steer_Kp[0] ]
       self.steerKiV = [ self.steer_Ki[0] ]
-      self.pid_change_flag = 0
+      self.pid_change_flag = 2
 
     if self.pid_change_flag != self.pre_pid_change_flag:
       self.pre_pid_change_flag = self.pid_change_flag
