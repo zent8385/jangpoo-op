@@ -959,7 +959,16 @@ static void ui_draw_debug(UIState *s)
   nvgText(s->vg, x_pos, y_pos+100, speed_str, NULL);
 
 
-  snprintf(speed_str, sizeof(speed_str), "%d", scene->status.nCanError );
+  if (scene->status.nCanError == 0)
+    snprintf(speed_str, sizeof(speed_str), "%d,Normal", scene->status.nCanError );
+  else if (scene->status.nCanError == 1)
+    snprintf(speed_str, sizeof(speed_str), "%d,커브감속", scene->status.nCanError );
+  else if (scene->status.nCanError == 2)
+    snprintf(speed_str, sizeof(speed_str), "%d,감속제어", scene->status.nCanError );
+  else
+    snprintf(speed_str, sizeof(speed_str), "%d", scene->status.nCanError );
+
+
   nvgText(s->vg, x_pos, y_pos+150, speed_str, NULL);
 
   snprintf(speed_str, sizeof(speed_str), "C:%.5f", scene->status.vCurvature );
