@@ -164,6 +164,12 @@ class SpdController():
   def update_lead(self, CS ):
     set_speed = CS.cruise_set_speed_kph
     cur_speed = CS.clu_Vanz
+    long_wait_timer_cmd = 500    
+    dst_lead_distance = 110
+
+
+    if CS.cruise_mode != 2:
+      return  long_wait_timer_cmd, set_speed
 
     #dRel, yRel, vRel = self.get_lead( sm, CS )
 
@@ -171,8 +177,6 @@ class SpdController():
     vRel = CS.lead_objspd
 
 
-    long_wait_timer_cmd = 500    
-    dst_lead_distance = 110
     if dst_lead_distance > cur_speed:
        dst_lead_distance = cur_speed
 
@@ -280,7 +284,8 @@ class SpdController():
       self.heart_time_cnt = 0
 
 
-
+    if CS.cruise_mode == 0:
+       btn_type = Buttons.NONE
 
     str3 = 'curvature={:3.0f} dest={:3.0f}/{:3.0f} md{} heart={:.0f} '.format( model_speed,  target_set_speed, self.long_wait_timer, CS.cruise_mode, self.heart_time_cnt )
     trace1.printf2(  str3 )
