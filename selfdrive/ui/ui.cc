@@ -321,7 +321,7 @@ void handle_message(UIState *s, Message * msg) {
 // debug Message
 
     s->scene.status.vCurvature = datad.vCurvature;
-    s->scene.status.cruise_set_mode = datad.canErrorCounter    
+    s->scene.status.cruise_set_mode = datad.canErrorCounter;    
     s->scene.status.nCanError = datad.canErrorCounter;
     if (datad.alertTextMsg1.str) 
     {
