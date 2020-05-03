@@ -92,6 +92,7 @@ class SpdController():
 
     self.movAvg = moveavg1.MoveAvg()   
 
+    self.time_no_lean = 0
 
   def reset(self):
     self.long_active_timer = 0
@@ -159,6 +160,17 @@ class SpdController():
 
     return dRel, yRel, vRel
 
+  def get_tm_speed( self, CS, set_time ):
+    time = set_time
+
+    if CS.VSetDis > CS.clu_Vanz:
+      set_speed = int(CS.clu_Vanz)
+    else:
+      set_speed = int(CS.VSetDis)
+
+    set_speed -= 1
+
+    return time, set_speed
 
   def update_lead(self, CS ):
     set_speed = CS.cruise_set_speed_kph
@@ -182,37 +194,45 @@ class SpdController():
     if dst_lead_distance < 30:
       dst_lead_distance = 30
 
+    if dRel != 150:
+      self.time_no_lean = 0
+
     d_delta = dRel - dst_lead_distance
     lead_objspd = vRel
     # 1. 거리 유지.
     if d_delta < 0:
+      
       if lead_objspd >= 0:
         set_speed = int(CS.VSetDis)
       elif lead_objspd < -10:
-        long_wait_timer_cmd = 10
-        set_speed = cur_speed - 2
+        long_wait_timer_cmd, set_speed = self.get_tm_speed( CS, 10 )
       elif lead_objspd < -5:
-        long_wait_timer_cmd = 50
-        set_speed = cur_speed - 2
+        long_wait_timer_cmd, set_speed = self.get_tm_speed( CS, 50 )
       elif lead_objspd < 0:
-        long_wait_timer_cmd = 100
-        set_speed = cur_speed - 1
+        long_wait_timer_cmd, set_speed = self.get_tm_speed( CS, 100 )
     else:
-      if lead_objspd < 0:
-        long_wait_timer_cmd = 200
-        set_speed = cur_speed - 1
+      if lead_objspd < -10:
+        long_wait_timer_cmd, set_speed = self.get_tm_speed( CS, 50 )   
+      elif lead_objspd < -5:
+        long_wait_timer_cmd, set_speed = self.get_tm_speed( CS, 90 )        
+      elif lead_objspd < 0:
+        long_wait_timer_cmd, set_speed = self.get_tm_speed( CS, 150 )           
       else:
         set_speed = cur_speed + 2
         if CS.VSetDis > set_speed:
           set_speed = CS.VSetDis + 1
 
         if dRel == 150:
-          long_wait_timer_cmd = 50
+          self.time_no_lean += 1
+          if self.time_no_lean < 150:
+            long_wait_timer_cmd = 50
+          else:
+            long_wait_timer_cmd = 20
         elif d_delta < 5:
           long_wait_timer_cmd = 50
         elif d_delta < 10:
           long_wait_timer_cmd = 30
-        elif d_delta < 30:
+        elif d_delta < 20:
           long_wait_timer_cmd = 20
         else:
           long_wait_timer_cmd = 10

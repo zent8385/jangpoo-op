@@ -16,7 +16,7 @@ class LatControlPID():
                             (CP.lateralTuning.pid.kiBP, CP.lateralTuning.pid.kiV),
                             k_f=CP.lateralTuning.pid.kf, pos_limit=1.0, sat_limit=CP.steerLimitTimer)
     self.angle_steers_des = 0.
-    self.mpc_frame = 0
+    self.mpc_frame = 500
 
     self.BP0 = 4
     self.steer_Kp = [0.18,0.25]
@@ -32,7 +32,7 @@ class LatControlPID():
     
   def live_tune(self, CP, path_plan):
     self.mpc_frame += 1
-    if self.mpc_frame % 300 == 0:
+    if self.mpc_frame % 600 == 0:
       # live tuning through /data/openpilot/tune.py overrides interface.py settings
       self.kegman = kegman_conf()
       if self.kegman.conf['tuneGernby'] == "1":

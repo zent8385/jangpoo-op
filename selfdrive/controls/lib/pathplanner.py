@@ -66,7 +66,7 @@ class PathPlanner():
       self.lane_change_enabled = Params().get('LaneChangeEnabled') == b'1'
       self.path_offset_i = 0.0
 
-      self.mpc_frame = 0
+      self.mpc_frame = 400
       self.lane_change_ll_prob = 1.0
       self.sR_delay_counter = 0
       self.steerRatio_new = 0.0
