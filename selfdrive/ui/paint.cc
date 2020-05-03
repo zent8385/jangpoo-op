@@ -972,7 +972,7 @@ static void ui_draw_debug(UIState *s)
   nvgText(s->vg, 0, 1020, speed_str, NULL);  
 
   snprintf(speed_str, sizeof(speed_str), "%s", scene->status.alert_text2 );
-  nvgText(s->vg, 0, 1020, speed_str, NULL);
+  nvgText(s->vg, 0, 1078, speed_str, NULL);
 
 }
 
