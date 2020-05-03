@@ -167,6 +167,7 @@ typedef struct UIScene {
   {
       float vCurvature; 
       int  nCanError;
+      int  cruise_mode;
       char alert_text1[512];
       char alert_text2[512];
   } status;

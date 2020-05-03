@@ -521,6 +521,7 @@ void handle_message(UIState *s, Message * msg) {
       
     s->scene.leftBlinker = datad.leftBlinker;
     s->scene.rightBlinker = datad.rightBlinker;
+    s->scene.status.cruise_mode = datad.cruise_mode
 
   } else if (eventd.which == cereal_Event_gpsLocationExternal) {
     struct cereal_GpsLocationData datad;
