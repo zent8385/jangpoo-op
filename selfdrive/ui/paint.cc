@@ -959,7 +959,23 @@ static void ui_draw_debug(UIState *s)
   nvgText(s->vg, x_pos, y_pos+100, speed_str, NULL);
 
   int   nCanError = scene->status.cruise_set_mode;
-  snprintf(speed_str, sizeof(speed_str), "%d", nCanError );
+  if (nCanError == 0)
+  {
+    snprintf(speed_str, sizeof(speed_str), "%d:hyundai", nCanError );
+  }
+  else if (nCanError == 1)
+  {
+    snprintf(speed_str, sizeof(speed_str), "%d:커브 감속", nCanError );
+  }
+  else if (nCanError == 2)
+  {
+    snprintf(speed_str, sizeof(speed_str), "%d:선행차 감속", nCanError );
+  }
+  else
+  {
+    snprintf(speed_str, sizeof(speed_str), "%d", nCanError );
+  }
+    
 
 
   nvgText(s->vg, x_pos, y_pos+150, speed_str, NULL);

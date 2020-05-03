@@ -319,7 +319,9 @@ void handle_message(UIState *s, Message * msg) {
     s->scene.pid.f = datad.ufAccelCmd;
 
 // debug Message
+
     s->scene.status.vCurvature = datad.vCurvature;
+    s->scene.status.cruise_set_mode = datad.canErrorCounter    
     s->scene.status.nCanError = datad.canErrorCounter;
     if (datad.alertTextMsg1.str) 
     {
@@ -521,7 +523,7 @@ void handle_message(UIState *s, Message * msg) {
       
     s->scene.leftBlinker = datad.leftBlinker;
     s->scene.rightBlinker = datad.rightBlinker;
-    s->scene.status.cruise_set_mode = datad.cruise_set_mode
+
 
   } else if (eventd.which == cereal_Event_gpsLocationExternal) {
     struct cereal_GpsLocationData datad;
