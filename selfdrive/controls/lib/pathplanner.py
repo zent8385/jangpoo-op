@@ -241,6 +241,8 @@ class PathPlanner():
 
     v_ego_kph = v_ego * CV.MS_TO_KPH
 
+    lean_offset = 0
+
     # Run MPC
     self.angle_steers_des_prev = self.angle_steers_des_mpc
     VM.update_params(sm['liveParameters'].stiffnessFactor, sm['liveParameters'].steerRatio)
@@ -266,7 +268,7 @@ class PathPlanner():
 
     abs_angle_steers = abs(angle_steers)
     if v_ego_kph < 10:
-      self.steerRatio = self.sR[0] * 0.6
+      self.steerRatio = self.sR[0] * 0.8
     elif self.lane_change_state != LaneChangeState.off:
       self.steerRatio = self.sR[0]
       self.steerAngle_new = 0
@@ -276,7 +278,7 @@ class PathPlanner():
 
       self.sR_delay_counter += 1
       delta_angle = abs_angle_steers - self.steerAngle_new
-      if delta_angle < -3.0 and self.sR_delay_counter > 5:
+      if delta_angle > 2.0 and self.sR_delay_counter > 5:
           self.sR_delay_counter += 20
 
       if self.sR_delay_counter < self.sR_time:
@@ -329,7 +331,17 @@ class PathPlanner():
     else:
       self.libmpc.init_weights(MPC_COST_LAT.PATH, MPC_COST_LAT.LANE, MPC_COST_LAT.HEADING, self.steer_rate_cost)
 
-    self.LP.update_d_poly(v_ego)
+
+
+    # 차량이 있을 경우 약간 이동하기.
+    if lca_left and lca_right:
+      lean_offset = 0
+    elif lca_left:
+      lean_offset = -0.005
+    elif lca_right:
+      lean_offset = 0.005
+
+    self.LP.update_d_poly( lean_offset )
 
 
     # TODO: Check for active, override, and saturation

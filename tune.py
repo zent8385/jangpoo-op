@@ -41,8 +41,9 @@ button_delay = 0.2
 kegman = kegman_conf()
 kegman.conf['tuneGernby'] = "1"
 #kegman.write_config(kegman.conf)
-param = ["Kp", "Ki", "Kf", "steerRatio", "steerRateCost", "deadzone", \
-         "sR_boost", "sR_BP0", "sR_BP1", "sR_time"]
+param = ["Kp", "Ki", "Kf", "steerRatio", "steerRateCost", \
+         "sR_boost", "sR_BP0", "sR_BP1", "sR_time", \
+         "sR_Kp", "sR_Ki"]
 
 j = 0
 while True:
@@ -53,7 +54,7 @@ while True:
   print ("")
   print ("1,3,5,7,r to incr 0.1,0.05,0.01,0.001,0.00001")
   print ("a,d,g,j,v to decr 0.1,0.05,0.01,0.001,0.00001")
-  print ("P,I,B,R to decr kp,ki,sR_boost,steerRatio")
+  print ("P,I,B,R,K to decr kp,ki,sR_boost,steerRatio,sR_Kp")
   print ("0 / L to make the value 0 / 1")
   print ("press SPACE / m for next /prev parameter")
   print ("press z to quit")
@@ -64,11 +65,12 @@ while True:
     j = 0
   elif (char == "I"):
     j = 1
-  elif (char == "B"):
-    j = 6
   elif (char == "R"):
     j = 3
-
+  elif (char == "B"):
+    j = 5
+  elif (char == "K"):
+    j = 9
 
   if (char == "v"):
     kegman.conf[param[j]] = str(round((float(kegman.conf[param[j]]) - 0.00001),5))
@@ -149,9 +151,19 @@ while True:
 
   if float(kegman.conf['Kp']) > 3:
     kegman.conf['Kp'] = "3"
+
+  if float(kegman.conf['sR_Kp']) < 0:
+    kegman.conf['sR_Kp'] = "0" 
+
+  if float(kegman.conf['sR_Kp']) > 3:
+    kegman.conf['sR_Kp'] = "3"
+
+  if float(kegman.conf['sR_Ki']) < 0:
+    kegman.conf['sR_Ki'] = "0" 
+
+  if float(kegman.conf['sR_Ki']) > 2:
+    kegman.conf['sR_Ki'] = "2"  
     
-  if kegman.conf['liveParams'] != "1" and kegman.conf['liveParams'] != "0":
-    kegman.conf['liveParams'] = "1"
     
   if float(kegman.conf['steerRatio']) < 1 and float(kegman.conf['steerRatio']) != -1:
     kegman.conf['steerRatio'] = "1"
@@ -238,7 +250,9 @@ while True:
     kegman.conf['Kf'] = "0.01"    
     
   if float(kegman.conf['Kf']) < 0:
-    kegman.conf['Kf'] = "0"    
+    kegman.conf['Kf'] = "0"
+
+
     
   if float(kegman.conf['sR_boost']) < 0:
     kegman.conf['sR_boost'] = "0"

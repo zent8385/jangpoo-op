@@ -123,12 +123,12 @@ class CarController():
 
     apply_accel, self.accel_steady = self.accel_hysteresis(apply_accel, self.accel_steady)
     apply_accel = clip(apply_accel * ACCEL_SCALE, ACCEL_MIN, ACCEL_MAX)
+    abs_angle_steers =  abs(actuators.steerAngle) #  abs(CS.angle_steers)  # 
 
     param = SteerLimitParams
-    if path_plan.laneChangeState != LaneChangeState.off or self.model_speed == 300:
+    if path_plan.laneChangeState != LaneChangeState.off:
       pass
-    elif self.model_speed > 200:
-      abs_angle_steers =  abs(actuators.steerAngle) #  abs(CS.angle_steers)  # 
+    elif abs_angle_steers < 2:
       xp = [0,0.5,1,1.5,2]
       fp = [190,225,240,250,param.STEER_MAX]
       param.STEER_MAX = interp( abs_angle_steers, xp, fp )

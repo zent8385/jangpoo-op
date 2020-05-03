@@ -22,25 +22,34 @@ class LatControlPID():
   def reset(self):
     self.pid.reset()
     
-  def live_tune(self, CP):
+  def live_tune(self, CP, path_plan):
     self.mpc_frame += 1
     if self.mpc_frame % 300 == 0:
       # live tuning through /data/openpilot/tune.py overrides interface.py settings
       self.kegman = kegman_conf()
       if self.kegman.conf['tuneGernby'] == "1":
-        self.steerKpV = [float(self.kegman.conf['Kp'])]
-        self.steerKiV = [float(self.kegman.conf['Ki'])]
-        self.steerKf = float(self.kegman.conf['Kf'])
+        self.steerKf = float(self.kegman.conf['Kf'])        
+        if path_plan.angleSteers > float(kegman.conf['sR_BP0']):
+          self.steerKpV = [float(self.kegman.conf['sR_Kp'])]
+          self.steerKiV = [float(self.kegman.conf['sR_Ki'])]
+        else:
+          self.steerKpV = [float(self.kegman.conf['Kp'])]
+          self.steerKiV = [float(self.kegman.conf['Ki'])]
+
+
         self.pid = PIController((CP.lateralTuning.pid.kpBP, self.steerKpV),
                             (CP.lateralTuning.pid.kiBP, self.steerKiV),
                             k_f=self.steerKf, pos_limit=1.0)
         self.deadzone = float(self.kegman.conf['deadzone'])
+
+
+
         
       self.mpc_frame = 0    
 
   def update(self, active, v_ego, angle_steers, angle_steers_rate, eps_torque, steer_override, rate_limited, CP, path_plan):
 
-    self.live_tune(CP)
+    self.live_tune(CP, path_plan)
  
     pid_log = log.ControlsState.LateralPIDState.new_message()
     pid_log.steerAngle = float(angle_steers)
