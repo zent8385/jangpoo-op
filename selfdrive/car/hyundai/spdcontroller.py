@@ -287,7 +287,7 @@ class SpdController():
     if CS.cruise_mode1 == 0:
        btn_type = Buttons.NONE
 
-    str3 = 'curvature={:3.0f} dest={:3.0f}/{:3.0f} md{} heart={:.0f} '.format( model_speed,  target_set_speed, self.long_wait_timer, CS.cruise_mode1, self.heart_time_cnt )
+    str3 = 'curvature={:3.0f} dest={:3.0f}/{:3.0f}  heart={:.0f} '.format( model_speed,  target_set_speed, self.long_wait_timer, self.heart_time_cnt )
     trace1.printf2(  str3 )
     #SC.add( str3 )
 
