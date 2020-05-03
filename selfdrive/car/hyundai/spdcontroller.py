@@ -156,7 +156,7 @@ class SpdController():
       yRel = 0
       vRel = 0
 
-      vRel = vRel * CV.MS_TO_KPH
+      #vRel = vRel * CV.MS_TO_KPH
 
     return dRel, yRel, vRel
 
