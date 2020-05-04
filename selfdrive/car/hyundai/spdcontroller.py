@@ -230,6 +230,9 @@ class SpdController():
             long_wait_timer_cmd = 100
           else:
             long_wait_timer_cmd = 60
+        elif d_delta < 2:
+          set_speed = CS.VSetDis
+          long_wait_timer_cmd = 500
         elif d_delta < 5:
           long_wait_timer_cmd = 100
         elif d_delta < 10:
