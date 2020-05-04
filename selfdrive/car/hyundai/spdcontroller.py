@@ -13,13 +13,14 @@ from selfdrive.controls.lib.speed_smoother import speed_smoother
 from selfdrive.controls.lib.long_mpc import LongitudinalMpc
 
 
+
 from selfdrive.car.hyundai.values import Buttons, SteerLimitParams
 from common.numpy_fast import clip, interp
 
 from selfdrive.config import RADAR_TO_CAMERA
 
 import common.log as trace1
-
+import common.CTime1000 as tm
 import common.MoveAvg as  moveavg1
 
 MAX_SPEED = 255.0
@@ -71,7 +72,6 @@ class SpdController():
     self.long_curv_timer = 0
     self.long_dst_speed = 0
 
-    self.heart_time_cnt = 0
 
     self.v_acc_start = 0.0
     self.a_acc_start = 0.0
@@ -91,7 +91,7 @@ class SpdController():
     self.r_poly = []
 
     self.movAvg = moveavg1.MoveAvg()   
-
+    self.Timer1 = tm.CTime1000("SPD")
     self.time_no_lean = 0
 
   def reset(self):
@@ -299,15 +299,11 @@ class SpdController():
       self.long_dst_speed = set_speed 
 
 
-    self.heart_time_cnt += 1
-    if self.heart_time_cnt > 50:
-      self.heart_time_cnt = 0
-
-
     if CS.cruise_set_mode == 0:
        btn_type = Buttons.NONE
 
-    str3 = 'curvature={:3.0f} dest={:3.0f}/{:3.0f} heart={:.0f} '.format( model_speed,  target_set_speed, self.long_wait_timer,   self.heart_time_cnt )
+    tm_sample = self.Timer1.sampleTime()
+    str3 = 'curvature={:3.0f} dest={:3.0f}/{:3.0f} heart={:.0f} '.format( model_speed,  target_set_speed, self.long_wait_timer,  tm_sample )
     trace1.printf2(  str3 )
     #SC.add( str3 )
 
