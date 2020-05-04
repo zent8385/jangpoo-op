@@ -355,7 +355,7 @@ class CarController():
       self.sc_wait_timer2 -= 1
     else:
       #acc_mode, clu_speed = self.long_speed_cntrl( v_ego_kph, CS, actuators )
-      btn_type, clu_speed, model_speed = self.SC.update( v_ego_kph, CS, sm, actuators )   # speed controller spdcontroller.py
+      btn_type, clu_speed, model_speed = self.SC.update( v_ego_kph, CS, sm, actuators, dRel, yRel, vRel )   # speed controller spdcontroller.py
 
       self.model_speed = model_speed
       if self.sc_btn_type != Buttons.NONE:
