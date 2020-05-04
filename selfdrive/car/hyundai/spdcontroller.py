@@ -160,7 +160,7 @@ class SpdController():
 
     return dRel, yRel, vRel
 
-  def get_tm_speed( self, CS, set_time ):
+  def get_tm_speed( self, CS, set_time, add_val ):
     time = set_time
 
     if CS.VSetDis > CS.clu_Vanz:
@@ -168,7 +168,7 @@ class SpdController():
     else:
       set_speed = int(CS.VSetDis)
 
-    set_speed -= 1
+    set_speed = set_speed + add_val
 
     return time, set_speed
 
@@ -204,22 +204,21 @@ class SpdController():
 
     # 1. 거리 유지.
     if d_delta < 0:
-      
       if lead_objspd >= 0:
         set_speed = int(CS.VSetDis)
       elif lead_objspd < -10:
-        long_wait_timer_cmd, set_speed = self.get_tm_speed( CS, 10 )
+        long_wait_timer_cmd, set_speed = self.get_tm_speed( CS, 50, -1 )
       elif lead_objspd < -5:
-        long_wait_timer_cmd, set_speed = self.get_tm_speed( CS, 50 )
+        long_wait_timer_cmd, set_speed = self.get_tm_speed( CS, 90, -1 )
       elif lead_objspd < 0:
-        long_wait_timer_cmd, set_speed = self.get_tm_speed( CS, 100 )
+        long_wait_timer_cmd, set_speed = self.get_tm_speed( CS, 150, -1 )
     else:
       if lead_objspd < -10:
-        long_wait_timer_cmd, set_speed = self.get_tm_speed( CS, 50 )   
+        long_wait_timer_cmd, set_speed = self.get_tm_speed( CS, 50, -1 )   
       elif lead_objspd < -5:
-        long_wait_timer_cmd, set_speed = self.get_tm_speed( CS, 90 )        
-      elif lead_objspd < -0.1:
-        long_wait_timer_cmd, set_speed = self.get_tm_speed( CS, 150 )           
+        long_wait_timer_cmd, set_speed = self.get_tm_speed( CS, 90, -1 )        
+      elif lead_objspd < 0:
+        long_wait_timer_cmd, set_speed = self.get_tm_speed( CS, 200, -1 )           
       else:
         set_speed = cur_speed + 2
         if CS.VSetDis > set_speed:
@@ -230,9 +229,9 @@ class SpdController():
           if self.time_no_lean < 150:
             long_wait_timer_cmd = 100
           else:
-            long_wait_timer_cmd = 80
+            long_wait_timer_cmd = 60
         elif d_delta < 5:
-          long_wait_timer_cmd = 80
+          long_wait_timer_cmd = 100
         elif d_delta < 10:
           long_wait_timer_cmd = 70
         elif d_delta < 20:
@@ -256,28 +255,24 @@ class SpdController():
     #xp = [0,5,20,40]
     #fp2 = [2,3,4,5]
     #limit_steers = interp( v_ego_kph, xp, fp2 )
-    lead_wait_timer_cmd = long_wait_timer_cmd
-    if set_speed > CS.VSetDis:
-        lead_wait_timer_cmd = 300
+    lead_wait_timer_cmd = 200
 
     # 2. 커브 감속.
     cuv_dst_speed = set_speed
     if CS.cruise_set_speed_kph >= 70:
       if model_speed < 80:
         cuv_dst_speed = CS.cruise_set_speed_kph - 15
-        if lead_wait_timer_cmd > 100:
-          long_wait_timer_cmd = 100
+        lead_wait_timer_cmd = 100
       elif model_speed < 120:  # 6도
         cuv_dst_speed = CS.cruise_set_speed_kph - 10
-        if lead_wait_timer_cmd > 150:
-          long_wait_timer_cmd = 150
+        lead_wait_timer_cmd = 150
       elif model_speed < 160:  #  3 도
         cuv_dst_speed = CS.cruise_set_speed_kph - 5
-        if lead_wait_timer_cmd > 200:
-          long_wait_timer_cmd = 200
+        lead_wait_timer_cmd = 200
 
       if set_speed > cuv_dst_speed:
         set_speed = cuv_dst_speed
+        long_wait_timer_cmd = lead_wait_timer_cmd
 
     if  set_speed > CS.cruise_set_speed_kph:
         set_speed = CS.cruise_set_speed_kph
