@@ -347,11 +347,12 @@ class PathPlanner():
       self.lean_wait_time = 200
       self.lean_offset = 0.005
 
+    lean_offset = 0
     if self.lean_wait_time:
       self.lean_wait_time -= 1
       lean_offset = self.lean_offset
-    else:
-      lean_offset = 0
+
+      
 
     self.LP.update_d_poly( lean_offset )
 

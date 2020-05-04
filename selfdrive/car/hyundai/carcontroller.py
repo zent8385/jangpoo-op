@@ -372,7 +372,7 @@ class CarController():
           self.sc_active_timer2 = 0
           self.sc_btn_type = Buttons.NONE          
         else:
-          # self.traceCC.add( 'sc_btn_type={}  clu_speed={}  cnt={}'.format( self.sc_btn_type, self.sc_clu_speed, self.sc_active_timer ) )
+          self.traceCC.add( 'sc_btn_type={}  clu_speed={}  cnt={}  set={:.0f} vanz={:.0f}'.format( self.sc_btn_type, self.sc_clu_speed, self.sc_active_timer, CS.VSetDis, CS.clu_Vanz  ) )
           can_sends.append(create_clu11(self.packer, CS.scc_bus, CS.clu11, self.sc_btn_type, self.sc_clu_speed, self.resume_cnt))
           self.resume_cnt += 1
 

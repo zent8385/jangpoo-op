@@ -165,15 +165,15 @@ class SpdController():
 
     delta_dst = CS.VSetDis - CS.clu_Vanz
 
-    if CS.VSetDis > CS.clu_Vanz:
-      set_speed = int(CS.clu_Vanz)
+    set_speed = int(CS.VSetDis) + add_val
+
+    if add_val > 0:  # 증가
+      if delta_dst > 5:
+        time = 500
     else:
-      set_speed = int(CS.VSetDis)
+      if delta_dst < -5:
+        time = 500
 
-    set_speed = set_speed + add_val
-
-    if abs( delta_dst ) > 5:
-      time = 500
 
     return time, set_speed
 
@@ -226,12 +226,11 @@ class SpdController():
       
       # 선행 차량이 가속하고 있으면.
       if dRel == 150:
-        lead_wait_cmd, lead_set_speed = self.get_tm_speed( CS, 100, 1 )
         self.time_no_lean += 1
         if self.time_no_lean < 200:
-          pass
+          lead_wait_cmd, lead_set_speed = self.get_tm_speed( CS, 100, 1 )
         else:
-          lead_wait_cmd = 50
+          lead_wait_cmd, lead_set_speed = self.get_tm_speed( CS, 50, 1 )
       elif lead_objspd < 3 or d_delta < 5:
         lead_set_speed = int(CS.VSetDis)
       elif lead_objspd < 5:
@@ -292,7 +291,7 @@ class SpdController():
     # control process
     target_set_speed = set_speed
     delta = int(set_speed) - int(CS.VSetDis)
-    if abs(delta) <= 1:
+    if abs(CS.cruise_set_speed_kph - CS.VSetDis) <= 1:
       long_wait_timer_cmd = 200
 
     if self.long_wait_timer:
