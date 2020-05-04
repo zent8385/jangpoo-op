@@ -100,6 +100,9 @@ class PathPlanner():
 
       self.movAvg = moveavg1.MoveAvg()
 
+      self.lean_wait_time = 0
+      self.lean_offset = 0     
+
 
 
   def limit_ctrl(self, value, limit, offset ):
@@ -335,11 +338,20 @@ class PathPlanner():
 
     # 차량이 있을 경우 약간 이동하기.
     if lca_left and lca_right:
+      self.lean_offset = 0
+      self.lean_wait_time = 500
+    elif lca_left and not self.lean_wait_time:
+      self.lean_wait_time = 200
+      self.lean_offset = -0.005
+    elif lca_right and not self.lean_wait_time:
+      self.lean_wait_time = 200
+      self.lean_offset = 0.005
+
+    if self.lean_wait_time:
+      self.lean_wait_time -= 1
+      lean_offset = self.lean_offset
+    else:
       lean_offset = 0
-    elif lca_left:
-      lean_offset = -0.005
-    elif lca_right:
-      lean_offset = 0.005
 
     self.LP.update_d_poly( lean_offset )
 
