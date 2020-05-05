@@ -48,7 +48,7 @@ _A_TOTAL_MAX_BP = [20., 40.]
 SPEED_PERCENTILE_IDX = 7
 
 
-SC = trace1.Loger("spd")
+
 
 
 def limit_accel_in_turns(v_ego, angle_steers, a_target, steerRatio , wheelbase):
@@ -93,6 +93,8 @@ class SpdController():
     self.movAvg = moveavg1.MoveAvg()   
     self.Timer1 = tm.CTime1000("SPD")
     self.time_no_lean = 0
+
+    self.SC = trace1.Loger("spd")
 
   def reset(self):
     self.long_active_timer = 0
@@ -220,20 +222,20 @@ class SpdController():
             lead_set_speed = 30
 
       str3 = '<0 speed={:3.0f} time={:3.0f}'.format( lead_set_speed, lead_wait_cmd )
-      trace1.printf2(  str3 )
+      self.SC.add(  str3 )
     # 선행차량이 멀리 있으면.
     elif lead_objspd < -10:  
         lead_wait_cmd, lead_set_speed = self.get_tm_speed( CS, 80, -1 )
         str3 = '-10 speed={:3.0f} time={:3.0f}'.format( lead_set_speed, lead_wait_cmd )
-        trace1.printf2(  str3 )         
+        self.SC.add(  str3 )         
     elif lead_objspd < -5:
       lead_wait_cmd, lead_set_speed = self.get_tm_speed( CS, 150, -1 )        
       str3 = '-5 speed={:3.0f} time={:3.0f}'.format( lead_set_speed, lead_wait_cmd )
-      trace1.printf2(  str3 )         
+      self.SC.add(  str3 )         
     elif lead_objspd < -1:
       lead_wait_cmd, lead_set_speed = self.get_tm_speed( CS, 200, -1 )           
       str3 = '-1 speed={:3.0f} time={:3.0f}'.format( lead_set_speed, lead_wait_cmd )
-      trace1.printf2(  str3 )         
+      self.SC.add(  str3 )         
     elif CS.cruise_set_speed_kph > CS.clu_Vanz:
       
       # 선행 차량이 가속하고 있으면.
@@ -253,7 +255,7 @@ class SpdController():
         lead_wait_cmd, lead_set_speed = self.get_tm_speed( CS, 50, 1 )
 
       str3 = 'acc speed={:3.0f} time={:3.0f}'.format( lead_set_speed, lead_wait_cmd )
-      trace1.printf2(  str3 )      
+      self.SC.add(  str3 )      
     return  lead_wait_cmd, lead_set_speed
 
 
@@ -333,14 +335,8 @@ class SpdController():
 
     tm_sample = self.Timer1.sampleTime()
 
-    if btn_type != Buttons.NONE:
-      str3 = 'curvature={:3.0f} dest={:3.0f}/{:3.0f} heart={:.0f} '.format( model_speed,  target_set_speed, self.long_wait_timer,  tm_sample )
-      trace1.printf2(  str3 )
-    #SC.add( str3 )
 
-    #if CS.pcm_acc_status and CS.AVM_Popup_Msg == 1 and CS.VSetDis > 30  and CS.lead_distance < 90:
-      #str2 = 'btn={:.0f} btn_type={}  v{:.5f} a{:.5f}  v{:.5f} a{:.5f}'.format(  CS.AVM_View, btn_type, self.v_model, self.a_model, self.v_cruise, self.a_cruise )
-     # self.traceSC.add( 'v_ego={:.1f} angle={:.1f}  {} {} {}'.format( v_ego_kph, CS.angle_steers, str1, str2, str3 )  ) 
+    str3 = 'curvature={:3.0f} dest={:3.0f}/{:3.0f} heart={:.0f} '.format( model_speed,  target_set_speed, self.long_wait_timer,  tm_sample )
+    trace1.printf2(  str3 )
 
     return btn_type, set_speed, model_speed
-    #return btn_type, set_speed, model_speed
