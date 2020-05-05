@@ -208,7 +208,7 @@ class CarController():
         self.steer_torque_over = False
         self.turning_signal_timer = 500
 
-   # turning indicator alert logic
+    # turning indicator alert logic
     self.turning_indicator = self.turning_signal_timer and CS.v_ego <  LaneChangeParms.LANE_CHANGE_SPEED_MIN
 
     if self.turning_signal_timer:
@@ -237,14 +237,19 @@ class CarController():
 
 
     # disable lkas 
-    if CS.stopped:
-        lkas_active = 0
+    if not CS.main_on:
+      lkas_active = 0
+      self.turning_signal_timer = 0
+      self.turning_indicator = False
+      self.steer_torque_over = False
+    elif CS.stopped:
+      lkas_active = 0
     elif self.steer_torque_over:
-        lkas_active = 0
+      lkas_active = 0
     if self.streer_angle_over:
-        lkas_active = 0
+      lkas_active = 0
     elif self.turning_indicator:
-        lkas_active = 0
+      lkas_active = 0
 
 
     if not lkas_active:
@@ -358,11 +363,14 @@ class CarController():
       btn_type, clu_speed, model_speed = self.SC.update( v_ego_kph, CS, sm, actuators, dRel, yRel, vRel )   # speed controller spdcontroller.py
 
       self.model_speed = model_speed
-      if self.sc_btn_type != Buttons.NONE:
-          pass
+
+      if CS.clu_Vanz < 5:
+        self.sc_btn_type = Buttons.NONE
+      elif self.sc_btn_type != Buttons.NONE:
+        pass
       elif btn_type != Buttons.NONE:
-          self.sc_btn_type = btn_type
-          self.sc_clu_speed = clu_speed
+        self.sc_btn_type = btn_type
+        self.sc_clu_speed = clu_speed
 
       if self.sc_btn_type != Buttons.NONE:
         self.sc_active_timer2 += 1

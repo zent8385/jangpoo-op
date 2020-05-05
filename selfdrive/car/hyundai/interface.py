@@ -396,8 +396,7 @@ class CarInterface(CarInterfaceBase):
 
     events = []
 
-    if not self.CS.main_on:
-      events.append(create_event('wrongCarMode', [ET.NO_ENTRY, ET.USER_DISABLE])) 
+
 
     if self.CS.esp_disabled:
       events.append(create_event('espDisabled', [ET.NO_ENTRY, ET.SOFT_DISABLE])) 
@@ -405,6 +404,8 @@ class CarInterface(CarInterfaceBase):
       events.append(create_event('doorOpen', [ET.NO_ENTRY, ET.SOFT_DISABLE]))
     elif ret.seatbeltUnlatched:
       events.append(create_event('seatbeltNotLatched', [ET.NO_ENTRY, ET.SOFT_DISABLE]))
+    elif not self.CS.main_on:
+      events.append(create_event('wrongCarMode', [ET.NO_ENTRY, ET.USER_DISABLE])) 
     elif ret.gearShifter == GearShifter.reverse:
       events.append(create_event('reverseGear', [ET.NO_ENTRY, ET.USER_DISABLE]))      
     elif not ret.gearShifter == GearShifter.drive:
