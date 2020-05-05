@@ -241,7 +241,7 @@ class SpdController():
       # 선행 차량이 가속하고 있으면.
       if dRel == 150:
         self.time_no_lean += 1
-        if self.time_no_lean < 200:
+        if self.time_no_lean < 50:
           lead_wait_cmd, lead_set_speed = self.get_tm_speed( CS, 100, 1 )
         else:
           lead_wait_cmd, lead_set_speed = self.get_tm_speed( CS, 50, 1 )
