@@ -163,24 +163,22 @@ class SpdController():
   def get_tm_speed( self, CS, set_time, add_val ):
     time = set_time
 
-    delta_dst = CS.VSetDis - CS.clu_Vanz
+    delta_speed = CS.VSetDis - CS.clu_Vanz
 
     set_speed = int(CS.VSetDis) + add_val
 
     if add_val > 0:  # 증가
-      if delta_dst > 5:
+      if delta_speed > 5:
         time = 500
     else:
-      if delta_dst < -5:
+      if delta_speed < -5:
         time = 500
-
 
     return time, set_speed
 
   def update_lead(self, CS,  dRel, yRel, vRel ):
     lead_set_speed = CS.cruise_set_speed_kph
-    lead_wait_cmd = 500    
-
+    lead_wait_cmd = 500
 
     if CS.cruise_set_mode != 2:
       return  lead_wait_cmd, lead_set_speed
@@ -215,14 +213,28 @@ class SpdController():
         lead_wait_cmd, lead_set_speed = self.get_tm_speed( CS, 90, -1 )
       elif lead_objspd < 0:
         lead_wait_cmd, lead_set_speed = self.get_tm_speed( CS, 150, -1 )
+      else:
+        lead_wait_cmd = 200
+        lead_set_speed = CS.clu_Vanz + 5
+        if lead_set_speed < 30:
+            lead_set_speed = 30
+
+      str3 = '<0 speed={:3.0f} time={:3.0f}'.format( lead_set_speed, lead_wait_cmd )
+      trace1.printf2(  str3 )
     # 선행차량이 멀리 있으면.
     elif lead_objspd < -10:  
-        lead_wait_cmd, lead_set_speed = self.get_tm_speed( CS, 80, -1 )   
+        lead_wait_cmd, lead_set_speed = self.get_tm_speed( CS, 80, -1 )
+        str3 = '-10 speed={:3.0f} time={:3.0f}'.format( lead_set_speed, lead_wait_cmd )
+        trace1.printf2(  str3 )         
     elif lead_objspd < -5:
       lead_wait_cmd, lead_set_speed = self.get_tm_speed( CS, 150, -1 )        
+      str3 = '-5 speed={:3.0f} time={:3.0f}'.format( lead_set_speed, lead_wait_cmd )
+      trace1.printf2(  str3 )         
     elif lead_objspd < -1:
       lead_wait_cmd, lead_set_speed = self.get_tm_speed( CS, 200, -1 )           
-    else:
+      str3 = '-1 speed={:3.0f} time={:3.0f}'.format( lead_set_speed, lead_wait_cmd )
+      trace1.printf2(  str3 )         
+    elif CS.cruise_set_speed_kph > CS.clu_Vanz:
       
       # 선행 차량이 가속하고 있으면.
       if dRel == 150:
@@ -240,6 +252,8 @@ class SpdController():
       else:
         lead_wait_cmd, lead_set_speed = self.get_tm_speed( CS, 50, 1 )
 
+      str3 = 'acc speed={:3.0f} time={:3.0f}'.format( lead_set_speed, lead_wait_cmd )
+      trace1.printf2(  str3 )      
     return  lead_wait_cmd, lead_set_speed
 
 
@@ -253,7 +267,7 @@ class SpdController():
       if model_speed < 80:
         set_speed = CS.cruise_set_speed_kph - 15
         wait_time_cmd = 100
-      elif model_speed < 120:  # 6도
+      elif model_speed < 110:  # 6도
         set_speed = CS.cruise_set_speed_kph - 10
         wait_time_cmd = 150
       elif model_speed < 160:  #  3 도
@@ -266,47 +280,50 @@ class SpdController():
   def update(self, v_ego_kph, CS, sm, actuators, dRel, yRel, vRel ):
     btn_type = Buttons.NONE
     #lead_1 = sm['radarState'].leadOne
-    long_wait_timer_cmd = 500
+    long_wait_cmd = 500
     set_speed = CS.cruise_set_speed_kph
 
-    lead_wait_cmd, lead_set_speed = self.update_lead( CS,  dRel, yRel, vRel )
-
-    curv_wait_cmd, curv_set_speed, model_speed = self.update_curv( CS, sm )
+    lead_wait_cmd, lead_set_speed = self.update_lead( CS,  dRel, yRel, vRel )  #선행 차량 거리유지
+    curv_wait_cmd, curv_set_speed, model_speed = self.update_curv( CS, sm )  # 커브 감속.
 
     if curv_wait_cmd != 0:
       if lead_set_speed > curv_set_speed:
         set_speed = curv_set_speed
-        long_wait_timer_cmd = curv_wait_cmd   
+        long_wait_cmd = curv_wait_cmd   
       else:
         set_speed = lead_set_speed
-        long_wait_timer_cmd = lead_wait_cmd      
+        long_wait_cmd = lead_wait_cmd      
     else: 
       set_speed = lead_set_speed
-      long_wait_timer_cmd = lead_wait_cmd
+      long_wait_cmd = lead_wait_cmd
+
 
     if  set_speed > CS.cruise_set_speed_kph:
         set_speed = CS.cruise_set_speed_kph
-    
+    elif set_speed < 30:
+        set_speed = 30
+
+
 
     # control process
     target_set_speed = set_speed
     delta = int(set_speed) - int(CS.VSetDis)
     if abs(CS.cruise_set_speed_kph - CS.VSetDis) <= 1:
-      long_wait_timer_cmd = 200
+      long_wait_cmd = 200
 
     if self.long_wait_timer:
       self.long_wait_timer -= 1      
-      if self.long_wait_timer > long_wait_timer_cmd:
-        self.long_wait_timer = long_wait_timer_cmd
+      if self.long_wait_timer > long_wait_cmd:
+        self.long_wait_timer = long_wait_cmd
     elif delta <= -1:
       set_speed = CS.VSetDis - 1
       btn_type = Buttons.SET_DECEL
-      self.long_wait_timer = long_wait_timer_cmd
+      self.long_wait_timer = long_wait_cmd
       self.long_dst_speed = set_speed
     elif  delta >= 1 and (model_speed > 200 or CS.clu_Vanz < 70):
       set_speed = CS.VSetDis + 1
       btn_type = Buttons.RES_ACCEL
-      self.long_wait_timer = long_wait_timer_cmd
+      self.long_wait_timer = long_wait_cmd
       self.long_dst_speed = set_speed 
 
 
@@ -315,8 +332,10 @@ class SpdController():
        self.long_wait_timer = 0
 
     tm_sample = self.Timer1.sampleTime()
-    str3 = 'curvature={:3.0f} dest={:3.0f}/{:3.0f} heart={:.0f} '.format( model_speed,  target_set_speed, self.long_wait_timer,  tm_sample )
-    trace1.printf2(  str3 )
+
+    if btn_type != Buttons.NONE:
+      str3 = 'curvature={:3.0f} dest={:3.0f}/{:3.0f} heart={:.0f} '.format( model_speed,  target_set_speed, self.long_wait_timer,  tm_sample )
+      trace1.printf2(  str3 )
     #SC.add( str3 )
 
     #if CS.pcm_acc_status and CS.AVM_Popup_Msg == 1 and CS.VSetDis > 30  and CS.lead_distance < 90:
