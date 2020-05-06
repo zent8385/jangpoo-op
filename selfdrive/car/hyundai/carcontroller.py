@@ -365,12 +365,14 @@ class CarController():
       elif self.sc_btn_type != Buttons.NONE:
         pass
       elif btn_type != Buttons.NONE:
+        self.resume_cnt = 0
+        self.sc_active_timer2 = 0
         self.sc_btn_type = btn_type
         self.sc_clu_speed = clu_speed
 
       if self.sc_btn_type != Buttons.NONE:
         self.sc_active_timer2 += 1
-        if self.sc_active_timer2 > 5:
+        if self.sc_active_timer2 > 10:
           self.sc_wait_timer2 = 5
           self.resume_cnt = 0
           self.sc_active_timer2 = 0

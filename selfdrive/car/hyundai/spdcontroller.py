@@ -222,7 +222,7 @@ class SpdController():
         lead_wait_cmd, lead_set_speed = self.get_tm_speed( CS, 150, -1 )
       elif CS.VSetDis > (CS.clu_Vanz + 5):
         lead_wait_cmd = 200
-        lead_set_speed = CS.clu_Vanz + 5
+        lead_set_speed = CS.VSetDis - 1 # CS.clu_Vanz + 5
         if lead_set_speed < 30:
             lead_set_speed = 30
 
@@ -247,9 +247,9 @@ class SpdController():
       if dRel == 150:
         self.time_no_lean += 1
         if self.time_no_lean < 50:
-          lead_wait_cmd, lead_set_speed = self.get_tm_speed( CS, 110, 1 )
+          lead_wait_cmd, lead_set_speed = self.get_tm_speed( CS, 150, 1 )
         else:
-          lead_wait_cmd, lead_set_speed = self.get_tm_speed( CS, 90, 1 )
+          lead_wait_cmd, lead_set_speed = self.get_tm_speed( CS, 100, 1 )
       elif lead_objspd < 3 or d_delta < 5:
         lead_set_speed = int(CS.VSetDis)
       elif lead_objspd < 5:
@@ -259,8 +259,9 @@ class SpdController():
       else:
         lead_wait_cmd, lead_set_speed = self.get_tm_speed( CS, 50, 1 )
 
-      str3 = 'acc speed={:3.0f} time={:3.0f}'.format( lead_set_speed, lead_wait_cmd )
-      self.SC.add(  str3 )
+      if lead_wait_cmd != 600:
+        str3 = 'acc speed={:3.0f} time={:3.0f}'.format( lead_set_speed, lead_wait_cmd )
+        self.SC.add(  str3 )
 
     return  lead_wait_cmd, lead_set_speed
 

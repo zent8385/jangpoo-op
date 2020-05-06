@@ -21,10 +21,12 @@ class LatControlPID():
     self.BP0 = 4
     self.steer_Kp = [0.18,0.25]
     self.steer_Ki = [0.01,0.05]
+    self.steer_Kf = [0.00001,0.00005]
 
-    self.steerKf = [ 0.000005 ]
+
     self.pid_change_flag = 0
     self.pre_pid_change_flag = 0
+    self.pid_BP0_time = 0
 
 
   def reset(self):
@@ -36,33 +38,43 @@ class LatControlPID():
       # live tuning through /data/openpilot/tune.py overrides interface.py settings
       self.kegman = kegman_conf()
       if self.kegman.conf['tuneGernby'] == "1":
-        self.steerKf = float(self.kegman.conf['Kf'])
+        #self.steerKf = float(self.kegman.conf['Kf'])
 
         self.BP0 = float(self.kegman.conf['sR_BP0'])
         self.steer_Kp = [ float(self.kegman.conf['Kp']), float(self.kegman.conf['sR_Kp']) ]
         self.steer_Ki = [ float(self.kegman.conf['Ki']), float(self.kegman.conf['sR_Ki']) ]
+        self.steer_Kf = [ float(self.kegman.conf['Kf']), float(self.kegman.conf['sR_Kf']) ]
 
         self.deadzone = float(self.kegman.conf['deadzone'])
         self.mpc_frame = 0 
-        self.pid_change_flag = 1
+        if not self.pid_change_flag:
+          self.pid_change_flag = 1
 
 
+    kBP0 = 0
     if self.pid_change_flag == 0:
       pass
     elif abs(path_plan.angleSteers) > self.BP0:
-      self.steerKpV = [ self.steer_Kp[1] ]
-      self.steerKiV = [ self.steer_Ki[1] ]
-      self.pid_change_flag = 1
-    else:
-      self.steerKpV = [ self.steer_Kp[0] ]
-      self.steerKiV = [ self.steer_Ki[0] ]
+      kBP0 = 1
       self.pid_change_flag = 2
+      self.pid_BP0_time = 30
+    elif self.pid_BP0_time:
+      kBP0 = 1
+      self.pid_BP0_time -= 1
+    else:
+      kBP0 = 0
+      self.pid_change_flag = 3
+
+
+    self.steerKpV = [ self.steer_Kp[ kBP0 ] ]
+    self.steerKiV = [ self.steer_Ki[ kBP0 ] ]
+    self.steerKf = [ self.steer_Kf[ kBP0 ] ]
 
     if self.pid_change_flag != self.pre_pid_change_flag:
       self.pre_pid_change_flag = self.pid_change_flag
       self.pid = PIController((CP.lateralTuning.pid.kpBP, self.steerKpV),
-                          (CP.lateralTuning.pid.kiBP, self.steerKiV),
-                          k_f=self.steerKf, pos_limit=1.0)
+                              (CP.lateralTuning.pid.kiBP, self.steerKiV),
+                               k_f=self.steerKf, pos_limit=1.0)
 
 
 
