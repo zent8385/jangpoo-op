@@ -208,6 +208,8 @@ while True:
   #if float(kegman.conf['Kf']) < 0.00001:
   kegman.conf['Kf'] = str("{:.5f}".format(float(kegman.conf['Kf'])))
 
+  kegman.conf['sR_Kf'] = str("{:.5f}".format(float(kegman.conf['sR_Kf'])))
+
 
   if write_json:
     kegman.write_config(kegman.conf)
