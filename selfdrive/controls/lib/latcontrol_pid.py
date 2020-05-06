@@ -38,7 +38,7 @@ class LatControlPID():
       # live tuning through /data/openpilot/tune.py overrides interface.py settings
       self.kegman = kegman_conf()
       if self.kegman.conf['tuneGernby'] == "1":
-        #self.steerKf = float(self.kegman.conf['Kf'])
+        self.steerKf = float(self.kegman.conf['Kf'])
 
         self.BP0 = float(self.kegman.conf['sR_BP0'])
         self.steer_Kp = [ float(self.kegman.conf['Kp']), float(self.kegman.conf['sR_Kp']) ]
@@ -68,7 +68,7 @@ class LatControlPID():
 
     self.steerKpV = [ float(self.steer_Kp[ kBP0 ]) ]
     self.steerKiV = [ float(self.steer_Ki[ kBP0 ]) ]
-    self.steerKf = [ float(self.steer_Kf[ kBP0 ]) ]
+    self.steerKf = float( self.steer_Kf[ kBP0 ] )
 
     if self.pid_change_flag != self.pre_pid_change_flag:
       self.pre_pid_change_flag = self.pid_change_flag
