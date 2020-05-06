@@ -130,7 +130,7 @@ class CarController():
       pass
     elif abs_angle_steers < 2:
       xp = [0,0.5,1,1.5,2]
-      fp = [190,225,240,250,param.STEER_MAX]
+      fp = [200,240,245,250,param.STEER_MAX]
       param.STEER_MAX = interp( abs_angle_steers, xp, fp )
 
       if abs_angle_steers < 0.5 or v_ego_kph < 5:
@@ -138,10 +138,7 @@ class CarController():
           param.STEER_DELTA_DOWN = 1
       elif abs_angle_steers < 1:
           param.STEER_DELTA_UP  = 2
-          param.STEER_DELTA_DOWN = 2
-      elif abs_angle_steers < 1.5:
-          param.STEER_DELTA_UP  = 3
-          param.STEER_DELTA_DOWN = 4
+          param.STEER_DELTA_DOWN = 3
 
 
     ### Steering Torque
@@ -152,7 +149,6 @@ class CarController():
     # steer torque의 변화량 감시.
     apply_steer = self.limit_ctrl( apply_steer, 50, self.apply_steer_last )
 
-    
 
     if abs( CS.steer_torque_driver ) > 180:
       self.steer_torque_over_timer += 1
