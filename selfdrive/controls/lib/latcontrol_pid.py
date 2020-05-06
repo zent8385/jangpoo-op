@@ -66,9 +66,9 @@ class LatControlPID():
       self.pid_change_flag = 3
 
 
-    self.steerKpV = [ self.steer_Kp[ kBP0 ] ]
-    self.steerKiV = [ self.steer_Ki[ kBP0 ] ]
-    self.steerKf = [ self.steer_Kf[ kBP0 ] ]
+    self.steerKpV = [ float(self.steer_Kp[ kBP0 ]) ]
+    self.steerKiV = [ float(self.steer_Ki[ kBP0 ]) ]
+    self.steerKf = [ float(self.steer_Kf[ kBP0 ]) ]
 
     if self.pid_change_flag != self.pre_pid_change_flag:
       self.pre_pid_change_flag = self.pid_change_flag
