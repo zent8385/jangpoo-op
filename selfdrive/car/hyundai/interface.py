@@ -60,7 +60,7 @@ class CarInterface(CarInterfaceBase):
     ret.safetyModel = car.CarParams.SafetyModel.hyundai
     ret.enableCruise = True  # stock acc
 
-    ret.steerActuatorDelay = 0.13  # Default delay   0.15
+    ret.steerActuatorDelay = 0.10  # Default delay   0.15
     ret.steerRateCost = 0.45
     ret.steerLimitTimer = 0.8
     ret.minSteerSpeed = 5 * CV.KPH_TO_MS    # 5 km/h 
