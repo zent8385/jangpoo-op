@@ -19,6 +19,7 @@ from common.numpy_fast import clip, interp
 
 from selfdrive.config import RADAR_TO_CAMERA
 
+
 import common.log as trace1
 import common.CTime1000 as tm
 import common.MoveAvg as  moveavg1
@@ -95,6 +96,8 @@ class SpdController():
     self.time_no_lean = 0
 
     self.SC = trace1.Loger("spd")
+
+    
 
   def reset(self):
     self.long_active_timer = 0

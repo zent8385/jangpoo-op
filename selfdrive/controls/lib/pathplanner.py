@@ -64,6 +64,7 @@ class PathPlanner():
       self.setup_mpc()
       self.solution_invalid_cnt = 0
       self.lane_change_enabled = Params().get('LaneChangeEnabled') == b'1'
+      self.car_avoid_enable = Params().get('CarAvoidanceEnabled') == b'1'
       self.path_offset_i = 0.0
 
       self.mpc_frame = 400
@@ -304,7 +305,7 @@ class PathPlanner():
     # Lane change logic
     below_lane_change_speed = v_ego_kph < 60
 
-    if (not active) or below_lane_change_speed or (self.lane_change_timer1 > 10.0):  # 5 sec
+    if not self.lane_change_enabled or (not active) or below_lane_change_speed or (self.lane_change_timer1 > 10.0):  # 5 sec
         self.nCommand = 0 
         self.lane_change_state = LaneChangeState.off
         self.lane_change_direction = LaneChangeDirection.none
@@ -337,22 +338,24 @@ class PathPlanner():
 
 
     # 차량이 있을 경우 약간 이동하기.
-    if lca_left and lca_right:
+    if self.car_avoid_enable:
+      if lca_left and lca_right:
+        self.lean_offset = 0
+        self.lean_wait_time = 500
+      elif lca_left and not self.lean_wait_time:
+        self.lean_wait_time = 200
+        self.lean_offset = -0.005
+      elif lca_right and not self.lean_wait_time:
+        self.lean_wait_time = 200
+        self.lean_offset = 0.005
+    else:
       self.lean_offset = 0
-      self.lean_wait_time = 500
-    elif lca_left and not self.lean_wait_time:
-      self.lean_wait_time = 200
-      self.lean_offset = -0.005
-    elif lca_right and not self.lean_wait_time:
-      self.lean_wait_time = 200
-      self.lean_offset = 0.005
+
 
     lean_offset = 0
     if self.lean_wait_time:
       self.lean_wait_time -= 1
       lean_offset = self.lean_offset
-
-      
 
     self.LP.update_d_poly( lean_offset )
 

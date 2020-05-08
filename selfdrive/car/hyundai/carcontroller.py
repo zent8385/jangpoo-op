@@ -9,7 +9,7 @@ from selfdrive.car.hyundai.values import Buttons, SteerLimitParams, LaneChangePa
 from opendbc.can.packer import CANPacker
 
 from common.numpy_fast import interp
-
+from common.params import Params
 
 import common.log as trace1
 
@@ -61,6 +61,9 @@ class CarController():
     self.sc_clu_speed = 0
     self.model_speed = 255
     self.traceCC = trace1.Loger("CarCtrl")
+
+    self.lane_change_enabled = Params().get('LaneChangeEnabled') == b'1'
+    self.speed_control_enabled = Params().get('SpeedControlEnabled') == b'1'
 
 
   def limit_ctrl(self, value, limit, offset ):
@@ -205,7 +208,10 @@ class CarController():
         self.turning_signal_timer = 500
 
     # turning indicator alert logic
-    self.turning_indicator = self.turning_signal_timer and CS.v_ego <  LaneChangeParms.LANE_CHANGE_SPEED_MIN
+    if self.lane_change_enabled:
+      self.turning_indicator = self.turning_signal_timer and CS.v_ego <  LaneChangeParms.LANE_CHANGE_SPEED_MIN
+    else:
+      self.turning_indicator = self.turning_signal_timer
 
     if self.turning_signal_timer:
         self.turning_signal_timer -= 1 
@@ -354,7 +360,7 @@ class CarController():
       self.sc_active_timer2 = 0
     elif self.sc_wait_timer2:
       self.sc_wait_timer2 -= 1
-    else:
+    elif self.speed_control_enabled:
       #acc_mode, clu_speed = self.long_speed_cntrl( v_ego_kph, CS, actuators )
       btn_type, clu_speed, model_speed = self.SC.update( v_ego_kph, CS, sm, actuators, dRel, yRel, vRel )   # speed controller spdcontroller.py
 
