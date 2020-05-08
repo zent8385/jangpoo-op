@@ -31,9 +31,9 @@ FRAMEBUFFER_LIBS = -lutils -lgui -lEGL
 .PHONY: all
 all: updater
 
-OBJS = NotoSansCJKtc-Regular.otf.o \
-			 NotoSansCJKtc-Medium.otf.o \
-			 NotoSansCJKtc-Bold.otf.o \
+OBJS = opensans_regular.ttf.o \
+			 opensans_semibold.ttf.o \
+			 opensans_bold.ttf.o \
        ../../selfdrive/common/touch.o \
        ../../selfdrive/common/framebuffer.o \
        $(PHONELIBS)/json11/json11.o \
@@ -52,15 +52,15 @@ updater: updater.o $(OBJS)
     -lcutils -lm -llog
 	strip updater
 
-NotoSansCJKtc-Regular.otf.o: ../../selfdrive/assets/fonts/NotoSansCJKtc-Regular.otf
+opensans_regular.ttf.o: ../../selfdrive/assets/fonts/opensans_regular.ttf
 	@echo "[ bin2o ] $@"
 	cd '$(dir $<)' && ld -r -b binary '$(notdir $<)' -o '$(abspath $@)'
 
-NotoSansCJKtc-Bold.otf.o: ../../selfdrive/assets/fonts/NotoSansCJKtc-Bold.otf
+opensans_bold.ttf.o: ../../selfdrive/assets/fonts/opensans_bold.ttf
 	@echo "[ bin2o ] $@"
 	cd '$(dir $<)' && ld -r -b binary '$(notdir $<)' -o '$(abspath $@)'
 
-NotoSansCJKtc-Medium.otf.o: ../../selfdrive/assets/fonts/NotoSansCJKtc-Medium.otf
+opensans_semibold.ttf.o: ../../selfdrive/assets/fonts/opensans_semibold.ttf
 	@echo "[ bin2o ] $@"
 	cd '$(dir $<)' && ld -r -b binary '$(notdir $<)' -o '$(abspath $@)'
 

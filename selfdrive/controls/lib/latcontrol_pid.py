@@ -19,9 +19,9 @@ class LatControlPID():
     self.mpc_frame = 500
 
     self.BP0 = 4
-    self.steer_Kp = [0.18,0.25]
-    self.steer_Ki = [0.01,0.05]
-    self.steer_Kf = [0.00001,0.00005]
+    self.steer_Kp = [0.18,0.20]
+    self.steer_Ki = [0.03,0.04]
+    self.steer_Kf = [0.00002,0.00005]
 
 
     self.pid_change_flag = 0
@@ -125,7 +125,5 @@ class LatControlPID():
       pid_log.output = output_steer
       pid_log.saturated = bool(self.pid.saturated)
 
-    delta = self.angle_steers_des - path_plan.angleSteers
-    #trace1.printf( 'pid steer:{:.1f} dst:{:.1f} delta={:.1f}'.format( self.angle_steers_des, path_plan.angleSteers ) )
 
     return output_steer, float(self.angle_steers_des), pid_log

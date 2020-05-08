@@ -43,12 +43,12 @@ const char *manifest_url = MANIFEST_URL_EON;
 
 #define UPDATE_DIR "/data/neoupdate"
 
-extern const uint8_t bin_opensans_regular[] asm("_binary_NotoSansCJKtc_Regular_otf_start");
-extern const uint8_t bin_opensans_regular_end[] asm("_binary_NotoSansCJKtc_Regular_otf_end");
-extern const uint8_t bin_opensans_semibold[] asm("_binary_NotoSansCJKtc_Medium_otf_start");
-extern const uint8_t bin_opensans_semibold_end[] asm("_binary_NotoSansCJKtc_Medium_otf_end");
-extern const uint8_t bin_opensans_bold[] asm("_binary_NotoSansCJKtc_Bold_otf_start");
-extern const uint8_t bin_opensans_bold_end[] asm("_binary_NotoSansCJKtc_Bold_otf_end");
+extern const uint8_t bin_opensans_regular[] asm("_binary_opensans_regular_ttf_start");
+extern const uint8_t bin_opensans_regular_end[] asm("_binary_opensans_regular_ttf_end");
+extern const uint8_t bin_opensans_semibold[] asm("_binary_opensans_semibold_ttf_start");
+extern const uint8_t bin_opensans_semibold_end[] asm("_binary_opensans_semibold_ttf_end");
+extern const uint8_t bin_opensans_bold[] asm("_binary_opensans_bold_ttf_start");
+extern const uint8_t bin_opensans_bold_end[] asm("_binary_opensans_bold_ttf_end");
 
 namespace {
 
