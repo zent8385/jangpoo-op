@@ -7,7 +7,7 @@ from selfdrive.car.hyundai.carstate import CarState, get_can_parser, get_can2_pa
 from selfdrive.car.hyundai.values import Ecu, ECU_FINGERPRINT, CAR, FINGERPRINTS, LaneChangeParms
 from selfdrive.car import STD_CARGO_KG, scale_rot_inertia, scale_tire_stiffness, is_ecu_disconnected, gen_empty_fingerprint
 from selfdrive.car.interfaces import CarInterfaceBase
-
+from common.params import Params
 
 import common.log as trace1
 
@@ -44,6 +44,11 @@ class CarInterface(CarInterfaceBase):
     self.traceSCC = trace1.Loger("scc12")
     self.traceMDPS = trace1.Loger("mdps12")
     self.traceCGW = trace1.Loger("CGW1")
+
+    self.params = Params()
+    self.lane_change_enabled = self.params.get('LaneChangeEnabled') == b'1'
+    self.speed_control_enabled = self.params.get('SpeedControlEnabled') == b'1'
+    self.car_avoid_enable = self.params.get('CarAvoidanceEnabled') == b'1'            
 
   @staticmethod
   def compute_gb(accel, speed):

@@ -62,8 +62,10 @@ class CarController():
     self.model_speed = 255
     self.traceCC = trace1.Loger("CarCtrl")
 
-    self.lane_change_enabled = Params().get('LaneChangeEnabled') == b'1'
-    self.speed_control_enabled = Params().get('SpeedControlEnabled') == b'1'
+    self.params = Params()
+    self.lane_change_enabled = self.params.get('LaneChangeEnabled') == b'1'
+    self.speed_control_enabled = self.params.get('SpeedControlEnabled') == b'1'
+
 
 
   def limit_ctrl(self, value, limit, offset ):

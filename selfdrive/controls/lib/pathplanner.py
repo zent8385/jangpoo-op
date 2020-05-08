@@ -61,10 +61,15 @@ class PathPlanner():
       self.last_cloudlog_t = 0
       self.steer_rate_cost = CP.steerRateCost
 
+
+      self.params = Params()
+      self.lane_change_enabled = self.params.get('LaneChangeEnabled') == b'1'
+      self.car_avoid_enable = self.params.get('CarAvoidanceEnabled') == b'1'
+
+
       self.setup_mpc()
       self.solution_invalid_cnt = 0
-      self.lane_change_enabled = Params().get('LaneChangeEnabled') == b'1'
-      self.car_avoid_enable = Params().get('CarAvoidanceEnabled') == b'1'
+
       self.path_offset_i = 0.0
 
       self.mpc_frame = 400
