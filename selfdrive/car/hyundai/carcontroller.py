@@ -278,7 +278,7 @@ class CarController():
     self.model_speed = self.SC.calc_va( sm, CS.v_ego )
     dRel, yRel, vRel = self.SC.get_lead( sm, CS )
     vRel = int(vRel * 3.6 + 0.5)
-    path_plan.curvature = self.model_speed
+    #path_plan.curvature = self.model_speed
     lead_objspd = CS.lead_objspd
     str_log1 = 'torg:{:5.0f} obj=[{:3.0f}/{:2.0f}][{:2.0f}/{:3.0f}] curvature={:3.0f}'.format( apply_steer, vRel, lead_objspd, dRel, CS.lead_distance, self.model_speed  )
     str_log2 = 'steer={:5.0f} sccInfo={:3.0f} lkas={:1.0f} sw{:.0f}/{:.0f}'.format( CS.steer_torque_driver, CS.sccInfoDisp, CS.lkas_LdwsSysState, CS.clu_CruiseSwState, CS.cruise_set_mode  )
