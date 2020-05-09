@@ -459,7 +459,7 @@ class PathPlanner():
 
 
     str_log = 'path_curvature={:.0f}'.format( plan_send.pathPlan.curvature )
-    tracePP.add( )
+    tracePP.add( str_log )
 
 
     if LOG_MPC:
