@@ -10,7 +10,7 @@ from opendbc.can.packer import CANPacker
 
 from common.numpy_fast import interp
 from common.params import Params
-from selfdrive.controls.lib.pathplanner import path_curvature
+
 
 import common.log as trace1
 
@@ -286,9 +286,7 @@ class CarController():
     str_log2 = 'steer={:5.0f} sccInfo={:3.0f} lkas={:1.0f} sw{:.0f}/{:.0f}'.format( CS.steer_torque_driver, CS.sccInfoDisp, CS.lkas_LdwsSysState, CS.clu_CruiseSwState, CS.cruise_set_mode  )
     trace1.printf( '{} {}'.format( str_log1, str_log2 ) )
 
-    global path_curvature
 
-    path_curvature = self.model_speed
     self.apply_accel_last = apply_accel
     self.apply_steer_last = apply_steer
 
