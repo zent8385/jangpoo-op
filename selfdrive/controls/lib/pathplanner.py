@@ -1,5 +1,6 @@
 import os
 import math
+import numpy as np
 import common.log as trace1
 
 
@@ -19,7 +20,7 @@ import cereal.messaging as messaging
 import common.MoveAvg as  moveavg1
 
 
-path_curvature = 256
+MAX_SPEED = 255
 
 LaneChangeState = log.PathPlan.LaneChangeState
 LaneChangeDirection = log.PathPlan.LaneChangeDirection
@@ -28,6 +29,8 @@ LaneChangeBSM = log.PathPlan.LaneChangeBSM
 LOG_MPC = os.environ.get('LOG_MPC', True)
 
 tracePP = trace1.Loger("pathPlanner")
+
+
 
 DESIRES = {
   LaneChangeDirection.none: {
@@ -111,6 +114,48 @@ class PathPlanner():
       self.lean_wait_time = 0
       self.lean_offset = 0     
 
+
+
+  def calc_va(self, sm, v_ego ):
+    md = sm['model']    
+    if len(md.path.poly):
+      path = list(md.path.poly)
+
+      self.l_poly = np.array(md.leftLane.poly)
+      self.r_poly = np.array(md.rightLane.poly)
+      self.p_poly = np.array(md.path.poly)
+
+
+      # Curvature of polynomial https://en.wikipedia.org/wiki/Curvature#Curvature_of_the_graph_of_a_function
+      # y = a x^3 + b x^2 + c x + d, y' = 3 a x^2 + 2 b x + c, y'' = 6 a x + 2 b
+      # k = y'' / (1 + y'^2)^1.5
+      # TODO: compute max speed without using a list of points and without numpy
+      y_p = 3 * path[0] * self.path_x**2 + 2 * path[1] * self.path_x + path[2]
+      y_pp = 6 * path[0] * self.path_x + 2 * path[1]
+      curv = y_pp / (1. + y_p**2)**1.5
+
+      a_y_max = 2.975 - v_ego * 0.0375  # ~1.85 @ 75mph, ~2.6 @ 25mph
+      v_curvature = np.sqrt(a_y_max / np.clip(np.abs(curv), 1e-4, None))
+      model_speed = np.min(v_curvature)
+      model_speed = max(30.0 * CV.MPH_TO_MS, model_speed) # Don't slow down below 20mph
+
+      model_speed = model_speed * CV.MS_TO_KPH
+      if model_speed > MAX_SPEED:
+          model_speed = MAX_SPEED
+    else:
+      model_speed = MAX_SPEED
+
+    #following = lead_1.status and lead_1.dRel < 45.0 and lead_1.vLeadK > v_ego and lead_1.aLeadK > 0.0
+
+    #following = CS.lead_distance < 100.0
+    #accel_limits = [float(x) for x in calc_cruise_accel_limits(v_ego, following)]
+    #jerk_limits = [min(-0.1, accel_limits[0]), max(0.1, accel_limits[1])]  # TODO: make a separate lookup for jerk tuning
+    #accel_limits_turns = limit_accel_in_turns(v_ego, CS.angle_steers, accel_limits, self.steerRatio, self.wheelbase )
+
+    model_speed = self.movAvg.get_min( model_speed, 10 )
+
+
+    return model_speed
 
 
   def limit_ctrl(self, value, limit, offset ):
@@ -431,6 +476,9 @@ class PathPlanner():
     else:
       self.solution_invalid_cnt = 0
     plan_solution_valid = self.solution_invalid_cnt < 2
+
+
+    path_curvature = self.calc_va( sm, v_ego )
 
     plan_send = messaging.new_message()
     plan_send.init('pathPlan')
