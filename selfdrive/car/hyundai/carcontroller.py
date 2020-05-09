@@ -142,7 +142,7 @@ class CarController():
       if abs_angle_steers < 0.5 or v_ego_kph < 5:
           param.STEER_DELTA_UP  = 1
           param.STEER_DELTA_DOWN = 1
-      elif abs_angle_steers < 1.5:
+      elif abs_angle_steers < 2:
           param.STEER_DELTA_UP  = 2
           param.STEER_DELTA_DOWN = 2
 
