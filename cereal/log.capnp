@@ -759,7 +759,6 @@ struct PathPlan {
 
   angleSteers @8 :Float32; # deg
   rateSteers @13 :Float32; # deg/s
-  v_curvature @21 :Float32;  # model_speed
   mpcSolutionValid @9 :Bool;
   paramsValid @10 :Bool;
   modelValidDEPRECATED @12 :Bool;
@@ -771,7 +770,8 @@ struct PathPlan {
   laneChangeState @18 :LaneChangeState;
   laneChangeDirection @19 :LaneChangeDirection;
   laneChangeBSM @20 :LaneChangeBSM;
-
+  v_curvature @21 :Float32;  # model_speed
+  
   enum Desire {
     none @0;
     turnLeft @1;
