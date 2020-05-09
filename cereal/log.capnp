@@ -759,7 +759,7 @@ struct PathPlan {
 
   angleSteers @8 :Float32; # deg
   rateSteers @13 :Float32; # deg/s
-  curvature @21 :Float32;  # model_speed
+  v_curvature @21 :Float32;  # model_speed
   mpcSolutionValid @9 :Bool;
   paramsValid @10 :Bool;
   modelValidDEPRECATED @12 :Bool;

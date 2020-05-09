@@ -480,7 +480,7 @@ class PathPlanner():
     plan_solution_valid = self.solution_invalid_cnt < 2
 
 
-    path_curvature = self.calc_va( sm, v_ego )
+    v_curvature = self.calc_va( sm, v_ego )
 
     plan_send = messaging.new_message()
     plan_send.init('pathPlan')
@@ -504,11 +504,11 @@ class PathPlanner():
     plan_send.pathPlan.laneChangeState = self.lane_change_state
     plan_send.pathPlan.laneChangeDirection = self.lane_change_direction
     plan_send.pathPlan.laneChangeBSM = self.lane_change_BSM
-    plan_send.pathPlan.curvature = path_curvature
+    plan_send.pathPlan.v_curvature = v_curvature
     pm.send('pathPlan', plan_send)
 
 
-    str_log = 'path_curvature={:.0f}'.format( plan_send.pathPlan.curvature )
+    str_log = 'path_curvature={:.0f}'.format( plan_send.pathPlan.v_curvature )
     tracePP.add( str_log )
 
 

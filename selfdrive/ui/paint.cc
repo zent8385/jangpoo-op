@@ -955,7 +955,7 @@ static void ui_draw_debug(UIState *s)
   nvgText(s->vg, x_pos, y_pos+0, speed_str, NULL);
   snprintf(speed_str, sizeof(speed_str), "I:%.5f", scene->pid.i );
   nvgText(s->vg, x_pos, y_pos+50, speed_str, NULL);
-  snprintf(speed_str, sizeof(speed_str), "F:%.5f", scene->pid.f );
+  snprintf(speed_str, sizeof(speed_str), "F:%.5f  %.5f", scene->pid.f, scene->curvature );
   nvgText(s->vg, x_pos, y_pos+100, speed_str, NULL);
 
   int   cruise_set_mode = scene->status.cruise_set_mode;
