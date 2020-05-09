@@ -530,7 +530,6 @@ def controlsd_thread(sm=None, pm=None, can_sock=None):
   sm['liveCalibration'].calStatus = Calibration.INVALID
   sm['pathPlan'].sensorValid = True
   sm['pathPlan'].posenetValid = True
-  sm['pathPlan'].curvature = 255
   sm['thermal'].freeSpace = 1.
   sm['dMonitoringState'].events = []
   sm['dMonitoringState'].awarenessStatus = 1.

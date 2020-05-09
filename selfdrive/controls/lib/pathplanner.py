@@ -452,7 +452,7 @@ class PathPlanner():
     plan_send.pathPlan.laneChangeState = self.lane_change_state
     plan_send.pathPlan.laneChangeDirection = self.lane_change_direction
     plan_send.pathPlan.laneChangeBSM = self.lane_change_BSM
-
+    plan_send.pathPlan.curvature = 256
     pm.send('pathPlan', plan_send)
 
 
