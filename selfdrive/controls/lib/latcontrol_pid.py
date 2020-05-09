@@ -79,8 +79,7 @@ class LatControlPID():
     return model_speed
 
   def update_state( self, sm, CS ):
-    self.calc_va( sm, CS.vEgo )
-    self.v_curvature = self.calc_va( sm, CS.v_ego )
+    self.v_curvature = self.calc_va( sm, CS.vEgo )
 
 
 
