@@ -19,6 +19,8 @@ import cereal.messaging as messaging
 import common.MoveAvg as  moveavg1
 
 
+path_curvature = 256
+
 LaneChangeState = log.PathPlan.LaneChangeState
 LaneChangeDirection = log.PathPlan.LaneChangeDirection
 LaneChangeBSM = log.PathPlan.LaneChangeBSM
@@ -452,10 +454,12 @@ class PathPlanner():
     plan_send.pathPlan.laneChangeState = self.lane_change_state
     plan_send.pathPlan.laneChangeDirection = self.lane_change_direction
     plan_send.pathPlan.laneChangeBSM = self.lane_change_BSM
-    plan_send.pathPlan.curvature = 256
+    plan_send.pathPlan.curvature = path_curvature
     pm.send('pathPlan', plan_send)
 
 
+    str_log = 'path_curvature={:.0f}'.format( plan_send.pathPlan.curvature )
+    tracePP.add( )
 
 
     if LOG_MPC:
