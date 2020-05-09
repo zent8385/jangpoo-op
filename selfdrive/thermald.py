@@ -33,7 +33,7 @@ CURRENT_TAU = 15.   # 15s time constant
 DAYS_NO_CONNECTIVITY_MAX = 7  # do not allow to engage after a week without internet
 DAYS_NO_CONNECTIVITY_PROMPT = 4  # send an offroad prompt after 4 days with no internet
 
-mediaplayer = '/data/openpilot/selfdrive/kyd/mediaplayer/'
+#mediaplayer = '/data/openpilot/selfdrive/kyd/mediaplayer/'
 
 with open(BASEDIR + "/selfdrive/controls/lib/alerts_offroad.json") as json_file:
   OFFROAD_ALERTS = json.load(json_file)
@@ -211,10 +211,10 @@ def thermald_thread():
   params = Params()
 
   # sound trigger
-  sound_trigger = 1
+  #sound_trigger = 1
 
-  env = dict(os.environ)
-  env['LD_LIBRARY_PATH'] = mediaplayer
+  #env = dict(os.environ)
+  #env['LD_LIBRARY_PATH'] = mediaplayer
 
   while 1:
     health = messaging.recv_sock(health_sock, wait=True)
@@ -403,12 +403,12 @@ def thermald_thread():
       started_ts = None
       if off_ts is None:
         off_ts = sec_since_boot()
-        sound_trigger = 1
+        #sound_trigger = 1
         os.system('echo powersave > /sys/class/devfreq/soc:qcom,cpubw/governor')
 
-      if sound_trigger == 1 and msg.thermal.batteryStatus == "Discharging" and started_seen and (sec_since_boot() - off_ts) > 2:
-        subprocess.Popen([mediaplayer + 'mediaplayer', '/data/openpilot/selfdrive/assets/sounds/eondetach.wav'], shell = False, stdin=None, stdout=None, stderr=None, env = env, close_fds=True)
-        sound_trigger = 0
+      #if sound_trigger == 1 and msg.thermal.batteryStatus == "Discharging" and started_seen and (sec_since_boot() - off_ts) > 2:
+      #  subprocess.Popen([mediaplayer + 'mediaplayer', '/data/openpilot/selfdrive/assets/sounds/eondetach.wav'], shell = False, stdin=None, stdout=None, stderr=None, env = env, close_fds=True)
+      #  sound_trigger = 0
 
       # shutdown if the battery gets lower than 3%, it's discharging, we aren't running for
       # more than a minute but we were running
