@@ -60,7 +60,7 @@ class CarController():
     self.sc_active_timer2 = 0     
     self.sc_btn_type = Buttons.NONE
     self.sc_clu_speed = 0
-    self.model_speed = 255
+    #self.model_speed = 255
     self.traceCC = trace1.Loger("CarCtrl")
 
     self.params = Params()
@@ -276,12 +276,12 @@ class CarController():
           apply_steer = self.limit_ctrl( apply_steer, apply_steer_limit, 0 )
 
 
-    self.model_speed = self.SC.calc_va( sm, CS.v_ego )
+    #self.model_speed = self.SC.calc_va( sm, CS.v_ego )
     dRel, yRel, vRel = self.SC.get_lead( sm, CS )
     vRel = int(vRel * 3.6 + 0.5)
   
     lead_objspd = CS.lead_objspd
-    str_log1 = 'cv={:3.0f}{:3.0f} torg:{:5.0f} obj={:3.0f}:{:2.0f}'.format( LaC.v_curvature, self.model_speed, apply_steer, vRel, dRel  )
+    str_log1 = 'cv={:3.0f} torg:{:5.0f} obj={:3.0f}:{:2.0f}'.format( LaC.v_curvature, apply_steer, vRel, dRel  )
     str_log2 = 'steer={:5.0f} sccInfo={:3.0f} lkas={:1.0f} sw{:.0f}/{:.0f}'.format( CS.steer_torque_driver, CS.sccInfoDisp, CS.lkas_LdwsSysState, CS.clu_CruiseSwState, CS.cruise_set_mode  )
     trace1.printf( '{} {}'.format( str_log1, str_log2 ) )
 
@@ -340,7 +340,7 @@ class CarController():
     
 
     if CS.stopped:
-      self.model_speed = 300
+      #self.model_speed = 300
       # run only first time when the car stopped
       if self.last_lead_distance == 0:
         # get the lead distance from the Radar
@@ -358,7 +358,7 @@ class CarController():
     elif self.last_lead_distance != 0:
       self.last_lead_distance = 0
     elif CS.driverOverride or not CS.pcm_acc_status or CS.clu_CruiseSwState == 1 or CS.clu_CruiseSwState == 2:
-      self.model_speed = 300
+      #self.model_speed = 300
       self.resume_cnt = 0
       self.sc_btn_type = Buttons.NONE
       self.sc_wait_timer2 = 10
@@ -367,7 +367,7 @@ class CarController():
       self.sc_wait_timer2 -= 1
     elif self.speed_control_enabled:
       #acc_mode, clu_speed = self.long_speed_cntrl( v_ego_kph, CS, actuators )
-      btn_type, clu_speed = self.SC.update( v_ego_kph, CS, sm, actuators, dRel, yRel, vRel, self.model_speed )   # speed controller spdcontroller.py
+      btn_type, clu_speed = self.SC.update( v_ego_kph, CS, sm, actuators, dRel, yRel, vRel, LaC.v_curvature )   # speed controller spdcontroller.py
 
       if CS.clu_Vanz < 5:
         self.sc_btn_type = Buttons.NONE
