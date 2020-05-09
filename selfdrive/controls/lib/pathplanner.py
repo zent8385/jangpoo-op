@@ -112,7 +112,9 @@ class PathPlanner():
       self.movAvg = moveavg1.MoveAvg()
 
       self.lean_wait_time = 0
-      self.lean_offset = 0     
+      self.lean_offset = 0
+
+      self.path_x = np.arange(192)
 
 
 
