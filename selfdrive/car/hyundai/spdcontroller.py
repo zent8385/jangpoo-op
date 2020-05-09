@@ -269,11 +269,11 @@ class SpdController():
     return  lead_wait_cmd, lead_set_speed
 
 
-  def update_curv(self, CS, sm ):
+  def update_curv(self, CS, sm, model_speed ):
     wait_time_cmd = 0
     set_speed = CS.cruise_set_speed_kph
 
-    model_speed = self.calc_va( sm, CS.v_ego )
+    #model_speed = self.calc_va( sm, CS.v_ego )
     # 2. 커브 감속.
     if CS.cruise_set_speed_kph >= 70:
       if model_speed < 80:
@@ -287,16 +287,16 @@ class SpdController():
         wait_time_cmd = 200
 
 
-    return wait_time_cmd, set_speed, model_speed
+    return wait_time_cmd, set_speed
 
-  def update(self, v_ego_kph, CS, sm, actuators, dRel, yRel, vRel ):
+  def update(self, v_ego_kph, CS, sm, actuators, dRel, yRel, vRel, model_speed ):
     btn_type = Buttons.NONE
     #lead_1 = sm['radarState'].leadOne
     long_wait_cmd = 500
     set_speed = CS.cruise_set_speed_kph
 
     lead_wait_cmd, lead_set_speed = self.update_lead( CS,  dRel, yRel, vRel )  #선행 차량 거리유지
-    curv_wait_cmd, curv_set_speed, model_speed = self.update_curv( CS, sm )  # 커브 감속.
+    curv_wait_cmd, curv_set_speed = self.update_curv( CS, sm, model_speed )  # 커브 감속.
 
     if curv_wait_cmd != 0:
       if lead_set_speed > curv_set_speed:
@@ -345,7 +345,7 @@ class SpdController():
     tm_sample = self.Timer1.sampleTime()
 
 
-    str3 = 'curvature={:3.0f} dest={:3.0f}/{:3.0f} heart={:.0f} '.format( model_speed,  target_set_speed, self.long_wait_timer,  tm_sample )
+    str3 = 'dest={:3.0f}/{:3.0f} heart={:.0f} '.format( target_set_speed, self.long_wait_timer,  tm_sample )
     trace1.printf2(  str3 )
 
-    return btn_type, set_speed, model_speed
+    return btn_type, set_speed

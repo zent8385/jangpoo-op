@@ -275,11 +275,12 @@ class CarController():
           apply_steer = self.limit_ctrl( apply_steer, apply_steer_limit, 0 )
 
 
+    self.model_speed = self.SC.calc_va( sm, CS.v_ego )
     dRel, yRel, vRel = self.SC.get_lead( sm, CS )
     vRel = int(vRel * 3.6 + 0.5)
-
+    path_plan.curvature = self.model_speed
     lead_objspd = CS.lead_objspd
-    str_log1 = 'torg:{:5.0f} obj=[{:3.0f}/{:2.0f}][{:2.0f}/{:3.0f}]'.format( apply_steer, vRel, lead_objspd, dRel, CS.lead_distance  )
+    str_log1 = 'torg:{:5.0f} obj=[{:3.0f}/{:2.0f}][{:2.0f}/{:3.0f}] curvature={:3.0f}'.format( apply_steer, vRel, lead_objspd, dRel, CS.lead_distance, self.model_speed  )
     str_log2 = 'steer={:5.0f} sccInfo={:3.0f} lkas={:1.0f} sw{:.0f}/{:.0f}'.format( CS.steer_torque_driver, CS.sccInfoDisp, CS.lkas_LdwsSysState, CS.clu_CruiseSwState, CS.cruise_set_mode  )
     trace1.printf( '{} {}'.format( str_log1, str_log2 ) )
 
@@ -364,9 +365,7 @@ class CarController():
       self.sc_wait_timer2 -= 1
     elif self.speed_control_enabled:
       #acc_mode, clu_speed = self.long_speed_cntrl( v_ego_kph, CS, actuators )
-      btn_type, clu_speed, model_speed = self.SC.update( v_ego_kph, CS, sm, actuators, dRel, yRel, vRel )   # speed controller spdcontroller.py
-
-      self.model_speed = model_speed
+      btn_type, clu_speed = self.SC.update( v_ego_kph, CS, sm, actuators, dRel, yRel, vRel, self.model_speed )   # speed controller spdcontroller.py
 
       if CS.clu_Vanz < 5:
         self.sc_btn_type = Buttons.NONE
@@ -386,7 +385,7 @@ class CarController():
           self.sc_active_timer2 = 0
           self.sc_btn_type = Buttons.NONE          
         else:
-          self.traceCC.add( 'sc_btn_type={}  clu_speed={}  set={:.0f} vanz={:.0f}'.format( self.sc_btn_type, self.sc_clu_speed,  CS.VSetDis, CS.clu_Vanz  ) )
+          #self.traceCC.add( 'sc_btn_type={}  clu_speed={}  set={:.0f} vanz={:.0f}'.format( self.sc_btn_type, self.sc_clu_speed,  CS.VSetDis, CS.clu_Vanz  ) )
           can_sends.append(create_clu11(self.packer, CS.scc_bus, CS.clu11, self.sc_btn_type, self.sc_clu_speed, self.resume_cnt))
           self.resume_cnt += 1
 

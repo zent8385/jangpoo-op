@@ -332,10 +332,10 @@ def data_send(sm, pm, CS, CI, CP, VM, state, events, actuators, v_cruise_kph, rk
   right_lane_visible = sm['pathPlan'].rProb
   left_lane_visible = sm['pathPlan'].lProb
 
-  lane_dPoly = sm['pathPlan'].dPoly
-  lane_width = sm['pathPlan'].laneWidth
-  lane_lPoly = sm['pathPlan'].lPoly
-  lane_rPloy = sm['pathPlan'].rPoly
+  #lane_dPoly = sm['pathPlan'].dPoly
+  #lane_width = sm['pathPlan'].laneWidth
+  #lane_lPoly = sm['pathPlan'].lPoly
+  #lane_rPloy = sm['pathPlan'].rPoly
 
   #str_dPoly = 'P='
   #for x in lane_dPoly:
@@ -530,6 +530,7 @@ def controlsd_thread(sm=None, pm=None, can_sock=None):
   sm['liveCalibration'].calStatus = Calibration.INVALID
   sm['pathPlan'].sensorValid = True
   sm['pathPlan'].posenetValid = True
+  sm['pathPlan'].curvature = 255
   sm['thermal'].freeSpace = 1.
   sm['dMonitoringState'].events = []
   sm['dMonitoringState'].awarenessStatus = 1.

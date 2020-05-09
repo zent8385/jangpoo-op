@@ -460,10 +460,10 @@ class CarInterface(CarInterfaceBase):
     self.gas_pressed_prev = ret.gasPressed
     self.brake_pressed_prev = ret.brakePressed
 
-
     #self.log_update( can_strings )
-
     return ret.as_reader()
+
+
 
   def apply(self, c, sm ):
     can_sends = self.CC.update(c.enabled, self.CS, self.frame, c.actuators,

@@ -54,7 +54,7 @@ class LatControlPID():
     kBP0 = 0
     if self.pid_change_flag == 0:
       pass
-    elif abs(path_plan.angleSteers) > self.BP0:
+    elif abs(path_plan.angleSteers) > self.BP0  or path_plan.curvature < 220:
       kBP0 = 1
       self.pid_change_flag = 2
       self.pid_BP0_time = 50
