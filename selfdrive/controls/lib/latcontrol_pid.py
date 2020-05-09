@@ -1,12 +1,19 @@
+import numpy as np
+
 from selfdrive.controls.lib.pid import PIController
 from selfdrive.controls.lib.drive_helpers import get_steer_max
 from cereal import car
 from cereal import log
 from selfdrive.kegman_conf import kegman_conf
 from common.numpy_fast import interp
+
 import common.log as  trace1
+import common.MoveAvg as  moveavg1
 
 from selfdrive.config import Conversions as CV
+
+
+MAX_SPEED = 255.0
 
 class LatControlPID():
   def __init__(self, CP):
@@ -27,6 +34,54 @@ class LatControlPID():
     self.pid_change_flag = 0
     self.pre_pid_change_flag = 0
     self.pid_BP0_time = 0
+
+    self.movAvg = moveavg1.MoveAvg()
+    self.v_curvature = 256
+    self.path_x = np.arange(192)
+  
+  def calc_va(self, sm, v_ego ):
+    md = sm['model']    
+    if len(md.path.poly):
+      path = list(md.path.poly)
+
+      self.l_poly = np.array(md.leftLane.poly)
+      self.r_poly = np.array(md.rightLane.poly)
+      self.p_poly = np.array(md.path.poly)
+
+
+      # Curvature of polynomial https://en.wikipedia.org/wiki/Curvature#Curvature_of_the_graph_of_a_function
+      # y = a x^3 + b x^2 + c x + d, y' = 3 a x^2 + 2 b x + c, y'' = 6 a x + 2 b
+      # k = y'' / (1 + y'^2)^1.5
+      # TODO: compute max speed without using a list of points and without numpy
+      y_p = 3 * path[0] * self.path_x**2 + 2 * path[1] * self.path_x + path[2]
+      y_pp = 6 * path[0] * self.path_x + 2 * path[1]
+      curv = y_pp / (1. + y_p**2)**1.5
+
+      a_y_max = 2.975 - v_ego * 0.0375  # ~1.85 @ 75mph, ~2.6 @ 25mph
+      v_curvature = np.sqrt(a_y_max / np.clip(np.abs(curv), 1e-4, None))
+      model_speed = np.min(v_curvature)
+      model_speed = max(30.0 * CV.MPH_TO_MS, model_speed) # Don't slow down below 20mph
+
+      model_speed = model_speed * CV.MS_TO_KPH
+      if model_speed > MAX_SPEED:
+          model_speed = MAX_SPEED
+    else:
+      model_speed = MAX_SPEED
+
+    #following = lead_1.status and lead_1.dRel < 45.0 and lead_1.vLeadK > v_ego and lead_1.aLeadK > 0.0
+
+    #following = CS.lead_distance < 100.0
+    #accel_limits = [float(x) for x in calc_cruise_accel_limits(v_ego, following)]
+    #jerk_limits = [min(-0.1, accel_limits[0]), max(0.1, accel_limits[1])]  # TODO: make a separate lookup for jerk tuning
+    #accel_limits_turns = limit_accel_in_turns(v_ego, CS.angle_steers, accel_limits, self.steerRatio, self.wheelbase )
+
+    model_speed = self.movAvg.get_min( model_speed, 10 )
+    return model_speed
+
+  def update_state( self, sm, CS ):
+    self.calc_va( sm, CS.v_ego )
+    self.v_curvature = self.calc_va( sm, CS.v_ego )
+
 
 
   def reset(self):
@@ -54,7 +109,7 @@ class LatControlPID():
     kBP0 = 0
     if self.pid_change_flag == 0:
       pass
-    elif abs(path_plan.angleSteers) > self.BP0  or path_plan.v_curvature < 220:
+    elif abs(path_plan.angleSteers) > self.BP0  or self.v_curvature < 220:
       kBP0 = 1
       self.pid_change_flag = 2
       self.pid_BP0_time = 50

@@ -359,7 +359,7 @@ def data_send(sm, pm, CS, CI, CP, VM, state, events, actuators, v_cruise_kph, rk
 
   if not read_only:
     # send car controls over can
-    can_sends = CI.apply(CC, sm)
+    can_sends = CI.apply(CC, sm, LaC )
     pm.send('sendcan', can_list_to_can_capnp(can_sends, msgtype='sendcan', valid=CS.canValid))
 
   force_decel = sm['dMonitoringState'].awarenessStatus < 0.
@@ -604,6 +604,8 @@ def controlsd_thread(sm=None, pm=None, can_sock=None):
       # update control state
       state, soft_disable_timer, v_cruise_kph, v_cruise_kph_last = \
         state_transition(sm.frame, CS, CP, state, events, soft_disable_timer, v_cruise_kph, AM)
+
+      LaC.update_state( sm, CS )
       prof.checkpoint("State transition")
 
     # Compute actuators (runs PID loops and lateral MPC)

@@ -770,8 +770,8 @@ struct PathPlan {
   laneChangeState @18 :LaneChangeState;
   laneChangeDirection @19 :LaneChangeDirection;
   laneChangeBSM @20 :LaneChangeBSM;
-  v_curvature @21 :Float32;  # model_speed
-  
+
+
   enum Desire {
     none @0;
     turnLeft @1;
