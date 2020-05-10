@@ -431,7 +431,8 @@ static int bb_ui_draw_measure(UIState *s,  const char* bb_value, const char* bb_
   if (strlen(bb_uom) > 0) {
     dx = (int)(bb_uomFontSize*2.5/2);
    }
-   bb_valueFontSize = 40;
+
+
   //print value
   nvgFontFace(s->vg, "sans-semibold");
   nvgFontSize(s->vg, bb_valueFontSize*2);
