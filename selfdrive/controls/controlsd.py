@@ -571,7 +571,7 @@ def controlsd_thread(sm=None, pm=None, can_sock=None):
       nlist = 0
       for s in service_list:
         nlist += 1
-        str_log = 'sevice_list{}  s={}'.format( nlist,  s )
+        str_log = 'sevice_list{}  s={}  alive={} valid={}'.format( nlist,  s, sm.alive[s],  sm.valid[s]  )
         print(  str_log ) 
 
       str_log = 'sm.alive.keys() = all_alive={}  all_valid={}'.format( sm.all_alive( service_list ),  sm.all_valid(service_list) )
