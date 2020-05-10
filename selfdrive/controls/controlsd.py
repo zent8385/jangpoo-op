@@ -566,6 +566,13 @@ def controlsd_thread(sm=None, pm=None, can_sock=None):
 
     prof.checkpoint("Sample")
 
+    service_list = sm.alive.keys()
+    if service_list:
+      str_log = 'sm.alive.keys() = all_alive={}  all_valid={}'.format( sm.all_alive( service_list ),  sm.all_valid(service_list) )
+      print( str_log )
+    else:
+      print( "cannot sm service_list" ) 
+
     # Create alerts
     if not sm.alive['plan'] and sm.alive['pathPlan']:  # only plan not being received: radar not communicating
       events.append(create_event('radarCommIssue', [ET.NO_ENTRY, ET.SOFT_DISABLE]))

@@ -46,9 +46,9 @@ class CarInterface(CarInterfaceBase):
     self.traceCGW = trace1.Loger("CGW1")
 
     self.params = Params()
-    self.lane_change_enabled = self.params.get('LaneChangeEnabled') == b'1'
-    self.speed_control_enabled = self.params.get('SpeedControlEnabled') == b'1'
-    self.car_avoid_enable = self.params.get('CarAvoidanceEnabled') == b'1'            
+    #self.lane_change_enabled = self.params.get('LaneChangeEnabled') == b'1'
+    #self.speed_control_enabled = self.params.get('SpeedControlEnabled') == b'1'
+    #self.car_avoid_enable = self.params.get('CarAvoidanceEnabled') == b'1'            
 
   @staticmethod
   def compute_gb(accel, speed):

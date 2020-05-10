@@ -112,7 +112,6 @@ def get_can_parser(CP):
        ("TauGapSet", "SCC11", 0),
       ("Navi_SCC_Camera_Act", "SCC11", 0),
 
-      ("ACCMode", "SCC12", 0),
       ("CF_VSM_Prefill", "SCC12", 0),
       ("CF_VSM_DecCmdAct", "SCC12", 0),
       ("CF_VSM_HBACmd", "SCC12", 0),
@@ -198,7 +197,7 @@ def get_can2_parser(CP):
       ("TauGapSet", "SCC11", 0),
       ("Navi_SCC_Camera_Act", "SCC11", 0),
 
-      ("ACCMode", "SCC12", 0),
+
       ("CF_VSM_Prefill", "SCC12", 0),
       ("CF_VSM_DecCmdAct", "SCC12", 0),
       ("CF_VSM_HBACmd", "SCC12", 0),
@@ -261,7 +260,6 @@ def get_camera_parser(CP):
       ("TauGapSet", "SCC11", 0),
       ("Navi_SCC_Camera_Act", "SCC11", 0),
 
-      ("ACCMode", "SCC12", 0),
       ("CF_VSM_Prefill", "SCC12", 0),
       ("CF_VSM_DecCmdAct", "SCC12", 0),
       ("CF_VSM_HBACmd", "SCC12", 0),

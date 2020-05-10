@@ -508,7 +508,7 @@ def main():
   if params.get("OpenpilotEnabledToggle") is None:
     params.put("OpenpilotEnabledToggle", "1")
   if params.get("LaneChangeEnabled") is None:
-    params.put("LaneChangeEnabled", "1")
+    params.put("LaneChangeEnabled", "0")
   if params.get("SpeedControlEnabled") is None:
     params.put("SpeedControlEnabled", "0")
   if params.get("CarAvoidanceEnabled") is None:

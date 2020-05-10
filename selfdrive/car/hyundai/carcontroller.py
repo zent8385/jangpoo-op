@@ -33,7 +33,7 @@ class CarController():
     self.apply_steer_last = 0
     self.steer_rate_limited = False
     self.lkas11_cnt = 0
-    self.scc12_cnt = 0
+    #self.scc12_cnt = 0
     self.resume_cnt = 0
     self.last_resume_frame = 0
     self.last_lead_distance = 0
@@ -301,10 +301,10 @@ class CarController():
 
     if frame == 0: # initialize counts from last received count signals
       self.lkas11_cnt = CS.lkas11["CF_Lkas_MsgCount"] + 1
-      self.scc12_cnt = CS.scc12["CR_VSM_Alive"] + 1 if not CS.no_radar else 0
+      #self.scc12_cnt = CS.scc12["CR_VSM_Alive"] + 1 if not CS.no_radar else 0
 
     self.lkas11_cnt %= 0x10
-    self.scc12_cnt %= 0xF
+    #self.scc12_cnt %= 0xF
     self.clu11_cnt = frame % 0x10
     self.mdps12_cnt = frame % 0x100
 
