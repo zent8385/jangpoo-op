@@ -131,7 +131,10 @@ class LatControlPID():
 
     self.steerKpV = [ float(self.steer_Kp1[ kBP0 ]), float(self.steer_Kp2[ kBP0 ]) ]
     self.steerKiV = [ float(self.steer_Ki1[ kBP0 ]), float(self.steer_Ki2[ kBP0 ]) ]
-    self.steerKf = interp( v_ego, float(self.steer_Kf1[ kBP0 ]), float(self.steer_Kf2[ kBP0 ]) )
+
+    xp = CP.lateralTuning.pid.kpBP
+    fp = [float(self.steer_Kf1[ kBP0 ]), float(self.steer_Kf2[ kBP0 ]) ]
+    self.steerKf = interp( v_ego,  xp, fp )
 
     if self.pid_change_flag != self.pre_pid_change_flag:
       self.pre_pid_change_flag = self.pid_change_flag
