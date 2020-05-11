@@ -26,10 +26,13 @@ class LatControlPID():
     self.mpc_frame = 500
 
     self.BP0 = 4
-    self.steer_Kp = [0.18,0.20]
-    self.steer_Ki = [0.03,0.04]
-    self.steer_Kf = [0.00002,0.00005]
+    self.steer_Kf1 = [0.00003,0.00003]    
+    self.steer_Ki1 = [0.02,0.03]
+    self.steer_Kp1 = [0.18,0.20]
 
+    self.steer_Kf2 = [0.00005,0.00005]
+    self.steer_Ki2 = [0.04,0.05]
+    self.steer_Kp2 = [0.20,0.25]
 
     self.pid_change_flag = 0
     self.pre_pid_change_flag = 0
@@ -38,6 +41,8 @@ class LatControlPID():
     self.movAvg = moveavg1.MoveAvg()
     self.v_curvature = 256
     self.path_x = np.arange(192)
+
+
   
   def calc_va(self, sm, v_ego ):
     md = sm['model']    
@@ -86,7 +91,7 @@ class LatControlPID():
   def reset(self):
     self.pid.reset()
     
-  def live_tune(self, CP, path_plan):
+  def live_tune(self, CP, path_plan, v_ego):
     self.mpc_frame += 1
     if self.mpc_frame % 600 == 0:
       # live tuning through /data/openpilot/tune.py overrides interface.py settings
@@ -95,9 +100,13 @@ class LatControlPID():
         self.steerKf = float(self.kegman.conf['Kf'])
 
         self.BP0 = float(self.kegman.conf['sR_BP0'])
-        self.steer_Kp = [ float(self.kegman.conf['Kp']), float(self.kegman.conf['sR_Kp']) ]
-        self.steer_Ki = [ float(self.kegman.conf['Ki']), float(self.kegman.conf['sR_Ki']) ]
-        self.steer_Kf = [ float(self.kegman.conf['Kf']), float(self.kegman.conf['sR_Kf']) ]
+        self.steer_Kp1 = [ float(self.kegman.conf['Kp']), float(self.kegman.conf['sR_Kp']) ]
+        self.steer_Ki1 = [ float(self.kegman.conf['Ki']), float(self.kegman.conf['sR_Ki']) ]
+        self.steer_Kf1 = [ float(self.kegman.conf['Kf']), float(self.kegman.conf['sR_Kf']) ]
+
+        self.steer_Kp2 = [ float(self.kegman.conf['Kp2']), float(self.kegman.conf['sR_Kp2']) ]
+        self.steer_Ki2 = [ float(self.kegman.conf['Ki2']), float(self.kegman.conf['sR_Ki2']) ]
+        self.steer_Kf2 = [ float(self.kegman.conf['Kf2']), float(self.kegman.conf['sR_Kf2']) ]        
 
         self.deadzone = float(self.kegman.conf['deadzone'])
         self.mpc_frame = 0 
@@ -120,9 +129,9 @@ class LatControlPID():
       self.pid_change_flag = 3
 
 
-    self.steerKpV = [ float(self.steer_Kp[ kBP0 ]) ]
-    self.steerKiV = [ float(self.steer_Ki[ kBP0 ]) ]
-    self.steerKf = float( self.steer_Kf[ kBP0 ] )
+    self.steerKpV = [ float(self.steer_Kp1[ kBP0 ]), float(self.steer_Kp2[ kBP0 ]) ]
+    self.steerKiV = [ float(self.steer_Ki1[ kBP0 ]), float(self.steer_Ki2[ kBP0 ]) ]
+    self.steerKf = interp( v_ego, self.steer_Kf1[ kBP0 ], self.steer_Kf2[ kBP0 ] )
 
     if self.pid_change_flag != self.pre_pid_change_flag:
       self.pre_pid_change_flag = self.pid_change_flag
@@ -137,7 +146,7 @@ class LatControlPID():
 
   def update(self, active, v_ego, angle_steers, angle_steers_rate, eps_torque, steer_override, rate_limited, CP, path_plan):
 
-    self.live_tune(CP, path_plan)
+    self.live_tune(CP, path_plan, v_ego)
  
     pid_log = log.ControlsState.LateralPIDState.new_message()
     pid_log.steerAngle = float(angle_steers)
@@ -167,8 +176,11 @@ class LatControlPID():
         steer_feedforward -= path_plan.angleOffset   # subtract the offset, since it does not contribute to resistive torque
         steer_feedforward *= v_ego**2  # proportional to realigning tire momentum (~ lateral accel)
       
-      deadzone = self.deadzone    
-        
+      if abs(self.angle_steers_des) > self.BP0:
+        deadzone = 0
+      else:
+        deadzone = self.deadzone
+
       check_saturation = (v_ego > 10) and not rate_limited and not steer_override
       output_steer = self.pid.update(self.angle_steers_des, angle_steers, check_saturation=check_saturation, override=steer_override,
                                      feedforward=steer_feedforward, speed=v_ego, deadzone=deadzone)

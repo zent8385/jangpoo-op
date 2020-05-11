@@ -41,9 +41,10 @@ button_delay = 0.2
 kegman = kegman_conf()
 kegman.conf['tuneGernby'] = "1"
 #kegman.write_config(kegman.conf)
-param = ["Kp", "Ki", "Kf", "steerRatio", "steerRateCost", \
+param = ["Kp", "Ki", "Kf", "Kp2", "Ki2", "Kf2", "steerRatio", "steerRateCost", \
          "sR_boost", "sR_BP0", "sR_BP1", "sR_time", \
-         "sR_Kp", "sR_Ki", "sR_Kf"]
+         "sR_Kp", "sR_Ki", "sR_Kf", \
+         "sR_Kp2", "sR_Ki2", "sR_Kf2"]
 
 j = 0
 while True:
@@ -146,11 +147,24 @@ while True:
   if float(kegman.conf['Ki']) > 2:
     kegman.conf['Ki'] = "2"
 
+
+  if float(kegman.conf['Ki2']) < 0 and float(kegman.conf['Ki2']) != -1:
+    kegman.conf['Ki2'] = "0"
+
+  if float(kegman.conf['Ki2']) > 2:
+    kegman.conf['Ki2'] = "2"    
+
   if float(kegman.conf['Kp']) < 0 and float(kegman.conf['Kp']) != -1:
     kegman.conf['Kp'] = "0"
 
   if float(kegman.conf['Kp']) > 3:
     kegman.conf['Kp'] = "3"
+
+  if float(kegman.conf['Kp2']) < 0 and float(kegman.conf['Kp2']) != -1:
+    kegman.conf['Kp2'] = "0"
+
+  if float(kegman.conf['Kp2']) > 3:
+    kegman.conf['Kp2'] = "3"    
 
   if float(kegman.conf['Kf']) > 0.01:
     kegman.conf['Kf'] = "0.01"    
@@ -158,6 +172,11 @@ while True:
   if float(kegman.conf['Kf']) < 0:
     kegman.conf['Kf'] = "0"
 
+  if float(kegman.conf['Kf2']) > 0.01:
+    kegman.conf['Kf2'] = "0.01"    
+    
+  if float(kegman.conf['Kf2']) < 0:
+    kegman.conf['Kf2'] = "0"
       
 
   if float(kegman.conf['sR_Kp']) < 0:
@@ -166,17 +185,35 @@ while True:
   if float(kegman.conf['sR_Kp']) > 3:
     kegman.conf['sR_Kp'] = "3"
 
+  if float(kegman.conf['sR_Kp2']) < 0:
+    kegman.conf['sR_Kp2'] = "0" 
+
+  if float(kegman.conf['sR_Kp2']) > 3:
+    kegman.conf['sR_Kp2'] = "3"    
+
   if float(kegman.conf['sR_Ki']) < 0:
     kegman.conf['sR_Ki'] = "0" 
 
   if float(kegman.conf['sR_Ki']) > 2:
     kegman.conf['sR_Ki'] = "2"  
 
+  if float(kegman.conf['sR_Ki2']) < 0:
+    kegman.conf['sR_Ki2'] = "0" 
+
+  if float(kegman.conf['sR_Ki2']) > 2:
+    kegman.conf['sR_Ki2'] = "2"      
+
   if float(kegman.conf['sR_Kf']) > 0.01:
     kegman.conf['sR_Kf'] = "0.01"    
     
   if float(kegman.conf['sR_Kf']) < 0:
     kegman.conf['sR_Kf'] = "0"    
+
+  if float(kegman.conf['sR_Kf2']) > 0.01:
+    kegman.conf['sR_Kf2'] = "0.01"    
+    
+  if float(kegman.conf['sR_Kf2']) < 0:
+    kegman.conf['sR_Kf2'] = "0"
     
     
   if float(kegman.conf['steerRatio']) < 1 and float(kegman.conf['steerRatio']) != -1:
