@@ -407,7 +407,7 @@ class PathPlanner():
         else:
             self.angle_steers_des_mpc = angle_steers_des
     elif self.lane_change_state != LaneChangeState.off:
-        self.angle_steers_des_mpc = self.limit_ctrl( self.angle_steers_des_mpc, 3, angle_steers )
+        self.angle_steers_des_mpc = self.limit_ctrl( self.angle_steers_des_mpc, 5, angle_steers )
     else:
         self.angle_steers_des_mpc = self.limit_ctrl( self.angle_steers_des_mpc, 10, angle_steers )
 
