@@ -64,15 +64,31 @@ class CarInterface(CarInterfaceBase):
     ret.isPandaBlack = has_relay
     ret.safetyModel = car.CarParams.SafetyModel.hyundai
     ret.enableCruise = True  # stock acc
+    ret.minSteerSpeed = 0    # 5 km/h     
 
     ret.steerActuatorDelay = 0.10  # Default delay   0.15
     ret.steerRateCost = 0.45
-    ret.steerLimitTimer = 0.8
-    ret.minSteerSpeed = 5 * CV.KPH_TO_MS    # 5 km/h 
-
-    tire_stiffness_factor = 0.7
+    ret.steerLimitTimer = 0.4
+    tire_stiffness_factor = 1
 
     #ret.radarOffCan = False
+
+    """
+      0.7.5
+      ret.steerActuatorDelay = 0.1  # Default delay   0.1
+      ret.steerRateCost = 0.5
+      ret.steerLimitTimer = 0.4
+      tire_stiffness_factor = 1
+    """
+
+    """
+      0.7.3
+      ret.steerActuatorDelay = 0.10  # Default delay   0.15
+      ret.steerRateCost = 0.45
+      ret.steerLimitTimer = 0.8
+      tire_stiffness_factor = 0.7
+    """
+
 
     if candidate in [CAR.SANTAFE, CAR.SANTAFE_1]:
       ret.lateralTuning.pid.kf = 0.00005
