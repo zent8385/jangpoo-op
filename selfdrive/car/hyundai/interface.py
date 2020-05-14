@@ -326,9 +326,9 @@ class CarInterface(CarInterfaceBase):
     #ret.cruise_set_mode = self.CS.cruise_set_mode
     
     # Some HKG cars only have blinker flash signal
-    if self.CP.carFingerprint not in [CAR.IONIQ, CAR.KONA]:
-      self.CS.left_blinker_on = self.CS.left_blinker_flash or self.CS.prev_left_blinker_on and self.CC.turning_signal_timer
-      self.CS.right_blinker_on = self.CS.right_blinker_flash or self.CS.prev_right_blinker_on and self.CC.turning_signal_timer
+    #if self.CP.carFingerprint not in [CAR.IONIQ, CAR.KONA]:
+      #self.CS.left_blinker_on = self.CS.left_blinker_flash or self.CS.prev_left_blinker_on and self.CC.turning_signal_timer
+      #self.CS.right_blinker_on = self.CS.right_blinker_flash or self.CS.prev_right_blinker_on and self.CC.turning_signal_timer
 
     blinker_status = self.CS.blinker_status
     if self.CS.left_blinker_flash or self.CS.right_blinker_flash:
