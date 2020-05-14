@@ -1027,7 +1027,7 @@ static void ui_draw_vision_speed(UIState *s)
 
   if(s->scene.leftBlinker || s->scene.rightBlinker) 
   {
-    s->scene.blinker_blinkingrate -= 5.5;
+    s->scene.blinker_blinkingrate -= 3;
     if(s->scene.blinker_blinkingrate<0) s->scene.blinker_blinkingrate = 120;
   }
 
