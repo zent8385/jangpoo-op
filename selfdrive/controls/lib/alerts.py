@@ -110,6 +110,13 @@ ALERTS = [
       Priority.LOW, VisualAlert.none, AudibleAlert.none, 1., 2., 3.),
 
   Alert(
+      "steerTorqueOver",
+      "핸들을 잡아주세요",
+      "스티어링 토크 일시 비활성화",
+      AlertStatus.userPrompt, AlertSize.mid,
+      Priority.LOW, VisualAlert.none, AudibleAlert.none, 1., 2., 3.),
+
+  Alert(
       "steerTempUnavailable",
       "핸들을 잡아주세요",
       "조향제어가 일시적으로 비활성화 되었습니다",
