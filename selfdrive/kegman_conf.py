@@ -106,7 +106,7 @@ class kegman_conf():
 
     else:
       self.config = {"cameraOffset":"0.06", "battChargeMin":"70", "battChargeMax":"80", \
-                    "battPercOff":"100", "carVoltageMinEonShutdown":"11800", \
+                    "wheelTouchSeconds":"86400", "battPercOff":"100", "carVoltageMinEonShutdown":"11800", \
                     "tuneGernby":"1", "deadzone":"0.0",\
                     "Kp":"-1", "Ki":"-1", "Kf":"-1",  \
                     "Kp2":"-1", "Ki2":"-1", "Kf2":"-1",  \
