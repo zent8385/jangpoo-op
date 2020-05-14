@@ -41,7 +41,7 @@ button_delay = 0.2
 kegman = kegman_conf()
 kegman.conf['tuneGernby'] = "1"
 #kegman.write_config(kegman.conf)
-param = ["Kp", "Ki", "Kf", "Kp2", "Ki2", "Kf2", "steerRatio", "steerRateCost", \
+param = ["cameraOffset", "Kp", "Ki", "Kf", "Kp2", "Ki2", "Kf2", "steerRatio", "steerRateCost", \
          "sR_boost", "sR_BP0", "sR_BP1", "sR_time", \
          "sR_Kp", "sR_Ki", "sR_Kf", \
          "sR_Kp2", "sR_Ki2", "sR_Kf2"]
@@ -53,26 +53,17 @@ while True:
   print ("")
   print (print_letters(kegman.conf[param[j]]))
   print ("")
-  print ("1,3,5,7,r to incr 0.1,0.05,0.01,0.001,0.00001")
-  print ("a,d,g,j,v to decr 0.1,0.05,0.01,0.001,0.00001")
-  print ("P,I,B,R,K to decr kp,ki,sR_boost,steerRatio,sR_Kp")
-  print ("0 / L to make the value 0 / 1")
-  print ("press SPACE / m for next /prev parameter")
-  print ("press z to quit")
+  print ("w: +1   1: +0.1   3: +0.05   5: +0.01   7: +0.001   r: +0.00001")
+  print ("x: -1   a: -0.1   d: -0.05   g: -0.01   j: -0.001   v: -0.00001")
+#  print ("w,1,3,5,7,r to incr 1,0.1,0.05,0.01,0.001,0.00001")
+#  print ("x,a,d,g,j,v to decr 1,0.1,0.05,0.01,0.001,0.00001")
+  print ("0: 0   L: 1")
+#  print ("0 / L to make the value 0 / 1")
+  print ("SPACE: next   m: prev")
+  print ("z: quit")
 
   char  = getch()
   write_json = False
-  if (char == "P"):
-    j = 0
-  elif (char == "I"):
-    j = 1
-  elif (char == "R"):
-    j = 3
-  elif (char == "B"):
-    j = 5
-  elif (char == "K"):
-    j = 9
-
   if (char == "v"):
     kegman.conf[param[j]] = str(round((float(kegman.conf[param[j]]) - 0.00001),5))
     write_json = True
@@ -97,6 +88,10 @@ while True:
     kegman.conf[param[j]] = str(round((float(kegman.conf[param[j]]) + 0.1),5))
     write_json = True
 
+  elif (char == "w"):
+    kegman.conf[param[j]] = str(round((float(kegman.conf[param[j]]) + 1),5))
+    write_json = True
+
   elif (char == "j"):
     kegman.conf[param[j]] = str(round((float(kegman.conf[param[j]]) - 0.001),5))
     write_json = True
@@ -111,6 +106,10 @@ while True:
 
   elif (char == "a"):
     kegman.conf[param[j]] = str(round((float(kegman.conf[param[j]]) - 0.1),5))
+    write_json = True
+
+  elif (char == "x"):
+    kegman.conf[param[j]] = str(round((float(kegman.conf[param[j]]) - 1),5))
     write_json = True
 
   elif (char == "0"):
@@ -225,11 +224,6 @@ while True:
   if float(kegman.conf['deadzone']) < 0:
     kegman.conf['deadzone'] = "0"
 
-        
-
-
-
-    
   if float(kegman.conf['sR_boost']) < 0:
     kegman.conf['sR_boost'] = "0"
     
@@ -246,6 +240,7 @@ while True:
   kegman.conf['Kf'] = str("{:.5f}".format(float(kegman.conf['Kf'])))
 
   kegman.conf['sR_Kf'] = str("{:.5f}".format(float(kegman.conf['sR_Kf'])))
+  kegman.conf['sR_Kf2'] = str("{:.5f}".format(float(kegman.conf['sR_Kf2'])))
 
 
   if write_json:

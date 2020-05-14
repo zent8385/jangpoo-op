@@ -24,6 +24,15 @@ class kegman_conf():
       if self.conf['Kf'] == "-1":
         self.conf['Kf'] = str('{:f}'.format(CP.lateralTuning.pid.kf))
         write_conf = True
+      if self.conf['Kp2'] == "-1":
+        self.conf['Kp2'] = str(round(CP.lateralTuning.pid.kpV[1],3))
+        write_conf = True
+      if self.conf['Ki2'] == "-1":
+        self.conf['Ki2'] = str(round(CP.lateralTuning.pid.kiV[1],3))
+        write_conf = True
+      if self.conf['Kf2'] == "-1":
+        self.conf['Kf2'] = str('{:f}'.format(CP.lateralTuning.pid.kf))
+        write_conf = True
     
     if self.conf['steerRatio'] == "-1":
       self.conf['steerRatio'] = str(round(CP.steerRatio,3))
@@ -44,7 +53,7 @@ class kegman_conf():
         self.config = json.load(f)
 
       if "battPercOff" not in self.config:
-        self.config.update({"battPercOff":"30"})
+        self.config.update({"battPercOff":"100"})
         self.config.update({"carVoltageMinEonShutdown":"11800"})
         self.element_updated = True
 
@@ -56,6 +65,12 @@ class kegman_conf():
         self.config.update({"Kp":"-1"})
         self.config.update({"Ki":"-1"})
         self.config.update({"Kf":"-1"})
+        self.element_updated = True
+
+      if "Kp2" not in self.config:
+        self.config.update({"Kp2":"-1"})
+        self.config.update({"Ki2":"-1"})
+        self.config.update({"Kf2":"-1"})
         self.element_updated = True
 
 	
@@ -77,6 +92,12 @@ class kegman_conf():
         self.config.update({"sR_Kf":"0.00005"})
         self.element_updated = True
 
+      if "sR_Kp2" not in self.config:
+        self.config.update({"sR_Kp2":"0.25"})
+        self.config.update({"sR_Ki2":"0.05"})
+        self.config.update({"sR_Kf2":"0.00005"})
+        self.element_updated = True
+
 
 
       if self.element_updated:
@@ -84,13 +105,15 @@ class kegman_conf():
         self.write_config(self.config)
 
     else:
-      self.config = {"battChargeMin":"70", "battChargeMax":"80", \
-                    "battPercOff":"30", "carVoltageMinEonShutdown":"11800", \
+      self.config = {"cameraOffset":"0.06", "battChargeMin":"70", "battChargeMax":"80", \
+                    "battPercOff":"100", "carVoltageMinEonShutdown":"11800", \
                     "tuneGernby":"1", "deadzone":"0.0",\
                     "Kp":"-1", "Ki":"-1", "Kf":"-1",  \
+                    "Kp2":"-1", "Ki2":"-1", "Kf2":"-1",  \
                     "steerRatio":"-1", "steerRateCost":"-1", \
                     "sR_boost":"0", "sR_BP0":"0", "sR_BP1":"0", "sR_time":"1", \
-                    "sR_Kp":"0.25", "sR_Ki":"0.05", "sR_Kf":"0.00005"}
+                    "sR_Kp":"0.25", "sR_Ki":"0.05", "sR_Kf":"0.00005", \
+                    "sR_Kp2":"0.25", "sR_Ki2":"0.05", "sR_Kf2":"0.00005"}
 
 
       self.write_config(self.config)

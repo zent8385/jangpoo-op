@@ -961,15 +961,15 @@ static void ui_draw_debug(UIState *s)
   int   cruise_set_mode = scene->status.cruise_set_mode;
   if (cruise_set_mode == 0)
   {
-    snprintf(speed_str, sizeof(speed_str), "%d:hyundai", cruise_set_mode );
+    snprintf(speed_str, sizeof(speed_str), "%d:STOCK", cruise_set_mode );
   }
   else if (cruise_set_mode == 1)
   {
-    snprintf(speed_str, sizeof(speed_str), "%d:커브 감속", cruise_set_mode );
+    snprintf(speed_str, sizeof(speed_str), "%d:커브제어", cruise_set_mode );
   }
   else if (cruise_set_mode == 2)
   {
-    snprintf(speed_str, sizeof(speed_str), "%d:선행차 감속", cruise_set_mode );
+    snprintf(speed_str, sizeof(speed_str), "%d:차간제어", cruise_set_mode );
   }
   else
   {
@@ -1010,7 +1010,7 @@ static void ui_draw_vision_speed(UIState *s)
     nvgLineTo(s->vg, viz_speed_x - viz_speed_w/2, box_y + header_h/4 + header_h/4);
     nvgLineTo(s->vg, viz_speed_x, box_y + header_h/2 + header_h/4);
     nvgClosePath(s->vg);
-    nvgFillColor(s->vg, nvgRGBA(23,134,68, 210) );// s->scene.blinker_blinkingrate>=50?210:60));
+    nvgFillColor(s->vg, nvgRGBA(23,134,68,s->scene.blinker_blinkingrate>=50?210:60));
     nvgFill(s->vg);
   }
 
@@ -1021,13 +1021,13 @@ static void ui_draw_vision_speed(UIState *s)
     nvgLineTo(s->vg, viz_speed_x+viz_speed_w + viz_speed_w/2, box_y + header_h/4 + header_h/4);
     nvgLineTo(s->vg, viz_speed_x+viz_speed_w, box_y + header_h/2 + header_h/4);
     nvgClosePath(s->vg);
-    nvgFillColor(s->vg, nvgRGBA(23,134,68, 210) ); // s->scene.blinker_blinkingrate>=50?210:60));
+    nvgFillColor(s->vg, nvgRGBA(23,134,68,s->scene.blinker_blinkingrate>=50?210:60));
     nvgFill(s->vg);
   }
 
   if(s->scene.leftBlinker || s->scene.rightBlinker) 
   {
-    s->scene.blinker_blinkingrate -= 3;
+    s->scene.blinker_blinkingrate -= 5.5;
     if(s->scene.blinker_blinkingrate<0) s->scene.blinker_blinkingrate = 120;
   }
 
