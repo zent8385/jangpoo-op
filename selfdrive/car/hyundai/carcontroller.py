@@ -59,7 +59,7 @@ class CarController():
     self.sc_active_timer2 = 0     
     self.sc_btn_type = Buttons.NONE
     self.sc_clu_speed = 0
-    self.model_speed = 255
+    #self.model_speed = 255
     self.traceCC = trace1.Loger("CarCtrl")
 
     self.params = Params()
