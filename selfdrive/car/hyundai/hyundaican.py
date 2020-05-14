@@ -30,7 +30,6 @@ def create_lkas11(packer, car_fingerprint, bus, apply_steer, steer_req, cnt, ena
     "CF_Lkas_LdwsOpt_USM": lkas11["CF_Lkas_LdwsOpt_USM"] if keep_stock else 3,
   }
 
-
   dat = packer.make_can_msg("LKAS11", 0, values)[2]
 
   if car_fingerprint in CHECKSUM["crc8"]:
@@ -96,7 +95,7 @@ def create_scc12(packer, apply_accel, enabled, cnt, scc12):
 
   return packer.make_can_msg("SCC12", 0, values)
 
-def create_mdps12(packer, car_fingerprint, cnt, mdps12 ):
+def create_mdps12(packer, car_fingerprint, cnt, mdps12):
   values = {
     "CR_Mdps_StrColTq": mdps12["CR_Mdps_StrColTq"],
     "CF_Mdps_Def": mdps12["CF_Mdps_Def"],

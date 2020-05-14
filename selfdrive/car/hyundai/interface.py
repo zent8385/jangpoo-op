@@ -68,27 +68,9 @@ class CarInterface(CarInterfaceBase):
 
     ret.steerActuatorDelay = 0.10  # Default delay   0.15
     ret.steerRateCost = 0.45
-    ret.steerLimitTimer = 0.4
-    tire_stiffness_factor = 1
-
+    ret.steerLimitTimer = 0.8
+    tire_stiffness_factor = 0.75
     #ret.radarOffCan = False
-
-    """
-      0.7.5
-      ret.steerActuatorDelay = 0.1  # Default delay   0.1
-      ret.steerRateCost = 0.5
-      ret.steerLimitTimer = 0.4
-      tire_stiffness_factor = 1
-    """
-
-    """
-      0.7.3
-      ret.steerActuatorDelay = 0.10  # Default delay   0.15
-      ret.steerRateCost = 0.45
-      ret.steerLimitTimer = 0.8
-      tire_stiffness_factor = 0.7
-    """
-
 
     if candidate in [CAR.SANTAFE, CAR.SANTAFE_1]:
       ret.lateralTuning.pid.kf = 0.00005
@@ -283,7 +265,7 @@ class CarInterface(CarInterfaceBase):
     ret.sasBus = 1 if 688 in fingerprint[1] and 1296 not in fingerprint[1] else 0
     ret.sccBus = 0 if 1056 in fingerprint[0] else 1 if 1056 in fingerprint[1] and 1296 not in fingerprint[1] \
                                                                      else 2 if 1056 in fingerprint[2] else -1
-    ret.autoLcaEnabled = 0
+    ret.autoLcaEnabled = 1
 
     return ret
 
@@ -344,13 +326,12 @@ class CarInterface(CarInterfaceBase):
     #ret.cruise_set_mode = self.CS.cruise_set_mode
     
     # Some HKG cars only have blinker flash signal
-    # bhcho-debug  blinker signal debug
-    #if self.CP.carFingerprint in [CAR.K5, CAR.K5_HYBRID, CAR.KONA_EV, CAR.STINGER, CAR.SONATA_TURBO, CAR.IONIQ_EV, CAR.SORENTO, CAR.GRANDEUR, CAR.K7, CAR.K7_HYBRID, CAR.NEXO]:
-    #  self.CS.left_blinker_on = self.CS.left_blinker_flash or self.CS.prev_left_blinker_on and self.CC.turning_signal_timer
-    #  self.CS.right_blinker_on = self.CS.right_blinker_flash or self.CS.prev_right_blinker_on and self.CC.turning_signal_timer
+    if self.CP.carFingerprint not in [CAR.IONIQ, CAR.KONA]:
+      self.CS.left_blinker_on = self.CS.left_blinker_flash or self.CS.prev_left_blinker_on and self.CC.turning_signal_timer
+      self.CS.right_blinker_on = self.CS.right_blinker_flash or self.CS.prev_right_blinker_on and self.CC.turning_signal_timer
 
     blinker_status = self.CS.blinker_status
-    if  self.CS.left_blinker_flash or self.CS.right_blinker_flash:
+    if self.CS.left_blinker_flash or self.CS.right_blinker_flash:
       self.blinker_timer = 50
     elif self.blinker_timer: 
       self.blinker_timer -= 1
@@ -370,10 +351,7 @@ class CarInterface(CarInterfaceBase):
     else:
       ret.leftBlinker = False
       ret.rightBlinker = False
-
     
-      
-
     #ret.leftBlinker = bool(self.CS.left_blinker_flash)
     #ret.rightBlinker = bool(self.CS.right_blinker_flash)
 
@@ -397,13 +375,10 @@ class CarInterface(CarInterfaceBase):
       
     ret.buttonEvents = buttonEvents
 
-
-    
     ret.doorOpen = not self.CS.door_all_closed
     ret.seatbeltUnlatched = not self.CS.seatbelt
 
     # low speed steer alert hysteresis logic (only for cars with steer cut off above 10 m/s)
-
 
     # turning indicator alert hysteresis logic
     self.turning_indicator_alert = self.CC.turning_indicator
@@ -414,11 +389,7 @@ class CarInterface(CarInterfaceBase):
     self.steer_angle_over_alert = self.CC.streer_angle_over
 
 
-
     events = []
-
-
-
     if self.CS.esp_disabled:
       events.append(create_event('espDisabled', [ET.NO_ENTRY, ET.SOFT_DISABLE])) 
     elif ret.doorOpen:
@@ -475,11 +446,8 @@ class CarInterface(CarInterfaceBase):
 
     self.gas_pressed_prev = ret.gasPressed
     self.brake_pressed_prev = ret.brakePressed
-
     #self.log_update( can_strings )
     return ret.as_reader()
-
-
 
   def apply(self, c, sm, LaC ):
     can_sends = self.CC.update(c.enabled, self.CS, self.frame, c.actuators,
@@ -487,9 +455,6 @@ class CarInterface(CarInterfaceBase):
                                c.hudControl.leftLaneVisible, c.hudControl.rightLaneVisible, sm, LaC )
     self.frame += 1
     return can_sends
-
-
-
 
   def log_update(self, can_string):
       v_ego = self.CS.v_ego * CV.MS_TO_KPH
