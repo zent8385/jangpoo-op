@@ -208,11 +208,11 @@ static void ui_draw_sidebar_panda_metric(UIState *s) {
 
 static void ui_draw_sidebar_connectivity(UIState *s) {
   if (s->scene.athenaStatus == NET_DISCONNECTED) {
-    ui_draw_sidebar_metric(s, NULL, NULL, 1, 180+158, "ATHENA\n오프라인");
+    ui_draw_sidebar_metric(s, NULL, NULL, 1, 180+158, "CONNECT\n오프라인");
   } else if (s->scene.athenaStatus == NET_CONNECTED) {
-    ui_draw_sidebar_metric(s, NULL, NULL, 0, 180+158, "ATHENA\n온라인");
+    ui_draw_sidebar_metric(s, NULL, NULL, 0, 180+158, "CONNECT\n온라인");
   } else {
-    ui_draw_sidebar_metric(s, NULL, NULL, 2, 180+158, "ATHENA\n에러");
+    ui_draw_sidebar_metric(s, NULL, NULL, 2, 180+158, "CONNECT\n에러");
   }
 }
 
