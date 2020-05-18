@@ -48,7 +48,7 @@ class kegman_conf():
         self.element_updated = True
 
       if "battPercOff" not in self.config:
-        self.config.update({"battPercOff":"100"})
+        self.config.update({"battPercOff":"30"})
         self.config.update({"carVoltageMinEonShutdown":"11800"})
         self.config.update({"brakeStoppingTarget":"0.25"})
         self.element_updated = True
@@ -73,7 +73,7 @@ class kegman_conf():
         self.element_updated = True
 	
       if "deadzone" not in self.config:
-        self.config.update({"deadzone":"0.0"})
+        self.config.update({"deadzone":"1.0"})
         self.element_updated = True
 	
       if "1barBP0" not in self.config:
@@ -140,9 +140,9 @@ class kegman_conf():
 
     else:
       self.config = {"cameraOffset":"0.06", "lastTrMode":"1", "battChargeMin":"60", "battChargeMax":"70", \
-                     "wheelTouchSeconds":"86400", "battPercOff":"100", "carVoltageMinEonShutdown":"11800", \
+                     "wheelTouchSeconds":"180", "battPercOff":"30", "carVoltageMinEonShutdown":"11800", \
                      "brakeStoppingTarget":"0.25", "tuneGernby":"1", \
-                     "Kp":"-1", "Ki":"-1", "liveParams":"1", "leadDistance":"5", "deadzone":"0.0", \
+                     "Kp":"-1", "Ki":"-1", "liveParams":"1", "leadDistance":"5", "deadzone":"1.0", \
                      "1barBP0":"-0.1", "1barBP1":"2.25", "2barBP0":"-0.1", "2barBP1":"2.5", "3barBP0":"0.0", \
                      "3barBP1":"3.0", "1barMax":"2.1", "2barMax":"2.1", "3barMax":"2.1", \
                      "1barHwy":"0.4", "2barHwy":"0.3", "3barHwy":"0.1", \
