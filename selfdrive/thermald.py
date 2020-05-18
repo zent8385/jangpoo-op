@@ -5,6 +5,8 @@ import copy
 import datetime
 import psutil
 import subprocess
+import re
+import time
 from smbus2 import SMBus
 from cereal import log
 from common.android import ANDROID, get_network_type
@@ -22,10 +24,6 @@ from selfdrive.kegman_conf import kegman_conf
 kegman = kegman_conf()
 
 FW_SIGNATURE = get_expected_signature()
-
-import subprocess
-import re
-import time
 
 ThermalStatus = log.ThermalData.ThermalStatus
 NetworkType = log.ThermalData.NetworkType

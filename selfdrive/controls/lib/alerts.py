@@ -111,8 +111,8 @@ ALERTS = [
 
   Alert(
       "steerTorqueOver",
-      "핸들을 잡아주세요",
-      "스티어링 토크 일시 비활성화",
+      "운전자 핸들 조향중",
+      "오픈파일럿 조향제어 일시 비활성화",
       AlertStatus.userPrompt, AlertSize.mid,
       Priority.LOW, VisualAlert.none, AudibleAlert.none, 1., 2., 3.),
 

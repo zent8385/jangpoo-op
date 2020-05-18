@@ -6,8 +6,8 @@ Ecu = car.CarParams.Ecu
 # Steer torque limits
 class SteerLimitParams:
   STEER_MAX = 255   # 409 is the max, 255 is stock
-  STEER_DELTA_UP = 3
-  STEER_DELTA_DOWN = 5
+  STEER_DELTA_UP = 2
+  STEER_DELTA_DOWN = 3
   STEER_DRIVER_ALLOWANCE = 50
   STEER_DRIVER_MULTIPLIER = 2
   STEER_DRIVER_FACTOR = 1
@@ -263,4 +263,4 @@ DBC = {
   CAR.NEXO: dbc_dict('hyundai_kia_generic', None),
 }
 
-STEER_THRESHOLD = 150
+STEER_THRESHOLD = 80
