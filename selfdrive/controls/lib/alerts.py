@@ -156,14 +156,14 @@ ALERTS = [
       "핸들을 터치하세요: 모니터링 없음",
       "",
       AlertStatus.normal, AlertSize.small,
-      Priority.LOW, VisualAlert.steerRequired, AudibleAlert.none, .0, .1, .1, alert_rate=0.75),
+      Priority.LOW, VisualAlert.none, AudibleAlert.none, .0, .1, .1, alert_rate=0.75),
 
   Alert(
       "promptDriverUnresponsive",
       "핸들을 터치하세요",
       "운전자 모니터링 없음",
       AlertStatus.userPrompt, AlertSize.mid,
-      Priority.MID, VisualAlert.steerRequired, AudibleAlert.chimeWarning2, .1, .1, .1),
+      Priority.MID, VisualAlert.none, AudibleAlert.chimeWarning2, .1, .1, .1),
 
   Alert(
       "driverUnresponsive",
@@ -177,7 +177,7 @@ ALERTS = [
       "운전자 얼굴 확인 중",
       "운전자 얼굴 인식이 어렵습니다",
       AlertStatus.normal, AlertSize.mid,
-      Priority.LOW, VisualAlert.steerRequired, AudibleAlert.none, .4, 0., 1.),
+      Priority.LOW, VisualAlert.none, AudibleAlert.none, .4, 0., 1.),
 
   Alert(
       "geofence",
@@ -247,7 +247,7 @@ ALERTS = [
       "핸들을 잡아주세요",
       "차량속도가 낮아 조향제어가 일시적으로 비활성화 되었습니다",
       AlertStatus.userPrompt, AlertSize.mid,
-      Priority.MID, VisualAlert.steerRequired, AudibleAlert.none, 0., 0.4, .3),
+      Priority.MID, VisualAlert.none, AudibleAlert.none, 0., 0.4, .3),
 
   Alert(
       "preStoped",
@@ -281,28 +281,28 @@ ALERTS = [
       "차선 변경 중",
       "다른 차량에 주의하세요",
       AlertStatus.normal, AlertSize.mid,
-      Priority.LOW, VisualAlert.steerRequired, AudibleAlert.none, .0, .1, .1),
+      Priority.LOW, VisualAlert.none, AudibleAlert.none, .0, .1, .1),
   
     Alert(
       "rightLCAbsm",
       "우측에 차량 접근 중",
       "차선 변경을 위해 잠시 대기합니다",
       AlertStatus.userPrompt, AlertSize.mid,
-      Priority.MID, VisualAlert.steerRequired, AudibleAlert.none, 0., 0.4, .3),
+      Priority.MID, VisualAlert.none, AudibleAlert.none, 0., 0.4, .3),
   
   Alert(
       "leftLCAbsm",
       "좌측에 차량 접근 중",
       "차선 변경을 위해 잠시 대기합니다",
       AlertStatus.userPrompt, AlertSize.mid,
-      Priority.MID, VisualAlert.steerRequired, AudibleAlert.none, 0., 0.4, .3),
+      Priority.MID, VisualAlert.none, AudibleAlert.none, 0., 0.4, .3),
   
   Alert(
       "preventLCA",
       "핸들을 잡아주세요",
       "도로 상황 불안으로 차선변경이 취소되었습니다",
       AlertStatus.critical, AlertSize.full,
-      Priority.HIGH, VisualAlert.steerRequired, AudibleAlert.chimeWarningRepeat, .4, 3., 3.,),
+      Priority.HIGH, VisualAlert.none, AudibleAlert.chimeWarningRepeat, .4, 3., 3.,),
 
 
   Alert(
@@ -310,7 +310,7 @@ ALERTS = [
       "핸들을 잡아주세요",
       "전방 영상 인식이 불확실합니다",
       AlertStatus.userPrompt, AlertSize.mid,
-      Priority.LOW, VisualAlert.steerRequired, AudibleAlert.chimeViewUncertain, 6., 2., 3.),
+      Priority.LOW, VisualAlert.none, AudibleAlert.chimeViewUncertain, 6., 2., 3.),
 
   # Non-entry only alerts
   Alert(
