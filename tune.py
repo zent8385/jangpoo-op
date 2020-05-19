@@ -240,6 +240,7 @@ while True:
   kegman.conf['Kf'] = str("{:.5f}".format(float(kegman.conf['Kf'])))
   kegman.conf['sR_Kf'] = str("{:.5f}".format(float(kegman.conf['sR_Kf'])))
   kegman.conf['sR_Kf2'] = str("{:.5f}".format(float(kegman.conf['sR_Kf2'])))
+  write_json = True
 
 
   if write_json:
