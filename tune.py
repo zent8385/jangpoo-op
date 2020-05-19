@@ -140,12 +140,12 @@ while True:
   if float(kegman.conf['tuneGernby']) != 1 and float(kegman.conf['tuneGernby']) != 0:
     kegman.conf['tuneGernby'] = "1"
 
+
   if float(kegman.conf['Ki']) < 0 and float(kegman.conf['Ki']) != -1:
     kegman.conf['Ki'] = "0"
 
   if float(kegman.conf['Ki']) > 2:
     kegman.conf['Ki'] = "2"
-
 
   if float(kegman.conf['Ki2']) < 0 and float(kegman.conf['Ki2']) != -1:
     kegman.conf['Ki2'] = "0"
@@ -213,8 +213,8 @@ while True:
     
   if float(kegman.conf['sR_Kf2']) < 0:
     kegman.conf['sR_Kf2'] = "0"
-    
-    
+
+
   if float(kegman.conf['steerRatio']) < 1 and float(kegman.conf['steerRatio']) != -1:
     kegman.conf['steerRatio'] = "1"
     
@@ -238,7 +238,6 @@ while True:
 
   #if float(kegman.conf['Kf']) < 0.00001:
   kegman.conf['Kf'] = str("{:.5f}".format(float(kegman.conf['Kf'])))
-
   kegman.conf['sR_Kf'] = str("{:.5f}".format(float(kegman.conf['sR_Kf'])))
   kegman.conf['sR_Kf2'] = str("{:.5f}".format(float(kegman.conf['sR_Kf2'])))
 
