@@ -25,10 +25,10 @@ class kegman_conf():
         self.conf['Kf'] = str('{:f}'.format(CP.lateralTuning.pid.kf))
         write_conf = True
       if self.conf['Kp2'] == "-1":
-        self.conf['Kp2'] = str(round(CP.lateralTuning.pid.kpV[1],3))
+        self.conf['Kp2'] = str(round(CP.lateralTuning.pid.kpV[0],3))
         write_conf = True
       if self.conf['Ki2'] == "-1":
-        self.conf['Ki2'] = str(round(CP.lateralTuning.pid.kiV[1],3))
+        self.conf['Ki2'] = str(round(CP.lateralTuning.pid.kiV[0],3))
         write_conf = True
       if self.conf['Kf2'] == "-1":
         self.conf['Kf2'] = str('{:f}'.format(CP.lateralTuning.pid.kf))
