@@ -158,7 +158,7 @@ class CarController():
     apply_steer = self.limit_ctrl( apply_steer, 50, self.apply_steer_last )
 
 
-    if abs( CS.steer_torque_driver ) > 180:
+    if abs( CS.steer_torque_driver ) > 180 and v_ego_kph < 30:
       self.steer_torque_over_timer += 1
       if self.steer_torque_over_timer > 5:
         self.steer_torque_over = True
