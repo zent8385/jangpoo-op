@@ -131,9 +131,12 @@ class CarController():
     abs_angle_steers =  abs(actuators.steerAngle) #  abs(CS.angle_steers)  # 
 
     param = SteerLimitParams
-    if path_plan.laneChangeState != LaneChangeState.off:
-      pass
-    elif abs_angle_steers < 2:
+    #if path_plan.laneChangeState != LaneChangeState.off:
+      #param.STEER_MAX = 0.99
+      #param.STEER_DELTA_UP  = 3
+      #param.STEER_DELTA_DOWN = 3
+
+    if abs_angle_steers < 2:
       xp = [0,0.5,1,1.5,2]
       fp = [200,240,245,250,param.STEER_MAX]
       param.STEER_MAX = interp( abs_angle_steers, xp, fp )
@@ -159,7 +162,7 @@ class CarController():
       self.steer_torque_over_timer += 1
       if self.steer_torque_over_timer > 5:
         self.steer_torque_over = True
-        self.steer_torque_over_timer = 200
+        self.steer_torque_over_timer = 100
     elif self.steer_torque_over_timer:
       self.steer_torque_over_timer -= 1
     else:
@@ -193,10 +196,10 @@ class CarController():
         self.low_speed_car = low_speed
 
     # streer over check
-    if enabled and abs(CS.angle_steers) > 90. and self.lkas_button or  CS.steer_error:
+    if enabled and abs(CS.angle_steers) > 90. and self.lkas_button or CS.steer_error:
       self.streer_angle_over =  True
-      self.steer_timer = 500
-    elif abs(CS.angle_steers) < 2 or not self.steer_timer:
+      self.steer_timer = 100
+    elif abs(CS.angle_steers) < 5 or not self.steer_timer:
       self.streer_angle_over =  False
     elif self.steer_timer:
       self.steer_timer -= 1
@@ -204,10 +207,10 @@ class CarController():
     # Disable steering while turning blinker on and speed below 60 kph
     if CS.left_blinker_on or CS.right_blinker_on:
         self.steer_torque_over = False
-        self.turning_signal_timer = 500  # Disable for 1.0 Seconds after blinker turned off
+        self.turning_signal_timer = 100  # Disable for 1.0 Seconds after blinker turned off
     elif CS.left_blinker_flash or CS.right_blinker_flash:
         self.steer_torque_over = False
-        self.turning_signal_timer = 500
+        self.turning_signal_timer = 100
 
     # turning indicator alert logic
     if self.lane_change_enabled:
@@ -281,7 +284,7 @@ class CarController():
   
     lead_objspd = CS.lead_objspd
     str_log1 = 'cv={:3.0f} torg:{:5.0f} obj={:3.0f}:{:2.0f}'.format( LaC.v_curvature, apply_steer, vRel, dRel  )
-    str_log2 = 'steer={:5.0f} sccInfo={:3.0f} lkas={:1.0f} sw{:.0f}/{:.0f}'.format( CS.steer_torque_driver, CS.sccInfoDisp, CS.lkas_LdwsSysState, CS.clu_CruiseSwState, CS.cruise_set_mode  )
+    str_log2 = 'steer={:5.0f} lkas={:1.0f} sw{:.0f}/{:.0f}'.format( CS.steer_torque_driver, CS.lkas_LdwsSysState, CS.clu_CruiseSwState, CS.cruise_set_mode  )
     trace1.printf( '{} {}'.format( str_log1, str_log2 ) )
 
 
