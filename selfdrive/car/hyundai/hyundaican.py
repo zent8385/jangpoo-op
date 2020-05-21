@@ -43,7 +43,7 @@ def create_lkas11(packer, car_fingerprint, bus, apply_steer, steer_req, cnt, ena
     values["CF_Lkas_FcwOpt_USM"] = 2 if enabled else 1
     values["CF_Lkas_LdwsOpt_USM"] = 2
     values["CF_Lkas_SysWarning"] = 0
-  if car_fingerprint in [CAR.SELTOS]:
+  if car_fingerprint in [CAR.SELTOS, CAR.PALISADE]:
     values["CF_Lkas_Bca_R"] = int(left_lane) + (int(right_lane) << 1)
     values["CF_Lkas_LdwsOpt_USM"] = 2
 
