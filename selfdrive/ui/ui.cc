@@ -1023,6 +1023,15 @@ int main(int argc, char* argv[])
     //awake on any touch
     int touch_x = -1, touch_y = -1;
     int touched = touch_poll(&touch, &touch_x, &touch_y, s->awake ? 0 : 100);
+
+    if( s->touch.x != touch_x || s->touch.y != touch_y )
+    {
+      s->touch.x = touch_x;
+      s->touch.y = touch_y;
+
+      printf( "touch x:%d,  y:%d \n", touch_x, touch_y );
+    }
+
     if (touched == 1) {
       set_awake(s, true);
     }
