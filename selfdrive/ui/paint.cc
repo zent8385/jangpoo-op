@@ -943,7 +943,7 @@ static void ui_draw_debug(UIState *s)
   int  y_pos = 0;
   int  x_pos = 0;
 
-  x_pos = 400;
+  x_pos = ui_viz_rx + 300;
   y_pos = 150; 
   
 
@@ -955,7 +955,7 @@ static void ui_draw_debug(UIState *s)
   nvgText(s->vg, x_pos, y_pos+0, speed_str, NULL);
   snprintf(speed_str, sizeof(speed_str), "I:%.5f", scene->pid.i );
   nvgText(s->vg, x_pos, y_pos+50, speed_str, NULL);
-  snprintf(speed_str, sizeof(speed_str), "F:%.5f  %.5f", scene->pid.f, scene->curvature );
+  snprintf(speed_str, sizeof(speed_str), "F:%.5f", scene->pid.f );
   nvgText(s->vg, x_pos, y_pos+100, speed_str, NULL);
 
   int   cruise_set_mode = scene->status.cruise_set_mode;
@@ -973,15 +973,10 @@ static void ui_draw_debug(UIState *s)
   }
   else
   {
-    snprintf(speed_str, sizeof(speed_str), "%d", cruise_set_mode );
+    snprintf(speed_str, sizeof(speed_str), "%d:테스트", cruise_set_mode );
   }
     
   nvgText(s->vg, x_pos, y_pos+170, speed_str, NULL);
-
-  //snprintf(speed_str, sizeof(speed_str), "C:%.5f", scene->status.vCurvature );
-  //nvgText(s->vg, x_pos, y_pos+200, speed_str, NULL);
-
-  
 
 
   snprintf(speed_str, sizeof(speed_str), "%s", scene->status.alert_text1 );
