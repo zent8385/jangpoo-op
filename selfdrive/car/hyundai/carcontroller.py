@@ -78,6 +78,15 @@ class CarController():
           value = m_limit
       return value
 
+  def limit_dir(self, value, offset, p_l, m_l ):
+      p_limit = offset + p_l
+      m_limit = offset - m_l
+      if value > p_limit:
+          value = p_limit
+      elif  value < m_limit:
+          value = m_limit
+      return value
+
 
   def accel_hysteresis(self, accel, accel_steady):
     # for small accel oscillations within ACCEL_HYST_GAP, don't change the accel command
@@ -156,17 +165,42 @@ class CarController():
           param.STEER_DELTA_DOWN = 5
 
 
-
     ### Steering Torque
     new_steer = actuators.steer * param.STEER_MAX
     apply_steer = apply_std_steer_torque_limits(new_steer, self.apply_steer_last, CS.steer_torque_driver, param)
     self.steer_rate_limited = new_steer != apply_steer
 
     # steer torque의 변화량 감시.
-    apply_steer = self.limit_ctrl( apply_steer, 50, self.apply_steer_last )
+    #  LaC.model_sum   오른쪽 +
+    if CS.cruise_set_mode == 3:
+      if path_plan.laneChangeState != LaneChangeState.off:
+        pass
+      elif LaC.v_curvature < 200:  # 커브 도로
+        xp = [50,100,150,200]
+        fp = [5,10,15,20,30]
+        fp1 = [1,2,3,5,10]
+        s_limit = interp( LaC.v_curvature, xp, fp )
+        cv_limit = interp( LaC.v_curvature, xp, fp1 )
 
+        if LaC.model_sum > 0: # left
+        #if actuators.steerAngle > 3: #left
+          apply_steer = self.limit_dir( apply_steer, self.apply_steer_last, param.STEER_MAX, cv_limit )
 
-    if abs( CS.steer_torque_driver ) > 180 and v_ego_kph < 30:
+          a_limit = -s_limit
+          if apply_steer < a_limit:
+            apply_steer = a_limit
+        elif LaC.model_sum < 0:   # right
+        #elif actuators.steerAngle < -3:   # right
+          apply_steer = self.limit_dir( apply_steer, self.apply_steer_last, cv_limit, param.STEER_MAX )
+
+          a_limit = s_limit
+          if apply_steer > a_limit:
+            apply_steer = a_limit
+      else:  # 직선 도로
+        apply_steer = self.limit_ctrl( apply_steer, 10, self.apply_steer_last )
+    
+
+    if abs( CS.steer_torque_driver ) > 180 and v_ego_kph < 60:
       self.steer_torque_over_timer += 1
       if self.steer_torque_over_timer > 5:
         self.steer_torque_over = True
@@ -286,13 +320,13 @@ class CarController():
           apply_steer = self.limit_ctrl( apply_steer, apply_steer_limit, 0 )
 
 
-    #self.model_speed = self.SC.calc_va( sm, CS.v_ego )
+
     dRel, yRel, vRel = self.SC.get_lead( sm, CS )
     vRel = int(vRel * 3.6 + 0.5)
   
     lead_objspd = CS.lead_objspd
-    str_log1 = 'cv={:3.0f} torg:{:5.0f} obj={:3.0f}:{:2.0f}'.format( LaC.v_curvature, apply_steer, vRel, dRel  )
-    str_log2 = 'steer={:5.0f} lkas={:1.0f} sw{:.0f}/{:.0f}'.format( CS.steer_torque_driver, CS.lkas_LdwsSysState, CS.clu_CruiseSwState, CS.cruise_set_mode  )
+    str_log1 = 'cv={:3.0f}/{:.3f} torg:{:5.0f} obj={:3.0f}:{:2.0f}'.format( LaC.v_curvature, LaC.model_sum, apply_steer, vRel, dRel  )
+    str_log2 = 'steer={:5.0f} lkas={:1.0f} sw{:.0f}/{:.0f} LC{}'.format( CS.steer_torque_driver, CS.lkas_LdwsSysState, CS.clu_CruiseSwState, CS.cruise_set_mode, path_plan.laneChangeState  )
     trace1.printf( '{} {}'.format( str_log1, str_log2 ) )
 
 
