@@ -44,7 +44,6 @@ def create_lkas11(packer, car_fingerprint, bus, apply_steer, steer_req, cnt, ena
     values["CF_Lkas_LdwsOpt_USM"] = 2
     values["CF_Lkas_SysWarning"] = 0
   if car_fingerprint in [CAR.SELTOS, CAR.PALISADE]:
-    values["CF_Lkas_Bca_R"] = 0
     values["CF_Lkas_LdwsOpt_USM"] = 2
 
     # FcwOpt_USM 5 = Orange blinking car + lanes
