@@ -211,7 +211,7 @@ class PathPlanner():
             self.lane_change_ll_prob = max(self.lane_change_ll_prob - 2*DT_MDL, 0.0)
             # 98% certainty
             if lane_change_prob > 0.5: # and self.lane_change_ll_prob < 0.01: # or self.lane_change_timer2 > 300:
-              self.lane_change_ll_prob = 0
+              #self.lane_change_ll_prob = 0
               self.lane_change_state = LaneChangeState.laneChangeFinishing
               self.nCommand=4
 
@@ -222,7 +222,7 @@ class PathPlanner():
           else:
             # fade in laneline over 1s
             self.lane_change_ll_prob = min(self.lane_change_ll_prob + 2*DT_MDL, 1.0)
-            if lane_change_prob < 0.2 and self.lane_change_ll_prob > 0.99:
+            if lane_change_prob < 0.5 and self.lane_change_ll_prob > 0.99:
               self.lane_change_state = LaneChangeState.off
               self.nCommand=0
 
@@ -412,7 +412,7 @@ class PathPlanner():
         else:
             self.angle_steers_des_mpc = angle_steers_des
     elif self.lane_change_state != LaneChangeState.off:
-        self.angle_steers_des_mpc = self.limit_ctrl( self.angle_steers_des_mpc, 10, angle_steers )
+        self.angle_steers_des_mpc = self.limit_ctrl( self.angle_steers_des_mpc, 20, angle_steers )
     #else:
     #    self.angle_steers_des_mpc = self.limit_ctrl( self.angle_steers_des_mpc, 10, angle_steers )
 
