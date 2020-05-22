@@ -95,8 +95,11 @@ void save_file(char *videos_dir, char *filename)
 void stop_capture() {
   char videos_dir[50] = "/storage/emulated/0/videos";
 
+  
+
   if (captureState == CAPTURE_STATE_CAPTURING)
   {
+    printf("stop_capture()\n ");
     system("killall -SIGINT screenrecord");
     captureState = CAPTURE_STATE_NOT_CAPTURING;
     elapsed_time = get_time() - start_time;
@@ -122,6 +125,8 @@ void start_capture()
   captureState = CAPTURE_STATE_CAPTURING;
   char cmd[128] = "";
   char videos_dir[50] = "/storage/emulated/0/videos";
+
+  printf("start_capture()\n ");
 
   //////////////////////////////////
   // NOTE: make sure videos_dir folder exists on the device!
@@ -311,7 +316,11 @@ static void screen_draw_button(UIState *s, int touch_x, int touch_y)
 
     nvgFontSize(s->vg, 70);
 
-    if (captureState == CAPTURE_STATE_CAPTURING)
+    if ( lock_current_video == false )
+    {
+       nvgFillColor(s->vg, nvgRGBA( 50, 50, 100, 200));
+    }
+    else if (captureState == CAPTURE_STATE_CAPTURING)
     {
       NVGcolor fillColor = nvgRGBA(255, 0, 0, 150);
       nvgFillColor(s->vg, fillColor);
@@ -320,50 +329,33 @@ static void screen_draw_button(UIState *s, int touch_x, int touch_y)
     }
     else
     {
-      nvgFillColor(s->vg, nvgRGBA(255, 255, 255, 200));
+      nvgFillColor(s->vg, nvgRGBA(255, 150, 150, 200));
     }
     nvgText(s->vg, btn_x - 88, btn_y + 50, "REC", NULL);
   }
 
   if (captureState == CAPTURE_STATE_CAPTURING)
   {
-    //draw_date_time(s);
-
-    elapsed_time = get_time() - start_time;
-
-    if (elapsed_time >= RECORD_INTERVAL)
-    {
-      rotate_video();
-    }
+    draw_date_time(s);
   }
 }
 
 void screen_toggle_record_state()
 {
-  if (captureState == CAPTURE_STATE_CAPTURING)
+  //if (captureState == CAPTURE_STATE_CAPTURING)
+  if( lock_current_video == true )
   {
     stop_capture();
     lock_current_video = false;
   }
   else
   {
-    //captureState = CAPTURE_STATE_CAPTURING;
-    //start_capture();
+    // start_capture();
+    lock_current_video = true;
   }
 }
 
-void screen_toggle_lock()
-{
-  if (lock_current_video)
-  {
-    lock_current_video = false;
-  }
-  else
-  {
-    lock_current_video = true;
-    locked_files[captureNum] = 1;
-  }
-}
+
 
 void dashcam(UIState *s, int touch_x, int touch_y)
 {
@@ -372,6 +364,7 @@ void dashcam(UIState *s, int touch_x, int touch_y)
   {
     click_elapsed_time = get_time() - click_time;
 
+    printf( "screen_button_clicked %d  captureState = %d \n", click_elapsed_time, captureState );
     if (click_elapsed_time > 0)
     {
       click_time = get_time() + 1;
@@ -379,22 +372,29 @@ void dashcam(UIState *s, int touch_x, int touch_y)
     }
   }
 
-  if (screen_lock_button_clicked(touch_x, touch_y, lock_button))
-  {
-    screen_toggle_lock();
-  }
+ // if (screen_lock_button_clicked(touch_x, touch_y, lock_button))
+ // {
+ //  screen_toggle_lock();
+ // }
+  
+  
   if (!s->vision_connected)
   {
     // Assume car is not in drive so stop recording
     stop_capture();
   }
-  if (s->scene.v_ego > 2.1 && captureState == CAPTURE_STATE_NOT_CAPTURING && !s->scene.engaged)
+  else if( lock_current_video == true  )
   {
-    //start_capture();
+    if( captureState != CAPTURE_STATE_CAPTURING )
+    {
+      start_capture();
+    }
   }
-  else if (s->scene.v_ego < 1.5 && !s->scene.engaged)
+  else  if( captureState == CAPTURE_STATE_CAPTURING )
   {
     stop_capture();
   }
+  
+
   s->scene.recording = (captureState != CAPTURE_STATE_NOT_CAPTURING);
 }
