@@ -848,7 +848,7 @@ static void ui_draw_vision_map(UIState *s) {
   const int map_y = (footer_y + ((footer_h - map_size) / 2));
   const int map_img_size = (map_size * 1.5);
   const int map_img_x = (map_x - (map_img_size / 2));
-  const int map_img_y = (map_y - (map_size / 4) + 25);
+  const int map_img_y = (map_y - (map_size / 4));
 
   bool map_valid = s->scene.map_valid;
   float map_img_alpha = map_valid ? 1.0f : 0.15f;
