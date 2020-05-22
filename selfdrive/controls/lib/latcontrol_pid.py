@@ -40,6 +40,7 @@ class LatControlPID():
 
     self.movAvg = moveavg1.MoveAvg()
     self.v_curvature = 256
+    self.model_sum = 0
     self.path_x = np.arange(192)
 
 
@@ -62,16 +63,21 @@ class LatControlPID():
       y_pp = 6 * path[0] * self.path_x + 2 * path[1]
       curv = y_pp / (1. + y_p**2)**1.5
 
+      #print( 'curv={}'.format( curv ) )
+
       a_y_max = 2.975 - v_ego * 0.0375  # ~1.85 @ 75mph, ~2.6 @ 25mph
       v_curvature = np.sqrt(a_y_max / np.clip(np.abs(curv), 1e-4, None))
       model_speed = np.min(v_curvature)
       model_speed = max(30.0 * CV.KPH_TO_MS, model_speed) # Don't slow down below 20mph
+
+      model_sum = curv[2] * 1000.  #np.sum( curv, 0 )
 
       model_speed = model_speed * CV.MS_TO_KPH
       if model_speed > MAX_SPEED:
           model_speed = MAX_SPEED
     else:
       model_speed = MAX_SPEED
+      model_sum = 0
 
     #following = lead_1.status and lead_1.dRel < 45.0 and lead_1.vLeadK > v_ego and lead_1.aLeadK > 0.0
 
@@ -81,10 +87,10 @@ class LatControlPID():
     #accel_limits_turns = limit_accel_in_turns(v_ego, CS.angle_steers, accel_limits, self.steerRatio, self.wheelbase )
 
     model_speed = self.movAvg.get_min( model_speed, 10 )
-    return model_speed
+    return model_speed, model_sum
 
   def update_state( self, sm, CS ):
-    self.v_curvature = self.calc_va( sm, CS.vEgo )
+    self.v_curvature, self.model_sum = self.calc_va( sm, CS.vEgo )
 
 
 
