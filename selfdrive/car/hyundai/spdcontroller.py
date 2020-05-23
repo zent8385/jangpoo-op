@@ -29,7 +29,7 @@ import common.MoveAvg as  moveavg1
 kegman = kegman_conf()
 
 cv_Raio = float(kegman.conf['cV_Ratio'])
-#cv_Dist = float(kegman.conf['cV_Dist'])
+cv_Dist = float(kegman.conf['cV_Dist'])
 
 MAX_SPEED = 255.0
 
@@ -257,7 +257,7 @@ class SpdController():
         else:
           lead_wait_cmd, lead_set_speed = self.get_tm_speed( CS, 50, 1 )
       #elif lead_objspd < 3 or d_delta < 5:
-      elif lead_objspd < -5:
+      elif lead_objspd < cv_Dist:   #-5:
         lead_set_speed = int(CS.VSetDis)
       elif lead_objspd < 5:
         lead_wait_cmd, lead_set_speed = self.get_tm_speed( CS, 50, 1 )
