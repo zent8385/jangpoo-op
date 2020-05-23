@@ -12,7 +12,7 @@ from selfdrive.controls.lib.planner import calc_cruise_accel_limits
 from selfdrive.controls.lib.speed_smoother import speed_smoother
 from selfdrive.controls.lib.long_mpc import LongitudinalMpc
 
-
+from selfdrive.kegman_conf import kegman_conf
 
 from selfdrive.car.hyundai.values import Buttons, SteerLimitParams
 from common.numpy_fast import clip, interp
@@ -23,6 +23,12 @@ from selfdrive.config import RADAR_TO_CAMERA
 import common.log as trace1
 import common.CTime1000 as tm
 import common.MoveAvg as  moveavg1
+
+
+
+kegman = kegman_conf()
+
+cv_Raio = float(kegman.conf['cV_Ratio'])
 
 MAX_SPEED = 255.0
 
@@ -189,7 +195,7 @@ class SpdController():
       dRel = CS.lead_distance
       vRel = CS.lead_objspd
 
-    dst_lead_distance = (CS.clu_Vanz*0.8)
+    dst_lead_distance = (CS.clu_Vanz*cv_Raio)
 
 
     if dst_lead_distance < 30:
