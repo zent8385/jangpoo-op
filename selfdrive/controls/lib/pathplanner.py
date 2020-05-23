@@ -155,7 +155,10 @@ class PathPlanner():
       elif self.nCommand == 1:
           self.lean_change_timer = 0
           one_blinker = sm['carState'].leftBlinker != sm['carState'].rightBlinker
+
+          print( 'one_blinker ={}'.format( one_blinker) )
           if not one_blinker:
+              print( 'not one_blinker' )
               pass
           elif sm['carState'].leftBlinker and not lca_left:
               self.lane_change_direction = LaneChangeDirection.left
