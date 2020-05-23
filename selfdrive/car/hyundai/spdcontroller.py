@@ -30,7 +30,7 @@ import common.MoveAvg as  moveavg1
 
 kegman = kegman_conf()
 
-cv_Raio = float(kegman.conf['cV_Ratio'])
+cv_Ratio = float(kegman.conf['cV_Ratio'])
 cv_Dist = float(kegman.conf['cV_Dist'])
 
 MAX_SPEED = 255.0
@@ -198,7 +198,7 @@ class SpdController():
       dRel = CS.lead_distance
       vRel = CS.lead_objspd
 
-    dst_lead_distance = (CS.clu_Vanz*cv_Raio)
+    dst_lead_distance = (CS.clu_Vanz*cv_Ratio)
 
 
     if dst_lead_distance < 30:

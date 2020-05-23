@@ -98,6 +98,14 @@ class kegman_conf():
         self.config.update({"sR_Kf2":"0.00005"})
         self.element_updated = True
 
+      if "cv_Ratio" not in self.config:
+        self.config.update({"cv_Ratio":"0.7"})
+        self.element_updated = True
+
+      if "cv_Dist" not in self.config:
+        self.config.update({"cv_Dist":"-5"})
+        self.element_updated = True
+
 
 
       if self.element_updated:
@@ -108,6 +116,7 @@ class kegman_conf():
       self.config = {"cameraOffset":"0.06", "battChargeMin":"70", "battChargeMax":"80", \
                     "wheelTouchSeconds":"3600", "battPercOff":"100", "carVoltageMinEonShutdown":"11800", \
                     "tuneGernby":"1", "deadzone":"0.0",\
+                    "cv_Ratio":"0.7", "cv_Dist":"-5",\
                     "Kp":"-1", "Ki":"-1", "Kf":"-1",  \
                     "Kp2":"-1", "Ki2":"-1", "Kf2":"-1",  \
                     "steerRatio":"-1", "steerRateCost":"-1", \
