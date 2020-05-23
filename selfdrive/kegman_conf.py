@@ -98,12 +98,12 @@ class kegman_conf():
         self.config.update({"sR_Kf2":"0.00005"})
         self.element_updated = True
 
-      if "cv_Ratio" not in self.config:
-        self.config.update({"cv_Ratio":"0.7"})
+      if "cV_Ratio" not in self.config:
+        self.config.update({"cV_Ratio":"0.7"})
         self.element_updated = True
 
-      if "cv_Dist" not in self.config:
-        self.config.update({"cv_Dist":"-5"})
+      if "cV_Dist" not in self.config:
+        self.config.update({"cV_Dist":"-5"})
         self.element_updated = True
 
 
