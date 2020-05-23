@@ -228,8 +228,8 @@ void draw_date_time(UIState *s)
 
   int rect_w = 600;
   int rect_h = 80;
-  int rect_x = ((1920 - rect_w) / 2) + 520;
-  int rect_y = rect_h - 70;
+  int rect_x = ((1920 - rect_w) / 2) + 620;
+  int rect_y = rect_h - 40;
   //int rect_x = (1920 - rect_w) / 2;
   //int rect_y = (1080 - rect_h - 10);
 
@@ -249,7 +249,7 @@ void draw_date_time(UIState *s)
   nvgFontSize(s->vg, 60);
   nvgFontFace(s->vg, "sans-semibold");
   nvgFillColor(s->vg, nvgRGBA(255, 255, 255, 200));
-  nvgText(s->vg, rect_x + 222, rect_y + 10, now, NULL);
+  nvgText(s->vg, rect_x + 219, rect_y + 10, now, NULL);
 }
 
 
