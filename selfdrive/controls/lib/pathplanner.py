@@ -174,9 +174,8 @@ class PathPlanner():
           torque_applied = False 
           # 자동 ALC 
           self.lean_change_timer += 1
-          if self.lean_change_timer > 100:
+          if self.lean_change_timer > 50:
             torque_applied = True
-
           elif not sm['carState'].steeringPressed:
               pass
           elif self.lane_change_direction == LaneChangeDirection.left:
