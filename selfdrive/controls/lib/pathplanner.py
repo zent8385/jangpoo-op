@@ -171,8 +171,13 @@ class PathPlanner():
               self.nCommand=2
 
       elif self.nCommand == 2:   # preLaneChange
-          torque_applied = False        
-          if not sm['carState'].steeringPressed:
+          torque_applied = False 
+          # 자동 ALC 
+          self.lean_change_timer += 1
+          if self.lean_change_timer > 100:
+            torque_applied = True
+
+          elif not sm['carState'].steeringPressed:
               pass
           elif self.lane_change_direction == LaneChangeDirection.left:
               if lca_left:  # BSM
@@ -188,10 +193,7 @@ class PathPlanner():
                 torque_applied = sm['carState'].steeringTorque < 0
 
 
-          # 자동 ALC 
-          self.lean_change_timer += 1
-          if self.lean_change_timer > 100:
-            torque_applied = True
+
 
 
           if torque_applied:
