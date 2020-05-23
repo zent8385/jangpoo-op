@@ -232,14 +232,15 @@ class PathPlanner():
 
 
       elif self.nCommand == 4:   # laneChangeFinishing
-          #if sm['carState'].leftBlinker or sm['carState'].rightBlinker:
-          #  pass
-          #else:
-            # fade in laneline over 1s
-          self.lane_change_ll_prob = min(self.lane_change_ll_prob + 2*DT_MDL, 1.0)
-          if lane_change_prob < 0.2 and self.lane_change_ll_prob > 0.99:
-            self.lane_change_state = LaneChangeState.off
-            self.nCommand=0
+              # fade in laneline over 1s
+            self.lane_change_ll_prob = min(self.lane_change_ll_prob + 2*DT_MDL, 1.0)
+            if lane_change_prob < 0.2 and self.lane_change_ll_prob > 0.99:
+              self.lane_change_state = LaneChangeState.off
+
+            if sm['carState'].leftBlinker or sm['carState'].rightBlinker:
+                pass
+            else:              
+                self.nCommand=0
 
       elif self.nCommand == 5:  # cancel
           self.lane_change_timer4 += 1
