@@ -191,7 +191,7 @@ class PathPlanner():
           # 자동 ALC 
           self.lean_change_timer += 1
           if self.lean_change_timer > 100:
-            self.torque_applied = True
+            torque_applied = True
 
 
           if torque_applied:
