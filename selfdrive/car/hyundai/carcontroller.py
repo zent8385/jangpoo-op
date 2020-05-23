@@ -175,11 +175,12 @@ class CarController():
     #  LaC.model_sum   오른쪽 +
 
     cv_limit = 0
-    fp_limit = 0    
-    if CS.cruise_set_mode == 3:
-      if path_plan.laneChangeState != LaneChangeState.off:
-        pass
-      elif LaC.v_curvature < 200:  # 커브 도로
+    fp_limit = 0   
+
+    if path_plan.laneChangeState != LaneChangeState.off:
+      apply_steer = self.limit_ctrl( apply_steer, 10, self.apply_steer_last )   
+    elif CS.cruise_set_mode == 3:
+      if LaC.v_curvature < 200:  # 커브 도로
         xp = [50,100,150,200]
         #fp = [15,25,30,35]  # limit
         fp = [40,50,60,80]
