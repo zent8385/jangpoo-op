@@ -176,6 +176,7 @@ class PathPlanner():
       elif self.nCommand == 2:   # preLaneChange
           torque_applied = False 
           # 자동 ALC 
+          print( 'lean_change_timer ={}'.format( self.lean_change_timer ) )
           self.lean_change_timer += 1
           if self.lean_change_timer > 50:
             torque_applied = True
