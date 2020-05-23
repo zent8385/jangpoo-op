@@ -188,7 +188,7 @@ class CarController():
 
 
     if path_plan.laneChangeState != LaneChangeState.off:
-      apply_steer = self.limit_ctrl( apply_steer, 1, self.apply_steer_last )   
+      apply_steer = self.limit_ctrl( apply_steer, 10, self.apply_steer_last )   
     elif CS.cruise_set_mode == 3:
       if LaC.v_curvature < 200:  # 커브 도로
         xp = [50,100,150,200]
