@@ -158,7 +158,7 @@ class CarController():
       fp = [290,300,310,320,param.STEER_MAX]
       param.STEER_MAX = interp( abs_angle_steers, xp, fp )
 
-      if abs_angle_steers < 0.5 or v_ego_kph < 5:
+      if abs_angle_steers < 0.5:
           param.STEER_DELTA_UP  = 2
           param.STEER_DELTA_DOWN = 3
       elif abs_angle_steers < 2:
@@ -184,7 +184,8 @@ class CarController():
         xp = [50,100,150,200]
         #fp = [15,25,30,35]  # limit
         fp = [40,50,60,80]
-        cv = [1,3,5,10]
+        #cv = [1,3,5,10]
+        cv = [1,2,3,4]
         fp_limit = interp( LaC.v_curvature, xp, fp )
         cv_limit = interp( LaC.v_curvature, xp, cv )
 
