@@ -226,10 +226,10 @@ void draw_date_time(UIState *s)
 
   // Draw the current date/time
 
-  int rect_w = 900;
+  int rect_w = 800;
   int rect_h = 80;
-  int rect_x = ((1920 - rect_w) / 2) + 610;
-  int rect_y = (rect_h + 10);
+  int rect_x = ((1920 - rect_w) / 2) + 510;
+  int rect_y = rect_h - 10;
   //int rect_x = (1920 - rect_w) / 2;
   //int rect_y = (1080 - rect_h - 10);
 
@@ -249,7 +249,7 @@ void draw_date_time(UIState *s)
   nvgFontSize(s->vg, 60);
   nvgFontFace(s->vg, "sans-semibold");
   nvgFillColor(s->vg, nvgRGBA(255, 255, 255, 200));
-  nvgText(s->vg, rect_x + 231, rect_y + 55, now, NULL);
+  nvgText(s->vg, rect_x + 220, rect_y + 57, now, NULL);
 }
 
 
@@ -288,7 +288,7 @@ static void screen_draw_button(UIState *s, int touch_x, int touch_y)
     {
       nvgFillColor(s->vg, nvgRGBA(255, 150, 150, 200));
     }
-    nvgText(s->vg, btn_x - 88, btn_y + 50, "녹화", NULL);
+    nvgText(s->vg, btn_x - 88, btn_y + 50, "REC", NULL);
   }
 
   if (captureState == CAPTURE_STATE_CAPTURING)
