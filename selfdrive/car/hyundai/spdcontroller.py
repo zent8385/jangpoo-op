@@ -250,14 +250,14 @@ class SpdController():
     elif CS.cruise_set_speed_kph > CS.clu_Vanz:
       
       # 선행 차량이 가속하고 있으면.
-      if dRel == 150:
-        self.time_no_lean += 1
-        if self.time_no_lean < 50:
-          lead_wait_cmd, lead_set_speed = self.get_tm_speed( CS, 100, 1 )
-        else:
-          lead_wait_cmd, lead_set_speed = self.get_tm_speed( CS, 50, 1 )
+      #if dRel == 150:
+      #  self.time_no_lean += 1
+      #  if self.time_no_lean < 50:
+      #    lead_wait_cmd, lead_set_speed = self.get_tm_speed( CS, 100, 1 )
+      #  else:
+      #    lead_wait_cmd, lead_set_speed = self.get_tm_speed( CS, 50, 1 )
       #elif lead_objspd < 3 or d_delta < 5:
-      elif lead_objspd < cv_Dist:   #-5:
+      if lead_objspd < cv_Dist:   #-5:
         lead_set_speed = int(CS.VSetDis)
       elif lead_objspd < 5:
         lead_wait_cmd, lead_set_speed = self.get_tm_speed( CS, 50, 1 )
