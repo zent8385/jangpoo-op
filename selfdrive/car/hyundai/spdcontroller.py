@@ -29,6 +29,7 @@ import common.MoveAvg as  moveavg1
 kegman = kegman_conf()
 
 cv_Raio = float(kegman.conf['cV_Ratio'])
+#cv_Dist = float(kegman.conf['cV_Dist'])
 
 MAX_SPEED = 255.0
 
@@ -215,7 +216,7 @@ class SpdController():
       lead_wait_cmd = 50
       str3 = 'driver acc speed={:3.0f} time={:3.0f}'.format( lead_set_speed, lead_wait_cmd )
     # 1. 거리 유지.
-    elif d_delta < 0:
+    elif d_delta < 0: # cv_Dist:
     # 선행 차량이 가까이 있으면.
       if lead_objspd >= 0:
         lead_set_speed = int(CS.VSetDis)
@@ -252,17 +253,18 @@ class SpdController():
       if dRel == 150:
         self.time_no_lean += 1
         if self.time_no_lean < 50:
-          lead_wait_cmd, lead_set_speed = self.get_tm_speed( CS, 150, 1 )
-        else:
           lead_wait_cmd, lead_set_speed = self.get_tm_speed( CS, 100, 1 )
-      elif lead_objspd < 3 or d_delta < 5:
+        else:
+          lead_wait_cmd, lead_set_speed = self.get_tm_speed( CS, 50, 1 )
+      #elif lead_objspd < 3 or d_delta < 5:
+      elif lead_objspd < -5:
         lead_set_speed = int(CS.VSetDis)
       elif lead_objspd < 5:
-        lead_wait_cmd, lead_set_speed = self.get_tm_speed( CS, 100, 1 )
-      elif lead_objspd < 10:
-        lead_wait_cmd, lead_set_speed = self.get_tm_speed( CS, 70, 1 )
-      else:
         lead_wait_cmd, lead_set_speed = self.get_tm_speed( CS, 50, 1 )
+      elif lead_objspd < 10:
+        lead_wait_cmd, lead_set_speed = self.get_tm_speed( CS, 50, 1 )
+      else:
+        lead_wait_cmd, lead_set_speed = self.get_tm_speed( CS, 30, 1 )
 
       if lead_wait_cmd != 600:
         str3 = 'acc speed={:3.0f} time={:3.0f}'.format( lead_set_speed, lead_wait_cmd )
