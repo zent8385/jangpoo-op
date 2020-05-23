@@ -140,6 +140,10 @@ class CarController():
     apply_accel = clip(apply_accel * ACCEL_SCALE, ACCEL_MIN, ACCEL_MAX)
     abs_angle_steers =  abs(actuators.steerAngle) #  abs(CS.angle_steers)  # 
 
+
+    cv_limit = 0
+    fp_limit = 0   
+
     param = SteerLimitParams
     #if path_plan.laneChangeState != LaneChangeState.off:
       #param.STEER_MAX = 0.99
@@ -166,6 +170,14 @@ class CarController():
           param.STEER_DELTA_DOWN = 5
 
 
+    if CS.cruise_set_mode == 4:
+        xp = [50,100,150,200]
+        fp = [1,2,3,4]  # limit
+
+        param.STEER_DELTA_DOWN = interp( LaC.v_curvature, xp, fp )
+        #cv_limit = interp( LaC.v_curvature, xp, cv )
+
+
     ### Steering Torque
     new_steer = actuators.steer * param.STEER_MAX
     apply_steer = apply_std_steer_torque_limits(new_steer, self.apply_steer_last, CS.steer_torque_driver, param)
@@ -174,15 +186,13 @@ class CarController():
     # steer torque의 변화량 감시.
     #  LaC.model_sum   오른쪽 +
 
-    cv_limit = 0
-    fp_limit = 0   
 
     if path_plan.laneChangeState != LaneChangeState.off:
       apply_steer = self.limit_ctrl( apply_steer, 10, self.apply_steer_last )   
     elif CS.cruise_set_mode == 3:
       if LaC.v_curvature < 200:  # 커브 도로
         xp = [50,100,150,200]
-        
+
         fp = [15,25,30,35]  # limit
         #fp = [40,50,60,80]
         #cv = [1,3,5,10]
@@ -207,6 +217,8 @@ class CarController():
             apply_steer = a_limit
       else:  # 
         apply_steer = self.limit_ctrl( apply_steer, 10, self.apply_steer_last )
+    elif CS.cruise_set_mode == 4:
+      pass
     
 
     if abs( CS.steer_torque_driver ) > 250: #180:

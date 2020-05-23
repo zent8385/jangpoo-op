@@ -411,7 +411,7 @@ class CarState():
       if self.prev_clu_CruiseSwState != self.clu_CruiseSwState:
         if self.clu_CruiseSwState == 4:
           self.cruise_set_mode += 1
-          if self.cruise_set_mode > 3:
+          if self.cruise_set_mode > 4:
             self.cruise_set_mode = 0
         self.prev_clu_CruiseSwState = self.clu_CruiseSwState
       
