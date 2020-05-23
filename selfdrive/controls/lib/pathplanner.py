@@ -187,6 +187,8 @@ class PathPlanner():
               else:
                 torque_applied = sm['carState'].steeringTorque < 0
 
+
+          # 자동 ALC 
           lean_change_timer += 1
           if lean_change_timer > 100:
             torque_applied = True
