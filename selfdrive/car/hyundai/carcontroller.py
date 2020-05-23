@@ -245,7 +245,7 @@ class CarController():
         self.low_speed_car = low_speed
 
     # streer over check
-    if enabled and abs(CS.angle_steers) > 90. and self.lkas_button or CS.steer_error:
+    if enabled and abs(CS.angle_steers) > 120. and self.lkas_button or CS.steer_error:
       self.streer_angle_over =  True
       self.steer_timer = 500
     elif abs(CS.angle_steers) < 2 or not self.steer_timer:
