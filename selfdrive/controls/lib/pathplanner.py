@@ -178,7 +178,7 @@ class PathPlanner():
           # 자동 ALC 
           print( 'lean_change_timer ={}'.format( self.lean_change_timer ) )
           self.lean_change_timer += 1
-          if self.lean_change_timer > 50:
+          if self.lean_change_timer > 2:
             torque_applied = True
           elif not sm['carState'].steeringPressed:
               pass
