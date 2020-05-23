@@ -341,8 +341,8 @@ class CarController():
     vRel = int(vRel * 3.6 + 0.5)
   
     lead_objspd = CS.lead_objspd
-    str_log1 = '도로곡률={:3.0f}  차량토크={: 04.0f}  '.format( LaC.v_curvature, apply_steer )
-    str_log2 = '핸들토크={: 04.0f}  최대조향={:3.0f}'.format( CS.steer_torque_driver, steer_limit )
+    str_log1 = '도로곡률={:3.0f}  차량토크={:4.0f}  '.format( LaC.v_curvature, apply_steer )
+    str_log2 = '핸들토크={:4.0f}  최대조향={:3.0f}'.format( CS.steer_torque_driver, steer_limit )
     trace1.printf( '{} {}'.format( str_log1, str_log2 ) )
 
 
