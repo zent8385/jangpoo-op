@@ -181,7 +181,8 @@ class CarController():
       apply_steer = self.limit_ctrl( apply_steer, 10, self.apply_steer_last )   
     elif CS.cruise_set_mode == 3:
       if LaC.v_curvature < 200:  # 커브 도로
-        #xp = [50,100,150,200]
+        xp = [50,100,150,200]
+        
         fp = [15,25,30,35]  # limit
         #fp = [40,50,60,80]
         #cv = [1,3,5,10]
