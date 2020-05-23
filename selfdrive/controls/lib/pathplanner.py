@@ -217,14 +217,14 @@ class PathPlanner():
 
 
       elif self.nCommand == 4:   # laneChangeFinishing
-          if sm['carState'].leftBlinker or sm['carState'].rightBlinker:
-            pass
-          else:
+          #if sm['carState'].leftBlinker or sm['carState'].rightBlinker:
+          #  pass
+          #else:
             # fade in laneline over 1s
-            self.lane_change_ll_prob = min(self.lane_change_ll_prob + 2*DT_MDL, 1.0)
-            if lane_change_prob < 0.5 and self.lane_change_ll_prob > 0.99:
-              self.lane_change_state = LaneChangeState.off
-              self.nCommand=0
+          self.lane_change_ll_prob = min(self.lane_change_ll_prob + 2*DT_MDL, 1.0)
+          if lane_change_prob < 0.2 and self.lane_change_ll_prob > 0.99:
+            self.lane_change_state = LaneChangeState.off
+            self.nCommand=0
 
       elif self.nCommand == 5:  # cancel
           self.lane_change_timer4 += 1
@@ -246,6 +246,8 @@ class PathPlanner():
     v_ego = sm['carState'].vEgo
     angle_steers = sm['carState'].steeringAngle
     active = sm['controlsState'].active
+
+    vCurvature = sm['controlsState'].vCurvature
 
     angle_offset = sm['liveParameters'].angleOffset
 
@@ -364,6 +366,12 @@ class PathPlanner():
     else:
       self.lean_offset = 0
 
+    if vCurvature > 1: # left
+      self.lean_offset = 0.01
+      self.lean_wait_time = 10
+    elif vCurvature < -1:   # right
+      self.lean_offset = -0.01
+      self.lean_wait_time = 10
 
     lean_offset = 0
     if self.lean_wait_time:
@@ -402,9 +410,11 @@ class PathPlanner():
     org_angle_steers_des = float(math.degrees(delta_desired * self.steerRatio) + angle_offset)
     self.angle_steers_des_mpc = org_angle_steers_des
 
-    if v_ego_kph < 40:
+    if abs(vCurvature) < 2:
+      pass
+    elif v_ego_kph < 40:
         xp = [5,20,40]
-        fp2 = [0.5,1,2]
+        fp2 = [1,5,10]
         limit_steers = interp( v_ego_kph, xp, fp2 )
         angle_steers_des = self.limit_ctrl( org_angle_steers_des, limit_steers, angle_steers )
         if v_ego_kph < 10:

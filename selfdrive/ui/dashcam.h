@@ -250,47 +250,6 @@ void draw_date_time(UIState *s)
   nvgText(s->vg, rect_x + 231, rect_y + 55, now, NULL);
 }
 
-static void rotate_video()
-{
-  // Overwrite the existing video (if needed)
-  elapsed_time = 0;
-  stop_capture();
-  //captureState = CAPTURE_STATE_CAPTURING;
-  //start_capture();
-}
-
-void draw_lock_button(UIState *s)
-{
-  int btn_w = 150;
-  int btn_h = 150;
-  int btn_x = 1920 - btn_w - 150;
-  int btn_y = 1080 - btn_h;
-  int imgw, imgh;
-  float alpha = 0.3f;
-
-  if (!lock_image)
-  {
-    // Load the lock icon
-    lock_image = nvgCreateImage(s->vg, "../assets/lock_icon.png", 1);
-  }
-
-  if (lock_current_video)
-  {
-    alpha = 1.0f;
-  }
-
-  nvgBeginPath(s->vg);
-  NVGpaint imgPaint = nvgImagePattern(s->vg, btn_x - 125, btn_y - 45, 150, 150, 0, lock_image, alpha);
-  nvgRoundedRect(s->vg, btn_x - 125, btn_y - 45, 150, 150, 100);
-  nvgFillPaint(s->vg, imgPaint);
-  nvgFill(s->vg);
-
-  lock_button = (dashcam_element){
-      .pos_x = 1500,
-      .pos_y = 920,
-      .width = 150,
-      .height = 150};
-}
 
 static void screen_draw_button(UIState *s, int touch_x, int touch_y)
 {
@@ -299,10 +258,6 @@ static void screen_draw_button(UIState *s, int touch_x, int touch_y)
   if (s->vision_connected)
   {
 
-    if (captureState == CAPTURE_STATE_CAPTURING)
-    {
-      draw_lock_button(s);
-    }
 
     int btn_w = 150;
     int btn_h = 150;

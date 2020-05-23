@@ -127,6 +127,7 @@ class SpdController():
 
       a_y_max = 2.975 - v_ego * 0.0375  # ~1.85 @ 75mph, ~2.6 @ 25mph
       v_curvature = np.sqrt(a_y_max / np.clip(np.abs(curv), 1e-4, None))
+      model_sum = np.sum( curv, 0 )
       model_speed = np.min(v_curvature)
       model_speed = max(30.0 * CV.MPH_TO_MS, model_speed) # Don't slow down below 20mph
 
@@ -135,18 +136,13 @@ class SpdController():
           model_speed = MAX_SPEED
     else:
       model_speed = MAX_SPEED
+      model_sum = 0
 
-    #following = lead_1.status and lead_1.dRel < 45.0 and lead_1.vLeadK > v_ego and lead_1.aLeadK > 0.0
-
-    #following = CS.lead_distance < 100.0
-    #accel_limits = [float(x) for x in calc_cruise_accel_limits(v_ego, following)]
-    #jerk_limits = [min(-0.1, accel_limits[0]), max(0.1, accel_limits[1])]  # TODO: make a separate lookup for jerk tuning
-    #accel_limits_turns = limit_accel_in_turns(v_ego, CS.angle_steers, accel_limits, self.steerRatio, self.wheelbase )
 
     model_speed = self.movAvg.get_min( model_speed, 10 )
 
 
-    return model_speed
+    return model_speed, model_sum
 
 
   def get_lead(self, sm, CS ):
@@ -266,6 +262,9 @@ class SpdController():
         str3 = 'acc speed={:3.0f} time={:3.0f}'.format( lead_set_speed, lead_wait_cmd )
         self.SC.add(  str3 )
 
+  
+  
+
     return  lead_wait_cmd, lead_set_speed
 
 
@@ -286,6 +285,8 @@ class SpdController():
         set_speed = CS.cruise_set_speed_kph - 5
         wait_time_cmd = 200
 
+      if set_speed > model_speed:
+        set_speed = model_speed
 
     return wait_time_cmd, set_speed
 

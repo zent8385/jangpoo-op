@@ -172,39 +172,43 @@ class CarController():
 
     # steer torque의 변화량 감시.
     #  LaC.model_sum   오른쪽 +
+
+    cv_limit = 0
+    cp_limit = 0    
     if CS.cruise_set_mode == 3:
       if path_plan.laneChangeState != LaneChangeState.off:
         pass
       elif LaC.v_curvature < 200:  # 커브 도로
         xp = [50,100,150,200]
-        fp = [5,10,15,20,30]
-        fp1 = [1,2,3,5,10]
-        s_limit = interp( LaC.v_curvature, xp, fp )
-        cv_limit = interp( LaC.v_curvature, xp, fp1 )
+        fp = [15,25,30,35]
+        cv = [1,3,5,10]
+        fp_limit = interp( LaC.v_curvature, xp, fp )
+        cv_limit = interp( LaC.v_curvature, xp, cv )
 
-        if LaC.model_sum > 0: # left
+
+        if LaC.model_sum > 1: # left
         #if actuators.steerAngle > 3: #left
           apply_steer = self.limit_dir( apply_steer, self.apply_steer_last, param.STEER_MAX, cv_limit )
 
-          a_limit = -s_limit
+          a_limit = -fp_limit
           if apply_steer < a_limit:
             apply_steer = a_limit
-        elif LaC.model_sum < 0:   # right
+        elif LaC.model_sum < -1:   # right
         #elif actuators.steerAngle < -3:   # right
           apply_steer = self.limit_dir( apply_steer, self.apply_steer_last, cv_limit, param.STEER_MAX )
 
-          a_limit = s_limit
+          a_limit = fp_limit
           if apply_steer > a_limit:
             apply_steer = a_limit
-      else:  # 직선 도로
+      else:  # 
         apply_steer = self.limit_ctrl( apply_steer, 10, self.apply_steer_last )
     
 
-    if abs( CS.steer_torque_driver ) > 180 and v_ego_kph < 60:
+    if abs( CS.steer_torque_driver ) > 180:
       self.steer_torque_over_timer += 1
       if self.steer_torque_over_timer > 5:
         self.steer_torque_over = True
-        self.steer_torque_over_timer = 100
+        self.steer_torque_over_timer = 200
     elif self.steer_torque_over_timer:
       self.steer_torque_over_timer -= 1
     else:
@@ -240,8 +244,8 @@ class CarController():
     # streer over check
     if enabled and abs(CS.angle_steers) > 90. and self.lkas_button or CS.steer_error:
       self.streer_angle_over =  True
-      self.steer_timer = 100
-    elif abs(CS.angle_steers) < 5 or not self.steer_timer:
+      self.steer_timer = 500
+    elif abs(CS.angle_steers) < 2 or not self.steer_timer:
       self.streer_angle_over =  False
     elif self.steer_timer:
       self.steer_timer -= 1
@@ -249,10 +253,10 @@ class CarController():
     # Disable steering while turning blinker on and speed below 60 kph
     if CS.left_blinker_on or CS.right_blinker_on:
         self.steer_torque_over = False
-        self.turning_signal_timer = 100  # Disable for 1.0 Seconds after blinker turned off
+        self.turning_signal_timer = 500  # Disable for 1.0 Seconds after blinker turned off
     elif CS.left_blinker_flash or CS.right_blinker_flash:
         self.steer_torque_over = False
-        self.turning_signal_timer = 100
+        self.turning_signal_timer = 500
 
     # turning indicator alert logic
     if self.lane_change_enabled:
@@ -274,12 +278,7 @@ class CarController():
     elif self.hud_timer_right:
       self.hud_timer_right -= 1
 
-    apply_steer_limit = 250
-    if not self.hud_timer_left and  not self.hud_timer_right:
-      self.lkas_active_timer1 = 200  #  apply_steer = 70
-    elif path_plan.laneChangeState != LaneChangeState.off:
-      self.lkas_active_timer1 = 200 
-      self.steer_torque_over = False
+
 
     if v_ego_kph < 5:
       self.lkas_active_timer1 = 100 
@@ -306,18 +305,15 @@ class CarController():
 
     steer_req = 1 if apply_steer else 0
 
+    steer_limit = param.STEER_MAX
     if not lkas_active:
        self.lkas_active_timer1 = 0
     elif self.lkas_active_timer1 < 400: 
       self.lkas_active_timer1 += 1
       ratio_steer = self.lkas_active_timer1 / 400
       if ratio_steer < 1:
-          steer_limit = ratio_steer * 200
-          if apply_steer_limit > steer_limit:
-              apply_steer_limit = steer_limit
-          if apply_steer_limit < 20:
-             apply_steer_limit = 20
-          apply_steer = self.limit_ctrl( apply_steer, apply_steer_limit, 0 )
+          steer_limit = ratio_steer * param.STEER_MAX
+          apply_steer = self.limit_ctrl( apply_steer, steer_limit, 0 )
 
 
 
@@ -325,8 +321,8 @@ class CarController():
     vRel = int(vRel * 3.6 + 0.5)
   
     lead_objspd = CS.lead_objspd
-    str_log1 = 'cv={:3.0f}/{:.3f} torg:{:5.0f} obj={:3.0f}:{:2.0f}'.format( LaC.v_curvature, LaC.model_sum, apply_steer, vRel, dRel  )
-    str_log2 = 'steer={:5.0f} lkas={:1.0f} sw{:.0f}/{:.0f} LC{}'.format( CS.steer_torque_driver, CS.lkas_LdwsSysState, CS.clu_CruiseSwState, CS.cruise_set_mode, path_plan.laneChangeState  )
+    str_log1 = 'cv={:3.0f}/{:.3f}/{:.0f}/{:.0f} torg:{:5.0f} obj={:3.0f}:{:2.0f}'.format( LaC.v_curvature, LaC.model_sum, cv_limit, cp_limit, apply_steer, vRel, dRel  )
+    str_log2 = 'steer={:5.0f} lkas={:1.0f} sw{:.0f}/{:.0f} LC={} SL={:.0f}'.format( CS.steer_torque_driver, CS.lkas_LdwsSysState, CS.clu_CruiseSwState, CS.cruise_set_mode, path_plan.laneChangeState , steer_limit )
     trace1.printf( '{} {}'.format( str_log1, str_log2 ) )
 
 
