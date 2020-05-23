@@ -175,7 +175,7 @@ class CarController():
     #  LaC.model_sum   오른쪽 +
 
     cv_limit = 0
-    cp_limit = 0    
+    fp_limit = 0    
     if CS.cruise_set_mode == 3:
       if path_plan.laneChangeState != LaneChangeState.off:
         pass
@@ -322,7 +322,7 @@ class CarController():
     vRel = int(vRel * 3.6 + 0.5)
   
     lead_objspd = CS.lead_objspd
-    str_log1 = 'cv={:3.0f}/{:.3f}/{:.0f}/{:.0f} torg:{:5.0f} obj={:3.0f}:{:2.0f}'.format( LaC.v_curvature, LaC.model_sum, cv_limit, cp_limit, apply_steer, vRel, dRel  )
+    str_log1 = 'cv={:3.0f}/{:.3f}/{:.0f}/{:.0f} torg:{:5.0f} obj={:3.0f}:{:2.0f}'.format( LaC.v_curvature, LaC.model_sum, cv_limit, fp_limit, apply_steer, vRel, dRel  )
     str_log2 = 'steer={:5.0f} lkas={:1.0f} sw{:.0f}/{:.0f} LC={} SL={:.0f}'.format( CS.steer_torque_driver, CS.lkas_LdwsSysState, CS.clu_CruiseSwState, CS.cruise_set_mode, path_plan.laneChangeState , steer_limit )
     trace1.printf( '{} {}'.format( str_log1, str_log2 ) )
 
