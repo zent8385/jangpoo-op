@@ -111,6 +111,8 @@ class PathPlanner():
       self.lean_wait_time = 0
       self.lean_offset = 0
 
+      self.lean_change_timer = 0
+
 
 
 
@@ -151,6 +153,7 @@ class PathPlanner():
           self.nCommand=1
 
       elif self.nCommand == 1:
+          lean_change_timer = 0
           one_blinker = sm['carState'].leftBlinker != sm['carState'].rightBlinker
           if not one_blinker:
               pass
@@ -183,6 +186,11 @@ class PathPlanner():
                 self.nCommand=5   # cancel         
               else:
                 torque_applied = sm['carState'].steeringTorque < 0
+
+          lean_change_timer += 1
+          if lean_change_timer > 100:
+            torque_applied = True
+
 
           if torque_applied:
               self.lane_change_timer2 = 0
