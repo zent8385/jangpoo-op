@@ -226,15 +226,17 @@ void draw_date_time(UIState *s)
 
   // Draw the current date/time
 
-  int rect_w = 465;
+  int rect_w = 900;
   int rect_h = 80;
-  int rect_x = (1920 - rect_w) / 2;
-  int rect_y = (1080 - rect_h - 10);
+  int rect_x = ((1920 - rect_w) / 2) + 610;
+  int rect_y = (rect_h + 10);
+  //int rect_x = (1920 - rect_w) / 2;
+  //int rect_y = (1080 - rect_h - 10);
 
   // Get local time to display
   char now[50];
   struct tm tm = get_time_struct();
-  snprintf(now, sizeof(now), "%04d/%02d/%02d  %02d:%02d:%02d", tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
+  snprintf(now, sizeof(now), "%04d-%02d-%02d  %02d:%02d:%02d", tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
 
   nvgBeginPath(s->vg);
   nvgRoundedRect(s->vg, rect_x, rect_y, rect_w, rect_h, 15);
@@ -286,7 +288,7 @@ static void screen_draw_button(UIState *s, int touch_x, int touch_y)
     {
       nvgFillColor(s->vg, nvgRGBA(255, 150, 150, 200));
     }
-    nvgText(s->vg, btn_x - 88, btn_y + 50, "REC", NULL);
+    nvgText(s->vg, btn_x - 88, btn_y + 50, "녹화", NULL);
   }
 
   if (captureState == CAPTURE_STATE_CAPTURING)

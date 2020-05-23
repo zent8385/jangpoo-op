@@ -359,7 +359,7 @@ class SpdController():
     tm_sample = self.Timer1.sampleTime()
 
 
-    str3 = '도로곡률={:3.0f}  크루즈속도={:3.0f}  반응시간={:3.0f}  HEARTBEAT={:.0f} '.format( model_speed, target_set_speed, self.long_wait_timer,  tm_sample )
+    str3 = '도로곡률={: 3.0f}  크루즈속도={: 3.0f}  반응시간={: 3.0f}  HEARTBEAT={:.0f} '.format( model_speed, target_set_speed, self.long_wait_timer,  tm_sample )
     trace1.printf2(  str3 )
 
     return btn_type, set_speed

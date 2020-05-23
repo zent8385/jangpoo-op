@@ -690,7 +690,7 @@ static void bb_ui_draw_measures_right(UIState *s, int bb_x, int bb_y, int bb_w )
       snprintf(val_str, sizeof(val_str), "%.1f°",(scene->angleSteers));
 
       snprintf(uom_str, sizeof(uom_str), "");
-    bb_h +=bb_ui_draw_measure(s,  val_str, uom_str, "조향각",
+    bb_h +=bb_ui_draw_measure(s,  val_str, uom_str, "핸들조향각",
         bb_rx, bb_ry, bb_uom_dx,
         val_color, lab_color, uom_color,
         value_fontSize, label_fontSize, uom_fontSize );
@@ -823,7 +823,7 @@ static void ui_draw_vision_maxspeed(UIState *s) {
   } else {
     nvgFillColor(s->vg, nvgRGBA(255, 255, 255, 100));
   }
-  nvgText(s->vg, viz_maxspeed_x+(viz_maxspeed_xo/2)+(viz_maxspeed_w/2), 148, "MAX", NULL);
+  nvgText(s->vg, viz_maxspeed_x+(viz_maxspeed_xo/2)+(viz_maxspeed_w/2), 148, "설정속도", NULL);
 
   // Draw Speed Text
   nvgFontFace(s->vg, "sans-bold");
@@ -836,7 +836,7 @@ static void ui_draw_vision_maxspeed(UIState *s) {
     nvgFontFace(s->vg, "sans-semibold");
     nvgFontSize(s->vg, 33*2);
     nvgFillColor(s->vg, nvgRGBA(255, 255, 255, 100));
-    nvgText(s->vg, viz_maxspeed_x+(viz_maxspeed_xo/2)+(viz_maxspeed_w/2), 242, "N/A", NULL);
+    nvgText(s->vg, viz_maxspeed_x+(viz_maxspeed_xo/2)+(viz_maxspeed_w/2), 242, "-", NULL);
   }
   //BB START: add new measures panel  const int bb_dml_w = 180;
   bb_ui_draw_UI(s);
