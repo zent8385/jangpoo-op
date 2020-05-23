@@ -1,3 +1,5 @@
+# This Python file uses the following encoding: utf-8
+# -*- coding: utf-8 -*-
 from cereal import car, log
 from common.numpy_fast import clip
 from selfdrive.config import Conversions as CV
@@ -234,19 +236,20 @@ class CarController():
 
 
     ### LKAS button to temporarily disable steering
-    if not CS.lkas_error:
-      if self.lkas_button != CS.lkas_button_on:
-         self.lkas_button = CS.lkas_button_on
+    #if not CS.lkas_error:
+    #  if self.lkas_button != CS.lkas_button_on:
+    #     self.lkas_button = CS.lkas_button_on
 
     # disable if steer angle reach 90 deg, otherwise mdps fault in some models
-    lkas_active = enabled and abs(CS.angle_steers) < 90. and self.lkas_button
+    lkas_active = enabled
+    #lkas_active = enabled and abs(CS.angle_steers) < 90. and self.lkas_button
 
     low_speed = self.low_speed_car
-    if not self.lkas_button:
-        low_speed = False
+    #if not self.lkas_button:
+    #    low_speed = False
     #elif not CS.cruiseState.enabled:
     #    low_speed = False
-    elif CS.stopped:
+    if CS.stopped:
         low_speed = False
     elif CS.v_ego > (CS.CP.minSteerSpeed + 0.7):
         low_speed = False
@@ -259,10 +262,10 @@ class CarController():
         self.low_speed_car = low_speed
 
     # streer over check
-    if enabled and abs(CS.angle_steers) > 120. and self.lkas_button or CS.steer_error:
+    if enabled and abs(CS.angle_steers) > 120. or CS.steer_error:
       self.streer_angle_over =  True
-      self.steer_timer = 500
-    elif abs(CS.angle_steers) < 2 or not self.steer_timer:
+      self.steer_timer = 250
+    elif abs(CS.angle_steers) < 5 or not self.steer_timer:
       self.streer_angle_over =  False
     elif self.steer_timer:
       self.steer_timer -= 1
@@ -338,8 +341,8 @@ class CarController():
     vRel = int(vRel * 3.6 + 0.5)
   
     lead_objspd = CS.lead_objspd
-    str_log1 = 'cv={:3.0f}/{:.3f}/{:.0f}/{:.0f} torg:{:5.0f} obj={:3.0f}:{:2.0f}'.format( LaC.v_curvature, LaC.model_sum, cv_limit, fp_limit, apply_steer, vRel, dRel  )
-    str_log2 = 'steer={:5.0f} lkas={:1.0f} sw{:.0f}/{:.0f} LC={} SL={:.0f}'.format( CS.steer_torque_driver, CS.lkas_LdwsSysState, CS.clu_CruiseSwState, CS.cruise_set_mode, path_plan.laneChangeState , steer_limit )
+    str_log1 = '도로곡률={:3.0f}  차량토크={: 04.0f}  '.format( LaC.v_curvature, apply_steer )
+    str_log2 = '핸들토크={: 04.0f}  최대조향={:3.0f}'.format( CS.steer_torque_driver, steer_limit )
     trace1.printf( '{} {}'.format( str_log1, str_log2 ) )
 
 
