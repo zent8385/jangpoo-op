@@ -270,9 +270,9 @@ class SpdController():
         str3 = 'acc speed={:3.0f} time={:3.0f}'.format( lead_set_speed, lead_wait_cmd )
         self.SC.add(  str3 )
 
-    delta_ego = CS.v_ego_kph - lead_set_speed 
+    delta_ego = CS.clu_Vanz - lead_set_speed 
     if delta_ego > 5:
-      lead_set_speed = CS.v_ego_kph + 5
+      lead_set_speed = CS.clu_Vanz + 5
       lead_wait_cmd = 10
   
 
