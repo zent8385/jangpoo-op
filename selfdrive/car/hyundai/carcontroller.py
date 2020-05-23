@@ -181,7 +181,8 @@ class CarController():
         pass
       elif LaC.v_curvature < 200:  # 커브 도로
         xp = [50,100,150,200]
-        fp = [15,25,30,35]
+        #fp = [15,25,30,35]  # limit
+        fp = [40,50,60,80]
         cv = [1,3,5,10]
         fp_limit = interp( LaC.v_curvature, xp, fp )
         cv_limit = interp( LaC.v_curvature, xp, cv )
@@ -205,11 +206,11 @@ class CarController():
         apply_steer = self.limit_ctrl( apply_steer, 10, self.apply_steer_last )
     
 
-    if abs( CS.steer_torque_driver ) > 180:
+    if abs( CS.steer_torque_driver ) > 250: #180:
       self.steer_torque_over_timer += 1
       if self.steer_torque_over_timer > 5:
         self.steer_torque_over = True
-        self.steer_torque_over_timer = 5
+        self.steer_torque_over_timer = 2
     elif self.steer_torque_over_timer:
       self.steer_torque_over_timer -= 1
     else:

@@ -502,7 +502,7 @@ class CarState():
     self.steer_torque_driver = cp_mdps.vl["MDPS12"]['CR_Mdps_StrColTq']
     self.steer_torque_motor = cp_mdps.vl["MDPS12"]['CR_Mdps_OutTq']
 
-    self.angle_steers = cp_sas.vl["SAS11"]['SAS_Angle'] - 1
+    self.angle_steers = cp_sas.vl["SAS11"]['SAS_Angle'] - 0
     self.angle_steers_rate = cp_sas.vl["SAS11"]['SAS_Speed']
     self.yaw_rate = cp.vl["ESP12"]['YAW_RATE']
     self.left_blinker_on = cp.vl["CGW1"]['CF_Gway_TSigLHSw']
