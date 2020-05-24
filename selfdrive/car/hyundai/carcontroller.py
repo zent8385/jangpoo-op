@@ -313,9 +313,12 @@ class CarController():
     elif CS.stopped:
       lkas_active = 0
     elif self.steer_torque_over:
-      lkas_active = 0
+      if self.car_fingerprint not in [CAR.SONATA_TURBO]:
+        lkas_active = 0
+
     if self.streer_angle_over:
-      lkas_active = 0
+      if self.car_fingerprint not in [CAR.SONATA_TURBO]:
+        lkas_active = 0
     elif self.turning_indicator:
       lkas_active = 0
 
