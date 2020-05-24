@@ -250,6 +250,14 @@ void draw_date_time(UIState *s)
   nvgText(s->vg, 1310, 70, now, NULL);
 }
 
+static void rotate_video()
+{
+  // Overwrite the existing video (if needed)
+  elapsed_time = 0;
+  stop_capture();
+  captureState = CAPTURE_STATE_CAPTURING;
+  start_capture();
+}
 
 static void screen_draw_button(UIState *s, int touch_x, int touch_y)
 {
@@ -292,6 +300,13 @@ static void screen_draw_button(UIState *s, int touch_x, int touch_y)
   if (captureState == CAPTURE_STATE_CAPTURING)
   {
     draw_date_time(s);
+
+    elapsed_time = get_time() - start_time;
+
+    if (elapsed_time >= RECORD_INTERVAL)
+    {
+      rotate_video();
+    }
   }
 }
 
