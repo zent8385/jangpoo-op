@@ -226,12 +226,10 @@ void draw_date_time(UIState *s)
 
   // Draw the current date/time
 
-  int rect_w = 600;
+  int rect_w = 465;
   int rect_h = 80;
-  int rect_x = ((1920 - rect_w) / 2) + 620;
-  int rect_y = rect_h - 40;
-  //int rect_x = (1920 - rect_w) / 2;
-  //int rect_y = (1080 - rect_h - 10);
+  int rect_x = (1920 - rect_w) / 2;
+  int rect_y = (1080 - rect_h - 10);
 
   // Get local time to display
   char now[50];
