@@ -105,7 +105,7 @@ void stop_capture() {
     elapsed_time = get_time() - start_time;
     if (elapsed_time < 3)
     {
-      // remove_file(videos_dir, filenames[captureNum]);
+      remove_file(videos_dir, filenames[captureNum]);
     }
     else
     {
