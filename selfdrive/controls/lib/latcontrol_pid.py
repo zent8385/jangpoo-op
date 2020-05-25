@@ -131,7 +131,7 @@ class LatControlPID():
       self.pid_BP0_time = 300
     elif self.pid_BP0_time:
       kBP0 = 1
-      self.pid_BP0_time -= 1
+      self.pid_BP0_time -= 0.1  # default vaule: 1,  modified 0.1 suggested by 뉴라 이빵 터보님
     else:
       kBP0 = 0
       self.pid_change_flag = 3
