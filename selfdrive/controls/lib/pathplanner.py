@@ -426,7 +426,7 @@ class PathPlanner():
     org_angle_steers_des = float(math.degrees(delta_desired * self.steerRatio) + angle_offset)
     self.angle_steers_des_mpc = org_angle_steers_des
 
-    if abs(vCurvature) < 2:
+    if abs(vCurvature) > 2:
       pass
     elif v_ego_kph < 40:
         xp = [5,20,40]
