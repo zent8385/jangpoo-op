@@ -145,7 +145,7 @@ class CarController():
     param = SteerLimitParams
 
     if path_plan.laneChangeState != LaneChangeState.off:
-      param.STEER_MAX = 0.995
+      param.STEER_MAX *= 0.995
       param.STEER_DELTA_UP  = 2
       param.STEER_DELTA_DOWN = 4
 
@@ -157,7 +157,7 @@ class CarController():
       if param.STEER_MAX == 255:
         fp = [200,240,245,250,param.STEER_MAX]
       elif param.STEER_MAX > 255:
-        fp = [(param.STEER_MAX - 40), (param.STEER_MAX - 30), (param.STEER_MAX - 20), (param.STEER_MAX - 10), param.STEER_MAX]
+        fp = [290,300,310,320,param.STEER_MAX]
       param.STEER_MAX = interp( abs_angle_steers, xp, fp )
 
       if abs_angle_steers < 0.5 or v_ego_kph < 5:
