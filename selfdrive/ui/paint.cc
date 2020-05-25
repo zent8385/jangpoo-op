@@ -947,7 +947,7 @@ static void ui_draw_debug(UIState *s)
   y_pos = 150; 
   
 
-  nvgFontFace(s->vg, "monospace");
+
   nvgTextAlign(s->vg, NVG_ALIGN_LEFT | NVG_ALIGN_BASELINE);
   nvgFontSize(s->vg, 36*1.5);
 
