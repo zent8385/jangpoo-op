@@ -949,6 +949,7 @@ static void ui_draw_debug(UIState *s)
 
 
   nvgTextAlign(s->vg, NVG_ALIGN_LEFT | NVG_ALIGN_BASELINE);
+  nvgFontFace(s->vg, "courbd");
   nvgFontSize(s->vg, 36*1.5);
 
 
