@@ -307,11 +307,11 @@ class CarController():
     elif CS.stopped:
       lkas_active = 0
     elif self.steer_torque_over:
-      if self.car_fingerprint not in [CAR.SONATA_TURBO]:
+      if self.car_fingerprint not in [CAR.SONATA_TURBO, CAR.GENESIS, CAR.SANTAFE]:
         lkas_active = 0
 
     if self.streer_angle_over:
-      if self.car_fingerprint not in [CAR.SONATA_TURBO]:
+      if self.car_fingerprint not in [CAR.SONATA_TURBO, CAR.GENESIS, CAR.SANTAFE]:
         lkas_active = 0
     elif self.turning_indicator:
       lkas_active = 0
@@ -338,7 +338,7 @@ class CarController():
     vRel = int(vRel * 3.6 + 0.5)
   
     lead_objspd = CS.lead_objspd
-    str_log1 = 'CURV={:03.0f} V_TORQUE={:04.0f} '.format( LaC.v_curvature, apply_steer )
+    str_log1 = 'CURV={:03.0f} V_TORQUE={:04.0f}'.format( LaC.v_curvature, apply_steer )
     str_log2 = 'S_TORQUE={:04.0f} MAXSTEER={:03.0f} SR={:02.2f}'.format( CS.steer_torque_driver, steer_limit, CS.CP.steerRatio )
     trace1.printf( '{} {}'.format( str_log1, str_log2 ) )
 
