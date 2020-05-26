@@ -312,11 +312,6 @@ class SpdController():
     lead_wait_cmd, lead_set_speed = self.update_lead( CS,  dRel, yRel, vRel )  #선행 차량 거리유지
     curv_wait_cmd, curv_set_speed = self.update_curv( CS, sm, model_speed )  # 커브 감속.
 
-    if lead_wait_cmd or curv_wait_cmd:
-      on_speed_control = "Y"
-    else:
-      on_speed_control = "N"
-
     if curv_wait_cmd != 0:
       if lead_set_speed > curv_set_speed:
         set_speed = curv_set_speed
@@ -364,7 +359,7 @@ class SpdController():
     tm_sample = self.Timer1.sampleTime()
 
 
-    str3 = 'TARGET_SPEED={:03.0f}  WAIT_TIMER={:03.0f}  ON_SPEED_CONTROL={:s}  HEARTBEAT={:.0f} '.format( target_set_speed, self.long_wait_timer, on_speed_control, tm_sample )
+    str3 = 'TARGET_SPEED={:03.0f} WAIT_TIMER={:03.0f} HEARTBEAT={:.0f} '.format( target_set_speed, self.long_wait_timer, tm_sample )
     trace1.printf2(  str3 )
 
     return btn_type, set_speed
