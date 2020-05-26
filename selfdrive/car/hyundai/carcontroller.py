@@ -142,7 +142,7 @@ class CarController():
     apply_accel = clip(apply_accel * ACCEL_SCALE, ACCEL_MIN, ACCEL_MAX)
     abs_angle_steers =  abs(actuators.steerAngle) #  abs(CS.angle_steers)  # 
 
-    param = SteerLimitParams
+    param = SteerLimitParams()
 
     if path_plan.laneChangeState != LaneChangeState.off:
       param.STEER_MAX *= 0.995
