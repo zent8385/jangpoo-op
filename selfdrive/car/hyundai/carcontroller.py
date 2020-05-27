@@ -302,7 +302,7 @@ class CarController():
     vRel = int(vRel * 3.6 + 0.5)
   
     lead_objspd = CS.lead_objspd
-    str_log1 = 'CURV={:03.0f}/{:05.3f} V_TORQ={:04.0f}'.format( LaC.v_curvature, LaC.model_sum, apply_steer )
+    str_log1 = 'CURV={:03.0f}/{:06.3f} V_TORQ={:04.0f}'.format( LaC.v_curvature, LaC.model_sum, apply_steer )
     str_log2 = 'S_TORQ={:04.0f} ST_LIMIT={:03.0f} ST_MAX={:03.0f}'.format( CS.steer_torque_driver, steer_limit, param.STEER_MAX )
     trace1.printf( '{} {}'.format( str_log1, str_log2 ) )
 
