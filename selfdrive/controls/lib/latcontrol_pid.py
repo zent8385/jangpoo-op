@@ -131,7 +131,7 @@ class LatControlPID():
       self.pid_BP0_time = 300
     elif self.pid_BP0_time:
       kBP0 = 1
-      self.pid_BP0_time -= 0.1  # default vaule: 1,  modified 0.1 suggested by 뉴라 이빵 터보님
+      self.pid_BP0_time -= 1
     else:
       kBP0 = 0
       self.pid_change_flag = 3
@@ -140,20 +140,19 @@ class LatControlPID():
     self.steerKpV = [ float(self.steer_Kp1[ kBP0 ]), float(self.steer_Kp2[ kBP0 ]) ]
     self.steerKiV = [ float(self.steer_Ki1[ kBP0 ]), float(self.steer_Ki2[ kBP0 ]) ]
 
+
     xp = CP.lateralTuning.pid.kpBP
     fp = [float(self.steer_Kf1[ kBP0 ]), float(self.steer_Kf2[ kBP0 ]) ]
     self.steerKf = interp( v_ego,  xp, fp )
 
     if self.pid_change_flag != self.pre_pid_change_flag:
       self.pre_pid_change_flag = self.pid_change_flag
-      self.pid = PIController((CP.lateralTuning.pid.kpBP, self.steerKpV),
-                              (CP.lateralTuning.pid.kiBP, self.steerKiV),
-                               k_f=self.steerKf, pos_limit=1.0)
+      self.pid.gain( (CP.lateralTuning.pid.kpBP, self.steerKpV), (CP.lateralTuning.pid.kiBP, self.steerKiV) , k_f=self.steerKf  )
 
+      #self.pid = PIController((CP.lateralTuning.pid.kpBP, self.steerKpV),
+      #                        (CP.lateralTuning.pid.kiBP, self.steerKiV),
+      #                         k_f=self.steerKf, pos_limit=1.0)
 
-
-        
-    
 
   def update(self, active, v_ego, angle_steers, angle_steers_rate, eps_torque, steer_override, rate_limited, CP, path_plan):
 
