@@ -177,7 +177,7 @@ class PathPlanner():
               self.nCommand=2
 
       elif self.nCommand == 2:   # preLaneChange
-          torque_applied = False
+          torque_applied = False        
           if not sm['carState'].steeringPressed:
               pass
           elif self.lane_change_direction == LaneChangeDirection.left:
@@ -256,7 +256,11 @@ class PathPlanner():
     angle_steers = sm['carState'].steeringAngle
     active = sm['controlsState'].active
 
+
     vCurvature = sm['controlsState'].vCurvature
+    #LaC_model_sum = sm['controlsState'].LaC_model_sum
+
+    #print( 'v_curvature={} '.format( vCurvature) )
 
     angle_offset = sm['liveParameters'].angleOffset
 
@@ -374,17 +378,19 @@ class PathPlanner():
         self.lean_wait_time = 200
         self.lean_offset = 0.01
 
+      
+
 
     vCurv = vCurvature
     if vCurvature > 1: # left
       if vCurv > 4:
         vCurv = 4
-      self.lean_offset = 0.03 + (vCurv * 0.01)
+      self.lean_offset = 0.02 + (vCurv * 0.01)
       self.lean_wait_time = 10
     elif vCurvature < -1:   # right
       if vCurv < -4:
         vCurv = -4      
-      self.lean_offset = -0.03 + (vCurv * 0.01)
+      self.lean_offset = -0.02 + (vCurv * 0.01)
       self.lean_wait_time = 10
 
     lean_offset = 0

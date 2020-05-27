@@ -27,7 +27,7 @@ class LatControlPID():
 
     self.BP0 = 4
     self.steer_Kf1 = [0.00003,0.00003]    
-    self.steer_Ki1 = [0.02,0.03]
+    self.steer_Ki1 = [0.02,0.04]
     self.steer_Kp1 = [0.18,0.20]
 
     self.steer_Kf2 = [0.00005,0.00005]
@@ -54,6 +54,8 @@ class LatControlPID():
       self.r_poly = np.array(md.rightLane.poly)
       self.p_poly = np.array(md.path.poly)
 
+
+ 
 
       # Curvature of polynomial https://en.wikipedia.org/wiki/Curvature#Curvature_of_the_graph_of_a_function
       # y = a x^3 + b x^2 + c x + d, y' = 3 a x^2 + 2 b x + c, y'' = 6 a x + 2 b
@@ -94,9 +96,73 @@ class LatControlPID():
 
 
 
-  def reset(self):
+  def reset( self ):
     self.pid.reset()
+
+
+  def linear_tune( self, CP, v_ego ):
+    cv_value = self.v_curvature
+    cv = [ 50, 200 ]
+    # Kp    
+    fKp1 = [float(self.steer_Kp1[ 1 ]), float(self.steer_Kp1[ 0 ]) ]
+    fKp2 = [float(self.steer_Kp2[ 1 ]), float(self.steer_Kp2[ 0 ]) ]
+    self.steerKp1 = interp( cv_value, cv, fKp1 )
+    self.steerKp2 = interp( cv_value, cv, fKp2 )
+    self.steerKpV = [ float(self.steerKp1), float(self.steerKp2) ]
     
+    # Ki
+    fKi1 = [float(self.steer_Ki1[ 1 ]), float(self.steer_Ki1[ 0 ]) ]
+    fKi2 = [float(self.steer_Ki2[ 1 ]), float(self.steer_Ki2[ 0 ]) ]
+    self.steerKi1 = interp( cv_value, cv, fKi1 )
+    self.steerKi2 = interp( cv_value, cv, fKi2 )
+    self.steerKiV = [ float(self.steerKi1), float(self.steerKi2) ]
+
+    # kf
+    fKf1 = [float(self.steer_Kf1[ 1 ]), float(self.steer_Kf1[ 0 ]) ]
+    fKf2 = [float(self.steer_Kf2[ 1 ]), float(self.steer_Kf2[ 0 ]) ]
+    self.steerKf1 = interp( cv_value, cv, fKf1 )
+    self.steerKf2 = interp( cv_value, cv, fKf2 )
+
+    xp = CP.lateralTuning.pid.kpBP
+    fp = [float(self.steerKf1), float(self.steerKf2) ]
+    self.steerKfV = interp( v_ego,  xp, fp )
+
+    self.pid.gain( (CP.lateralTuning.pid.kpBP, self.steerKpV), (CP.lateralTuning.pid.kiBP, self.steerKiV), k_f=self.steerKfV  )
+
+
+  def sR_tune( self, CP, v_ego, path_plan ):
+    kBP0 = 0
+    if self.pid_change_flag == 0:
+      pass
+    elif abs(path_plan.angleSteers) > self.BP0  or self.v_curvature < 200:
+      kBP0 = 1
+      self.pid_change_flag = 2
+
+      ##
+      self.pid_BP0_time = 300
+    elif self.pid_BP0_time:
+      kBP0 = 1
+      self.pid_BP0_time -= 1
+    else:
+      kBP0 = 0
+      self.pid_change_flag = 3
+
+    self.steerKpV = [ float(self.steer_Kp1[ kBP0 ]), float(self.steer_Kp2[ kBP0 ]) ]
+    self.steerKiV = [ float(self.steer_Ki1[ kBP0 ]), float(self.steer_Ki2[ kBP0 ]) ]
+
+    xp = CP.lateralTuning.pid.kpBP
+    fp = [float(self.steer_Kf1[ kBP0 ]), float(self.steer_Kf2[ kBP0 ]) ]
+    self.steerKfV = interp( v_ego,  xp, fp )    
+
+    if self.pid_change_flag != self.pre_pid_change_flag:
+      self.pre_pid_change_flag = self.pid_change_flag
+      self.pid.gain( (CP.lateralTuning.pid.kpBP, self.steerKpV), (CP.lateralTuning.pid.kiBP, self.steerKiV) , k_f=self.steerKfV  )
+
+      #self.pid = PIController((CP.lateralTuning.pid.kpBP, self.steerKpV),
+      #                        (CP.lateralTuning.pid.kiBP, self.steerKiV),
+      #                         k_f=self.steerKfV, pos_limit=1.0)
+
+
   def live_tune(self, CP, path_plan, v_ego):
     self.mpc_frame += 1
     if self.mpc_frame % 600 == 0:
@@ -119,39 +185,13 @@ class LatControlPID():
         if not self.pid_change_flag:
           self.pid_change_flag = 1
 
+    #self.linear_tune( CP, v_ego )
 
-    kBP0 = 0
-    if self.pid_change_flag == 0:
-      pass
-    elif abs(path_plan.angleSteers) > self.BP0  or self.v_curvature < 200:
-      kBP0 = 1
-      self.pid_change_flag = 2
-
-      ##
-      self.pid_BP0_time = 300
-    elif self.pid_BP0_time:
-      kBP0 = 1
-      self.pid_BP0_time -= 1
-    else:
-      kBP0 = 0
-      self.pid_change_flag = 3
+    self.sR_tune( CP, v_ego, path_plan )
 
 
-    self.steerKpV = [ float(self.steer_Kp1[ kBP0 ]), float(self.steer_Kp2[ kBP0 ]) ]
-    self.steerKiV = [ float(self.steer_Ki1[ kBP0 ]), float(self.steer_Ki2[ kBP0 ]) ]
 
 
-    xp = CP.lateralTuning.pid.kpBP
-    fp = [float(self.steer_Kf1[ kBP0 ]), float(self.steer_Kf2[ kBP0 ]) ]
-    self.steerKf = interp( v_ego,  xp, fp )
-
-    if self.pid_change_flag != self.pre_pid_change_flag:
-      self.pre_pid_change_flag = self.pid_change_flag
-      self.pid.gain( (CP.lateralTuning.pid.kpBP, self.steerKpV), (CP.lateralTuning.pid.kiBP, self.steerKiV) , k_f=self.steerKf  )
-
-      #self.pid = PIController((CP.lateralTuning.pid.kpBP, self.steerKpV),
-      #                        (CP.lateralTuning.pid.kiBP, self.steerKiV),
-      #                         k_f=self.steerKf, pos_limit=1.0)
 
 
   def update(self, active, v_ego, angle_steers, angle_steers_rate, eps_torque, steer_override, rate_limited, CP, path_plan):
