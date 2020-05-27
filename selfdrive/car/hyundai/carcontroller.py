@@ -1,6 +1,5 @@
 from cereal import car, log
 from common.numpy_fast import clip
-from selfdrive.controls.lib.lateral_mpc import libmpc_py
 from selfdrive.config import Conversions as CV
 from selfdrive.car import apply_std_steer_torque_limits
 from selfdrive.car.hyundai.spdcontroller  import SpdController
