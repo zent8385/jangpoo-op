@@ -131,7 +131,7 @@ class CarController():
               visual_alert, left_line, right_line, sm, LaC ):
 
     path_plan = sm['pathPlan']
-    steerRatio = sm['liveParameters'].steerRatio)
+    steerRatio = sm['liveParameters'].steerRatio
     # *** compute control surfaces ***
     v_ego_kph = CS.v_ego * CV.MS_TO_KPH
 
