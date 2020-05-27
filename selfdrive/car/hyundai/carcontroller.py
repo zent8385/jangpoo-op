@@ -1,5 +1,3 @@
-# This Python file uses the following encoding: utf-8
-# -*- coding: utf-8 -*-
 from cereal import car, log
 from common.numpy_fast import clip
 from selfdrive.config import Conversions as CV
@@ -13,6 +11,7 @@ from opendbc.can.packer import CANPacker
 from common.numpy_fast import interp
 from common.params import Params
 
+import copy
 
 import common.log as trace1
 
@@ -40,7 +39,7 @@ class CarController():
     self.last_lead_distance = 0
     self.turning_signal_timer = 0
     self.lkas_button = 1
-    self.lkas_button_last = 0
+
     self.longcontrol = 0 #TODO: make auto
     self.low_speed_car = False 
     self.streer_angle_over = False
@@ -144,26 +143,29 @@ class CarController():
 
     param = SteerLimitParams()
 
+    #param.STEER_MAX = 255
+    #param.STEER_DELTA_UP = 3
+    #param.STEER_DELTA_DOWN = 5
+
+
+    #print('param.STEER_MAX={} abs_angle_steers ={}'.format(param.STEER_MAX, abs_angle_steers ) )
+
     if path_plan.laneChangeState != LaneChangeState.off:
       #param.STEER_MAX *= 0.995
       param.STEER_DELTA_UP  = 2
       param.STEER_DELTA_DOWN = 4
 
     #v_curvature
-    if LaC.v_curvature < 220:
+    elif LaC.v_curvature < 200:
       self.timer_curvature = 300
     elif abs_angle_steers < 2 and  self.timer_curvature <= 0:
-      xp = [0,0.5,1,1.5,2]
-      #fp = [200,240,245,250,param.STEER_MAX]
-      fp = [290,300,310,320,param.STEER_MAX]
+      xp = [0.5,1,1.5,2]
+      fp = [240,245,250,255]
       param.STEER_MAX = interp( abs_angle_steers, xp, fp )
 
       if abs_angle_steers < 0.5 or v_ego_kph < 5:
           param.STEER_DELTA_UP  = 2
           param.STEER_DELTA_DOWN = 3
-      elif abs_angle_steers < 2:
-          param.STEER_DELTA_UP  = 3
-          param.STEER_DELTA_DOWN = 5
 
 
     if CS.cruise_set_mode == 4:
@@ -293,9 +295,13 @@ class CarController():
       self.hud_timer_right -= 1
 
 
+    if path_plan.laneChangeState != LaneChangeState.off:
+      pass
+    elif not self.hud_timer_left and  not self.hud_timer_right:
+      self.lkas_active_timer1 = 200  #  apply_steer = 70
+    elif path_plan.laneChangeState != LaneChangeState.off:
+      self.steer_torque_over = False
 
-    if v_ego_kph < 5:
-      self.lkas_active_timer1 = 100 
 
 
     # disable lkas 
