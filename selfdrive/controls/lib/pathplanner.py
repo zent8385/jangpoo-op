@@ -376,12 +376,12 @@ class PathPlanner():
 
 
     vCurv = vCurvature
-    if vCurvature > 0.1: # left
+    if vCurvature > 1: # left
       if vCurv > 4:
         vCurv = 4
       self.lean_offset = 0.03 + (vCurv * 0.01)
       self.lean_wait_time = 10
-    elif vCurvature < -0.1:   # right
+    elif vCurvature < -1:   # right
       if vCurv < -4:
         vCurv = -4      
       self.lean_offset = -0.03 + (vCurv * 0.01)
