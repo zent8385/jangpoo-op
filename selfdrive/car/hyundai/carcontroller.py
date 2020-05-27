@@ -131,6 +131,7 @@ class CarController():
               visual_alert, left_line, right_line, sm, LaC ):
 
     path_plan = sm['pathPlan']
+    steerRatio = sm['liveParameters'].steerRatio)
     # *** compute control surfaces ***
     v_ego_kph = CS.v_ego * CV.MS_TO_KPH
 
@@ -345,7 +346,7 @@ class CarController():
   
     lead_objspd = CS.lead_objspd
     str_log1 = 'CURV={:03.0f} V_TORQUE={:04.0f}'.format( LaC.v_curvature, apply_steer )
-    str_log2 = 'S_TORQUE={:04.0f} MAXSTEER={:03.0f} SR={:02.2f}'.format( CS.steer_torque_driver, steer_limit, CS.CP.steerRatio )
+    str_log2 = 'S_TORQUE={:04.0f} MAXSTEER={:03.0f} SR={:02.2f}'.format( CS.steer_torque_driver, steer_limit, steerRatio )
     trace1.printf( '{} {}'.format( str_log1, str_log2 ) )
 
 
