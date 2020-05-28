@@ -974,14 +974,6 @@ static void ui_draw_debug(UIState *s)
   {
     snprintf(speed_str, sizeof(speed_str), "%d:CURVE+DIST", cruise_set_mode );
   }
-  else if (cruise_set_mode == 3)
-  {
-    snprintf(speed_str, sizeof(speed_str), "%d:COMFORT1", cruise_set_mode );
-  }
-  else
-  {
-    snprintf(speed_str, sizeof(speed_str), "%d:COMFORT2", cruise_set_mode );
-  }
     
   nvgText(s->vg, x_pos, y_pos+170, speed_str, NULL);
  
