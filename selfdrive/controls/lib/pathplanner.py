@@ -99,6 +99,7 @@ class PathPlanner():
       self.steerRateCost_prev = self.steerRateCost
       self.setup_mpc()
 
+      self.alc_nudge_less = bool(int(kegman.conf['ALCnudgeLess']))
       self.lane_change_state = LaneChangeState.off
       self.lane_change_direction = LaneChangeDirection.none
       self.lane_change_timer1 = 0
@@ -155,6 +156,7 @@ class PathPlanner():
           self.lane_change_timer2 = 0
           self.lane_change_timer3 = 0
           self.lane_change_timer4 = 0
+          self.pre_auto_LCA_timer = 0.0
           self.lane_change_state = LaneChangeState.off
           self.lane_change_direction = LaneChangeDirection.none
           self.nCommand=1
@@ -172,15 +174,19 @@ class PathPlanner():
 
           self.lane_change_state = LaneChangeState.off
           if self.lane_change_direction != LaneChangeDirection.none:
-              self.lane_change_BSM = LaneChangeBSM.off
-              self.lane_change_state = LaneChangeState.preLaneChange
+            self.lane_change_BSM = LaneChangeBSM.off
+            self.lane_change_state = LaneChangeState.preLaneChange
+            self.pre_auto_LCA_timer += DT_MDL
+            if not sm['carState'].steeringPressed and self.alc_nudge_less and 1.5 > self.pre_auto_LCA_timer > 1.0:
+              self.pre_auto_LCA_timer = 0.0
+              self.nCommand=2
+            elif sm['carState'].steeringPressed:
+              self.pre_auto_LCA_timer = 0.0
               self.nCommand=2
 
       elif self.nCommand == 2:   # preLaneChange
           torque_applied = False        
-          if not sm['carState'].steeringPressed:
-              pass
-          elif self.lane_change_direction == LaneChangeDirection.left:
+          if self.lane_change_direction == LaneChangeDirection.left:
               if lca_left:  # BSM
                 self.lane_change_BSM = LaneChangeBSM.left
                 self.nCommand=5  # cancel
