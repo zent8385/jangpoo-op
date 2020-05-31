@@ -1,4 +1,4 @@
-import numpy as np
+﻿import numpy as np
 
 from selfdrive.controls.lib.pid import PIController
 from selfdrive.controls.lib.drive_helpers import get_steer_max
@@ -100,9 +100,41 @@ class LatControlPID():
     self.pid.reset()
 
 
-  def linear_tune( self, CP, v_ego ):
+  def linear2_tune( self, CP, v_ego ):  # angle(조향각에 의한 변화)
+    cv_angle = abs(self.angle_steers_des)
+    cv = [ 2, 15 ]  # angle
+    # Kp
+    fKp1 = [float(self.steer_Kp1[ 0 ]), float(self.steer_Kp1[ 1 ]) ]
+    fKp2 = [float(self.steer_Kp2[ 0 ]), float(self.steer_Kp2[ 1 ]) ]
+    self.steerKp1 = interp( cv_angle, cv, fKp1 )
+    self.steerKp2 = interp( cv_angle, cv, fKp2 )
+    self.steerKpV = [ float(self.steerKp1), float(self.steerKp2) ]
+    
+    # Ki
+    fKi1 = [float(self.steer_Ki1[ 0 ]), float(self.steer_Ki1[ 1 ]) ]
+    fKi2 = [float(self.steer_Ki2[ 0 ]), float(self.steer_Ki2[ 1 ]) ]
+    self.steerKi1 = interp( cv_angle, cv, fKi1 )
+    self.steerKi2 = interp( cv_angle, cv, fKi2 )
+    self.steerKiV = [ float(self.steerKi1), float(self.steerKi2) ]
+
+    # kf
+    fKf1 = [float(self.steer_Kf1[ 0 ]), float(self.steer_Kf1[ 1 ]) ]
+    fKf2 = [float(self.steer_Kf2[ 0 ]), float(self.steer_Kf2[ 1 ]) ]
+    self.steerKf1 = interp( cv_angle, cv, fKf1 )
+    self.steerKf2 = interp( cv_angle, cv, fKf2 )
+
+    xp = CP.lateralTuning.pid.kpBP
+    fp = [float(self.steerKf1), float(self.steerKf2) ]
+    self.steerKfV = interp( v_ego,  xp, fp )
+
+    self.pid.gain( (CP.lateralTuning.pid.kpBP, self.steerKpV), (CP.lateralTuning.pid.kiBP, self.steerKiV), k_f=self.steerKfV  )
+
+
+
+
+  def linear_tune( self, CP, v_ego ):  # 곡률에 의한 변화.
     cv_value = self.v_curvature
-    cv = [ 50, 200 ]
+    cv = [ 100, 200 ]   # 곡률
     # Kp    
     fKp1 = [float(self.steer_Kp1[ 1 ]), float(self.steer_Kp1[ 0 ]) ]
     fKp2 = [float(self.steer_Kp2[ 1 ]), float(self.steer_Kp2[ 0 ]) ]
@@ -185,9 +217,10 @@ class LatControlPID():
         if not self.pid_change_flag:
           self.pid_change_flag = 1
 
-    #self.linear_tune( CP, v_ego )
+    self.linear2_tune( CP, v_ego )
 
-    self.sR_tune( CP, v_ego, path_plan )
+    #self.linear_tune( CP, v_ego )
+    #self.sR_tune( CP, v_ego, path_plan )
 
 
 
@@ -196,6 +229,7 @@ class LatControlPID():
 
   def update(self, active, v_ego, angle_steers, angle_steers_rate, eps_torque, steer_override, rate_limited, CP, path_plan):
 
+    self.angle_steers_des = path_plan.angleSteers
     self.live_tune(CP, path_plan, v_ego)
  
     pid_log = log.ControlsState.LateralPIDState.new_message()
@@ -209,12 +243,9 @@ class LatControlPID():
       pid_log.active = False
       #self.angle_steers_des = 0.0
       self.pid.reset()
-      self.angle_steers_des = path_plan.angleSteers
+      #self.angle_steers_des = path_plan.angleSteers
     else:
-      self.angle_steers_des = path_plan.angleSteers
-
-      
-
+      #self.angle_steers_des = path_plan.angleSteers
       steers_max = get_steer_max(CP, v_ego)
       self.pid.pos_limit = steers_max
       self.pid.neg_limit = -steers_max

@@ -237,7 +237,7 @@ class PathPlanner():
           #if sm['carState'].leftBlinker or sm['carState'].rightBlinker:
           #  pass
           #else:
-          if lane_change_prob < 0.2 and self.lane_change_ll_prob > 0.99:
+          if lane_change_prob < 0.4 and self.lane_change_ll_prob > 0.99:
             self.lane_change_state = LaneChangeState.off
             self.nCommand=0
 
@@ -313,7 +313,7 @@ class PathPlanner():
       self.sR_delay_counter += 1
       delta_angle = abs_angle_steers - self.steerAngle_new
       if delta_angle > 2.0 and self.sR_delay_counter > 5:
-          self.sR_delay_counter += 20
+          self.sR_delay_counter += 2
 
       if self.sR_delay_counter < self.sR_time:
         if self.steerRatio_new > self.steerRatio:
@@ -387,17 +387,17 @@ class PathPlanner():
       
 
 
-    vCurv = vCurvature
-    if vCurvature > 1: # left
-      if vCurv > 4:
-        vCurv = 4
-      self.lean_offset = 0.02 + (vCurv * 0.01)
-      self.lean_wait_time = 10
-    elif vCurvature < -1:   # right
-      if vCurv < -4:
-        vCurv = -4      
-      self.lean_offset = -0.02 + (vCurv * 0.01)
-      self.lean_wait_time = 10
+    #vCurv = vCurvature
+    #if vCurvature > 1: # left
+    #  if vCurv > 4:
+    #    vCurv = 4
+    #  self.lean_offset = 0.02 + (vCurv * 0.01)
+    #  self.lean_wait_time = 10
+    #elif vCurvature < -1:   # right
+    #  if vCurv < -4:
+    #    vCurv = -4      
+    #  self.lean_offset = -0.02 + (vCurv * 0.01)
+    #  self.lean_wait_time = 10
 
     lean_offset = 0
     if self.lean_wait_time:
@@ -463,8 +463,7 @@ class PathPlanner():
             self.angle_steers_des_mpc = self.movAvg.get_data( angle_steers_des, 5 )
         else:
             self.angle_steers_des_mpc = angle_steers_des
-    #elif self.lane_change_state != LaneChangeState.off:
-    #    self.angle_steers_des_mpc = self.limit_ctrl( self.angle_steers_des_mpc, 20, angle_steers )
+
 
 
 

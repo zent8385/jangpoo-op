@@ -147,8 +147,8 @@ class CarController():
 
 
     if path_plan.laneChangeState != LaneChangeState.off:
-      #param.STEER_MAX *= 0.995
-      param.STEER_DELTA_UP  = 1
+      #param.STEER_MAX *= 0.99
+      param.STEER_DELTA_UP  = 2
       param.STEER_DELTA_DOWN = 5
 
     #v_curvature
@@ -159,7 +159,7 @@ class CarController():
       fp = [240,245,250,255]
       param.STEER_MAX = interp( abs_angle_steers, xp, fp )
 
-      if abs_angle_steers < 0.5 or v_ego_kph < 5:
+      if abs_angle_steers < 1 or v_ego_kph < 5:
           param.STEER_DELTA_UP  = 2
           param.STEER_DELTA_DOWN = 3
 
@@ -173,12 +173,12 @@ class CarController():
     apply_steer = apply_std_steer_torque_limits(new_steer, self.apply_steer_last, CS.steer_torque_driver, param)
     self.steer_rate_limited = new_steer != apply_steer
 
-    if self.car_fingerprint not in [CAR.SONATA_TURBO, CAR.GENESIS, CAR.SANTAFE]:
+    if self.car_fingerprint not in [CAR.SONATA_TURBO, CAR.GENESIS, CAR.SANTAFE, CAR.GRANDEUR_HEV]:
       if abs( CS.steer_torque_driver ) > 200: #180:
         self.steer_torque_over_timer += 1
         if self.steer_torque_over_timer > 5:
           self.steer_torque_over = True
-          self.steer_torque_over_timer = 2
+          self.steer_torque_over_timer = 100
       elif self.steer_torque_over_timer:
         self.steer_torque_over_timer -= 1
       else:
@@ -215,7 +215,7 @@ class CarController():
         self.low_speed_car = low_speed
 
     # streer over check
-    if self.car_fingerprint not in [CAR.SONATA_TURBO, CAR.GENESIS, CAR.SANTAFE]:
+    if self.car_fingerprint not in [CAR.SONATA_TURBO, CAR.GENESIS, CAR.SANTAFE, CAR.GRANDEUR_HEV]:
       if enabled and abs(CS.angle_steers) > 100. or CS.steer_error:
         self.streer_angle_over =  True
         self.steer_timer = 250
@@ -228,11 +228,11 @@ class CarController():
 
     # Disable steering while turning blinker on and speed below 60 kph
     if CS.left_blinker_on or CS.right_blinker_on:
-        self.steer_torque_over = False
-        self.turning_signal_timer = 100  # Disable for 1.0 Seconds after blinker turned off
+      self.steer_torque_over = False
+      self.turning_signal_timer = 100  # Disable for 1.0 Seconds after blinker turned off
     elif CS.left_blinker_flash or CS.right_blinker_flash:
-        self.steer_torque_over = False
-        self.turning_signal_timer = 100
+      self.steer_torque_over = False
+      self.turning_signal_timer = 100
 
     # turning indicator alert logic
     if self.lane_change_enabled:
@@ -241,7 +241,7 @@ class CarController():
       self.turning_indicator = self.turning_signal_timer
 
     if self.turning_signal_timer:
-        self.turning_signal_timer -= 1 
+      self.turning_signal_timer -= 1 
 
     if left_line:
       self.hud_timer_left = 100
@@ -256,7 +256,9 @@ class CarController():
 
 
     if path_plan.laneChangeState != LaneChangeState.off:
-      pass
+      if LaC.v_curvature > 200:
+        self.lkas_active_timer1 = 300
+        apply_steer = self.limit_ctrl( apply_steer, 100, 0 )
     elif not self.hud_timer_left and  not self.hud_timer_right:
       self.lkas_active_timer1 = 200  #  apply_steer = 70
     elif path_plan.laneChangeState != LaneChangeState.off:
@@ -288,7 +290,7 @@ class CarController():
 
     steer_limit = param.STEER_MAX
     if not lkas_active:
-      self.lkas_active_timer1 = 0
+      self.lkas_active_timer1 = 200
     elif self.lkas_active_timer1 < 400: 
       self.lkas_active_timer1 += 1
       ratio_steer = self.lkas_active_timer1 / 400
