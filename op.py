@@ -88,6 +88,10 @@ elif (char == "3"):
     print ("")
     os.system("cd /data; ls -d openpilot_* | grep openpilot_")
     print ("")
+    print ("and kegman.json file")
+    print ("")
+    os.system("cd /data; ls kegman.json_* | grep kegman.json_")
+    print ("")
     print ("Press y key to continue,  p: move to first")
 
     char3 = getch()
@@ -95,8 +99,9 @@ elif (char == "3"):
     if (char3 == "y"):
         os.system("clear")
         print ("Please select the left side number you want to restore")
+        print ("will be restored with kegman.json bak file")
+        print ("If finished, will reboot automatically")
         print ("")
-        print ("if finished, will reboot automatically")
         os.system("cd /data; ls -d openpilot_* | grep -n openpilot_")
 
         char31 = getch()
@@ -108,9 +113,10 @@ elif (char == "3"):
             fp.close()
             if (dir_data != ""):
                 print ("")
-                print ("On copying your openpilot backup dir to openpilot...")
+                print ("On restoring your openpilot backup dir to openpilot...")
                 os.system("rm -f /data/dir_temp.txt")
                 os.system("cd /data; rm -rf openpilot; tdir=`ls -d openpilot_* | grep -n openpilot_ | grep 1: | awk -F ':' '{print $2}' | tail -n 1`; cp -rpf $tdir openpilot")
+                os.system("cd /data; tfile=`ls -d openpilot_* | grep -n openpilot_ | grep 1: | awk -F 'openpilot_' '{print $2}' | tail -n 1`; cp -f kegman.json_$tfile kegman.json")
                 print ("Done. will reboot now...")
                 os.system("reboot")
             else:
@@ -128,6 +134,7 @@ elif (char == "3"):
                 print ("On copying your openpilot backup dir to openpilot...")
                 os.system("rm -f /data/dir_temp.txt")
                 os.system("cd /data; rm -rf openpilot; tdir=`ls -d openpilot_* | grep -n openpilot_ | grep 2: | awk -F ':' '{print $2}' | tail -n 1`; cp -rpf $tdir openpilot")
+                os.system("cd /data; tfile=`ls -d openpilot_* | grep -n openpilot_ | grep 2: | awk -F 'openpilot_' '{print $2}' | tail -n 1`; cp -f kegman.json_$tfile kegman.json")
                 print ("Done. will reboot now...")
                 os.system("reboot")
             else:
@@ -145,6 +152,7 @@ elif (char == "3"):
                 print ("On copying your openpilot backup dir to openpilot...")
                 os.system("rm -f /data/dir_temp.txt")
                 os.system("cd /data; rm -rf openpilot; tdir=`ls -d openpilot_* | grep -n openpilot_ | grep 3: | awk -F ':' '{print $2}' | tail -n 1`; cp -rpf $tdir openpilot")
+                os.system("cd /data; tfile=`ls -d openpilot_* | grep -n openpilot_ | grep 3: | awk -F 'openpilot_' '{print $2}' | tail -n 1`; cp -f kegman.json_$tfile kegman.json")
                 print ("Done. will reboot now...")
                 os.system("reboot")
             else:
@@ -163,6 +171,7 @@ elif (char == "3"):
                 print ("On copying your openpilot backup dir to openpilot...")
                 os.system("rm -f /data/dir_temp.txt")
                 os.system("cd /data; rm -rf openpilot; tdir=`ls -d openpilot_* | grep -n openpilot_ | grep 4: | awk -F ':' '{print $2}' | tail -n 1`; cp -rpf $tdir openpilot")
+                os.system("cd /data; tfile=`ls -d openpilot_* | grep -n openpilot_ | grep 4: | awk -F 'openpilot_' '{print $2}' | tail -n 1`; cp -f kegman.json_$tfile kegman.json")
                 print ("Done. will reboot now...")
                 os.system("reboot")
             else:
@@ -180,6 +189,7 @@ elif (char == "3"):
                 print ("On copying your openpilot backup dir to openpilot...")
                 os.system("rm -f /data/dir_temp.txt")
                 os.system("cd /data; rm -rf openpilot; tdir=`ls -d openpilot_* | grep -n openpilot_ | grep 5: | awk -F ':' '{print $2}' | tail -n 1`; cp -rpf $tdir openpilot")
+                os.system("cd /data; tfile=`ls -d openpilot_* | grep -n openpilot_ | grep 5: | awk -F 'openpilot_' '{print $2}' | tail -n 1`; cp -f kegman.json_$tfile kegman.json")
                 print ("Done. will reboot now...")
                 os.system("reboot")
             else:
@@ -197,6 +207,7 @@ elif (char == "3"):
                 print ("On copying your openpilot backup dir to openpilot...")
                 os.system("rm -f /data/dir_temp.txt")
                 os.system("cd /data; rm -rf openpilot; tdir=`ls -d openpilot_* | grep -n openpilot_ | grep 6: | awk -F ':' '{print $2}' | tail -n 1`; cp -rpf $tdir openpilot")
+                os.system("cd /data; tfile=`ls -d openpilot_* | grep -n openpilot_ | grep 6: | awk -F 'openpilot_' '{print $2}' | tail -n 1`; cp -f kegman.json_$tfile kegman.json")
                 print ("Done. will reboot now...")
                 os.system("reboot")
             else:
@@ -214,6 +225,7 @@ elif (char == "3"):
                 print ("On copying your openpilot backup dir to openpilot...")
                 os.system("rm -f /data/dir_temp.txt")
                 os.system("cd /data; rm -rf openpilot; tdir=`ls -d openpilot_* | grep -n openpilot_ | grep 7: | awk -F ':' '{print $2}' | tail -n 1`; cp -rpf $tdir openpilot")
+                os.system("cd /data; tfile=`ls -d openpilot_* | grep -n openpilot_ | grep 7: | awk -F 'openpilot_' '{print $2}' | tail -n 1`; cp -f kegman.json_$tfile kegman.json")
                 print ("Done. will reboot now...")
                 os.system("reboot")
             else:
@@ -231,6 +243,7 @@ elif (char == "3"):
                 print ("On copying your openpilot backup dir to openpilot...")
                 os.system("rm -f /data/dir_temp.txt")
                 os.system("cd /data; rm -rf openpilot; tdir=`ls -d openpilot_* | grep -n openpilot_ | grep 8: | awk -F ':' '{print $2}' | tail -n 1`; cp -rpf $tdir openpilot")
+                os.system("cd /data; tfile=`ls -d openpilot_* | grep -n openpilot_ | grep 8: | awk -F 'openpilot_' '{print $2}' | tail -n 1`; cp -f kegman.json_$tfile kegman.json")
                 print ("Done. will reboot now...")
                 os.system("reboot")
             else:
@@ -248,6 +261,7 @@ elif (char == "3"):
                 print ("On copying your openpilot backup dir to openpilot...")
                 os.system("rm -f /data/dir_temp.txt")
                 os.system("cd /data; rm -rf openpilot; tdir=`ls -d openpilot_* | grep -n openpilot_ | grep 9: | awk -F ':' '{print $2}' | tail -n 1`; cp -rpf $tdir openpilot")
+                os.system("cd /data; tfile=`ls -d openpilot_* | grep -n openpilot_ | grep 9: | awk -F 'openpilot_' '{print $2}' | tail -n 1`; cp -f kegman.json_$tfile kegman.json")
                 print ("Done. will reboot now...")
                 os.system("reboot")
             else:
@@ -347,7 +361,7 @@ elif (char == "7"):
     print ("Your current branch is")
     os.system("cd /data/openpilot; git branch")
     print ("")
-    print ("Press r key to move first menu")
+    print ("Press p key to move first menu")
 
     char7 = getch()
 
