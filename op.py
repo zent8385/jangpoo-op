@@ -19,7 +19,7 @@ def getch():
     return ch
 
 os.system("clear")
-print ("1. OP_BACKUP  - AUTO DIR BACKUP(timestamp)")
+print ("1. OP_BACKUP  - AUTO DIR BACKUP(branch_timestamp)")
 print ("2. OP_BACKUP  - MANUAL BACKUP + kegman.json")
 print ("3. OP_RESTORE - MANUAL RESTORE + kegman.json")
 print ("4. OP_RESTORE - AUTO RESTORE(LAST Bak DIR)")
@@ -39,9 +39,9 @@ char = getch()
 if (char == "1"):
     os.system("clear")
     ct = time.strftime('%Y%m%d%H%M%S', time.localtime(time.time()))
-    print ("Copying openpilot to openpilot_(timestamp)...")
-    os.system("cp -rp /data/openpilot /data/openpilot_" + ct)
-    os.system("cp -f /data/kegman.json /data/kegman.json_" + ct)
+    print ("Copying openpilot to openpilot_branch_timestamp_...")
+    os.system("cd /data/openpilot; branch=`git branch | grep "*" | awk -F' ' '{print $2}' | tail -n 1`; cp -rfp /data/openpilot /data/openpilot_$branch_" + ct)
+    os.system("cd /data/openpilot; branch=`git branch | grep "*" | awk -F' ' '{print $2}' | tail -n 1`; cp -f /data/kegman.json /data/kegman.json_$branch_" + ct)
     print ("Your backup dir and kegman file are below")
     print ("")
     os.system("ls -drt /data/openpilot_* | tail -n 1")
@@ -57,6 +57,39 @@ if (char == "1"):
         os.system("cd /system/comma/home; ./op.sh")
 
 elif (char == "2"):
+    os.system("clear")
+    print ("Your last backup dir is here. check if it is")
+    print ("")
+    os.system("cd /data; ls -drt /data/openpilot_* | tail -n 1")
+    print ("")
+    print ("")
+    print ("This will remove your openpilot directory")
+    print ("And replace the openpilot dir with current bak dir")
+    print ("If you don't see the backup dir Press n key")
+    print ("Do yo want to continue?(y/n)")
+    
+    char2 = getch()
+
+    if (char2 == "y"):
+        ct = time.strftime('%Y%m%d%H%M%S', time.localtime(time.time()))
+        os.system("cd /data; curopdir=`ls -aldrt /data/openpilot_* | awk -F '/' '{print $3}' | tail -n 1`; cd /data/openpilot; branch=`git branch | grep "*" | awk -F' ' '{print $2}' | tail -n 1`; mv openpilot openpilot_temp_12345; mv $curopdir openpilot; mv openpilot_temp_12345 openpilot_$branch_" + ct)
+        print ("Following is the result")
+        os.system("cd /data; ls -aldrt /data/openpilot*")
+        print ("")
+        print ("Do yo want to reboot?(y/n)")
+
+        char21 = getch()
+
+        if (char21 == "y"):
+            os.system("reboot")
+        elif (char21 == "n"):
+            os.system("cd /system/comma/home; ./op.sh")
+
+    elif (char2 == "n"):
+        os.system("cd /system/comma/home; ./op.sh")
+
+
+elif (char == "3"):
     os.system("clear")
     print ("Please type backup name you want to make")
     print ("")
@@ -74,11 +107,11 @@ elif (char == "2"):
     print ("")
     print ("Press p key to move first menu")
 
-    char2 = getch()
-    if (char2 == "p"):
+    char3 = getch()
+    if (char3 == "p"):
         os.system("cd /system/comma/home; ./op.sh")
 
-elif (char == "3"):
+elif (char == "4"):
     os.system("clear")
     print ("This will remove your openpilot directory")
     print ("And replace the openpilot with the dir you selected")
@@ -93,9 +126,9 @@ elif (char == "3"):
     print ("Next step, you can choose the bak dirs")
     print ("Press y key to continue,  p: move to first")
 
-    char3 = getch()
+    char4 = getch()
 
-    if (char3 == "y"):
+    if (char4 == "y"):
         os.system("clear")
         print ("Please select the left side number you want to restore")
         print ("will be restored with matched kegman.json backup file")
@@ -103,9 +136,9 @@ elif (char == "3"):
         print ("")
         os.system("cd /data; ls -d openpilot_* | grep -n openpilot_")
 
-        char31 = getch()
+        char41 = getch()
 
-        if (char31 == "1"):
+        if (char41 == "1"):
             os.system("cd /data; ls -d openpilot_* | grep -n openpilot_ | grep 1: | awk -F ':' '{print $2}' | tail -n 1 > dir_temp.txt")
             fp = open('/data/dir_temp.txt', 'r')
             dir_data = fp.readline()
@@ -123,7 +156,7 @@ elif (char == "3"):
                 print ("")
                 print ("Aborted")
                 print ("Your backup Directory is invalid")
-        elif (char31 == "2"):
+        elif (char41 == "2"):
             os.system("cd /data; ls -d openpilot_* | grep -n openpilot_ | grep 2: | awk -F ':' '{print $2}' | tail -n 1 > dir_temp.txt")
             fp = open('/data/dir_temp.txt', 'r')
             dir_data = fp.readline()
@@ -141,7 +174,7 @@ elif (char == "3"):
                 print ("")
                 print ("Aborted")
                 print ("Your backup Directory is invalid")
-        elif (char31 == "3"):
+        elif (char41 == "3"):
             os.system("cd /data; ls -d openpilot_* | grep -n openpilot_ | grep 3: | awk -F ':' '{print $2}' | tail -n 1 > dir_temp.txt")
             fp = open('/data/dir_temp.txt', 'r')
             dir_data = fp.readline()
@@ -160,7 +193,7 @@ elif (char == "3"):
                 print ("Aborted")
                 print ("Your backup Directory is invalid")
                 os.system("rm -f /data/dir_temp.txt")
-        elif (char31 == "4"):
+        elif (char41 == "4"):
             os.system("cd /data; ls -d openpilot_* | grep -n openpilot_ | grep 4: | awk -F ':' '{print $2}' | tail -n 1 > dir_temp.txt")
             fp = open('/data/dir_temp.txt', 'r')
             dir_data = fp.readline()
@@ -178,7 +211,7 @@ elif (char == "3"):
                 print ("")
                 print ("Aborted")
                 print ("Your backup Directory is invalid")
-        elif (char31 == "5"):
+        elif (char41 == "5"):
             os.system("cd /data; ls -d openpilot_* | grep -n openpilot_ | grep 5: | awk -F ':' '{print $2}' | tail -n 1 > dir_temp.txt")
             fp = open('/data/dir_temp.txt', 'r')
             dir_data = fp.readline()
@@ -196,7 +229,7 @@ elif (char == "3"):
                 print ("")
                 print ("Aborted")
                 print ("Your backup Directory is invalid")
-        elif (char31 == "6"):
+        elif (char41 == "6"):
             os.system("cd /data; ls -d openpilot_* | grep -n openpilot_ | grep 6: | awk -F ':' '{print $2}' | tail -n 1 > dir_temp.txt")
             fp = open('/data/dir_temp.txt', 'r')
             dir_data = fp.readline()
@@ -214,7 +247,7 @@ elif (char == "3"):
                 print ("")
                 print ("Aborted")
                 print ("Your backup Directory is invalid")
-        elif (char31 == "7"):
+        elif (char41 == "7"):
             os.system("cd /data; ls -d openpilot_* | grep -n openpilot_ | grep 7: | awk -F ':' '{print $2}' | tail -n 1 > dir_temp.txt")
             fp = open('/data/dir_temp.txt', 'r')
             dir_data = fp.readline()
@@ -232,7 +265,7 @@ elif (char == "3"):
                 print ("")
                 print ("Aborted")
                 print ("Your backup Directory is invalid")
-        elif (char31 == "8"):
+        elif (char41 == "8"):
             os.system("cd /data; ls -d openpilot_* | grep -n openpilot_ | grep 8: | awk -F ':' '{print $2}' | tail -n 1 > dir_temp.txt")
             fp = open('/data/dir_temp.txt', 'r')
             dir_data = fp.readline()
@@ -250,7 +283,7 @@ elif (char == "3"):
                 print ("")
                 print ("Aborted")
                 print ("Your backup Directory is invalid")
-        elif (char31 == "9"):
+        elif (char41 == "9"):
             os.system("cd /data; ls -d openpilot_* | grep -n openpilot_ | grep 9: | awk -F ':' '{print $2}' | tail -n 1 > dir_temp.txt")
             fp = open('/data/dir_temp.txt', 'r')
             dir_data = fp.readline()
@@ -268,40 +301,8 @@ elif (char == "3"):
                 print ("")
                 print ("Aborted")
                 print ("Your backup Directory is invalid")
-    elif (char3 == "p"):
+    elif (char4 == "p"):
             os.system("cd /system/comma/home; ./op.sh")
-
-elif (char == "4"):
-    os.system("clear")
-    print ("Your last backup dir is here. check if it is")
-    print ("")
-    os.system("cd /data; ls -drt /data/openpilot_* | tail -n 1")
-    print ("")
-    print ("")
-    print ("This will remove your openpilot directory")
-    print ("And replace the openpilot dir with current bak dir")
-    print ("If you don't see the backup dir Press n key")
-    print ("Do yo want to continue?(y/n)")
-    
-    char4 = getch()
-
-    if (char4 == "y"):
-        ct = time.strftime('%Y%m%d%H%M%S', time.localtime(time.time()))
-        os.system("cd /data; curopdir=`ls -aldrt /data/openpilot_* | awk -F '/' '{print $3}' | tail -n 1`; cd /data/openpilot; branch=`git branch | grep "*" | awk -F' ' '{print $2}' | tail -n 1`; mv openpilot openpilot_temp_12345; mv $curopdir openpilot; mv openpilot_temp_12345 openpilot_$branch_" + ct)
-        print ("Following is the result")
-        os.system("cd /data; ls -aldrt /data/openpilot*")
-        print ("")
-        print ("Do yo want to reboot?(y/n)")
-
-        char41 = getch()
-
-        if (char41 == "y"):
-            os.system("reboot")
-        elif (char41 == "n"):
-            os.system("cd /system/comma/home; ./op.sh")
-
-    elif (char4 == "n"):
-        os.system("cd /system/comma/home; ./op.sh")
 
 elif (char == "5"):
     os.system("clear")
@@ -320,27 +321,27 @@ elif (char == "5"):
 
     if (char5 == "1"):    
         ct = time.strftime('%Y%m%d%H%M%S', time.localtime(time.time()))
-        os.system("cd /data/openpilot; branch=`git branch | grep "*" | awk -F' ' '{print $2}' | tail -n 1`; mv /data/openpilot /data/openpilot_$branch_" + ct)
+        os.system("cd /data/openpilot; branch=`git branch | grep "*" | awk -F' ' '{print $2}' | tail -n 1`; cd /data; mv /data/openpilot /data/openpilot_$branch_" + ct)
         os.system("cd /data; git clone https://github.com/openpilotkr/openpilot.git; cd openpilot; git checkout OPKR_0.7.3; reboot")
     elif (char5 == "2"):
         ct = time.strftime('%Y%m%d%H%M%S', time.localtime(time.time()))
-        os.system("cd /data/openpilot; branch=`git branch | grep "*" | awk -F' ' '{print $2}' | tail -n 1`; mv /data/openpilot /data/openpilot_$branch_" + ct)
+        os.system("cd /data/openpilot; branch=`git branch | grep "*" | awk -F' ' '{print $2}' | tail -n 1`; cd /data; mv /data/openpilot /data/openpilot_$branch_" + ct)
         os.system("cd /data; git clone https://github.com/openpilotkr/openpilot.git; cd openpilot; git checkout OPKR_0.7.4; reboot")
     elif (char5 == "3"):
         ct = time.strftime('%Y%m%d%H%M%S', time.localtime(time.time()))
-        os.system("cd /data/openpilot; branch=`git branch | grep "*" | awk -F' ' '{print $2}' | tail -n 1`; mv /data/openpilot /data/openpilot_$branch_" + ct)
+        os.system("cd /data/openpilot; branch=`git branch | grep "*" | awk -F' ' '{print $2}' | tail -n 1`; cd /data; mv /data/openpilot /data/openpilot_$branch_" + ct)
         os.system("cd /data; git clone https://github.com/openpilotkr/openpilot.git; cd openpilot; git checkout OPKR_0.7.5; reboot")
     elif (char5 == "4"):
         ct = time.strftime('%Y%m%d%H%M%S', time.localtime(time.time()))
-        os.system("cd /data/openpilot; branch=`git branch | grep "*" | awk -F' ' '{print $2}' | tail -n 1`; mv /data/openpilot /data/openpilot_$branch_" + ct)
+        os.system("cd /data/openpilot; branch=`git branch | grep "*" | awk -F' ' '{print $2}' | tail -n 1`; cd /data; mv /data/openpilot /data/openpilot_$branch_" + ct)
         os.system("cd /data; git clone https://github.com/openpilotkr/openpilot.git; cd openpilot; git checkout OPKR_0.7.3_BOLT; reboot")
     elif (char5 == "5"):
         ct = time.strftime('%Y%m%d%H%M%S', time.localtime(time.time()))
-        os.system("cd /data/openpilot; branch=`git branch | grep "*" | awk -F' ' '{print $2}' | tail -n 1`; mv /data/openpilot /data/openpilot_$branch_" + ct)
+        os.system("cd /data/openpilot; branch=`git branch | grep "*" | awk -F' ' '{print $2}' | tail -n 1`; cd /data; mv /data/openpilot /data/openpilot_$branch_" + ct)
         os.system("cd /data; git clone https://github.com/openpilotkr/openpilot.git; cd openpilot; git checkout OPKR_0.7.3_HKG_community; reboot")
     elif (char5 == "6"):
         ct = time.strftime('%Y%m%d%H%M%S', time.localtime(time.time()))
-        os.system("cd /data/openpilot; branch=`git branch | grep "*" | awk -F' ' '{print $2}' | tail -n 1`; mv /data/openpilot /data/openpilot_$branch_" + ct)
+        os.system("cd /data/openpilot; branch=`git branch | grep "*" | awk -F' ' '{print $2}' | tail -n 1`; cd /data; mv /data/openpilot /data/openpilot_$branch_" + ct)
         os.system("cd /data; git clone https://github.com/openpilotkr/openpilot.git; cd openpilot; git checkout OPKR_0.7.3_ATOM; reboot")
     elif (char5 == "p"):
         os.system("cd /system/comma/home; ./op.sh")
