@@ -42,13 +42,13 @@ if (char == "1"):
     print ("Copying openpilot to openpilot_(timestamp)...")
     os.system("cp -rp /data/openpilot /data/openpilot_" + ct)
     os.system("cp -f /data/kegman.json /data/kegman.json_" + ct)
-    print ("Your backup dir is below")
+    print ("Your backup dir and kegman file are below")
     print ("")
-    os.system("ls -aldrt /data/openpilot_*")
+    os.system("ls -drt /data/openpilot_* | tail -n 1")
     print ("")
     print ("and kegman file")
     print ("")
-    os.system("ls -altr /data/kegman*")
+    os.system("ls -tr /data/kegman* | tail -n 1")
     print ("")
     print ("Press p key to move first menu")
 
@@ -67,10 +67,10 @@ elif (char == "2"):
     print ("")
     os.system("cp -rp /data/openpilot /data/openpilot_" + bakdir)
     os.system("cp -f /data/kegman.json /data/kegman.json_" + bakdir)
-    print ("Your backup dir and kegman file is below")
+    print ("Your backup dir and kegman file are below")
     print ("")
-    os.system("ls -aldrt /data/openpilot_" + bakdir)
-    os.system("ls -altr /data/kegman.json_" + bakdir)
+    os.system("ls -drt /data/openpilot_" + bakdir + " | tail -n 1")
+    os.system("ls -tr /data/kegman.json_" + bakdir + " | tail -n 1")
     print ("")
     print ("Press p key to move first menu")
 
@@ -85,6 +85,7 @@ elif (char == "3"):
     print ("If the backup dir is not match or empty, Press n key")
     print ("")
     print ("Your BACKUP Directory is here")
+    print ("")
     os.system("cd /data; ls -d openpilot_* | grep openpilot_")
     print ("")
     print ("Press y key to continue,  p: move to first")
@@ -110,6 +111,7 @@ elif (char == "3"):
                 os.system("reboot")
             else:
                 os.system("rm -f /data/dir_temp.txt")
+                print ("")
                 print ("Aborted")
                 print ("Your backup Directory is invalid")
         elif (char31 == "2"):
@@ -123,6 +125,7 @@ elif (char == "3"):
                 os.system("reboot")
             else:
                 os.system("rm -f /data/dir_temp.txt")
+                print ("")
                 print ("Aborted")
                 print ("Your backup Directory is invalid")
         elif (char31 == "3"):
@@ -136,6 +139,7 @@ elif (char == "3"):
                 os.system("reboot")
             else:
                 os.system("rm -f /data/dir_temp.txt")
+                print ("")
                 print ("Aborted")
                 print ("Your backup Directory is invalid")
                 os.system("rm -f /data/dir_temp.txt")
@@ -150,6 +154,7 @@ elif (char == "3"):
                 os.system("reboot")
             else:
                 os.system("rm -f /data/dir_temp.txt")
+                print ("")
                 print ("Aborted")
                 print ("Your backup Directory is invalid")
         elif (char31 == "5"):
@@ -163,6 +168,7 @@ elif (char == "3"):
                 os.system("reboot")
             else:
                 os.system("rm -f /data/dir_temp.txt")
+                print ("")
                 print ("Aborted")
                 print ("Your backup Directory is invalid")
         elif (char31 == "6"):
@@ -176,6 +182,7 @@ elif (char == "3"):
                 os.system("reboot")
             else:
                 os.system("rm -f /data/dir_temp.txt")
+                print ("")
                 print ("Aborted")
                 print ("Your backup Directory is invalid")
         elif (char31 == "7"):
@@ -189,6 +196,7 @@ elif (char == "3"):
                 os.system("reboot")
             else:
                 os.system("rm -f /data/dir_temp.txt")
+                print ("")
                 print ("Aborted")
                 print ("Your backup Directory is invalid")
         elif (char31 == "8"):
@@ -202,6 +210,7 @@ elif (char == "3"):
                 os.system("reboot")
             else:
                 os.system("rm -f /data/dir_temp.txt")
+                print ("")
                 print ("Aborted")
                 print ("Your backup Directory is invalid")
         elif (char31 == "9"):
@@ -215,6 +224,7 @@ elif (char == "3"):
                 os.system("reboot")
             else:
                 os.system("rm -f /data/dir_temp.txt")
+                print ("")
                 print ("Aborted")
                 print ("Your backup Directory is invalid")
     elif (char3 == "p"):
@@ -224,7 +234,7 @@ elif (char == "4"):
     os.system("clear")
     print ("Your last backup dir is here. check if it is")
     print ("")
-    os.system("cd /data; ls -aldrt /data/openpilot_*")
+    os.system("cd /data; ls -drt /data/openpilot_* | tail -n 1")
     print ("")
     print ("")
     print ("This will remove your openpilot directory")
