@@ -19,15 +19,19 @@ def getch():
     return ch
 
 os.system("clear")
-print ("1. OPBACKUP   - OP backup as openpilot_timestamp with kegman.json file")
-print ("2. OPINSTALL  - install OP new. if exist OP directory, will be renamed")
-print ("3. OPUPDATE   - run 'git pull' command to update OP latest")
-print ("4. OPRESTORE  - replace OP with last OP backup directory")
-print ("5. SEEBRANCH  - confirm current branch")
-print ("6. CHBRANCH   - branch change(pull latest, quick change and reboot")
+print ("1. OP_BACKUP  - AUTO BACKUP")
+print ("2. OP_BACKUP  - MANUAL BACKUP")
+print ("3. OP_RESTORE - MANUAL RESTORE")
+print ("4. OP_RESTORE - AUTO RESTORE(LAST BAK DIR)")
+print ("5. OP_INSTALL - Install OP new. If exist OP directory, will be renamed")
+print ("6. OP_UPDATE  - Run 'git pull' command to update OP latest")
+print ("7. SEE_BRANCH - Confirm current branch")
+print ("8. CH_BRANCH  - Branch change(pull latest, quick change and reboot")
+print ("t. LIVE_TUNE   - Run live tune")
+print ("r. REBOOT     - Reboot your eon")
 print ("EXIT: anykey")
 print ("")
-print ("Please select job what you want(number)")
+print ("Please select job what you want")
 
 
 char = getch()
@@ -38,68 +42,21 @@ if (char == "1"):
     print ("Copying openpilot to openpilot_(timestamp)...")
     os.system("cp -rp /data/openpilot /data/openpilot_" + ct)
     os.system("cp -f /data/kegman.json /data/kegman.json_" + ct)
-    os.system("ls -altr /data")
+    print ("cls")
+    print ("Your backup dir is below")
     print ("")
-    print ("Your backup dir is above")
-    print ("Press r key to move first menu")
+    os.system("ls -aldrt /data/openpilot_*")
+    print ("")
+    print ("and kegman file")
+    print ("")
+    os.system("ls -altr /data/kegman*")
+    print ("")
+    print ("Press p key to move first menu")
 
     char1 = getch()
-    if (char1 == "r"):
+    if (char1 == "p"):
         os.system("cd /system/comma/home; ./op.sh")
 
-
-elif (char == "2"):
-    os.system("clear")
-    print ("1. OPKR_0.7.3")
-    print ("2. OPKR_0.7.4")
-    print ("3. OPKR_0.7.5")
-    print ("4. OPKR_0.7.3_BOLT")
-    print ("5. OPKR_0.7.3_HKG_community")
-    print ("6. OPKR_0.7.3_ATOM")
-    print ("r. move to first menu")
-    print ("EXIT: anykey")
-    print ("")
-    print ("Select Branch you want to install(number)")
-    
-    char2 = getch()
-
-    if (char2 == "1"):    
-        ct = time.strftime('%Y%m%d%H%M%S', time.localtime(time.time()))
-        os.system("mv /data/openpilot /data/openpilot_0.7.3_" + ct)
-        os.system("cd /data; git clone https://github.com/openpilotkr/openpilot.git; cd openpilot; git checkout OPKR_0.7.3; reboot")
-    elif (char2 == "2"):
-        ct = time.strftime('%Y%m%d%H%M%S', time.localtime(time.time()))
-        os.system("mv /data/openpilot /data/openpilot_0.7.4_" + ct)
-        os.system("cd /data; git clone https://github.com/openpilotkr/openpilot.git; cd openpilot; git checkout OPKR_0.7.4; reboot")
-    elif (char2 == "3"):
-        ct = time.strftime('%Y%m%d%H%M%S', time.localtime(time.time()))
-        os.system("mv /data/openpilot /data/openpilot_0.7.5_" + ct)
-        os.system("cd /data; git clone https://github.com/openpilotkr/openpilot.git; cd openpilot; git checkout OPKR_0.7.5; reboot")
-    elif (char2 == "4"):
-        ct = time.strftime('%Y%m%d%H%M%S', time.localtime(time.time()))
-        os.system("mv /data/openpilot /data/openpilot_0.7.3_bolt_" + ct)
-        os.system("cd /data; git clone https://github.com/openpilotkr/openpilot.git; cd openpilot; git checkout OPKR_0.7.3_BOLT; reboot")
-    elif (char2 == "5"):
-        ct = time.strftime('%Y%m%d%H%M%S', time.localtime(time.time()))
-        os.system("mv /data/openpilot /data/openpilot_0.7.3_HKG_community_" + ct)
-        os.system("cd /data; git clone https://github.com/openpilotkr/openpilot.git; cd openpilot; git checkout OPKR_0.7.3_HKG_community; reboot")
-    elif (char2 == "6"):
-        ct = time.strftime('%Y%m%d%H%M%S', time.localtime(time.time()))
-        os.system("mv /data/openpilot /data/openpilot_0.7.3_ATOM_" + ct)
-        os.system("cd /data; git clone https://github.com/openpilotkr/openpilot.git; cd openpilot; git checkout OPKR_0.7.3_ATOM; reboot")
-    elif (char2 == "r"):
-        os.system("cd /system/comma/home; ./op.sh")
-
-elif (char == "3"):
-    print ("")
-    os.system("cd /data/openpilot; git pull")
-    print ("")
-    print ("Press r key to move first menu")
-
-    char3 = getch()
-
-    if (char3 == "r"):
-        os.system("cd /system/comma/home; ./op.sh")
 
 elif (char == "4"):
     os.system("clear")
@@ -132,21 +89,7 @@ elif (char == "4"):
     elif (char4 == "n"):
         os.system("cd /system/comma/home; ./op.sh")
 
-
-
 elif (char == "5"):
-    print ("")
-    print ("Your current branch is")
-    os.system("cd /data/openpilot; git branch")
-    print ("")
-    print ("Press r key to move first menu")
-
-    char5 = getch()
-
-    if (char5 == "r"):
-        os.system("cd /system/comma/home; ./op.sh")
-
-elif (char == "6"):
     os.system("clear")
     print ("1. OPKR_0.7.3")
     print ("2. OPKR_0.7.4")
@@ -154,43 +97,114 @@ elif (char == "6"):
     print ("4. OPKR_0.7.3_BOLT")
     print ("5. OPKR_0.7.3_HKG_community")
     print ("6. OPKR_0.7.3_ATOM")
-    print ("r. move to first menu")
+    print ("p. move to first menu")
+    print ("EXIT: anykey")
+    print ("")
+    print ("Select Branch you want to install(number)")
+    
+    char5 = getch()
+
+    if (char5 == "1"):    
+        ct = time.strftime('%Y%m%d%H%M%S', time.localtime(time.time()))
+        os.system("mv /data/openpilot /data/openpilot_0.7.3_" + ct)
+        os.system("cd /data; git clone https://github.com/openpilotkr/openpilot.git; cd openpilot; git checkout OPKR_0.7.3; reboot")
+    elif (char5 == "2"):
+        ct = time.strftime('%Y%m%d%H%M%S', time.localtime(time.time()))
+        os.system("mv /data/openpilot /data/openpilot_0.7.4_" + ct)
+        os.system("cd /data; git clone https://github.com/openpilotkr/openpilot.git; cd openpilot; git checkout OPKR_0.7.4; reboot")
+    elif (char5 == "3"):
+        ct = time.strftime('%Y%m%d%H%M%S', time.localtime(time.time()))
+        os.system("mv /data/openpilot /data/openpilot_0.7.5_" + ct)
+        os.system("cd /data; git clone https://github.com/openpilotkr/openpilot.git; cd openpilot; git checkout OPKR_0.7.5; reboot")
+    elif (char5 == "4"):
+        ct = time.strftime('%Y%m%d%H%M%S', time.localtime(time.time()))
+        os.system("mv /data/openpilot /data/openpilot_0.7.3_bolt_" + ct)
+        os.system("cd /data; git clone https://github.com/openpilotkr/openpilot.git; cd openpilot; git checkout OPKR_0.7.3_BOLT; reboot")
+    elif (char5 == "5"):
+        ct = time.strftime('%Y%m%d%H%M%S', time.localtime(time.time()))
+        os.system("mv /data/openpilot /data/openpilot_0.7.3_HKG_community_" + ct)
+        os.system("cd /data; git clone https://github.com/openpilotkr/openpilot.git; cd openpilot; git checkout OPKR_0.7.3_HKG_community; reboot")
+    elif (char5 == "6"):
+        ct = time.strftime('%Y%m%d%H%M%S', time.localtime(time.time()))
+        os.system("mv /data/openpilot /data/openpilot_0.7.3_ATOM_" + ct)
+        os.system("cd /data; git clone https://github.com/openpilotkr/openpilot.git; cd openpilot; git checkout OPKR_0.7.3_ATOM; reboot")
+    elif (char5 == "p"):
+        os.system("cd /system/comma/home; ./op.sh")
+
+elif (char == "6"):
+    print ("")
+    os.system("cd /data/openpilot; git pull")
+    print ("")
+    print ("Press p key to move first menu")
+
+    char6 = getch()
+
+    if (char6 == "p"):
+        os.system("cd /system/comma/home; ./op.sh")
+
+elif (char == "7"):
+    print ("")
+    print ("Your current branch is")
+    os.system("cd /data/openpilot; git branch")
+    print ("")
+    print ("Press r key to move first menu")
+
+    char7 = getch()
+
+    if (char7 == "p"):
+        os.system("cd /system/comma/home; ./op.sh")
+
+elif (char == "8"):
+    os.system("clear")
+    print ("1. OPKR_0.7.3")
+    print ("2. OPKR_0.7.4")
+    print ("3. OPKR_0.7.5")
+    print ("4. OPKR_0.7.3_BOLT")
+    print ("5. OPKR_0.7.3_HKG_community")
+    print ("6. OPKR_0.7.3_ATOM")
+    print ("p. move to first menu")
     print ("EXIT: anykey")
     print ("")
     print ("Select Branch you want to change(number)")
     print ("Changing the branch and reboot will occur automatically")
 
-    char6 = getch()
+    char8 = getch()
 
-    if (char6 == "1"):
+    if (char8 == "1"):
         os.system("cd /data/openpilot; git pull")
         os.system("cd /data/openpilot; git checkout OPKR_0.7.3")
         os.system("cd /data/openpilot; git pull")
         os.system("reboot")
-    elif (char6 == "2"):
+    elif (char8 == "2"):
         os.system("cd /data/openpilot; git pull")
         os.system("cd /data/openpilot; git checkout OPKR_0.7.4")
         os.system("cd /data/openpilot; git pull")
         os.system("reboot")
-    elif (char6 == "3"):
+    elif (char8 == "3"):
         os.system("cd /data/openpilot; git pull")
         os.system("cd /data/openpilot; git checkout OPKR_0.7.5")
         os.system("cd /data/openpilot; git pull")
         os.system("reboot")
-    elif (char6 == "4"):
+    elif (char8 == "4"):
         os.system("cd /data/openpilot; git pull")
         os.system("cd /data/openpilot; git checkout OPKR_0.7.3_BOLT")
         os.system("cd /data/openpilot; git pull")
         os.system("reboot")
-    elif (char6 == "5"):
+    elif (char8 == "5"):
         os.system("cd /data/openpilot; git pull")
         os.system("cd /data/openpilot; git checkout OPKR_0.7.3_HKG_community")
         os.system("cd /data/openpilot; git pull")
         os.system("reboot")
-    elif (char6 == "6"):
+    elif (char8 == "6"):
         os.system("cd /data/openpilot; git pull")
         os.system("cd /data/openpilot; git checkout OPKR_0.7.3_ATOM")
         os.system("cd /data/openpilot; git pull")
         os.system("reboot")
-    elif (char6 == "r"):
+    elif (char8 == "p"):
         os.system("cd /system/comma/home; ./op.sh")
+
+elif (char == "t"):
+    os.system("cd /data/openpilot; ./tune.sh")
+
+elif (char == "r"):
+    os.system("reboot")
