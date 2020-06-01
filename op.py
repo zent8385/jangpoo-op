@@ -98,7 +98,7 @@ elif (char == "3"):
     if (char3 == "y"):
         os.system("clear")
         print ("Please select the left side number you want to restore")
-        print ("will be restored with matched kegman.json bakup file")
+        print ("will be restored with matched kegman.json backup file")
         print ("If finished, will reboot automatically")
         print ("")
         os.system("cd /data; ls -d openpilot_* | grep -n openpilot_")
