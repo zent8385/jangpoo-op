@@ -96,6 +96,7 @@ elif (char == "3"):
         os.system("clear")
         print ("Please select the left side number you want to restore")
         print ("")
+        print ("if finished, will reboot automatically")
         os.system("cd /data; ls -d openpilot_* | grep -n openpilot_")
 
         char31 = getch()
@@ -106,8 +107,11 @@ elif (char == "3"):
             dir_data = fp.readline()
             fp.close()
             if (dir_data != ""):
+                print ("")
+                print ("On copying your openpilot backup dir to openpilot...")
                 os.system("rm -f /data/dir_temp.txt")
                 os.system("cd /data; rm -rf openpilot; tdir=`ls -d openpilot_* | grep -n openpilot_ | grep 1: | awk -F ':' '{print $2}' | tail -n 1`; cp -rpf $tdir openpilot")
+                print ("Done. will reboot now...")
                 os.system("reboot")
             else:
                 os.system("rm -f /data/dir_temp.txt")
@@ -120,8 +124,11 @@ elif (char == "3"):
             dir_data = fp.readline()
             fp.close()
             if (dir_data != ""):
+                print ("")
+                print ("On copying your openpilot backup dir to openpilot...")
                 os.system("rm -f /data/dir_temp.txt")
                 os.system("cd /data; rm -rf openpilot; tdir=`ls -d openpilot_* | grep -n openpilot_ | grep 2: | awk -F ':' '{print $2}' | tail -n 1`; cp -rpf $tdir openpilot")
+                print ("Done. will reboot now...")
                 os.system("reboot")
             else:
                 os.system("rm -f /data/dir_temp.txt")
@@ -134,8 +141,11 @@ elif (char == "3"):
             dir_data = fp.readline()
             fp.close()
             if (dir_data != ""):
+                print ("")
+                print ("On copying your openpilot backup dir to openpilot...")
                 os.system("rm -f /data/dir_temp.txt")
                 os.system("cd /data; rm -rf openpilot; tdir=`ls -d openpilot_* | grep -n openpilot_ | grep 3: | awk -F ':' '{print $2}' | tail -n 1`; cp -rpf $tdir openpilot")
+                print ("Done. will reboot now...")
                 os.system("reboot")
             else:
                 os.system("rm -f /data/dir_temp.txt")
@@ -149,8 +159,11 @@ elif (char == "3"):
             dir_data = fp.readline()
             fp.close()
             if (dir_data != ""):
+                print ("")
+                print ("On copying your openpilot backup dir to openpilot...")
                 os.system("rm -f /data/dir_temp.txt")
                 os.system("cd /data; rm -rf openpilot; tdir=`ls -d openpilot_* | grep -n openpilot_ | grep 4: | awk -F ':' '{print $2}' | tail -n 1`; cp -rpf $tdir openpilot")
+                print ("Done. will reboot now...")
                 os.system("reboot")
             else:
                 os.system("rm -f /data/dir_temp.txt")
@@ -163,8 +176,11 @@ elif (char == "3"):
             dir_data = fp.readline()
             fp.close()
             if (dir_data != ""):
+                print ("")
+                print ("On copying your openpilot backup dir to openpilot...")
                 os.system("rm -f /data/dir_temp.txt")
                 os.system("cd /data; rm -rf openpilot; tdir=`ls -d openpilot_* | grep -n openpilot_ | grep 5: | awk -F ':' '{print $2}' | tail -n 1`; cp -rpf $tdir openpilot")
+                print ("Done. will reboot now...")
                 os.system("reboot")
             else:
                 os.system("rm -f /data/dir_temp.txt")
@@ -177,8 +193,11 @@ elif (char == "3"):
             dir_data = fp.readline()
             fp.close()
             if (dir_data != ""):
+                print ("")
+                print ("On copying your openpilot backup dir to openpilot...")
                 os.system("rm -f /data/dir_temp.txt")
                 os.system("cd /data; rm -rf openpilot; tdir=`ls -d openpilot_* | grep -n openpilot_ | grep 6: | awk -F ':' '{print $2}' | tail -n 1`; cp -rpf $tdir openpilot")
+                print ("Done. will reboot now...")
                 os.system("reboot")
             else:
                 os.system("rm -f /data/dir_temp.txt")
@@ -191,8 +210,11 @@ elif (char == "3"):
             dir_data = fp.readline()
             fp.close()
             if (dir_data != ""):
+                print ("")
+                print ("On copying your openpilot backup dir to openpilot...")
                 os.system("rm -f /data/dir_temp.txt")
                 os.system("cd /data; rm -rf openpilot; tdir=`ls -d openpilot_* | grep -n openpilot_ | grep 7: | awk -F ':' '{print $2}' | tail -n 1`; cp -rpf $tdir openpilot")
+                print ("Done. will reboot now...")
                 os.system("reboot")
             else:
                 os.system("rm -f /data/dir_temp.txt")
@@ -205,8 +227,11 @@ elif (char == "3"):
             dir_data = fp.readline()
             fp.close()
             if (dir_data != ""):
+                print ("")
+                print ("On copying your openpilot backup dir to openpilot...")
                 os.system("rm -f /data/dir_temp.txt")
                 os.system("cd /data; rm -rf openpilot; tdir=`ls -d openpilot_* | grep -n openpilot_ | grep 8: | awk -F ':' '{print $2}' | tail -n 1`; cp -rpf $tdir openpilot")
+                print ("Done. will reboot now...")
                 os.system("reboot")
             else:
                 os.system("rm -f /data/dir_temp.txt")
@@ -219,8 +244,11 @@ elif (char == "3"):
             dir_data = fp.readline()
             fp.close()
             if (dir_data != ""):
+                print ("")
+                print ("On copying your openpilot backup dir to openpilot...")
                 os.system("rm -f /data/dir_temp.txt")
                 os.system("cd /data; rm -rf openpilot; tdir=`ls -d openpilot_* | grep -n openpilot_ | grep 9: | awk -F ':' '{print $2}' | tail -n 1`; cp -rpf $tdir openpilot")
+                print ("Done. will reboot now...")
                 os.system("reboot")
             else:
                 os.system("rm -f /data/dir_temp.txt")
