@@ -20,9 +20,9 @@ def getch():
 
 os.system("clear")
 print ("1. OP_BACKUP  - AUTO DIR BACKUP(branch_timestamp)")
-print ("2. OP_BACKUP  - MANUAL BACKUP + kegman.json")
-print ("3. OP_RESTORE - MANUAL RESTORE + kegman.json")
-print ("4. OP_RESTORE - AUTO RESTORE(LAST Bak DIR)")
+print ("2. OP_RESTORE - AUTO RESTORE(LAST Bak DIR)")
+print ("3. OP_BACKUP  - MANUAL BACKUP + kegman.json")
+print ("4. OP_RESTORE - MANUAL RESTORE + kegman.json")
 print ("5. OP_INSTALL - Install OP new. If exist OP directory, will be renamed")
 print ("6. OP_UPDATE  - Run 'git pull' command to update OP latest")
 print ("7. SEE_BRANCH - Confirm current branch")
