@@ -87,7 +87,7 @@ elif (char == "3"):
     print ("Your BACKUP Directory is here")
     os.system("cd /data; ls -d openpilot_* | grep openpilot_")
     print ("")
-    print ("Pree y key to continue,  p: move to first")
+    print ("Press y key to continue,  p: move to first")
 
     char3 = getch()
 
