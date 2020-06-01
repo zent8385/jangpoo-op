@@ -45,9 +45,8 @@ if (char == "1"):
     os.system("rm -f /data/ctime.txt")
     print ("")
     print ("Your backup dir and kegman file are below")
-    os.system("ls -drt /data/openpilot_* | tail -n 1")
     print ("")
-    print ("and kegman file")
+    os.system("ls -drt /data/openpilot_* | tail -n 1")
     os.system("ls -tr /data/kegman* | tail -n 1")
     print ("")
     print ("Press p key to move first menu")
@@ -58,13 +57,14 @@ if (char == "1"):
 
 elif (char == "2"):
     os.system("clear")
-    print ("Your last backup dir is here. check if it is")
+    print ("Your last backup dir and kegman file are here")
     print ("")
     os.system("cd /data; ls -drt /data/openpilot_* | tail -n 1")
+    os.system("ls -tr /data/kegman* | tail -n 1")
     print ("")
     print ("")
     print ("This will remove your openpilot directory")
-    print ("And replace the openpilot dir with current bak dir")
+    print ("and replace the op with current bak dir with kegman file")
     print ("If you don't see the backup dir Press n key")
     print ("Do yo want to continue?(y/n)")
     
