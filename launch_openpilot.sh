@@ -33,19 +33,20 @@ if [ ! -f /system/comma/home/tune.sh ]; then
     mount -o remount,r /system
 fi
 
-ALIAS_CHECK1=$(/usr/bin/grep op /system/comma/home/.bash_profile)
-ALIAS_CHECK2=$(/usr/bin/grep tu /system/comma/home/.bash_profile)
+ALIAS_CHECK1=$(/usr/bin/grep tu /system/comma/home/.bash_profile)
+ALIAS_CHECK2=$(/usr/bin/grep op /system/comma/home/.bash_profile)
 
 if [ "$ALIAS_CHECK1" = "" ] ; then
     sleep 3
     mount -o remount,rw /system
-    echo "alias op="/system/comma/home/op.sh"" >> /system/comma/home/.bash_profile
+    echo "alias tu="/system/comma/home/tune.sh"" >> /system/comma/home/.bash_profile
     mount -o remount,r /system
 fi
 if [ "$ALIAS_CHECK2" = "" ] ; then
     sleep 3
     mount -o remount,rw /system
-    echo "alias tu="/system/comma/home/tune.sh"" >> /system/comma/home/.bash_profile
+    echo "alias op="/system/comma/home/op.sh"" >> /system/comma/home/.bash_profile
+    echo "/system/comma/home/op.sh" >> /system/comma/home/.bash_profile
     mount -o remount,r /system
 fi
 
