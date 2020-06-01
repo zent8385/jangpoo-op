@@ -38,10 +38,9 @@ char = getch()
 
 if (char == "1"):
     os.system("clear")
-    ct = time.strftime('%Y%m%d%H%M%S', time.localtime(time.time()))
-    print ("Copying openpilot to openpilot_branch_timestamp_...")
-    os.system("cd /data/openpilot; branch=`git branch | grep '*' | awk -F' ' '{print $2}' | tail -n 1`; cd /data; cp -rfp openpilot openpilot_${branch}_" + ct)
-    os.system("cd /data/openpilot; branch=`git branch | grep '*' | awk -F' ' '{print $2}' | tail -n 1`; cp -f /data/kegman.json /data/kegman.json_${branch}_" + ct)
+    print ("Copying openpilot to openpilot_branch_timestamp...")
+    os.system("cd /data/openpilot; branch=`git branch | grep '*' | awk -F' ' '{print $2}' | tail -n 1`; cd /data; ct=`date +%Y%m%d%H%M%S`; cp -rfp openpilot openpilot_${branch}_${ct}")
+    os.system("cd /data/openpilot; branch=`git branch | grep '*' | awk -F' ' '{print $2}' | tail -n 1`; cp -f /data/kegman.json /data/kegman.json_${branch}_${ct}")
     print ("")
     print ("Your backup dir and kegman file are below")
     print ("")
