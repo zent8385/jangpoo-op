@@ -1,4 +1,4 @@
-﻿import numpy as np
+import numpy as np
 
 from selfdrive.controls.lib.pid import PIController
 from selfdrive.controls.lib.drive_helpers import get_steer_max
