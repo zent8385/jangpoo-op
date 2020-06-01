@@ -31,6 +31,9 @@ if [ ! -f "/system/comma/home/op.py" ]; then
     mount -o remount,r /system
 fi
 
+alias tu="/system/comma/home/tune.sh"
+alias op="/system/comma/home/op.sh"
+
 #ALIAS_CHECK1=$(/usr/bin/grep tu /system/comma/home/.bash_profile)
 #ALIAS_CHECK2=$(/usr/bin/grep op /system/comma/home/.bash_profile)
 
