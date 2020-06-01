@@ -319,27 +319,27 @@ elif (char == "5"):
 
     if (char5 == "1"):    
         ct = time.strftime('%Y%m%d%H%M%S', time.localtime(time.time()))
-        os.system("mv /data/openpilot /data/openpilot_0.7.3_" + ct)
+        os.system("cd /data/openpilot; branch=`git branch | grep "*" | awk -F' ' '{print $2}' | tail -n 1`; mv /data/openpilot /data/openpilot_$branch_" + ct)
         os.system("cd /data; git clone https://github.com/openpilotkr/openpilot.git; cd openpilot; git checkout OPKR_0.7.3; reboot")
     elif (char5 == "2"):
         ct = time.strftime('%Y%m%d%H%M%S', time.localtime(time.time()))
-        os.system("mv /data/openpilot /data/openpilot_0.7.4_" + ct)
+        os.system("cd /data/openpilot; branch=`git branch | grep "*" | awk -F' ' '{print $2}' | tail -n 1`; mv /data/openpilot /data/openpilot_$branch_" + ct)
         os.system("cd /data; git clone https://github.com/openpilotkr/openpilot.git; cd openpilot; git checkout OPKR_0.7.4; reboot")
     elif (char5 == "3"):
         ct = time.strftime('%Y%m%d%H%M%S', time.localtime(time.time()))
-        os.system("mv /data/openpilot /data/openpilot_0.7.5_" + ct)
+        os.system("cd /data/openpilot; branch=`git branch | grep "*" | awk -F' ' '{print $2}' | tail -n 1`; mv /data/openpilot /data/openpilot_$branch_" + ct)
         os.system("cd /data; git clone https://github.com/openpilotkr/openpilot.git; cd openpilot; git checkout OPKR_0.7.5; reboot")
     elif (char5 == "4"):
         ct = time.strftime('%Y%m%d%H%M%S', time.localtime(time.time()))
-        os.system("mv /data/openpilot /data/openpilot_0.7.3_bolt_" + ct)
+        os.system("cd /data/openpilot; branch=`git branch | grep "*" | awk -F' ' '{print $2}' | tail -n 1`; mv /data/openpilot /data/openpilot_$branch_" + ct)
         os.system("cd /data; git clone https://github.com/openpilotkr/openpilot.git; cd openpilot; git checkout OPKR_0.7.3_BOLT; reboot")
     elif (char5 == "5"):
         ct = time.strftime('%Y%m%d%H%M%S', time.localtime(time.time()))
-        os.system("mv /data/openpilot /data/openpilot_0.7.3_HKG_community_" + ct)
+        os.system("cd /data/openpilot; branch=`git branch | grep "*" | awk -F' ' '{print $2}' | tail -n 1`; mv /data/openpilot /data/openpilot_$branch_" + ct)
         os.system("cd /data; git clone https://github.com/openpilotkr/openpilot.git; cd openpilot; git checkout OPKR_0.7.3_HKG_community; reboot")
     elif (char5 == "6"):
         ct = time.strftime('%Y%m%d%H%M%S', time.localtime(time.time()))
-        os.system("mv /data/openpilot /data/openpilot_0.7.3_ATOM_" + ct)
+        os.system("cd /data/openpilot; branch=`git branch | grep "*" | awk -F' ' '{print $2}' | tail -n 1`; mv /data/openpilot /data/openpilot_$branch_" + ct)
         os.system("cd /data; git clone https://github.com/openpilotkr/openpilot.git; cd openpilot; git checkout OPKR_0.7.3_ATOM; reboot")
     elif (char5 == "p"):
         os.system("cd /system/comma/home; ./op.sh")
