@@ -27,7 +27,7 @@ print ("5. OP_INSTALL - Install OP new. If exist OP directory, will be renamed")
 print ("6. OP_UPDATE  - Run 'git pull' command to update OP latest")
 print ("7. SEE_BRANCH - Confirm current branch")
 print ("8. CH_BRANCH  - Branch change(pull latest, quick change and reboot")
-print ("t. LIVE_TUNE   - Run live tune")
+print ("t. LIVE_TUNE  - Run live tune")
 print ("r. REBOOT     - Reboot your eon")
 print ("EXIT: anykey")
 print ("")
@@ -42,7 +42,6 @@ if (char == "1"):
     print ("Copying openpilot to openpilot_(timestamp)...")
     os.system("cp -rp /data/openpilot /data/openpilot_" + ct)
     os.system("cp -f /data/kegman.json /data/kegman.json_" + ct)
-    print ("cls")
     print ("Your backup dir is below")
     print ("")
     os.system("ls -aldrt /data/openpilot_*")
@@ -72,6 +71,12 @@ elif (char == "2"):
     print ("")
     os.system("ls -aldrt /data/openpilot_" + bakdir)
     os.system("ls -altr /data/kegman.json_" + bakdir)
+    print ("")
+    print ("Press p key to move first menu")
+
+    char2 = getch()
+    if (char2 == "p"):
+        os.system("cd /system/comma/home; ./op.sh")
 
 elif (char == "3"):
     os.system("clear")
