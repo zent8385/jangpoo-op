@@ -90,6 +90,7 @@ elif (char == "3"):
     print ("and kegman.json file")
     os.system("cd /data; ls kegman.json_* | grep kegman.json_")
     print ("")
+    print ("Next step, you can choose the bak dirs")
     print ("Press y key to continue,  p: move to first")
 
     char3 = getch()
@@ -97,7 +98,7 @@ elif (char == "3"):
     if (char3 == "y"):
         os.system("clear")
         print ("Please select the left side number you want to restore")
-        print ("will be restored with kegman.json bak file")
+        print ("will be restored with matched kegman.json bakup file")
         print ("If finished, will reboot automatically")
         print ("")
         os.system("cd /data; ls -d openpilot_* | grep -n openpilot_")
