@@ -81,19 +81,19 @@ elif (char == "2"):
 elif (char == "3"):
     os.system("clear")
     print ("This will remove your openpilot directory")
-    print ("And replace the openpilot dir with the dir you selected")
+    print ("And replace the openpilot with the dir you selected")
     print ("If the backup dir is not match or empty, Press n key")
     print ("")
-    print ("Your BAKUP Directory is here")
-    os.system("cd /data; ls -d openpilot_* | grep -n openpilot_")
+    print ("Your BACKUP Directory is here")
+    os.system("cd /data; ls -d openpilot_* | grep openpilot_")
     print ("")
-    print ("Do yo want to continue?(y/n), p: move to first")
+    print ("Pree y key to continue,  p: move to first")
 
     char3 = getch()
 
     if (char3 == "y"):
         os.system("clear")
-        print ("Please select the number you want to restore")
+        print ("Please select the left side number you want to restore")
         print ("")
         os.system("cd /data; ls -d openpilot_* | grep -n openpilot_")
 
@@ -217,7 +217,7 @@ elif (char == "3"):
                 os.system("rm -f /data/dir_temp.txt")
                 print ("Aborted")
                 print ("Your backup Directory is invalid")
-    elif (char3 == "n"):
+    elif (char3 == "p"):
             os.system("cd /system/comma/home; ./op.sh")
 
 elif (char == "4"):
