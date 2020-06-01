@@ -42,6 +42,7 @@ if (char == "1"):
     print ("Copying openpilot to openpilot_branch_timestamp_...")
     os.system("cd /data/openpilot; branch=`git branch | grep '*' | awk -F' ' '{print $2}' | tail -n 1`; cd /data; cp -rfp openpilot openpilot_$branch_" + ct)
     os.system("cd /data/openpilot; branch=`git branch | grep '*' | awk -F' ' '{print $2}' | tail -n 1`; cp -f /data/kegman.json /data/kegman.json_$branch_" + ct)
+    print ("")
     print ("Your backup dir and kegman file are below")
     print ("")
     os.system("ls -drt /data/openpilot_* | tail -n 1")
