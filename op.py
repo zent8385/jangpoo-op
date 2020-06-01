@@ -19,10 +19,10 @@ def getch():
     return ch
 
 os.system("clear")
-print ("1. OP_BACKUP  - AUTO BACKUP")
-print ("2. OP_BACKUP  - MANUAL BACKUP")
-print ("3. OP_RESTORE - MANUAL RESTORE")
-print ("4. OP_RESTORE - AUTO RESTORE(LAST BAK DIR)")
+print ("1. OP_BACKUP  - AUTO DIR BACKUP(timestamp)")
+print ("2. OP_BACKUP  - MANUAL BACKUP + kegman.json")
+print ("3. OP_RESTORE - MANUAL RESTORE + kegman.json")
+print ("4. OP_RESTORE - AUTO RESTORE(LAST Bak DIR)")
 print ("5. OP_INSTALL - Install OP new. If exist OP directory, will be renamed")
 print ("6. OP_UPDATE  - Run 'git pull' command to update OP latest")
 print ("7. SEE_BRANCH - Confirm current branch")
@@ -57,6 +57,162 @@ if (char == "1"):
     if (char1 == "p"):
         os.system("cd /system/comma/home; ./op.sh")
 
+elif (char == "2"):
+    os.system("clear")
+    print ("Please type backup name you want to make")
+    bakdir = input('BACKUP DIR NAME: openpilot_')
+    print ("cls")
+    print ("Copying openpilot to openpilot_%s...")
+    print ("Copying kegman.json to kegman.json_%s...")
+    print ("")
+    os.system("cp -rp /data/openpilot /data/openpilot_" + bakdir)
+    os.system("cp -f /data/kegman.json /data/kegman.json_" + bakdir)
+    print ("Your backup dir and kegman file is below")
+    print ("")
+    os.system("ls -aldrt /data/openpilot_" + bakdir)
+    os.system("ls -altr /data/kegman.json_" + bakdir)
+
+elif (char == "3"):
+    os.system("clear")
+    print ("This will remove your openpilot directory")
+    print ("And replace the openpilot dir with the dir you selected")
+    print ("If the backup dir is not match or empty, Press n key")
+    print ("")
+    print ("Your BAKUP Directory is here")
+    os.system("cd /data; ls -d openpilot_* | grep -n openpilot_")
+    print ("")
+    print ("Do yo want to continue?(y/n), p: move to first")
+
+    char3 = getch()
+
+    if (char3 == "y"):
+        os.system("clear")
+        print ("Please select the number you want to restore")
+        print ("")
+        os.system("cd /data; ls -d openpilot_* | grep -n openpilot_")
+
+        char31 = getch()
+
+        if (char31 == "1"):
+            os.system("cd /data; ls -d openpilot_* | grep -n openpilot_ | grep 1: | awk -F ':' '{print $2}' | tail -n 1 > dir_temp.txt")
+            fp = open('/data/dir_temp.txt', 'r')
+            dir_data = fp.readline()
+            fp.close()
+            if (dir_data != ""):
+                os.system("rm -f /data/dir_temp.txt")
+                os.system("cd /data; rm -rf openpilot; tdir=`ls -d openpilot_* | grep -n openpilot_ | grep 1: | awk -F ':' '{print $2}' | tail -n 1`; cp -rpf $tdir openpilot")
+                os.system("reboot")
+            else:
+                os.system("rm -f /data/dir_temp.txt")
+                print ("Aborted")
+                print ("Your backup Directory is invalid")
+        elif (char31 == "2"):
+            os.system("cd /data; ls -d openpilot_* | grep -n openpilot_ | grep 2: | awk -F ':' '{print $2}' | tail -n 1 > dir_temp.txt")
+            fp = open('/data/dir_temp.txt', 'r')
+            dir_data = fp.readline()
+            fp.close()
+            if (dir_data != ""):
+                os.system("rm -f /data/dir_temp.txt")
+                os.system("cd /data; rm -rf openpilot; tdir=`ls -d openpilot_* | grep -n openpilot_ | grep 2: | awk -F ':' '{print $2}' | tail -n 1`; cp -rpf $tdir openpilot")
+                os.system("reboot")
+            else:
+                os.system("rm -f /data/dir_temp.txt")
+                print ("Aborted")
+                print ("Your backup Directory is invalid")
+        elif (char31 == "3"):
+            os.system("cd /data; ls -d openpilot_* | grep -n openpilot_ | grep 3: | awk -F ':' '{print $2}' | tail -n 1 > dir_temp.txt")
+            fp = open('/data/dir_temp.txt', 'r')
+            dir_data = fp.readline()
+            fp.close()
+            if (dir_data != ""):
+                os.system("rm -f /data/dir_temp.txt")
+                os.system("cd /data; rm -rf openpilot; tdir=`ls -d openpilot_* | grep -n openpilot_ | grep 3: | awk -F ':' '{print $2}' | tail -n 1`; cp -rpf $tdir openpilot")
+                os.system("reboot")
+            else:
+                os.system("rm -f /data/dir_temp.txt")
+                print ("Aborted")
+                print ("Your backup Directory is invalid")
+                os.system("rm -f /data/dir_temp.txt")
+        elif (char31 == "4"):
+            os.system("cd /data; ls -d openpilot_* | grep -n openpilot_ | grep 4: | awk -F ':' '{print $2}' | tail -n 1 > dir_temp.txt")
+            fp = open('/data/dir_temp.txt', 'r')
+            dir_data = fp.readline()
+            fp.close()
+            if (dir_data != ""):
+                os.system("rm -f /data/dir_temp.txt")
+                os.system("cd /data; rm -rf openpilot; tdir=`ls -d openpilot_* | grep -n openpilot_ | grep 4: | awk -F ':' '{print $2}' | tail -n 1`; cp -rpf $tdir openpilot")
+                os.system("reboot")
+            else:
+                os.system("rm -f /data/dir_temp.txt")
+                print ("Aborted")
+                print ("Your backup Directory is invalid")
+        elif (char31 == "5"):
+            os.system("cd /data; ls -d openpilot_* | grep -n openpilot_ | grep 5: | awk -F ':' '{print $2}' | tail -n 1 > dir_temp.txt")
+            fp = open('/data/dir_temp.txt', 'r')
+            dir_data = fp.readline()
+            fp.close()
+            if (dir_data != ""):
+                os.system("rm -f /data/dir_temp.txt")
+                os.system("cd /data; rm -rf openpilot; tdir=`ls -d openpilot_* | grep -n openpilot_ | grep 5: | awk -F ':' '{print $2}' | tail -n 1`; cp -rpf $tdir openpilot")
+                os.system("reboot")
+            else:
+                os.system("rm -f /data/dir_temp.txt")
+                print ("Aborted")
+                print ("Your backup Directory is invalid")
+        elif (char31 == "6"):
+            os.system("cd /data; ls -d openpilot_* | grep -n openpilot_ | grep 6: | awk -F ':' '{print $2}' | tail -n 1 > dir_temp.txt")
+            fp = open('/data/dir_temp.txt', 'r')
+            dir_data = fp.readline()
+            fp.close()
+            if (dir_data != ""):
+                os.system("rm -f /data/dir_temp.txt")
+                os.system("cd /data; rm -rf openpilot; tdir=`ls -d openpilot_* | grep -n openpilot_ | grep 6: | awk -F ':' '{print $2}' | tail -n 1`; cp -rpf $tdir openpilot")
+                os.system("reboot")
+            else:
+                os.system("rm -f /data/dir_temp.txt")
+                print ("Aborted")
+                print ("Your backup Directory is invalid")
+        elif (char31 == "7"):
+            os.system("cd /data; ls -d openpilot_* | grep -n openpilot_ | grep 7: | awk -F ':' '{print $2}' | tail -n 1 > dir_temp.txt")
+            fp = open('/data/dir_temp.txt', 'r')
+            dir_data = fp.readline()
+            fp.close()
+            if (dir_data != ""):
+                os.system("rm -f /data/dir_temp.txt")
+                os.system("cd /data; rm -rf openpilot; tdir=`ls -d openpilot_* | grep -n openpilot_ | grep 7: | awk -F ':' '{print $2}' | tail -n 1`; cp -rpf $tdir openpilot")
+                os.system("reboot")
+            else:
+                os.system("rm -f /data/dir_temp.txt")
+                print ("Aborted")
+                print ("Your backup Directory is invalid")
+        elif (char31 == "8"):
+            os.system("cd /data; ls -d openpilot_* | grep -n openpilot_ | grep 8: | awk -F ':' '{print $2}' | tail -n 1 > dir_temp.txt")
+            fp = open('/data/dir_temp.txt', 'r')
+            dir_data = fp.readline()
+            fp.close()
+            if (dir_data != ""):
+                os.system("rm -f /data/dir_temp.txt")
+                os.system("cd /data; rm -rf openpilot; tdir=`ls -d openpilot_* | grep -n openpilot_ | grep 8: | awk -F ':' '{print $2}' | tail -n 1`; cp -rpf $tdir openpilot")
+                os.system("reboot")
+            else:
+                os.system("rm -f /data/dir_temp.txt")
+                print ("Aborted")
+                print ("Your backup Directory is invalid")
+        elif (char31 == "9"):
+            os.system("cd /data; ls -d openpilot_* | grep -n openpilot_ | grep 9: | awk -F ':' '{print $2}' | tail -n 1 > dir_temp.txt")
+            fp = open('/data/dir_temp.txt', 'r')
+            dir_data = fp.readline()
+            fp.close()
+            if (dir_data != ""):
+                os.system("rm -f /data/dir_temp.txt")
+                os.system("cd /data; rm -rf openpilot; tdir=`ls -d openpilot_* | grep -n openpilot_ | grep 9: | awk -F ':' '{print $2}' | tail -n 1`; cp -rpf $tdir openpilot")
+                os.system("reboot")
+            else:
+                os.system("rm -f /data/dir_temp.txt")
+                print ("Aborted")
+                print ("Your backup Directory is invalid")
+    elif (char3 == "n"):
+            os.system("cd /system/comma/home; ./op.sh")
 
 elif (char == "4"):
     os.system("clear")
