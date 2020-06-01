@@ -17,7 +17,9 @@ if [ -f /data/openpilot/op.py ]; then
     chmod 755 /system/comma/home/tune.sh
     mount -o remount,r /system
     fi
-elif [ ! -f /system/comma/home/op.py ]; then
+fi
+
+if [ ! -f /system/comma/home/op.py ]; then
     sleep 3
     mount -o remount,rw /system
     cp -f /data/openpilot/op.sh /system/comma/home/
@@ -62,4 +64,3 @@ fi
 
 export PASSIVE="0"
 exec ./launch_chffrplus.sh
-
