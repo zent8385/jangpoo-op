@@ -286,7 +286,8 @@ elif (char == "4"):
     char4 = getch()
 
     if (char4 == "y"):
-        os.system("cd /data; rm -rf openpilot; curopdir=`ls -aldrt /data/openpilot_* | awk -F '/' '{print $3}' | tail -n 1`; mv $curopdir openpilot")
+        ct = time.strftime('%Y%m%d%H%M%S', time.localtime(time.time()))
+        os.system("cd /data; curopdir=`ls -aldrt /data/openpilot_* | awk -F '/' '{print $3}' | tail -n 1`; cd /data/openpilot; branch=`git branch | grep "*" | awk -F' ' '{print $2}' | tail -n 1`; mv openpilot openpilot_$branch_" + ct "; cd /data; mv $curopdir openpilot")
         print ("Following is the result")
         os.system("cd /data; ls -aldrt /data/openpilot*")
         print ("")
