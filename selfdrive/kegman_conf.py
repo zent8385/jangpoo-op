@@ -73,10 +73,13 @@ class kegman_conf():
         self.config.update({"Kf2":"-1"})
         self.element_updated = True
 
-	
       if "steerRatio" not in self.config:
         self.config.update({"steerRatio":"-1"})
         self.config.update({"steerRateCost":"-1"})
+        self.element_updated = True
+
+      if "steerMax" not in self.config:
+        self.config.update({"steerMax":"255"})
         self.element_updated = True
 		
       if "sR_boost" not in self.config:
@@ -117,16 +120,16 @@ class kegman_conf():
         self.write_config(self.config)
 
     else:
-      self.config = {"cameraOffset":"0.06", "battChargeMin":"70", "battChargeMax":"80", \
-                    "wheelTouchSeconds":"3600", "battPercOff":"100", "carVoltageMinEonShutdown":"11800", \
-                    "tuneGernby":"1", "deadzone":"0.0",\
+      self.config = {"cameraOffset":"0.06", "battChargeMin":"60", "battChargeMax":"70", \
+                    "wheelTouchSeconds":"30000", "battPercOff":"100", "carVoltageMinEonShutdown":"11800", \
+                    "tuneGernby":"1", "deadzone":"0.0", "steerMax":"255"\
                     #"cv_Ratio":"0.7", "cv_Dist":"-5",\
                     "Kp":"-1", "Ki":"-1", "Kf":"-1",  \
                     "Kp2":"-1", "Ki2":"-1", "Kf2":"-1",  \
                     "steerRatio":"-1", "steerRateCost":"-1", "ALCnudgeLess":"0", \
                     "sR_boost":"0", "sR_BP0":"0", "sR_BP1":"0", "sR_time":"1", \
-                    "sR_Kp":"0.25", "sR_Ki":"0.05", "sR_Kf":"0.00005", \
-                    "sR_Kp2":"0.25", "sR_Ki2":"0.05", "sR_Kf2":"0.00005"}
+                    "sR_Kp":"0.20", "sR_Ki":"0.04", "sR_Kf":"0.00004", \
+                    "sR_Kp2":"0.20", "sR_Ki2":"0.04", "sR_Kf2":"0.00004"}
 
 
       self.write_config(self.config)
