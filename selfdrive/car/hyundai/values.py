@@ -1,11 +1,14 @@
 from cereal import car
 from selfdrive.car import dbc_dict
 from selfdrive.config import Conversions as CV
+from selfdrive.kegman_conf import kegman_conf
 Ecu = car.CarParams.Ecu
 
 # Steer torque limits
 class SteerLimitParams:
-  STEER_MAX = 255 #255   # 409 is the max, 255 is stock
+  kegman = kegman_conf()
+  STEER_MAX = int(kegman.conf['steerMax'])
+  #STEER_MAX = 255 #255   # 409 is the max, 255 is stock
   STEER_DELTA_UP = 3
   STEER_DELTA_DOWN = 5
   STEER_DRIVER_ALLOWANCE = 50
