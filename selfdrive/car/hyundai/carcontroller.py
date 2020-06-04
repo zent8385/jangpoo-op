@@ -154,14 +154,14 @@ class CarController():
     #v_curvature
     elif LaC.v_curvature < 200:
       self.timer_curvature = 300
-    elif abs_angle_steers < 2 and  self.timer_curvature <= 0:
-      xp = [0.5,1,1.5,2]
-      fp = [240,245,250,255]
+    elif abs_angle_steers < 1 and  self.timer_curvature <= 0:
+      xp = [0.5,1]
+      fp = [240,255]
       param.STEER_MAX = interp( abs_angle_steers, xp, fp )
 
       if abs_angle_steers < 1 or v_ego_kph < 5:
           param.STEER_DELTA_UP  = 2
-          param.STEER_DELTA_DOWN = 3
+          param.STEER_DELTA_DOWN = 4
 
 
 
@@ -288,7 +288,7 @@ class CarController():
 
     steer_req = 1 if apply_steer else 0
 
-    steer_limit = param.STEER_MAX
+    steer_limit = param.STEER_MAX #param.STEER_MAX
     if not lkas_active:
       self.lkas_active_timer1 = 200
     elif self.lkas_active_timer1 < 400: 
@@ -304,8 +304,8 @@ class CarController():
     vRel = int(vRel * 3.6 + 0.5)
   
     lead_objspd = CS.lead_objspd
-    str_log1 = 'CURV={:03.0f}/{:06.3f} V_TORQ={:04.0f}'.format( LaC.v_curvature, LaC.model_sum, apply_steer )
-    str_log2 = 'S_TORQ={:04.0f} ST_LIMIT={:03.0f} ST_MAX={:03.0f}'.format( CS.steer_torque_driver, steer_limit, param.STEER_MAX )
+    str_log1 = 'CURV={:03.0f}/{:06.3f} TORQ=V:{:04.0f}/S:{:04.0f}'.format( LaC.v_curvature, LaC.model_sum, apply_steer, CS.steer_torque_driver )
+    str_log2 = 'D={:03.1f} V={:03.0f} ST_LIM={:03.0f} ST_MAX={:03.0f}'.format( dRel, vRel, steer_limit, param.STEER_MAX )
     trace1.printf( '{} {}'.format( str_log1, str_log2 ) )
 
 
@@ -372,7 +372,7 @@ class CarController():
     # reset lead distnce after the car starts moving
     elif self.last_lead_distance != 0:
       self.last_lead_distance = 0
-    elif CS.driverOverride or not CS.pcm_acc_status or CS.clu_CruiseSwState == 1 or CS.clu_CruiseSwState == 2:
+    elif CS.driverOverride == 2 or not CS.pcm_acc_status or CS.clu_CruiseSwState == 1 or CS.clu_CruiseSwState == 2:
       #self.model_speed = 300
       self.resume_cnt = 0
       self.sc_btn_type = Buttons.NONE

@@ -151,6 +151,7 @@ class PathPlanner():
 
 
   def lane_change_fun( self, sm, lca_left, lca_right, lane_change_prob ):
+      one_blinker = sm['carState'].leftBlinker != sm['carState'].rightBlinker
       if self.nCommand == 0:
           self.lane_change_timer1 = 0
           self.lane_change_timer2 = 0
@@ -162,7 +163,6 @@ class PathPlanner():
           self.nCommand=1
 
       elif self.nCommand == 1:
-          one_blinker = sm['carState'].leftBlinker != sm['carState'].rightBlinker
           if not one_blinker:
               pass
           elif sm['carState'].leftBlinker and not lca_left:
@@ -185,8 +185,10 @@ class PathPlanner():
               self.nCommand=2
 
       elif self.nCommand == 2:   # preLaneChange
-          torque_applied = False        
-          if self.lane_change_direction == LaneChangeDirection.left:
+          torque_applied = False
+          if not one_blinker:
+              self.nCommand = 0     
+          elif self.lane_change_direction == LaneChangeDirection.left:
               if lca_left:  # BSM
                 self.lane_change_BSM = LaneChangeBSM.left
                 self.nCommand=5  # cancel
@@ -237,9 +239,17 @@ class PathPlanner():
           #if sm['carState'].leftBlinker or sm['carState'].rightBlinker:
           #  pass
           #else:
-          if lane_change_prob < 0.4 and self.lane_change_ll_prob > 0.99:
+          if lane_change_prob < 0.4 and self.lane_change_ll_prob > 0.8:
             self.lane_change_state = LaneChangeState.off
+            self.nCommand=5
+
+      elif self.nCommand == 5:   # laneChangeEnd
+          if sm['carState'].leftBlinker or sm['carState'].rightBlinker:
+            pass
+          else:
             self.nCommand=0
+
+
 
       elif self.nCommand == 5:  # cancel
           self.lane_change_timer4 += 1
@@ -301,31 +311,20 @@ class PathPlanner():
 
 
     abs_angle_steers = abs(angle_steers)
-    if v_ego_kph < 10:
-      self.steerRatio = self.sR[0] * 0.9
-    elif self.lane_change_state != LaneChangeState.off:
-      self.steerRatio = self.sR[0]
-      self.steerAngle_new = 0
-    elif v_ego_kph > 40:  # 11.111:
+    if v_ego_kph > 40:  # 11.111:
       # boost steerRatio by boost amount if desired steer angle is high
       self.steerRatio_new = interp( abs_angle_steers, self.sRBP, self.sR)
 
       self.sR_delay_counter += 1
-      delta_angle = abs_angle_steers - self.steerAngle_new
-      if delta_angle > 2.0 and self.sR_delay_counter > 5:
-          self.sR_delay_counter += 2
-
       if self.sR_delay_counter < self.sR_time:
         if self.steerRatio_new > self.steerRatio:
           self.steerRatio = self.steerRatio_new
           self.steerAngle_new = abs_angle_steers
       else:
-        self.steerRatio = (self.steerRatio_new + self.steerRatio) * 0.5
+        self.steerRatio = self.steerRatio_new
         self.sR_delay_counter = 0
-        self.steerAngle_new = 0
     else:
       self.steerRatio = self.sR[0]
-      self.steerAngle_new = 0
 
 
 
@@ -379,25 +378,25 @@ class PathPlanner():
         self.lean_wait_time = 500
       elif lca_left and not self.lean_wait_time:
         self.lean_wait_time = 200
-        self.lean_offset = -0.01
+        self.lean_offset = -0.005
       elif lca_right and not self.lean_wait_time:
         self.lean_wait_time = 200
-        self.lean_offset = 0.01
+        self.lean_offset = 0.005
 
       
 
 
-    #vCurv = vCurvature
-    #if vCurvature > 1: # left
-    #  if vCurv > 4:
-    #    vCurv = 4
-    #  self.lean_offset = 0.02 + (vCurv * 0.01)
-    #  self.lean_wait_time = 10
-    #elif vCurvature < -1:   # right
-    #  if vCurv < -4:
-    #    vCurv = -4      
-    #  self.lean_offset = -0.02 + (vCurv * 0.01)
-    #  self.lean_wait_time = 10
+    vCurv = vCurvature
+    if vCurvature > 1: # left
+      if vCurv > 5:
+        vCurv = 5
+      self.lean_offset = 0.02 + (vCurv * 0.02)
+      self.lean_wait_time = 50
+    elif vCurvature < -1:   # right
+      if vCurv < -5:
+        vCurv = -5
+      self.lean_offset = -0.02 + (vCurv * 0.02)
+      self.lean_wait_time = 50
 
     lean_offset = 0
     if self.lean_wait_time:
@@ -441,24 +440,12 @@ class PathPlanner():
         self.angle_steers_des_mpc = self.limit_ctrl( org_angle_steers_des, 0.3, angle_steers )
     elif abs(vCurvature) > 2:  # 커브면.
         pass
-    elif v_ego_kph < 40:
-        xp = [5,20,40]
+    elif v_ego_kph < 30:
+        xp = [5,20,30]
         fp2 = [0.5,2,3]
         limit_steers = interp( v_ego_kph, xp, fp2 )
 
-        nP_limit = limit_steers
-        nM_limit = limit_steers
-
-        if limit_steers < 1:
-          pass
-        elif vCurvature < -0.1:  # right
-          nP_limit = 1
-        elif vCurvature > 0.1:  # left
-          nM_limit = 1
-
-
-        angle_steers_des = self.limit_PM( org_angle_steers_des, angle_steers, nP_limit, nM_limit )
-        #angle_steers_des = self.limit_ctrl( org_angle_steers_des, limit_steers, angle_steers )
+        angle_steers_des = self.limit_ctrl( org_angle_steers_des, limit_steers, angle_steers )
         if v_ego_kph < 10:
             self.angle_steers_des_mpc = self.movAvg.get_data( angle_steers_des, 5 )
         else:
