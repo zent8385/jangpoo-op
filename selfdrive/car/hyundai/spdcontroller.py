@@ -1,5 +1,3 @@
-# This Python file uses the following encoding: utf-8
-# -*- coding: utf-8 -*-
 import math
 import numpy as np
 
@@ -41,8 +39,8 @@ AWARENESS_DECEL = -0.2     # car smoothly decel at .2m/s^2 when user is distract
 
 # lookup tables VS speed to determine min and max accels in cruise
 # make sure these accelerations are smaller than mpc limits
-_A_CRUISE_MIN_V  = [-1.0, -.8, -.67, -.5, -.30]
-_A_CRUISE_MIN_BP = [   0., 5.,  10., 20.,  40.]
+_A_CRUISE_MIN_V = [-1.0, -.8, -.67, -.5, -.30]
+_A_CRUISE_MIN_BP = [0., 5.,  10., 20.,  40.]
 
 # need fast accel at very low speed for stop and go
 # make sure these accelerations are smaller than mpc limits
@@ -57,11 +55,7 @@ _A_TOTAL_MAX_BP = [20., 40.]
 # 75th percentile
 SPEED_PERCENTILE_IDX = 7
 
-
-
-
-
-def limit_accel_in_turns(v_ego, angle_steers, a_target, steerRatio , wheelbase):
+def limit_accel_in_turns(v_ego, angle_steers, a_target, steerRatio, wheelbase):
   """
   This function returns a limited long acceleration allowed, depending on the existing lateral acceleration
   this should avoid accelerating when losing the target in turns
@@ -80,8 +74,6 @@ class SpdController():
     self.long_active_timer = 0
     self.long_wait_timer = 0
     self.long_curv_timer = 0
-
-
 
     self.v_acc_start = 0.0
     self.a_acc_start = 0.0
@@ -147,9 +139,7 @@ class SpdController():
       model_speed = MAX_SPEED
       model_sum = 0
 
-
     model_speed = self.movAvg.get_min( model_speed, 10 )
-
 
     return model_speed, model_sum
 
@@ -179,16 +169,16 @@ class SpdController():
 
     if add_val > 0:  # 증가
       if delta_speed > 5:
-        time = 500
+        time = 300
     else:
       if delta_speed < -5:
-        time = 500
+        time = 300
 
     return time, set_speed
 
   def update_lead(self, CS,  dRel, yRel, vRel ):
     lead_set_speed = CS.cruise_set_speed_kph
-    lead_wait_cmd = 600
+    lead_wait_cmd = 400
 
     if CS.cruise_set_mode != 2:
       return  lead_wait_cmd, lead_set_speed
@@ -359,7 +349,7 @@ class SpdController():
     tm_sample = self.Timer1.sampleTime()
 
 
-    str3 = 'TARGET_SPEED={:03.0f} WAIT_TIMER={:03.0f} HEARTBEAT={:.0f} '.format( target_set_speed, self.long_wait_timer, tm_sample )
+    str3 = 'TARGET_SPEED={:03.0f} LONG_TIMER={:03.0f} HEARTBEAT={:.0f} '.format( target_set_speed, self.long_wait_timer, tm_sample )
     trace1.printf2(  str3 )
 
     return btn_type, set_speed
