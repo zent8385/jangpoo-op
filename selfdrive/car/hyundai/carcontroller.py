@@ -310,8 +310,8 @@ class CarController():
     vRel = int(vRel * 3.6 + 0.5)
   
     lead_objspd = CS.lead_objspd
-    str_log1 = 'CV={:03.0f}/{:06.3f} TQ=V:{:04.0f}/S:{:04.0f}'.format( LaC.v_curvature, LaC.model_sum, apply_steer, CS.steer_torque_driver )
-    str_log2 = 'D={:05.1f} V={:03.0f} SLIM={:03.0f} SMAX={:03.0f}'.format( dRel, vRel, steer_limit, param.STEER_MAX )
+    str_log1 = 'CV={: 3.0f}/{: 6.3f} TQ=V:{: 4.0f}/S:{: 4.0f}'.format( LaC.v_curvature, LaC.model_sum, apply_steer, CS.steer_torque_driver )
+    str_log2 = 'D={: 5.1f} V={: 3.0f} S_LIM={: 3.0f} S_MAX={: 3.0f}'.format( dRel, vRel, steer_limit, param.STEER_MAX )
     trace1.printf( '{} {}'.format( str_log1, str_log2 ) )
 
 
