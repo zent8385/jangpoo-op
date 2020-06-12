@@ -113,6 +113,10 @@ class kegman_conf():
         self.config.update({"cV_Dist":"-5"})
         self.element_updated = True
 
+      if "steerTorqueOver" not in self.config:
+        self.config.update({"steerTorqueOver":"200"})
+        self.element_updated = True
+
 
 
       if self.element_updated:
@@ -123,7 +127,7 @@ class kegman_conf():
       self.config = {"cameraOffset":"0.06", "battChargeMin":"60", "battChargeMax":"70", \
                     "wheelTouchSeconds":"30000", "battPercOff":"100", "carVoltageMinEonShutdown":"11800", \
                     "tuneGernby":"1", "deadzone":"0.0", "steerMax":"255", \
-                    "cv_Ratio":"0.7", "cv_Dist":"-5",\
+                    "cv_Ratio":"0.7", "cv_Dist":"-5", "steerTorqueOver":"200", \
                     "Kp":"-1", "Ki":"-1", "Kf":"-1", \
                     "Kp2":"-1", "Ki2":"-1", "Kf2":"-1", \
                     "steerRatio":"-1", "steerRateCost":"-1", "ALCnudgeLess":"0", \
