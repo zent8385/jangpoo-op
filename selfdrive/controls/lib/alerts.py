@@ -121,7 +121,7 @@ ALERTS = [
       "핸들을 잡아주세요",
       "조향제어 임계점에 근접하였습니다",
       AlertStatus.userPrompt, AlertSize.mid,
-      Priority.LOW, VisualAlert.steerRequired, AudibleAlert.none, .4, 2., 3.),
+      Priority.LOW, VisualAlert.none, AudibleAlert.none, .4, 2., 3.),
 
   Alert(
       "steerTempUnavailableMute",
@@ -135,7 +135,7 @@ ALERTS = [
       "도로상황에 주의를 기울이세요 : 주행 산만",
       "",
       AlertStatus.normal, AlertSize.small,
-      Priority.LOW, VisualAlert.steerRequired, AudibleAlert.none, .0, .1, .1, alert_rate=0.75),
+      Priority.LOW, VisualAlert.none, AudibleAlert.none, .0, .1, .1, alert_rate=0.75),
 
   Alert(
       "promptDriverDistracted",
@@ -784,7 +784,7 @@ ALERTS = [
   Alert(
       "communityFeatureDisallowedPermanent",
       "커뮤니티 기능 감지",
-      "Enable Community Features in Developer Settings",
+      "개발자 설정에서 커뮤니티 기능을 활성화하세요",
       AlertStatus.normal, AlertSize.mid,
       Priority.LOW, VisualAlert.none, AudibleAlert.none, 0., 0., .2),  # LOW priority to overcome Cruise Error
 
