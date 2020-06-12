@@ -388,9 +388,9 @@ class SpdController():
         if CS.cruise_set_mode == 0:
             btn_type = Buttons.NONE
 
-        str3 = 'SS={: 3.0f} TSS={: 3.0f} VSD={: 3.0f} DAt={: 3.0f}/{: 3.0f}/{: 3.0f} DG/dec={:2.0f}/{: 2.0f}'.format(
+        str3 = 'SS={:03.0f} TSS={:03.0f} VSD={:03.0f} DAt={:03.0f}/{:03.0f}/{:03.0f} DG/dec={:02.0f}/{:02.0f}'.format(
             set_speed, target_set_speed, CS.VSetDis, CS.driverAcc_time, long_wait_cmd, self.long_curv_timer, self.seq_step_debug, dec_step_cmd )
-        str4 = ' LD/LS={: 3.0f}/{: 3.0f} '.format(  CS.lead_distance, CS.lead_objspd )
+        str4 = ' LD/LS={:03.0f}/{:03.0f} '.format(  CS.lead_distance, CS.lead_objspd )
 
         str5 = str3 +  str4
         trace1.printf2( str5 )
