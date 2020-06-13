@@ -100,6 +100,7 @@ class PathPlanner():
       self.setup_mpc()
 
       self.alc_nudge_less = bool(int(kegman.conf['ALCnudgeLess']))
+      self.alc_timer = float(kegman.conf['ALCtimer'])
       self.lane_change_state = LaneChangeState.off
       self.lane_change_direction = LaneChangeDirection.none
       self.lane_change_timer1 = 0
@@ -177,7 +178,7 @@ class PathPlanner():
             self.lane_change_BSM = LaneChangeBSM.off
             self.lane_change_state = LaneChangeState.preLaneChange
             self.pre_auto_LCA_timer += DT_MDL
-            if not sm['carState'].steeringPressed and self.alc_nudge_less and 1.5 > self.pre_auto_LCA_timer > 1.0:
+            if not sm['carState'].steeringPressed and self.alc_nudge_less and self.pre_auto_LCA_timer > self.alc_timer:
               self.pre_auto_LCA_timer = 0.0
               self.nCommand=2
             elif sm['carState'].steeringPressed:

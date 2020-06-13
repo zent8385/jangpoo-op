@@ -117,6 +117,10 @@ class kegman_conf():
         self.config.update({"steerTorqueOver":"200"})
         self.element_updated = True
 
+      if "ALCtimer" not in self.config:
+        self.config.update({"ALCtimer":"1.0"})
+        self.element_updated = True
+
 
 
       if self.element_updated:
@@ -130,7 +134,7 @@ class kegman_conf():
                     "cv_Ratio":"0.7", "cv_Dist":"-5", "steerTorqueOver":"200", \
                     "Kp":"-1", "Ki":"-1", "Kf":"-1", \
                     "Kp2":"-1", "Ki2":"-1", "Kf2":"-1", \
-                    "steerRatio":"-1", "steerRateCost":"-1", "ALCnudgeLess":"0", \
+                    "steerRatio":"-1", "steerRateCost":"-1", "ALCnudgeLess":"0", "ALCtimer":"1.0", \
                     "sR_boost":"0", "sR_BP0":"0", "sR_BP1":"0", "sR_time":"1", \
                     "sR_Kp":"0.20", "sR_Ki":"0.04", "sR_Kf":"0.00004", \
                     "sR_Kp2":"0.20", "sR_Ki2":"0.04", "sR_Kf2":"0.00004"}
