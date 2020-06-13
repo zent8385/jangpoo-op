@@ -227,7 +227,7 @@ class PathPlanner():
             # fade out lanelines over 1s
             self.lane_change_ll_prob = max(self.lane_change_ll_prob - 2*DT_MDL, 0.0)
             # 98% certainty
-            if lane_change_prob > 0.5: # and self.lane_change_ll_prob < 0.01: # or self.lane_change_timer2 > 300:
+            if lane_change_prob > 0.7: # and self.lane_change_ll_prob < 0.01: # or self.lane_change_timer2 > 300:
               #self.lane_change_ll_prob = 0
               self.lane_change_state = LaneChangeState.laneChangeFinishing
               self.nCommand=4
@@ -239,7 +239,7 @@ class PathPlanner():
           #if sm['carState'].leftBlinker or sm['carState'].rightBlinker:
           #  pass
           #else:
-          if lane_change_prob < 0.4 and self.lane_change_ll_prob > 0.8:
+          if lane_change_prob < 0.3 and self.lane_change_ll_prob > 0.8:
             self.lane_change_state = LaneChangeState.off
             self.nCommand=5
 
@@ -362,8 +362,10 @@ class PathPlanner():
 
     # Turn off lanes during lane change
     if desire == log.PathPlan.Desire.laneChangeRight or desire == log.PathPlan.Desire.laneChangeLeft:
-      self.LP.l_prob *= self.lane_change_ll_prob
-      self.LP.r_prob *= self.lane_change_ll_prob
+      self.LP.l_prob = 0
+      self.LP.r_prob = 0
+      #self.LP.l_prob *= self.lane_change_ll_prob
+      #self.LP.r_prob *= self.lane_change_ll_prob
       #self.libmpc.init_weights(MPC_COST_LAT.PATH / 10.0, MPC_COST_LAT.LANE, MPC_COST_LAT.HEADING, self.steer_rate_cost)
     #else:
       #self.libmpc.init_weights(MPC_COST_LAT.PATH, MPC_COST_LAT.LANE, MPC_COST_LAT.HEADING, self.steer_rate_cost)
@@ -386,17 +388,17 @@ class PathPlanner():
       
 
 
-    vCurv = vCurvature
-    if vCurvature > 1: # left
-      if vCurv > 5:
-        vCurv = 5
-      self.lean_offset = 0.02 + (vCurv * 0.02)
-      self.lean_wait_time = 50
-    elif vCurvature < -1:   # right
-      if vCurv < -5:
-        vCurv = -5
-      self.lean_offset = -0.02 + (vCurv * 0.02)
-      self.lean_wait_time = 50
+    # vCurv = vCurvature
+    # if vCurvature > 1: # left
+    #  if vCurv > 5:
+    #     vCurv = 5
+    #  self.lean_offset = 0.02 + (vCurv * 0.02)
+    #  self.lean_wait_time = 50
+    # elif vCurvature < -1:   # right
+    #  if vCurv < -5:
+    #     vCurv = -5
+    #  self.lean_offset = -0.02 + (vCurv * 0.02)
+    #  self.lean_wait_time = 50
 
     lean_offset = 0
     if self.lean_wait_time:
@@ -440,9 +442,9 @@ class PathPlanner():
         self.angle_steers_des_mpc = self.limit_ctrl( org_angle_steers_des, 0.3, angle_steers )
     elif abs(vCurvature) > 2:  # 커브면.
         pass
-    elif v_ego_kph < 30:
-        xp = [5,20,30]
-        fp2 = [0.5,2,3]
+    elif v_ego_kph < 40:
+        xp = [0,5,20,40]
+        fp2 = [1,3,5,9]
         limit_steers = interp( v_ego_kph, xp, fp2 )
 
         angle_steers_des = self.limit_ctrl( org_angle_steers_des, limit_steers, angle_steers )
