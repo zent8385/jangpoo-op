@@ -101,6 +101,9 @@ class PathPlanner():
 
       self.alc_nudge_less = bool(int(kegman.conf['ALCnudgeLess']))
       self.alc_timer = float(kegman.conf['ALCtimer'])
+      self.lean_St_Velocity = float(kegman.conf['leanStVelocity'])
+      self.lean_Left_Amount = float(kegman.conf['leanLeftAmount'])
+      self.lean_Right_Amount = float(kegman.conf['leanRightAmount'])
       self.lane_change_state = LaneChangeState.off
       self.lane_change_direction = LaneChangeDirection.none
       self.lane_change_timer1 = 0
@@ -386,20 +389,13 @@ class PathPlanner():
         self.lean_wait_time = 200
         self.lean_offset = 0.005
 
-      
-
-
-    # vCurv = vCurvature
-    # if vCurvature > 1: # left
-    #  if vCurv > 5:
-    #     vCurv = 5
-    #  self.lean_offset = 0.02 + (vCurv * 0.02)
-    #  self.lean_wait_time = 50
-    # elif vCurvature < -1:   # right
-    #  if vCurv < -5:
-    #     vCurv = -5
-    #  self.lean_offset = -0.02 + (vCurv * 0.02)
-    #  self.lean_wait_time = 50
+    if v_ego_kph > self.lean_St_Velocity:
+      if vCurvature > 1.5: # left
+        self.lean_offset = self.lean_Left_Amount
+        self.lean_wait_time = 50
+      elif vCurvature < -1.5:   # right
+        self.lean_offset = -self.lean_Right_Amount
+        self.lean_wait_time = 50
 
     lean_offset = 0
     if self.lean_wait_time:
