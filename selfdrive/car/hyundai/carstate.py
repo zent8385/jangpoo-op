@@ -352,7 +352,10 @@ class CarState():
     self.curise_sw_check = 0
     self.prev_clu_CruiseSwState = 0
 
-    self.prev_VSetDis = 30
+    self.prev_VSetDis = 0 #30
+
+    #add
+    self.button_pressed = 0
 
     self.cruise_set_mode = 0
 
@@ -487,7 +490,29 @@ class CarState():
     self.clu_SldMainSW = cp.vl["CLU11"]["CF_Clu_SldMainSW"]
     self.v_ego = self.clu_Vanz * CV.KPH_TO_MS
 
-    self.VSetDis = cp_scc.vl["SCC11"]['VSetDis']
+    #self.VSetDis = cp_scc.vl["SCC11"]['VSetDis']
+    
+    #VSetDis
+    if cp.vl['EMS16']['CRUISE_LAMP_M'] and not self.button_pressed:
+      if cp.vl['CLU11']['CF_Clu_CruiseSwState'] == 2 and self.cruise_set_speed == 0 and self.clu_Vanz >= 30:
+        self.VSetDis = self.clu_Vanz * speed_conv
+      elif self.VSetDis:
+        if cp.vl['CLU11']['CF_Clu_CruiseSwState'] == 2:
+          if self.prev_VSetDis:
+            self.VSetDis = self.prev_VSetDis
+          else:
+            #if (self.VSetDis -(2 * speed_conv) < (30 * speed_conv)):
+            if (self.VSetDis -2 < 30):  
+              self.VSetDis = 30 #(30 * speed_conv)
+            else:
+              self.VSetDis -= 2 #(2 * speed_conv)
+        elif cp.vl['CLU11']['CF_Clu_CruiseSwState'] == 1:
+          self.VSetDis += 2 #(2 * speed_conv)
+      self.button_pressed = 1
+    
+    if not cp.vl['CLU11']['CF_Clu_CruiseSwState']:
+      self.button_pressed = 0
+
 
 
 
