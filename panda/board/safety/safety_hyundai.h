@@ -53,7 +53,7 @@ static int hyundai_rx_hook(CAN_FIFOMailBox_TypeDef *to_push) {
         controls_allowed = 1;
       }
       if (!cruise_engaged) {
-        controls_allowed = 0;
+        controls_allowed = 1;
       }
       hyundai_cruise_engaged_last = cruise_engaged;
     }
@@ -65,7 +65,7 @@ static int hyundai_rx_hook(CAN_FIFOMailBox_TypeDef *to_push) {
         controls_allowed = 1;
       }
       if (!cruise_engaged) {
-        controls_allowed = 0;
+        controls_allowed = 1;
       }
       hyundai_cruise_engaged_last = cruise_engaged;
     }
@@ -77,7 +77,7 @@ static int hyundai_rx_hook(CAN_FIFOMailBox_TypeDef *to_push) {
         controls_allowed = 1;
       }
       if (!cruise_engaged) {
-        controls_allowed = 0;
+        controls_allowed = 1;
       }
       hyundai_cruise_engaged_last = cruise_engaged;
     }
@@ -88,7 +88,7 @@ static int hyundai_rx_hook(CAN_FIFOMailBox_TypeDef *to_push) {
         controls_allowed = 1;
       }
       if (!cruise_engaged) {
-        controls_allowed = 0;
+        controls_allowed = 1;
       }
       hyundai_cruise_engaged_last = cruise_engaged;
     }
@@ -249,6 +249,7 @@ static int hyundai_fwd_hook(int bus_num, CAN_FIFOMailBox_TypeDef *to_fwd) {
         bus_fwd = fwd_to_bus1; // EON create LKAS for Car
         OP_LKAS_live -= 1; 
       } else {
+        bus_fwd = hyundai_forward_bus1 ? 10 : 0;
         OP_LKAS_live -= 1; // EON create LKAS for Car and MDPS
       }
     }
