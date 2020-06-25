@@ -408,7 +408,7 @@ class CarController():
           self.sc_btn_type = Buttons.NONE          
         else:
           #self.traceCC.add( 'sc_btn_type={}  clu_speed={}  set={:.0f} vanz={:.0f}'.format( self.sc_btn_type, self.sc_clu_speed,  CS.VSetDis, clu11_speed  ) )
-          print("self.sc_btn_type : %d", % self.sc_btn_type)
+          print("self.sc_btn_type : "+ str(elf.sc_btn_type))
           can_sends.append(create_clu11(self.packer, CS.scc_bus, CS.clu11, self.sc_btn_type, self.sc_clu_speed, self.resume_cnt))
           self.resume_cnt += 1
 
