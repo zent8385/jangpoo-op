@@ -352,11 +352,7 @@ class CarState():
     self.curise_sw_check = 0
     self.prev_clu_CruiseSwState = 0
 
-    self.VSetDis = 30
-    self.prev_VSetDis = 30 #30
-
-    #add
-    self.button_pressed = 0
+    self.prev_VSetDis = 30
 
     self.cruise_set_mode = 0
 
@@ -387,26 +383,46 @@ class CarState():
           self.prev_VSetDis = int(self.VSetDis)
         elif self.driverAcc_time:
           cruise_set_speed_kph =  int(self.VSetDis)          
+
         elif self.prev_clu_CruiseSwState == 1:   # up
           if self.curise_set_first:
             self.curise_set_first = 0
             cruise_set_speed_kph =  int(self.VSetDis)
           elif delta_vsetdis > 5:
-            cruise_set_speed_kph = self.VSetDis
+            #속도차이가 5 이상이면 다시 현재 계기판 속도를 curise_set_speed
+            #cruise_set_speed_kph = self.VSetDis
+            cruise_set_speed_kph =  int(self.clu_Vanz)
+            self.VSetDis = int(self.clu_Vanz)
           elif not self.curise_sw_check:
-            #for tucson +2
-            #cruise_set_speed_kph += 1
-            cruise_set_speed_kph += 2
+            cruise_set_speed_kph += 2 #1
+
         elif self.prev_clu_CruiseSwState == 2:  # dn
+          if self.curise_set_first:
+            self.curise_set_first = 0
+            cruise_set_speed_kph =  int(self.clu_Vanz)
+          elif delta_vsetdis > 5:
+            #속도차이가 5 이상이면 다시 현재 계기판 속도를 curise_set_speed
+            #cruise_set_speed_kph =  int(self.VSetDis)
+            cruise_set_speed_kph =  int(self.clu_Vanz)
+            self.VSetDis = int(self.clu_Vanz)
+
+          elif not self.curise_sw_check:
+            cruise_set_speed_kph -= 2 #1
+        #      
+        elif self.prev_clu_CruiseSwState == 4 or self.brake_pressed or not self.acc_active:  # cancel
+          self.cruise_set_speed_kph = 0
+          self.prev_VSetDis = self.cruise_set_speed_kph
+          self.VSetDis=30
+          
+
+
           if self.curise_set_first:
             self.curise_set_first = 0
             cruise_set_speed_kph =  int(self.clu_Vanz)
           elif delta_vsetdis > 5:
             cruise_set_speed_kph =  int(self.VSetDis)
           elif not self.curise_sw_check:
-            #for tucson -2
-            #cruise_set_speed_kph -= 1
-            cruise_set_speed_kph -= 2
+            cruise_set_speed_kph -= 1  
 
         self.prev_clu_CruiseSwState = self.clu_CruiseSwState
       elif self.clu_CruiseSwState and delta_vsetdis > 0:
@@ -495,35 +511,8 @@ class CarState():
     self.clu_SldMainSW = cp.vl["CLU11"]["CF_Clu_SldMainSW"]
     self.v_ego = self.clu_Vanz * CV.KPH_TO_MS
 
-    #self.VSetDis = cp_scc.vl["SCC11"]['VSetDis']
-    
-    #VSetDis
-    if cp.vl['EMS16']['CRUISE_LAMP_M'] and not self.button_pressed:
-      if cp.vl['CLU11']['CF_Clu_CruiseSwState'] == 2 and self.cruise_set_speed == 0 and self.clu_Vanz >= 30:
-        self.VSetDis = self.clu_Vanz  #* speed_conv
-      elif self.VSetDis:
-        if cp.vl['CLU11']['CF_Clu_CruiseSwState'] == 2:
-          if self.prev_VSetDis:
-            self.VSetDis = self.prev_VSetDis
-          else:
-            #if (self.VSetDis -(2 * speed_conv) < (30 * speed_conv)):
-            if (self.VSetDis -2 < 30):  
-              self.VSetDis = 30 #(30 * speed_conv)
-            else:
-              self.VSetDis -= 2 #(2 * speed_conv)
-        elif cp.vl['CLU11']['CF_Clu_CruiseSwState'] == 1:
-          self.VSetDis += 2 #(2 * speed_conv)
-      self.button_pressed = 1
-    
-    if not cp.vl['CLU11']['CF_Clu_CruiseSwState']:
-      self.button_pressed = 0
+    self.VSetDis = cp_scc.vl["SCC11"]['VSetDis']
 
-
-
-    if cp.vl["TCS13"]['DriverBraking'] or not cp.vl['EMS16']['CRUISE_LAMP_M'] or cp.vl['CLU11']['CF_Clu_CruiseSwState'] == 4:  
-      #self.cruise_set_speed_prev = self.cruise_set_speed
-      self.cruise_set_speed = 0
-      self.VSetDis=30
 
 
     self.is_set_speed_in_mph = int(cp.vl["CLU11"]["CF_Clu_SPEED_UNIT"])
@@ -665,8 +654,6 @@ class CarState():
        self.blinker_timer -= 1
     else:
        self.blinker_status = 0
-
-
 
 
 
