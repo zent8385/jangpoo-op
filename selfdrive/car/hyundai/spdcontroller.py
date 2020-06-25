@@ -176,10 +176,12 @@ class SpdController():
             return lead_wait_cmd, lead_set_speed
 
         self.seq_step_debug = 1
+        
+        #vision model 인식 거리 전달
         #dRel, yRel, vRel = self.get_lead( sm, CS )
-        if CS.lead_distance < 150:
-            dRel = CS.lead_distance
-            vRel = CS.lead_objspd
+        #if CS.lead_distance < 150:
+        #    dRel = CS.lead_distance
+        #    vRel = CS.lead_objspd
 
         dst_lead_distance = (CS.clu_Vanz*cv_Raio)   # 유지 거리.
         
@@ -390,7 +392,8 @@ class SpdController():
 
         str3 = 'SS={:03.0f} TSS={:03.0f} VSD={:03.0f} DAt={:03.0f}/{:03.0f}/{:03.0f} DG/dec={:02.0f}/{:02.0f}'.format(
             set_speed, target_set_speed, CS.VSetDis, CS.driverAcc_time, long_wait_cmd, self.long_curv_timer, self.seq_step_debug, dec_step_cmd )
-        str4 = ' LD/LS={:03.0f}/{:03.0f} '.format(  CS.lead_distance, CS.lead_objspd )
+        #str4 = ' LD/LS={:03.0f}/{:03.0f} '.format(  CS.lead_distance, CS.lead_objspd )
+        str4 = ' LD/LS={:03.0f}/{:03.0f} '.format(  dRel, vRel )
 
         str5 = str3 +  str4
         trace1.printf2( str5 )
