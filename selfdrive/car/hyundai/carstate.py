@@ -352,6 +352,7 @@ class CarState():
     self.curise_sw_check = 0
     self.prev_clu_CruiseSwState = 0
 
+    self.VSetDis = 0
     self.prev_VSetDis = 0 #30
 
     #add
