@@ -352,8 +352,8 @@ class CarState():
     self.curise_sw_check = 0
     self.prev_clu_CruiseSwState = 0
 
-    self.VSetDis = 0
-    self.prev_VSetDis = 0 #30
+    self.VSetDis = 30
+    self.prev_VSetDis = 30 #30
 
     #add
     self.button_pressed = 0
@@ -523,6 +523,7 @@ class CarState():
     if cp.vl["TCS13"]['DriverBraking'] or not cp.vl['EMS16']['CRUISE_LAMP_M'] or cp.vl['CLU11']['CF_Clu_CruiseSwState'] == 4:  
       #self.cruise_set_speed_prev = self.cruise_set_speed
       self.cruise_set_speed = 0
+      self.VSetDis=30
 
 
     self.is_set_speed_in_mph = int(cp.vl["CLU11"]["CF_Clu_SPEED_UNIT"])
