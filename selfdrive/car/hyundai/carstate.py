@@ -678,9 +678,9 @@ class CarState():
 
 
     #
-    if( self.clu_Vanz > 30):
-      self.cruise_set_speed_kph = self.update_cruiseSW()
-      self.cruise_set_speed = self.cruise_set_speed_kph * speed_conv
+    #if( self.clu_Vanz > 30):
+    self.cruise_set_speed_kph = self.update_cruiseSW()
+    self.cruise_set_speed = self.cruise_set_speed_kph * speed_conv
     
     #str1 = 'C:{:.0f}  as={:.1f} set{:.1f}'.format( self.main_on,  self.pcm_acc_status,  self.cruise_set_speed )
     #str2 = 'sw={:.0f}/{:.0f}/{:.0f} gear={:.0f} scc={:.0f}'.format( self.clu_CruiseSwState, self.clu_CruiseSwMain, self.clu_SldMainSW, self.gear_shifter, self.sccInfoDisp )
