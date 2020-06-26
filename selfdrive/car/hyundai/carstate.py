@@ -400,8 +400,7 @@ class CarState():
               cruise_set_speed_kph =  int(self.prev_VSetDis)
             else:
               cruise_set_speed_kph =  int(self.VSetDis)
-          #elif delta_vsetdis > 5:
-          elif delta_vsetdis > 2:
+          elif delta_vsetdis > 5:
             #속도차이가 2 이상이면 다시 현재 계기판 속도를 curise_set_speed
             cruise_set_speed_kph = self.VSetDis
           elif not self.curise_sw_check:
@@ -415,8 +414,7 @@ class CarState():
             #첫 설정이면 현재 속도 입력
             cruise_set_speed_kph =  int(self.clu_Vanz)
             self.VSetDis = int(self.clu_Vanz)
-          #elif delta_vsetdis > 5:
-          elif delta_vsetdis > 2:  
+          elif delta_vsetdis > 5:  
             #속도차이가 2 이상이면 다시 현재 계기판 속도를 curise_set_speed
             cruise_set_speed_kph =  int(self.VSetDis)
           elif not self.curise_sw_check:
