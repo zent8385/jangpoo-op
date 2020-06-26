@@ -352,6 +352,7 @@ class CarState():
     self.curise_sw_check = 0
     self.prev_clu_CruiseSwState = 0
 
+    self.VSetDis = 30
     self.prev_VSetDis = 30
 
     self.cruise_set_mode = 0
@@ -377,41 +378,53 @@ class CarState():
     cruise_set_speed_kph = self.cruise_set_speed_kph
     delta_vsetdis = 0
     if self.pcm_acc_status:
+      
       delta_vsetdis = abs(self.VSetDis - self.prev_VSetDis)
+      print("delta_vsetdis : " + str(delta_vsetdis), end= ' ')
+
       if self.prev_clu_CruiseSwState != self.clu_CruiseSwState:
         if self.clu_CruiseSwState:
+          print("pressed sw", end= ' ')
           self.prev_VSetDis = int(self.VSetDis)
         elif self.driverAcc_time:
+          print("driver acc", end= ' ')
+          #운전자 가속 동안에는 set_speed 표기 설정 유지
           cruise_set_speed_kph =  int(self.VSetDis)          
 
         elif self.prev_clu_CruiseSwState == 1:   # up
+          print("res", end= ' ')
           if self.curise_set_first:
             self.curise_set_first = 0
+            #첫 설정이면 이전 속도 셋 입력(기본 =30 )
             cruise_set_speed_kph =  int(self.VSetDis)
-          elif delta_vsetdis > 5:
-            #속도차이가 5 이상이면 다시 현재 계기판 속도를 curise_set_speed
-            #cruise_set_speed_kph = self.VSetDis
-            cruise_set_speed_kph =  int(self.clu_Vanz)
-            self.VSetDis = int(self.clu_Vanz)
+          #elif delta_vsetdis > 5:
+          elif delta_vsetdis > 2:
+            #속도차이가 2 이상이면 다시 현재 계기판 속도를 curise_set_speed
+            cruise_set_speed_kph = self.VSetDis
           elif not self.curise_sw_check:
             cruise_set_speed_kph += 2 #1
+            self.VSetDis += 2
 
         elif self.prev_clu_CruiseSwState == 2:  # dn
+          print("set", end= ' ')
           if self.curise_set_first:
             self.curise_set_first = 0
-            cruise_set_speed_kph =  int(self.clu_Vanz)
-          elif delta_vsetdis > 5:
-            #속도차이가 5 이상이면 다시 현재 계기판 속도를 curise_set_speed
-            #cruise_set_speed_kph =  int(self.VSetDis)
+            #첫 설정이면 현재 속도 입력
             cruise_set_speed_kph =  int(self.clu_Vanz)
             self.VSetDis = int(self.clu_Vanz)
-
+          #elif delta_vsetdis > 5:
+          elif delta_vsetdis > 2:  
+            #속도차이가 2 이상이면 다시 현재 계기판 속도를 curise_set_speed
+            cruise_set_speed_kph =  int(self.VSetDis)
           elif not self.curise_sw_check:
             cruise_set_speed_kph -= 2 #1
-        #      
-        elif self.prev_clu_CruiseSwState == 4 or self.brake_pressed or not self.acc_active:  # cancel
+            self.VSetDis -= 2
+            
+        #브레이크 또는 cancel 버튼 누름 또는 크루즈 상태에 따른 cruise set 초기화
+        elif self.prev_clu_CruiseSwState == 4 or self.driverOverride == 2 or not self.acc_active:  # cancel /brake/ cruise off
+          print("cancel", end= ' ')
           self.cruise_set_speed_kph = 0
-          self.prev_VSetDis = self.cruise_set_speed_kph
+          self.prev_VSetDis = self.VSetDis
           self.VSetDis=30
           
 
@@ -419,10 +432,13 @@ class CarState():
           if self.curise_set_first:
             self.curise_set_first = 0
             cruise_set_speed_kph =  int(self.clu_Vanz)
-          elif delta_vsetdis > 5:
-            cruise_set_speed_kph =  int(self.VSetDis)
+          #elif delta_vsetdis > 5:
+          elif delta_vsetdis > 2:
+            #cruise_set_speed_kph =  int(self.VSetDis)
+            cruise_set_speed_kph =  int(self.clu_Vanz)
+            self.VSetDis = int(self.clu_Vanz)
           elif not self.curise_sw_check:
-            cruise_set_speed_kph -= 1  
+            cruise_set_speed_kph -= 2 #1  
 
         self.prev_clu_CruiseSwState = self.clu_CruiseSwState
       elif self.clu_CruiseSwState and delta_vsetdis > 0:
@@ -511,7 +527,7 @@ class CarState():
     self.clu_SldMainSW = cp.vl["CLU11"]["CF_Clu_SldMainSW"]
     self.v_ego = self.clu_Vanz * CV.KPH_TO_MS
 
-    self.VSetDis = cp_scc.vl["SCC11"]['VSetDis']
+    #self.VSetDis = cp_scc.vl["SCC11"]['VSetDis']
 
 
 
@@ -543,9 +559,11 @@ class CarState():
 
     self.driverOverride = cp.vl["TCS13"]["DriverOverride"]     # 1 Acc,  2 bracking, 0 Normal
 
+    #운전자 개입
     if self.driverOverride == 1:
       self.driverAcc_time = 100
 
+    #100초 동안 개입 카운트 -1
     if self.driverAcc_time:
       self.driverAcc_time -= 1
 
