@@ -352,8 +352,8 @@ class CarState():
     self.curise_sw_check = 0
     self.prev_clu_CruiseSwState = 0
 
-    self.VSetDis = 30
-    self.prev_VSetDis = 30
+    self.VSetDis = 0
+    self.prev_VSetDis = 0
 
     self.cruise_set_mode = 2
 
@@ -462,6 +462,7 @@ class CarState():
     if cruise_set_speed_kph < 30:
       cruise_set_speed_kph = 30
 
+    print(" ")
     return cruise_set_speed_kph
 
 
