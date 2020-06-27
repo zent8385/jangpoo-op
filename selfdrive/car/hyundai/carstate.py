@@ -380,8 +380,7 @@ class CarState():
     if self.pcm_acc_status:
       
       delta_vsetdis = abs(self.VSetDis - self.prev_VSetDis)
-      print("delta_vsetdis : " + str(delta_vsetdis), end= ' ')
-
+      print("vsd:%d prev_vsd%d prev_clu_csw:%d clu_cws:%d" % (self.VSetDis, self.prev_VSetDis, self.prev_clu_CruiseSwState, self.clu_CruiseSwState))
       if self.prev_clu_CruiseSwState != self.clu_CruiseSwState:
         if self.clu_CruiseSwState:
           print("pressed sw", end= ' ')
@@ -395,7 +394,7 @@ class CarState():
           print("res", end= ' ')
           if self.curise_set_first:
             self.curise_set_first = 0
-            #첫 설정이면 이전 속도 셋 입력(기본 =30 )
+            #첫 설정이면 이전 속도 셋 입력
             if not self.prev_VSetDis:
               cruise_set_speed_kph =  int(self.prev_VSetDis)
             else:
@@ -428,18 +427,6 @@ class CarState():
           self.prev_VSetDis = self.VSetDis
           self.VSetDis = 0
 
-
-          if self.curise_set_first:
-            self.curise_set_first = 0
-            cruise_set_speed_kph =  int(self.clu_Vanz)
-          #elif delta_vsetdis > 5:
-          elif delta_vsetdis > 2:
-            #cruise_set_speed_kph =  int(self.VSetDis)
-            cruise_set_speed_kph =  int(self.clu_Vanz)
-            self.VSetDis = int(self.clu_Vanz)
-          elif not self.curise_sw_check:
-            cruise_set_speed_kph -= 2 #1  
-
         self.prev_clu_CruiseSwState = self.clu_CruiseSwState
       elif self.clu_CruiseSwState and delta_vsetdis > 0:
         self.curise_sw_check = True
@@ -460,7 +447,7 @@ class CarState():
     trace1.cruise_set_mode = self.cruise_set_mode
 
     if cruise_set_speed_kph < 30:
-      cruise_set_speed_kph = 30
+      cruise_set_speed_kph = 0
 
     print(" ")
     return cruise_set_speed_kph
