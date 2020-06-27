@@ -396,7 +396,7 @@ class CarState():
           if self.curise_set_first:
             print("cruise_set_first")
             self.curise_set_first = 0
-            #첫 설정이면 이전 속도 셋 입력
+            #첫 설정이 아니면 이전 속도 셋 입력
             if not self.prev_VSetDis:
               cruise_set_speed_kph =  int(self.prev_VSetDis)
             else:
@@ -427,9 +427,9 @@ class CarState():
             self.VSetDis -= 2
 
         #브레이크 또는 cancel 버튼 누름 또는 크루즈 상태에 따른 cruise set 초기화
-        elif self.prev_clu_CruiseSwState == 4 or self.driverOverride == 2:  # cancel /brake/ cruise off
+        elif self.prev_clu_CruiseSwState == 4 or self.brake_pressed:  # cancel /brake/ cruise off
           print("cancel vsd:%d prev_vsd:%d prev_clu_csw:%d clu_csw:%d cruise_set_speed_kph:%d" % (self.VSetDis, self.prev_VSetDis, self.prev_clu_CruiseSwState, self.clu_CruiseSwState, self.cruise_set_speed_kph))
-          
+          self.curise_set_first = 1
           cruise_set_speed_kph = 0
           self.prev_VSetDis = self.VSetDis
           self.VSetDis = 0
@@ -443,8 +443,11 @@ class CarState():
     else:
       self.curise_sw_check = False
       self.curise_set_first = 1
+
       self.prev_VSetDis = 0 #int(self.VSetDis)
+      self.VSetDis = 0
       cruise_set_speed_kph = 0 #self.VSetDis
+      
       if self.prev_clu_CruiseSwState != self.clu_CruiseSwState:
         if self.clu_CruiseSwState == 4:
           self.cruise_set_mode += 1
@@ -456,8 +459,9 @@ class CarState():
 
     if cruise_set_speed_kph < 30:
       cruise_set_speed_kph = 0
+      self.VSetDis = 0
 
-    print("cruise_set_speed_kph:%d" % (cruise_set_speed_kph))
+    print("cruise_set_speed_kph:%d vsetdis%d prev_vsetdis" % (cruise_set_speed_kph, self.VSetDis, self.prev_VSetDis))
     return cruise_set_speed_kph
 
 
