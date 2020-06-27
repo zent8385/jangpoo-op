@@ -381,19 +381,20 @@ class CarState():
     if self.pcm_acc_status:
       
       delta_vsetdis = abs(self.VSetDis - self.prev_VSetDis)
-      print("vsd:%d prev_vsd%d prev_clu_csw:%d clu_cws:%d" % (self.VSetDis, self.prev_VSetDis, self.prev_clu_CruiseSwState, self.clu_CruiseSwState))
+      print("vsd:%d prev_vsd:%d prev_clu_csw:%d clu_csw:%d curise_set_first:%d" % (self.VSetDis, self.prev_VSetDis, self.prev_clu_CruiseSwState, self.clu_CruiseSwState, self.cruise_set_first))
       if self.prev_clu_CruiseSwState != self.clu_CruiseSwState:
         if self.clu_CruiseSwState:
-          print("pressed sw", end= ' ')
+          print("pressed sw")
           self.prev_VSetDis = int(self.VSetDis)
         elif self.driverAcc_time:
-          print("driver acc", end= ' ')
+          print("driver acc")
           #운전자 가속 동안에는 set_speed 표기 설정 유지
           cruise_set_speed_kph =  int(self.VSetDis)          
 
         elif self.prev_clu_CruiseSwState == 1:   # up
           print("res", end= ' ')
           if self.curise_set_first:
+            print("cruise_set_first")
             self.curise_set_first = 0
             #첫 설정이면 이전 속도 셋 입력
             if not self.prev_VSetDis:
@@ -410,6 +411,7 @@ class CarState():
         elif self.prev_clu_CruiseSwState == 2:  # dn
           print("set", end= ' ')
           if self.curise_set_first:
+            print("cruise_set_first")
             self.curise_set_first = 0
             #첫 설정이면 현재 속도 입력
             cruise_set_speed_kph =  int(self.clu_Vanz)
@@ -436,8 +438,8 @@ class CarState():
     else:
       self.curise_sw_check = False
       self.curise_set_first = 1
-      self.prev_VSetDis = int(self.VSetDis)
-      cruise_set_speed_kph = self.VSetDis
+      self.prev_VSetDis = 0 #int(self.VSetDis)
+      cruise_set_speed_kph = 0 #self.VSetDis
       if self.prev_clu_CruiseSwState != self.clu_CruiseSwState:
         if self.clu_CruiseSwState == 4:
           self.cruise_set_mode += 1
@@ -498,7 +500,7 @@ class CarState():
     self.acc_active = cp.vl['EMS16']['CRUISE_LAMP_M'] #(cp_scc.vl["SCC12"]['ACCMode'] != 0) if not self.no_radar else \
                                                       #                (cp.vl["LVR12"]['CF_Lvr_CruiseSet'] != 0)
     self.cruise_set = cp.vl['EMS16']['CRUISE_LAMP_S']  
-    
+
     self.pcm_acc_status = int(self.acc_active)
 
     self.v_wheel_fl = cp.vl["WHL_SPD11"]['WHL_SPD_FL'] * CV.KPH_TO_MS
