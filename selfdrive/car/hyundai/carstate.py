@@ -289,7 +289,7 @@ def get_camera_parser(CP):
       ("SCC11", 50),
       ("SCC12", 50),
     ]
-  return CANParser(DBC[CP.carFingerprint]['pt'], signals, checks, 2)
+  return CANParser(DBC[CP.carFingerprint]['pt'], signals,dh checks, 2)
 
 
 
@@ -427,7 +427,7 @@ class CarState():
             self.VSetDis -= 2
 
         #브레이크 또는 cancel 버튼 누름 또는 크루즈 상태에 따른 cruise set 초기화
-        elif self.prev_clu_CruiseSwState == 4 or self.driverOverride == 2:  # cancel /brake/ cruise off
+        elif self.prev_clu_CruiseSwState == 4 or self.brake_pressed:  # cancel /brake/ cruise off
           print("cancel vsd:%d prev_vsd:%d prev_clu_csw:%d clu_csw:%d cruise_set_speed_kph:%d" % (self.VSetDis, self.prev_VSetDis, self.prev_clu_CruiseSwState, self.clu_CruiseSwState, self.cruise_set_speed_kph))
           
           self.cruise_set_speed_kph = 0
