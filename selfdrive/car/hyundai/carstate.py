@@ -457,7 +457,7 @@ class CarState():
     if cruise_set_speed_kph < 30:
       cruise_set_speed_kph = 0
 
-    
+    print("cruise_set_speed_kph:%d" % (cruise_set_speed_kph))
     return cruise_set_speed_kph
 
 
