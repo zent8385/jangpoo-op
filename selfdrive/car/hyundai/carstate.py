@@ -436,6 +436,7 @@ class CarState():
 
         self.prev_clu_CruiseSwState = self.clu_CruiseSwState
       elif self.clu_CruiseSwState and delta_vsetdis > 0:
+        print("self.clu_CruiseSwState and delta_vsetdis > 0")
         self.curise_sw_check = True
         cruise_set_speed_kph =  int(self.VSetDis)
 
