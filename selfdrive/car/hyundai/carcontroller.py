@@ -399,7 +399,7 @@ class CarController():
         self.sc_btn_type = btn_type
         self.sc_clu_speed = clu_speed
 
-      if self.sc_btn_type != Buttons.NONE:
+      if self.sc_btn_type != Buttons.NONE and CS.cruise_set:
         self.sc_active_timer2 += 1
         if self.sc_active_timer2 > 10:
           self.sc_wait_timer2 = 5
@@ -408,7 +408,7 @@ class CarController():
           self.sc_btn_type = Buttons.NONE          
         else:
           #self.traceCC.add( 'sc_btn_type={}  clu_speed={}  set={:.0f} vanz={:.0f}'.format( self.sc_btn_type, self.sc_clu_speed,  CS.VSetDis, clu11_speed  ) )
-          print("self.sc_btn_type : "+ str(self.sc_btn_type))
+          print("cruise set-> "+ str(self.sc_btn_type))
           can_sends.append(create_clu11(self.packer, CS.scc_bus, CS.clu11, self.sc_btn_type, self.sc_clu_speed, self.resume_cnt))
           self.resume_cnt += 1
 

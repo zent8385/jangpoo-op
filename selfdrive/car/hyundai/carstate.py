@@ -63,6 +63,7 @@ def get_can_parser(CP):
     ("CF_Lca_IndRight", "LCA11", 0),
 
     ("CRUISE_LAMP_M", "EMS16", 0),
+    ("CRUISE_LAMP_S", "EMS16", 0),
   ]
 
   checks = [
@@ -449,7 +450,7 @@ class CarState():
     if cruise_set_speed_kph < 30:
       cruise_set_speed_kph = 0
 
-    print(" ")
+    
     return cruise_set_speed_kph
 
 
@@ -496,6 +497,8 @@ class CarState():
                                                     #                         cp.vl['EMS16']['CRUISE_LAMP_M']
     self.acc_active = cp.vl['EMS16']['CRUISE_LAMP_M'] #(cp_scc.vl["SCC12"]['ACCMode'] != 0) if not self.no_radar else \
                                                       #                (cp.vl["LVR12"]['CF_Lvr_CruiseSet'] != 0)
+    self.cruise_set = cp.vl['EMS16']['CRUISE_LAMP_S']  
+    
     self.pcm_acc_status = int(self.acc_active)
 
     self.v_wheel_fl = cp.vl["WHL_SPD11"]['WHL_SPD_FL'] * CV.KPH_TO_MS
