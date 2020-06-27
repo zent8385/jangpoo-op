@@ -381,7 +381,7 @@ class CarState():
     if self.pcm_acc_status:
       
       delta_vsetdis = abs(self.VSetDis - self.prev_VSetDis)
-      print("vsd:%d prev_vsd:%d prev_clu_csw:%d clu_csw:%d curise_set_first:%d" % (self.VSetDis, self.prev_VSetDis, self.prev_clu_CruiseSwState, self.clu_CruiseSwState, self.cruise_set_first))
+      
       if self.prev_clu_CruiseSwState != self.clu_CruiseSwState:
         if self.clu_CruiseSwState:
           print("pressed sw")
@@ -407,12 +407,15 @@ class CarState():
           elif not self.curise_sw_check:
             cruise_set_speed_kph += 2 #1
             self.VSetDis += 2
+          # dn & cancel test
+          self.VSetDis = 100
+          cruise_set_speed_kph = 100
 
         elif self.prev_clu_CruiseSwState == 2:  # dn
-          print("set", end= ' ')
+          print("dn vsd:%d clu_csw:%d clu_csw:%d curise_set_first:%d clu_vanz:%d delta_vsd:%d cruise_sw_check" % (self.VSetDis, self.clu_CruiseSwState, self.cruise_set_first, self.clu_Vanz, delta_vsetdis, self.curise_sw_check))
           if self.curise_set_first:
             print("cruise_set_first")
-            self.curise_set_first = 0
+            self.cruise_set_first = 0
             #첫 설정이면 현재 속도 입력
             cruise_set_speed_kph =  int(self.clu_Vanz)
             self.VSetDis = int(self.clu_Vanz)
@@ -424,8 +427,9 @@ class CarState():
             self.VSetDis -= 2
 
         #브레이크 또는 cancel 버튼 누름 또는 크루즈 상태에 따른 cruise set 초기화
-        elif self.prev_clu_CruiseSwState == 4 or self.driverOverride == 2 or not self.acc_active:  # cancel /brake/ cruise off
-          print("cancel", end= ' ')
+        elif self.prev_clu_CruiseSwState == 4 or self.driverOverride == 2:  # cancel /brake/ cruise off
+          print("cancel vsd:%d prev_vsd:%d prev_clu_csw:%d clu_csw:%d cruise_set_speed_kph:%d" % (self.VSetDis, self.prev_VSetDis, self.prev_clu_CruiseSwState, self.clu_CruiseSwState, self.cruise_set_speed_kph))
+          
           self.cruise_set_speed_kph = 0
           self.prev_VSetDis = self.VSetDis
           self.VSetDis = 0
