@@ -386,10 +386,10 @@ class CarState():
         if self.clu_CruiseSwState:
           print("pressed sw")
           self.prev_VSetDis = int(self.VSetDis)
-        elif self.driverAcc_time:
-          print("driver acc")
-          #운전자 가속 동안에는 set_speed 표기 설정 유지
-          cruise_set_speed_kph =  int(self.VSetDis)          
+        #elif self.driverAcc_time:
+        #  print("driver acc")
+        #  #운전자 가속 동안에는 set_speed 표기 설정 유지
+        #  cruise_set_speed_kph =  int(self.VSetDis)          
 
         elif self.prev_clu_CruiseSwState == 1:   # up
           print("res", end= ' ')
