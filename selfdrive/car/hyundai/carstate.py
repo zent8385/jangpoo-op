@@ -581,7 +581,7 @@ class CarState():
     if self.driverOverride == 1:
       print("driver acc")
       self.driverAcc_time = 100
-    else if self.driverOverride == 2:
+    elif self.driverOverride == 2:
       print("driver brake")
 
     #100ms 동안 개입 카운트 -1
