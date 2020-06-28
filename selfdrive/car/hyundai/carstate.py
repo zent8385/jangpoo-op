@@ -461,7 +461,7 @@ class CarState():
       cruise_set_speed_kph = 0
       self.VSetDis = 0
 
-    print("cruise_set_speed_kph:%d vsetdis%d prev_vsetdis" % (cruise_set_speed_kph, self.VSetDis, self.prev_VSetDis))
+    print("cruise_set_speed_kph:%d vsetdis%d prev_vsetdis%d" % (cruise_set_speed_kph, self.VSetDis, self.prev_VSetDis))
     return cruise_set_speed_kph
 
 
