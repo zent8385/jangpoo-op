@@ -408,8 +408,9 @@ class CarState():
             cruise_set_speed_kph += 2 #1
             self.VSetDis += 2
           # dn & cancel test
-          self.VSetDis = 100
-          cruise_set_speed_kph = 100
+          #self.VSetDis = 100
+          #cruise_set_speed_kph = 100
+          
 
         elif self.prev_clu_CruiseSwState == 2:  # dn
           print("dn vsd:%d clu_csw:%d clu_csw:%d curise_set_first:%d clu_vanz:%d delta_vsd:%d cruise_sw_check" % (self.VSetDis, self.clu_CruiseSwState, self.curise_set_first, self.clu_Vanz, delta_vsetdis, self.curise_sw_check))
