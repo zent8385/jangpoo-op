@@ -337,6 +337,7 @@ class SpdController():
         #lead_1 = sm['radarState'].leadOne
         long_wait_cmd = 500
         set_speed = CS.cruise_set_speed_kph
+        set_speed_diff = CS.VSetDis - CS.clu_Vanz
         dec_step_cmd = 0
 
         if self.long_curv_timer < 600:
@@ -362,10 +363,13 @@ class SpdController():
         if set_speed > CS.cruise_set_speed_kph:
             set_speed = CS.cruise_set_speed_kph
         elif set_speed < 30:
-            set_speed = 30
+            set_speed = 0
 
         # control process
         target_set_speed = set_speed
+
+              
+        CS.VSetDis -= set_speed_diff
         delta = int(set_speed) - int(CS.VSetDis)
         if dec_step_cmd == 0 and delta < -1:
             if delta < -3:
