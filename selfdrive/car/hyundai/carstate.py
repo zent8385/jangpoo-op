@@ -349,7 +349,7 @@ class CarState():
 
     self.cruise_set_speed = 0
     self.cruise_set_speed_kph = 0
-    self.curise_set_first = 0
+    self.cruise_set_first = 0
     self.curise_sw_check = 0
     self.prev_clu_CruiseSwState = 0
 
@@ -393,9 +393,9 @@ class CarState():
 
         elif self.prev_clu_CruiseSwState == 1:   # up
           print("res", end= ' ')
-          if self.curise_set_first:
+          if self.cruise_set_first:
             print("cruise_set_first")
-            self.curise_set_first = 0
+            self.cruise_set_first = 0
             #첫 설정이 아니면 이전 속도 셋 입력
             if not self.prev_VSetDis:
               cruise_set_speed_kph =  int(self.prev_VSetDis)
@@ -405,37 +405,51 @@ class CarState():
             #속도차이가 2 이상이면 다시 현재 계기판 속도를 curise_set_speed
             cruise_set_speed_kph = self.VSetDis
           elif not self.curise_sw_check:
+            print("not self.curise_sw_check")
+            cruise_set_speed_kph += 2 #1
+            self.VSetDis += 2
+          elif self.curise_sw_check:
+            print("self.curise_sw_check")
             cruise_set_speed_kph += 2 #1
             self.VSetDis += 2
           # dn & cancel test
           #self.VSetDis = 100
           #cruise_set_speed_kph = 100
-          
+
 
         elif self.prev_clu_CruiseSwState == 2:  # dn
-          print("dn vsd:%d clu_csw:%d clu_csw:%d curise_set_first:%d clu_vanz:%d delta_vsd:%d cruise_sw_check" % (self.VSetDis, self.clu_CruiseSwState, self.curise_set_first, self.clu_Vanz, delta_vsetdis, self.curise_sw_check))
-          if self.curise_set_first:
+          print("dn vsd:%d clu_csw:%d cruise_set_first:%d clu_vanz:%d delta_vsd:%d cruise_sw_check:%d" % (self.VSetDis, self.clu_CruiseSwState, self.cruise_set_first, self.clu_Vanz, delta_vsetdis, self.curise_sw_check))
+          if self.cruise_set_first:
             print("cruise_set_first")
             self.cruise_set_first = 0
             #첫 설정이면 현재 속도 입력
             cruise_set_speed_kph =  int(self.clu_Vanz)
             self.VSetDis = int(self.clu_Vanz)
-          elif delta_vsetdis > 5:  
+          elif delta_vsetdis > 5:
+            print("delta_vsetdis > 5:")  
             #속도차이가 2 이상이면 다시 현재 계기판 속도를 curise_set_speed
             cruise_set_speed_kph =  int(self.VSetDis)
           elif not self.curise_sw_check:
+            print("not self.curise_sw_check")
             cruise_set_speed_kph -= 2 #1
             self.VSetDis -= 2
+          elif self.curise_sw_check:
+            print("self.curise_sw_check")
+            cruise_set_speed_kph -= 2 #1
+            self.VSetDis -= 2
+
 
         #브레이크 또는 cancel 버튼 누름 또는 크루즈 상태에 따른 cruise set 초기화
         elif self.prev_clu_CruiseSwState == 4 or self.brake_pressed:  # cancel /brake/ cruise off
           print("cancel vsd:%d prev_vsd:%d prev_clu_csw:%d clu_csw:%d cruise_set_speed_kph:%d" % (self.VSetDis, self.prev_VSetDis, self.prev_clu_CruiseSwState, self.clu_CruiseSwState, self.cruise_set_speed_kph))
-          self.curise_set_first = 1
+          self.cruise_set_first = 1
           cruise_set_speed_kph = 0
           self.prev_VSetDis = self.VSetDis
           self.VSetDis = 0
 
         self.prev_clu_CruiseSwState = self.clu_CruiseSwState
+
+      #같은 버튼을 두번 눌렀을 때 동작
       elif self.clu_CruiseSwState and delta_vsetdis > 0:
         print("self.clu_CruiseSwState and delta_vsetdis > 0")
         self.curise_sw_check = True
@@ -443,7 +457,7 @@ class CarState():
 
     else:
       self.curise_sw_check = False
-      self.curise_set_first = 1
+      self.cruise_set_first = 1
 
       self.prev_VSetDis = 0 #int(self.VSetDis)
       self.VSetDis = 0
@@ -458,11 +472,12 @@ class CarState():
       
     trace1.cruise_set_mode = self.cruise_set_mode
 
-    if cruise_set_speed_kph < 30:
-      cruise_set_speed_kph = 0
-      self.VSetDis = 0
+    #if cruise_set_speed_kph < 30:
+    #  cruise_set_speed_kph = 0
+    #  self.VSetDis = 0
 
-    print("cruise_set_speed_kph:%d vsetdis%d prev_vsetdis%d" % (cruise_set_speed_kph, self.VSetDis, self.prev_VSetDis))
+    
+    #print("cruise_set_speed_kph:%d vsetdis%d prev_vsetdis%d brake pressed:%d" % (cruise_set_speed_kph, self.VSetDis, self.prev_VSetDis, self.brake_pressed))
     return cruise_set_speed_kph
 
 
@@ -564,9 +579,12 @@ class CarState():
 
     #운전자 개입
     if self.driverOverride == 1:
+      print("driver acc")
       self.driverAcc_time = 100
+    else if self.driverOverride == 2:
+      print("driver brake")
 
-    #100초 동안 개입 카운트 -1
+    #100ms 동안 개입 카운트 -1
     if self.driverAcc_time:
       self.driverAcc_time -= 1
 
