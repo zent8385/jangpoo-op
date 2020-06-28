@@ -187,8 +187,14 @@ class SpdController():
         
         if dst_lead_distance > 100:
             dst_lead_distance = 100
+        #유지거리 조건 추가
+        elif dst_lead_distance < 75:
+            dst_lead_distance = 70
         elif dst_lead_distance < 50:
             dst_lead_distance = 50
+        #유지거리 조건 추가
+        elif dst_lead_distance < 25:
+            dst_lead_distance = 25
 
         if dRel < 150:
             self.time_no_lean = 0
@@ -264,7 +270,9 @@ class SpdController():
                 lead_wait_cmd, lead_set_speed = self.get_tm_speed( CS, 10, 3 )
             elif lead_objspd < cv_Dist:
                 self.seq_step_debug = 18
-                lead_set_speed = int(CS.VSetDis)
+                print("%d lead_objspd:%d cv_Dist:%d CS.cruise_set_speed_kph:%d" % (lead_objspd, cv_Dist, CS.cruise_set_speed_kph))
+                #lead_set_speed = int(CS.VSetDis)
+                lead_set_speed = int(CS.cruise_set_speed_kph)
             elif lead_objspd < 5:
                 self.seq_step_debug = 20
                 lead_wait_cmd, lead_set_speed = self.get_tm_speed(CS, 15, 1)
@@ -377,7 +385,7 @@ class SpdController():
                     btn_type = Buttons.SET_DECEL
         elif delta <= -1:
             set_speed = CS.VSetDis - dec_step_cmd
-            self.seq_step_debug = 98
+            self.seq_step_debug = 98   
             btn_type = Buttons.SET_DECEL
             self.long_curv_timer = 0
         elif delta >= 1 and (model_speed > 200 or CS.clu_Vanz < 70):

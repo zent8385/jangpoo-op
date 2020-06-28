@@ -382,7 +382,7 @@ class CarState():
       
       delta_vsetdis = abs(self.VSetDis - self.prev_VSetDis)
       
-      if self.prev_clu_CruiseSwState != self.clu_CruiseSwState:
+      if self.prev_clu_CruiseSwState != self.clu_CruiseSwState or self.brake_pressed:
         if self.clu_CruiseSwState:
           print("pressed sw")
           self.prev_VSetDis = int(self.VSetDis)
@@ -398,8 +398,10 @@ class CarState():
             self.cruise_set_first = 0
             #첫 설정이 아니면 이전 속도 셋 입력
             if not self.prev_VSetDis:
+              print("res set prev_VSetDis:%d" % (self.prev_VSetDis))
               cruise_set_speed_kph =  int(self.prev_VSetDis)
             else:
+              print("res set prev_VSetDis:%d" % (self.prev_VSetDis))
               cruise_set_speed_kph =  int(self.VSetDis)
           elif delta_vsetdis > 5:
             #속도차이가 2 이상이면 다시 현재 계기판 속도를 curise_set_speed
@@ -449,7 +451,7 @@ class CarState():
 
         self.prev_clu_CruiseSwState = self.clu_CruiseSwState
 
-      #같은 버튼을 두번 눌렀을 때 동작
+      #같은 버튼을 두번 눌렀을 때 동작인가?
       elif self.clu_CruiseSwState and delta_vsetdis > 0:
         print("self.clu_CruiseSwState and delta_vsetdis > 0")
         self.curise_sw_check = True
