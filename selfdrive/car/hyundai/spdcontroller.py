@@ -185,7 +185,10 @@ class SpdController():
 
         dst_lead_distance = (CS.clu_Vanz*cv_Raio)   # 유지 거리.
         
-        if dst_lead_distance > 100:
+        #유지거리 조건 추가
+        if dst_lead_distance > 150:
+            dst_lead_distance = 150
+        elif dst_lead_distance > 100:
             dst_lead_distance = 100
         #유지거리 조건 추가
         elif dst_lead_distance < 75:
