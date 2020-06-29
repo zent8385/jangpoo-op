@@ -79,14 +79,14 @@ ALERTS = [
       "",
       "",
       AlertStatus.normal, AlertSize.none,
-      Priority.MID, VisualAlert.none, AudibleAlert.chimeEngage, 4., 0., 0.),
+      Priority.MID, VisualAlert.none, AudibleAlert.chimeEngage, 1., 0., 0.),
 
   Alert(
       "disable",
       "",
       "",
       AlertStatus.normal, AlertSize.none,
-      Priority.MID, VisualAlert.none, AudibleAlert.chimeDisengage, 4., 0., 0.),
+      Priority.MID, VisualAlert.none, AudibleAlert.chimeDisengage, 1., 0., 0.),
 
   Alert(
       "fcw",
