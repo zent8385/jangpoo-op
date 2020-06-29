@@ -364,42 +364,12 @@ class SpdController():
         if set_speed > CS.cruise_set_speed_kph:
             set_speed = CS.cruise_set_speed_kph
         elif set_speed < 30:
-            set_speed = 0
+            set_speed = 30
 
         # control process
         target_set_speed = set_speed
 
-        #ss 80
-        #vsd 80
-        #vanz 70
-        #ssd 10 차속보다 설정 속도가 높음         
-        #delta 80-80+10 = 10 가속
-
-        #ss 80
-        #vsd 80
-        #vanz 80
-        #ssd 0 차속보다 설정 속도가 높음         
-        #delta 80-80+10 = 10 가속
-
-        # 
-        #ss 57
-        #vsd 60
-        #vanz 70
-        #ssd -10 차속보다 설정 속도가 낮음
-        #57-60 -10 =-13 감속
-
-        #ss81
-        #vsd 71
-        #clu 73
-        #delta 81 -76  - 2 = 12
-        
-        #ss80
-        #vsd 80
-        #clu 80
-        #ssd 0
-        #delta 80 - 80  - 0 = 0
-
-        delta = int(set_speed) - int(CS.VSetDis) + int(round(set_speed_diff / 2, 0))
+        delta = int(set_speed) - int(CS.VSetDis)    # + int(round(set_speed_diff / 2, 0))
         if dec_step_cmd == 0 and delta < -1:
             if delta < -3:
                 dec_step_cmd = 4
