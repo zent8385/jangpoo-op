@@ -438,8 +438,8 @@ class SpdController():
 
         #str3 = 'SS={:03.0f} TSS={:03.0f} SSD={:03.0f} VSD={:03.0f} CLU={:03.0f}/{:03.0f}/{:03.0f} DG/dec={:02.0f}/{:02.0f}'.format(
         #    set_speed, target_set_speed, set_speed_diff, CS.VSetDis, CS.driverAcc_time, long_wait_cmd, self.long_curv_timer, self.seq_step_debug, dec_step_cmd )
-        str3 = 'SS={:03.0f} CLU={:03.0f} SSD={:03.0f} VSD={:03.0f} CLU={:03.0f}/{:03.0f}/{:03.0f} DG/dec={:02.0f}/{:02.0f}'.format(
-            set_speed, CS.clu_Vanz, set_speed_diff, CS.VSetDis, CS.driverAcc_time, long_wait_cmd, self.long_curv_timer, self.seq_step_debug, dec_step_cmd )
+        str3 = 'SS={:03.0f} CLU={:03.0f} SSD={:03.0f} VSD={:03.0f} DG/dec={:02.0f}/{:02.0f} DAT={:03.0f}/{:03.0f}/{:03.0f} '.format(
+            set_speed, CS.clu_Vanz, set_speed_diff, CS.VSetDis, self.seq_step_debug, dec_step_cmd, CS.driverAcc_time, long_wait_cmd, self.long_curv_timer )
         #str4 = ' LD/LS={:03.0f}/{:03.0f} '.format(  CS.lead_distance, CS.lead_objspd )
         str4 = ' LD/LS={:03.0f}/{:03.0f} '.format(  dRel, vRel )
 
