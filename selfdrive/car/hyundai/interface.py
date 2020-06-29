@@ -182,9 +182,9 @@ class CarInterface(CarInterfaceBase):
 
       ret.steerRateCost = 0.4
 
-      ret.steerRatio = 12.5
+      ret.steerRatio = 13.0
       ret.lateralTuning.pid.kf = 0.00001
-      ret.lateralTuning.pid.kd = 0.005
+      ret.lateralTuning.pid.kd = 0.004
       ret.lateralTuning.pid.kpBP, ret.lateralTuning.pid.kpV = [0], [0.35]
       ret.lateralTuning.pid.kiBP, ret.lateralTuning.pid.kiV = [0], [0.005]
 
@@ -269,11 +269,7 @@ class CarInterface(CarInterfaceBase):
     if ret.vEgo > (self.CP.minSteerSpeed + 0.7):
       self.low_speed_alert = False
 
-    # TODO: button presses
     ret.buttonEvents = []
-
-    #events = self.create_common_events(ret)
-    #TODO: addd abs(self.CS.angle_steers) > 90 to 'steerTempUnavailable' event
 
     events = []
     if not ret.gearShifter == GearShifter.drive:
@@ -288,8 +284,8 @@ class CarInterface(CarInterfaceBase):
       events.append(create_event('wrongCarMode', [ET.NO_ENTRY, ET.USER_DISABLE]))
     if ret.gearShifter == GearShifter.reverse:
       events.append(create_event('reverseGear', [ET.NO_ENTRY, ET.USER_DISABLE]))
-    if ret.steerWarning or abs(ret.steeringAngle) > 120.:
-      events.append(create_event('steerTempUnavailable', [ET.NO_ENTRY, ET.WARNING]))
+    #if ret.steerWarning or abs(ret.steeringAngle) > 120.:
+    #  events.append(create_event('steerTempUnavailable', [ET.NO_ENTRY, ET.WARNING]))
 
     if ret.cruiseState.enabled and not self.CS.out.cruiseState.enabled:
       events.append(create_event('pcmEnable', [ET.ENABLE]))

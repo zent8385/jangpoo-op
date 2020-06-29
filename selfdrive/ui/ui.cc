@@ -14,6 +14,7 @@
 #include "common/touch.h"
 #include "common/visionimg.h"
 #include "common/params.h"
+#include "dashcam.h"
 
 static int last_brightness = -1;
 static void set_brightness(UIState *s, int brightness) {
@@ -228,6 +229,7 @@ static void ui_init(UIState *s) {
   s->dmonitoring_sock = SubSocket::create(s->ctx, "dMonitoringState");
   s->offroad_sock = PubSocket::create(s->ctx, "offroadLayout");
   s->carcontrol_sock = SubSocket::create(s->ctx, "carControl");
+  s->gpsLocationExternal_sock = SubSocket::create(s->ctx, "gpsLocationExternal");
 
   assert(s->model_sock != NULL);
   assert(s->controlsstate_sock != NULL);
@@ -241,6 +243,7 @@ static void ui_init(UIState *s) {
   assert(s->dmonitoring_sock != NULL);
   assert(s->offroad_sock != NULL);
   assert(s->carcontrol_sock != NULL);
+  assert(s->gpsLocationExternal_sock != NULL);
 
   s->poller = Poller::create({
                               s->model_sock,
@@ -253,7 +256,8 @@ static void ui_init(UIState *s) {
                               s->ubloxgnss_sock,
                               s->driverstate_sock,
                               s->dmonitoring_sock,
-                              s->carcontrol_sock
+                              s->carcontrol_sock,
+                              s->gpsLocationExternal_sock
                              });
 
 #ifdef SHOW_SPEEDLIMIT
@@ -302,6 +306,7 @@ static void ui_init_vision(UIState *s, const VisionStreamBufs back_bufs,
       .front_box_height = ui_info.front_box_height,
       .world_objects_visible = false,  // Invisible until we receive a calibration message.
       .gps_planner_active = false,
+      .recording = false,
   };
 
   s->rgb_width = back_bufs.width;
@@ -455,6 +460,20 @@ void handle_message(UIState *s,  Message* msg) {
 
     scene.pCurvature = data.getPCurvature();
     scene.curvMaxSpeed = data.getCurvMaxSpeed();
+
+  } else if (which == cereal::Event::GPS_LOCATION_EXTERNAL) {
+
+    auto data = event.getGpsLocationExternal();
+    scene.gpsAccuracy = data.getAccuracy();
+
+    if (scene.gpsAccuracy > 100)
+    {
+      scene.gpsAccuracy = 99.99;
+    }
+    else if (scene.gpsAccuracy == 0)
+    {
+      scene.gpsAccuracy = 99.8;
+    }
 
   } else if (which == cereal::Event::RADAR_STATE) {
     auto data = event.getRadarState();
@@ -1022,6 +1041,7 @@ int main(int argc, char* argv[]) {
 
     // Don't waste resources on drawing in case screen is off
     if (s->awake) {
+      dashcam(s, touch_x, touch_y);
       ui_draw(s);
       glFinish();
       should_swap = true;

@@ -666,6 +666,28 @@ static void bb_ui_draw_measures_right(UIState *s, int bb_x, int bb_y, int bb_w )
     bb_ry = bb_y + bb_h;
   }
 
+  //add grey panda GPS accuracy
+  if (true) {
+    char val_str[16];
+    char uom_str[3];
+    NVGcolor val_color = nvgRGBA(255, 255, 255, 200);
+    //show red/orange if gps accuracy is high
+      if(scene->gpsAccuracy > 1.0) {
+         val_color = nvgRGBA(255, 188, 3, 200);
+      }
+      if(scene->gpsAccuracy > 1.5) {
+         val_color = nvgRGBA(255, 0, 0, 200);
+      }
+    // gps accuracy is always in meters
+    snprintf(val_str, sizeof(val_str), "%.2f", (s->scene.gpsAccuracy));
+    snprintf(uom_str, sizeof(uom_str), "m");;
+    bb_h +=bb_ui_draw_measure(s,  val_str, uom_str, "GPS PREC",
+        bb_rx, bb_ry, bb_uom_dx,
+        val_color, lab_color, uom_color,
+        value_fontSize, label_fontSize, uom_fontSize );
+    bb_ry = bb_y + bb_h;
+  }
+
   //finally draw the frame
   bb_h += 20;
   nvgBeginPath(s->vg);
@@ -705,17 +727,17 @@ static void bb_ui_draw_L_Extra(UIState *s)
     snprintf(str, sizeof(str), "D: %.5f", scene->pid_d);
     ui_draw_text(s->vg, text_x, y, str, 25 * 2.5, COLOR_WHITE_ALPHA(200), s->font_sans_regular);
 
-    y += height;
+    /*y += height;
     snprintf(str, sizeof(str), "O: %.5f", scene->pid_output);
-    ui_draw_text(s->vg, text_x, y, str, 25 * 2.5, COLOR_WHITE_ALPHA(200), s->font_sans_regular);
+    ui_draw_text(s->vg, text_x, y, str, 25 * 2.5, COLOR_WHITE_ALPHA(200), s->font_sans_regular);*/
 
     y += height;
     snprintf(str, sizeof(str), "CURV: %.3f", scene->pCurvature * 1000.);
     ui_draw_text(s->vg, text_x, y, str, 25 * 2.5, COLOR_WHITE_ALPHA(200), s->font_sans_regular);
 
-    y += height;
+    /*y += height;
     snprintf(str, sizeof(str), "CMAX: %.3f", scene->curvMaxSpeed);
-    ui_draw_text(s->vg, text_x, y, str, 25 * 2.5, COLOR_WHITE_ALPHA(200), s->font_sans_regular);
+    ui_draw_text(s->vg, text_x, y, str, 25 * 2.5, COLOR_WHITE_ALPHA(200), s->font_sans_regular);*/
 
     y += height;
     snprintf(str, sizeof(str), "ACC: %.3f", scene->actuators.getGas() - scene->actuators.getBrake());
