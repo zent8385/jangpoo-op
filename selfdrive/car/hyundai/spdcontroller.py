@@ -184,6 +184,7 @@ class SpdController():
         #    vRel = CS.lead_objspd
 
         dst_lead_distance = (CS.clu_Vanz*cv_Raio)   # 유지 거리.
+        #속도 70이면 49
         
         #유지거리 조건 추가
         if dst_lead_distance > 150:
@@ -368,9 +369,37 @@ class SpdController():
         # control process
         target_set_speed = set_speed
 
-              
-        CS.VSetDis -= set_speed_diff
-        delta = int(set_speed) - int(CS.VSetDis)
+        #ss 80
+        #vsd 80
+        #vanz 70
+        #ssd 10 차속보다 설정 속도가 높음         
+        #delta 80-80+10 = 10 가속
+
+        #ss 80
+        #vsd 80
+        #vanz 80
+        #ssd 0 차속보다 설정 속도가 높음         
+        #delta 80-80+10 = 10 가속
+
+        # 
+        #ss 57
+        #vsd 60
+        #vanz 70
+        #ssd -10 차속보다 설정 속도가 낮음
+        #57-60 -10 =-13 감속
+
+        #ss81
+        #vsd 71
+        #clu 73
+        #delta 81 -76  - 2 = 12
+        
+        #ss80
+        #vsd 80
+        #clu 80
+        #ssd 0
+        #delta 80 - 80  - 0 = 0
+
+        delta = int(set_speed) - int(CS.VSetDis) + int(round(set_speed_diff / 2, 0))
         if dec_step_cmd == 0 and delta < -1:
             if delta < -3:
                 dec_step_cmd = 4
@@ -398,7 +427,7 @@ class SpdController():
             self.long_curv_timer = 0
         elif delta >= 1 and (model_speed > 200 or CS.clu_Vanz < 70):
             set_speed = CS.VSetDis + dec_step_cmd
-            CS.VSetDis = set_speed
+            CS.VSetDis = set_speed - int(round(set_speed_diff / 2, 0)) #가속 폭을 반감하여 가속함 (천천히 가속) / 목표치에 다가갈 수록 폭이 줄어듬
             self.seq_step_debug = 99
             btn_type = Buttons.RES_ACCEL
             self.long_curv_timer = 0            
@@ -407,8 +436,10 @@ class SpdController():
         if CS.cruise_set_mode == 0:
             btn_type = Buttons.NONE
 
-        str3 = 'SS={:03.0f} TSS={:03.0f} SSD={:03.0f} VSD={:03.0f} DAt={:03.0f}/{:03.0f}/{:03.0f} DG/dec={:02.0f}/{:02.0f}'.format(
-            set_speed, target_set_speed, set_speed_diff, CS.VSetDis, CS.driverAcc_time, long_wait_cmd, self.long_curv_timer, self.seq_step_debug, dec_step_cmd )
+        #str3 = 'SS={:03.0f} TSS={:03.0f} SSD={:03.0f} VSD={:03.0f} CLU={:03.0f}/{:03.0f}/{:03.0f} DG/dec={:02.0f}/{:02.0f}'.format(
+        #    set_speed, target_set_speed, set_speed_diff, CS.VSetDis, CS.driverAcc_time, long_wait_cmd, self.long_curv_timer, self.seq_step_debug, dec_step_cmd )
+        str3 = 'SS={:03.0f} CLU={:03.0f} SSD={:03.0f} VSD={:03.0f} CLU={:03.0f}/{:03.0f}/{:03.0f} DG/dec={:02.0f}/{:02.0f}'.format(
+            set_speed, CS.clu_Vanz, set_speed_diff, CS.VSetDis, CS.driverAcc_time, long_wait_cmd, self.long_curv_timer, self.seq_step_debug, dec_step_cmd )
         #str4 = ' LD/LS={:03.0f}/{:03.0f} '.format(  CS.lead_distance, CS.lead_objspd )
         str4 = ' LD/LS={:03.0f}/{:03.0f} '.format(  dRel, vRel )
 
