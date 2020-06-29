@@ -59,7 +59,7 @@ class CarController():
     self.steer_torque_over = False
 
     kegman = kegman_conf()
-    self.steer_torque_over_max = 400 #float(kegman.conf['steerTorqueOver'])
+    self.steer_torque_over_max = float(kegman.conf['steerTorqueOver'])
 
 
     self.timer_curvature = 0
@@ -279,8 +279,8 @@ class CarController():
       self.steer_torque_over = False
     elif CS.stopped:
       lkas_active = 0
-    elif self.steer_torque_over:
-      lkas_active = 0
+    #elif self.steer_torque_over:
+    #  lkas_active = 0
 
     if self.streer_angle_over:
       lkas_active = 0
