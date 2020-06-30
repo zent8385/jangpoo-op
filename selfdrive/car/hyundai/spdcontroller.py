@@ -397,7 +397,8 @@ class SpdController():
                     btn_type = Buttons.SET_DECEL
         elif delta <= -1:
             set_speed = CS.VSetDis - dec_step_cmd + set_speed_diff
-
+            
+            #Carstate 값 변경
             CS.VSetDis -= dec_step_cmd
             self.seq_step_debug = 98   
             btn_type = Buttons.SET_DECEL
@@ -405,6 +406,7 @@ class SpdController():
         elif delta >= 1 and (model_speed > 200 or CS.clu_Vanz < 70):
             set_speed = CS.VSetDis + dec_step_cmd + set_speed_diff
             
+            #Carstate 값 변경
             CS.VSetDis += dec_step_cmd  #- int(round(set_speed_diff / 2, 0)) #가속 폭을 반감하여 가속함 (천천히 가속) / 목표치에 다가갈 수록 폭이 줄어듬
             self.seq_step_debug = 99
             btn_type = Buttons.RES_ACCEL
