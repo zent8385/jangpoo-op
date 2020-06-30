@@ -246,7 +246,7 @@ class CarController():
       self.turning_indicator = self.turning_signal_timer
 
     if self.turning_signal_timer:
-      self.turning_signal_timer -= 1 
+      self.turning_signal_timer -= 1
 
     if left_line:
       self.hud_timer_left = 100

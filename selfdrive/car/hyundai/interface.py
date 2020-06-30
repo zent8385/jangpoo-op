@@ -434,7 +434,6 @@ class CarInterface(CarInterfaceBase):
             events.append(create_event('pcmDisable', [ET.USER_DISABLE]))
         self.cruise_enabled_prev = ret.cruiseState.enabled
     elif ret.cruiseState.enabled and ret.gearShifter == GearShifter.drive and self.CS.clu_Vanz > 15:
-      #print("vEgo:"+str(ret.vEgo) + "/vEgoRaw:" + str(ret.vEgoRaw))
       events.append(create_event('pcmEnable', [ET.ENABLE]))
     elif  ret.cruiseState.enabled:
         if self.turning_indicator_alert:
