@@ -403,7 +403,7 @@ class SpdController():
             self.seq_step_debug = 98   
             btn_type = Buttons.SET_DECEL
             self.long_curv_timer = 0
-        elif delta >= 1 and (model_speed > 200 or CS.clu_Vanz < 70):
+        elif delta >= 1 and (model_speed > 200 or CS.clu_Vanz < 200):
             set_speed = CS.VSetDis + dec_step_cmd + set_speed_diff
             
             #Carstate 값 변경
