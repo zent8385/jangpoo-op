@@ -354,7 +354,7 @@ class CarState():
     self.prev_clu_CruiseSwState = 0
 
     self.VSetDis = 0
-    self. 0
+    self.prev_VSetDis = 0
 
     self.cruise_set_mode = 2
 
