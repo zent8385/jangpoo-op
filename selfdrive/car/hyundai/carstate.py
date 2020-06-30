@@ -383,9 +383,9 @@ class CarState():
       delta_vsetdis = abs(self.VSetDis - self.prev_VSetDis)
       
       if self.prev_clu_CruiseSwState != self.clu_CruiseSwState or self.brake_pressed:
-        if self.clu_CruiseSwState:
-          print("pressed sw")
-          self.prev_VSetDis = int(self.VSetDis)
+        #if self.clu_CruiseSwState:
+       	#   print("pressed sw")
+        #  self.prev_VSetDis = int(self.VSetDis)
         #elif self.driverAcc_time:
         #  print("driver acc")
         #  #운전자 가속 동안에는 set_speed 표기 설정 유지
@@ -397,12 +397,7 @@ class CarState():
             print("cruise_set_first")
             self.cruise_set_first = 0
             #첫 설정이 아니면 이전 속도 셋 입력
-            if not self.prev_VSetDis:
-              print("res set prev_VSetDis:%d" % (self.prev_VSetDis))
-              cruise_set_speed_kph =  int(self.prev_VSetDis)
-            else:
-              print("res set prev_VSetDis:%d" % (self.prev_VSetDis))
-              cruise_set_speed_kph =  int(self.VSetDis)
+            cruise_set_speed_kph =  int(self.prev_VSetDis)
           elif delta_vsetdis > 5:
             #속도차이가 2 이상이면 다시 현재 계기판 속도를 curise_set_speed
             cruise_set_speed_kph = self.VSetDis
