@@ -445,7 +445,7 @@ class CarState():
         elif self.prev_clu_CruiseSwState == 4 or self.brake_pressed:  # cancel /brake/ cruise off
           print("cancel vsd:%d prev_vsd:%d prev_clu_csw:%d clu_csw:%d cruise_set_speed_kph:%d" % (self.VSetDis, self.prev_VSetDis, self.prev_clu_CruiseSwState, self.clu_CruiseSwState, self.cruise_set_speed_kph))
           self.cruise_set_first = 1
-          self.prev_VSetDis = cruise_set_speed_kph
+          self.prev_VSetDis = self.cruise_set_speed_kph
           cruise_set_speed_kph = 0
           self.VSetDis = 0
 
