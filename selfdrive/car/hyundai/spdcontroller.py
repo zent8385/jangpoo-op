@@ -344,6 +344,11 @@ class SpdController():
         if self.long_curv_timer < 600:
             self.long_curv_timer += 1
 
+        set_speed_diff = set_speed - CS.clu_Vanz
+        if set_speed_diff > 2: #가속 필요
+            CS.VSetDis -= 1
+        elif set_speed_diff < -2: # 감속 필요
+            CS.VSetDis += 1
         
         # 선행 차량 거리유지
         lead_wait_cmd, lead_set_speed = self.update_lead( CS,  dRel, yRel, vRel)  
@@ -370,12 +375,9 @@ class SpdController():
         # control process
         target_set_speed = set_speed
 
-        if (set_speed - CS.clu_Vanz) > 0:
-            set_speed_diff = 1 # set_speed를 올려 더 가속해야함
-        elif (set_speed - CS.clu_Vanz) < 0:
-            set_speed_diff = -1 # set_speed를 낮춰 더 감속해야함
-
-        delta = int(set_speed) - int(CS.VSetDis)    # + int(round(set_speed_diff / 2, 0))
+        
+        
+        delta = int(set_speed) - int(CS.VSetDis)
         if dec_step_cmd == 0 and delta < -1:
             if delta < -3:
                 dec_step_cmd = 4
@@ -397,22 +399,21 @@ class SpdController():
                     btn_type = Buttons.SET_DECEL
         elif delta <= -1:
             set_speed = CS.VSetDis - dec_step_cmd
-            
-            #Carstate 값 변경
-            CS.VSetDis = set_speed + set_speed_diff
             self.seq_step_debug = 98   
             btn_type = Buttons.SET_DECEL
             self.long_curv_timer = 0
         elif delta >= 1 and (model_speed > 200 or CS.clu_Vanz < 200):
             set_speed = CS.VSetDis + dec_step_cmd
-            
-            #Carstate 값 변경
-            CS.VSetDis = set_speed + set_speed_diff
             self.seq_step_debug = 99
             btn_type = Buttons.RES_ACCEL
             self.long_curv_timer = 0            
             if set_speed > CS.cruise_set_speed_kph:
                 set_speed = CS.cruise_set_speed_kph
+
+        #Carstate 값 변경
+        CS.VSetDis = set_speed
+
+
         if CS.cruise_set_mode == 0:
             btn_type = Buttons.NONE
 
