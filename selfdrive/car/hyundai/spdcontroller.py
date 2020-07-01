@@ -348,7 +348,7 @@ class SpdController():
             CS.VSetDis -= 2
         elif set_speed_diff < -2: # 감속 필요
             CS.VSetDis += 2
-            
+
         # 선행 차량 거리유지
         lead_wait_cmd, lead_set_speed = self.update_lead( CS,  dRel, yRel, vRel)  
         # 커브 감속.
@@ -407,6 +407,9 @@ class SpdController():
             self.long_curv_timer = 0            
             if set_speed > CS.cruise_set_speed_kph:
                 set_speed = CS.cruise_set_speed_kph
+        
+        CS.VSetDis = CS.clu_Vanz
+
         if CS.cruise_set_mode == 0:
             btn_type = Buttons.NONE
 
