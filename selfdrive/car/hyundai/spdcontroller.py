@@ -411,7 +411,7 @@ class SpdController():
                 set_speed = CS.cruise_set_speed_kph
 
         #Carstate 값 변경
-        CS.VSetDis = set_speed
+        CS.VSetDis = CS.clu_Vanz
 
 
         if CS.cruise_set_mode == 0:
