@@ -346,9 +346,9 @@ class SpdController():
 
         set_speed_diff = set_speed - CS.clu_Vanz
         if set_speed_diff > 2: #가속 필요
-            CS.VSetDis -= 1
+            CS.VSetDis -= 2
         elif set_speed_diff < -2: # 감속 필요
-            CS.VSetDis += 1
+            CS.VSetDis += 2
         
         # 선행 차량 거리유지
         lead_wait_cmd, lead_set_speed = self.update_lead( CS,  dRel, yRel, vRel)  
