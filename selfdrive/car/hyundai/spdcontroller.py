@@ -408,7 +408,7 @@ class SpdController():
             if set_speed > CS.cruise_set_speed_kph:
                 set_speed = CS.cruise_set_speed_kph
         
-        CS.VSetDis = CS.clu_Vanz
+        
 
         if CS.cruise_set_mode == 0:
             btn_type = Buttons.NONE
