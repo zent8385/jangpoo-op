@@ -412,7 +412,7 @@ class SpdController():
         #    CS.VSetDis += 2
 
 
-        #ver2
+        #ver2 -
         # 고정 속도(2)만 가감
         #CS.VSetDis = set_speed
         if set_speed_diff > 1: #가속 필요
