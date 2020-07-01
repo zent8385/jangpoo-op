@@ -184,7 +184,6 @@ class SpdController():
         #    vRel = CS.lead_objspd
 
         dst_lead_distance = (CS.clu_Vanz*cv_Raio)   # 유지 거리.
-        #속도 70이면 49
         
         #유지거리 조건 추가
         if dst_lead_distance > 150:
@@ -338,18 +337,18 @@ class SpdController():
         #lead_1 = sm['radarState'].leadOne
         long_wait_cmd = 500
         set_speed = CS.cruise_set_speed_kph
-        set_speed_diff = 0
         dec_step_cmd = 0
 
         if self.long_curv_timer < 600:
             self.long_curv_timer += 1
+
 
         set_speed_diff = set_speed - CS.clu_Vanz
         if set_speed_diff > 2: #가속 필요
             CS.VSetDis -= 2
         elif set_speed_diff < -2: # 감속 필요
             CS.VSetDis += 2
-        
+            
         # 선행 차량 거리유지
         lead_wait_cmd, lead_set_speed = self.update_lead( CS,  dRel, yRel, vRel)  
         # 커브 감속.
@@ -374,9 +373,6 @@ class SpdController():
 
         # control process
         target_set_speed = set_speed
-
-        
-        
         delta = int(set_speed) - int(CS.VSetDis)
         if dec_step_cmd == 0 and delta < -1:
             if delta < -3:
@@ -399,28 +395,23 @@ class SpdController():
                     btn_type = Buttons.SET_DECEL
         elif delta <= -1:
             set_speed = CS.VSetDis - dec_step_cmd
+            CS.VSetDis = set_speed
             self.seq_step_debug = 98   
             btn_type = Buttons.SET_DECEL
             self.long_curv_timer = 0
-        elif delta >= 1 and (model_speed > 200 or CS.clu_Vanz < 200):
+        elif delta >= 1 and (model_speed > 200 or CS.clu_Vanz < 70):
             set_speed = CS.VSetDis + dec_step_cmd
+            CS.VSetDis = set_speed
             self.seq_step_debug = 99
             btn_type = Buttons.RES_ACCEL
             self.long_curv_timer = 0            
             if set_speed > CS.cruise_set_speed_kph:
                 set_speed = CS.cruise_set_speed_kph
-
-        #Carstate 값 변경
-        CS.VSetDis = CS.clu_Vanz
-
-
         if CS.cruise_set_mode == 0:
             btn_type = Buttons.NONE
 
-        #str3 = 'SS={:03.0f} TSS={:03.0f} SSD={:03.0f} VSD={:03.0f} CLU={:03.0f}/{:03.0f}/{:03.0f} DG/dec={:02.0f}/{:02.0f}'.format(
-        #    set_speed, target_set_speed, set_speed_diff, CS.VSetDis, CS.driverAcc_time, long_wait_cmd, self.long_curv_timer, self.seq_step_debug, dec_step_cmd )
-        str3 = 'SS={:03.0f} CLU={:03.0f} SSD={:03.0f} pVSD={:03.0f} VSD={:03.0f} DG/dec={:02.0f}/{:02.0f} '.format(
-            set_speed, CS.clu_Vanz, set_speed_diff, CS.prev_VSetDis, CS.VSetDis, self.seq_step_debug, dec_step_cmd )
+        str3 = 'SS={:03.0f} TSS={:03.0f} VSD={:03.0f} DAt={:03.0f}/{:03.0f}/{:03.0f} DG/dec={:02.0f}/{:02.0f}'.format(
+            set_speed, target_set_speed, CS.VSetDis, CS.driverAcc_time, long_wait_cmd, self.long_curv_timer, self.seq_step_debug, dec_step_cmd )
         #str4 = ' LD/LS={:03.0f}/{:03.0f} '.format(  CS.lead_distance, CS.lead_objspd )
         str4 = ' LD/LS={:03.0f}/{:03.0f} '.format(  dRel, vRel )
 
