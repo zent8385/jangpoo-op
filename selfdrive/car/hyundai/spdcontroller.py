@@ -412,23 +412,23 @@ class SpdController():
         #    CS.VSetDis += 2
 
 
-        #ver2 -
+        #ver2
         # 고정 속도(2)만 가감
         #CS.VSetDis = set_speed
-        if set_speed_diff > 1: #가속 필요
+        #if set_speed_diff > 1: #가속 필요
             #크루즈 설정값은 set_speed 보다 낮아야 가속 신호를 보냄
-            CS.VSetDis -= 2
-        elif set_speed_diff < -1: # 감속 필요
+        #    CS.VSetDis -= 2
+        #elif set_speed_diff < -1: # 감속 필요
             #크루즈 설정값은 set_speed 보다 높아야 감속 신호를 보냄
-            CS.VSetDis += 2
+        #    CS.VSetDis += 2
 
 
         #ver3
         # 차이 속도 가감
-        #if set_speed_diff > 1: #가속 필요
-        #    CS.VSetDis -= set_speed_diff
-        #elif set_speed_diff < -1: # 감속 필요
-        #    CS.VSetDis += set_speed_diff
+        if set_speed_diff > 1: #가속 필요
+            CS.VSetDis -= set_speed_diff
+        elif set_speed_diff < -1: # 감속 필요
+            CS.VSetDis += set_speed_diff
         
 
         
