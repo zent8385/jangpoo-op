@@ -187,7 +187,7 @@ class SpdController():
 
         dst_lead_distance = (CS.clu_Vanz*cv_Raio)   # 유지 거리.
         
-        if dst_lead_distance > 42: #> 100:  60km/h 이상은 거리 150m 유지
+        if dst_lead_distance > 63: #> 100:  90km/h 이상은 거리 150m 유지
             dst_lead_distance = 150 #100
         elif dst_lead_distance > 21:    #30km/h 이상은 거리 100m 유지
             dst_lead_distance = 100 #50
@@ -233,9 +233,11 @@ class SpdController():
                         lead_set_speed = 30 #40
                 #설정속도가 현재 속도 보다 낮다면 가속 진행
                 else:
-                    self.seq_step_debug = 62
-                    #lead_set_speed = int(CS.VSetDis)
-                    lead_wait_cmd, lead_set_speed = self.get_tm_speed(CS, 20, 1)                    
+                    #앞차가 빨리가지만 거리가 100m 이상인 경우에만 가속 진행
+                    if dRel > dst_lead_distance:
+                        self.seq_step_debug = 62
+                        #lead_set_speed = int(CS.VSetDis)
+                        lead_wait_cmd, lead_set_speed = self.get_tm_speed(CS, 20, 1)                    
             #내차가 더 빠름        
             elif lead_objspd < -30 or (dRel < 60 and CS.clu_Vanz > 60 and lead_objspd < -5):            
                 self.seq_step_debug = 7
@@ -266,22 +268,27 @@ class SpdController():
         elif CS.cruise_set_speed_kph > CS.clu_Vanz:
             self.seq_step_debug = 16
             # 선행 차량이 가속하고 있으면.
-            if dRel >= 150:
+                
+            if dRel >= dst_lead_distance:   #100-150:
                 self.seq_step_debug = 17
                 lead_wait_cmd, lead_set_speed = self.get_tm_speed( CS, 10, 1) #3 )
+            
             elif lead_objspd < cv_Dist:
                 self.seq_step_debug = 18
                 #lead_set_speed = int(CS.VSetDis)
                 lead_set_speed = int(CS.cruise_set_speed_kph)
-            elif lead_objspd < 5:
-                self.seq_step_debug = 20
-                lead_wait_cmd, lead_set_speed = self.get_tm_speed(CS, 15, 1) #1)
-            elif lead_objspd < 10:
-                self.seq_step_debug = 21
-                lead_wait_cmd, lead_set_speed = self.get_tm_speed(CS, 15, 1) #2)
             elif lead_objspd < 30:
-                self.seq_step_debug = 22
-                lead_wait_cmd, lead_set_speed = self.get_tm_speed(CS, 15, 1) #3)                
+                #선행 차량이 가속하고 있지만 안전거리 100 이상에서만 가속
+                if dRel >= dst_lead_distance:
+                    self.seq_step_debug = 20
+                    lead_wait_cmd, lead_set_speed = self.get_tm_speed(CS, 15, 1) #1)
+            #elif lead_objspd < 10:
+            #    self.seq_step_debug = 21
+            #    lead_wait_cmd, lead_set_speed = self.get_tm_speed(CS, 15, 1) #2)
+            #elif lead_objspd < 30:
+            #    self.seq_step_debug = 22
+            #    lead_wait_cmd, lead_set_speed = self.get_tm_speed(CS, 15, 1) #3)                
+            # 선행차량이 없는 경우 가속
             else:
                 self.seq_step_debug = 23
                 lead_wait_cmd, lead_set_speed = self.get_tm_speed(CS, 15, 1) #5)
@@ -332,11 +339,11 @@ class SpdController():
     def update(self, v_ego_kph, CS, sm, actuators, dRel, yRel, vRel, model_speed):
         btn_type = Buttons.NONE
         #lead_1 = sm['radarState'].leadOne
-        long_wait_cmd = 100
+        long_wait_cmd = 500
         set_speed = CS.cruise_set_speed_kph
         dec_step_cmd = 0
 
-        if self.long_curv_timer < 120:
+        if self.long_curv_timer < 600:
             self.long_curv_timer += 1
 
 
