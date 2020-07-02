@@ -24,6 +24,7 @@
 #include "messaging.hpp"
 #include "sound.hpp"
 
+
 #define STATUS_STOPPED 0
 #define STATUS_DISENGAGED 1
 #define STATUS_ENGAGED 2
@@ -220,6 +221,7 @@ typedef struct UIState {
   int img_turn;
   int img_face;
   int img_map;
+  int img_brake;
   int img_button_settings;
   int img_button_home;
   int img_battery;
@@ -242,6 +244,7 @@ typedef struct UIState {
   PubSocket *offroad_sock;
   SubSocket *carcontrol_sock;
   SubSocket *gpsLocationExternal_sock;
+  SubSocket *carstate_sock;
   Poller * poller;
   Poller * ublox_poller;
 

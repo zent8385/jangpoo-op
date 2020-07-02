@@ -230,6 +230,7 @@ static void ui_init(UIState *s) {
   s->offroad_sock = PubSocket::create(s->ctx, "offroadLayout");
   s->carcontrol_sock = SubSocket::create(s->ctx, "carControl");
   s->gpsLocationExternal_sock = SubSocket::create(s->ctx, "gpsLocationExternal");
+  s->carstate_sock = SubSocket::create(s->ctx, "carState");
 
   assert(s->model_sock != NULL);
   assert(s->controlsstate_sock != NULL);
@@ -244,6 +245,7 @@ static void ui_init(UIState *s) {
   assert(s->offroad_sock != NULL);
   assert(s->carcontrol_sock != NULL);
   assert(s->gpsLocationExternal_sock != NULL);
+  assert(s->carstate_sock != NULL);
 
   s->poller = Poller::create({
                               s->model_sock,
@@ -257,7 +259,8 @@ static void ui_init(UIState *s) {
                               s->driverstate_sock,
                               s->dmonitoring_sock,
                               s->carcontrol_sock,
-                              s->gpsLocationExternal_sock
+                              s->gpsLocationExternal_sock,
+                              s->carstate_sock
                              });
 
 #ifdef SHOW_SPEEDLIMIT
@@ -543,10 +546,13 @@ void handle_message(UIState *s,  Message* msg) {
     s->thermal_started = data.getStarted();
   }
   else if (which == cereal::Event::CAR_CONTROL){
-
     auto data = event.getCarControl();
     scene.actuators = data.getActuators();
-
+  }
+  else if (which == cereal::Event::CAR_STATE)
+  {
+    auto data = event.getCarState();
+    scene.brakeLights = data.getBrakeLights();
   }
   else if (which == cereal::Event::UBLOX_GNSS) {
     auto data = event.getUbloxGnss();
