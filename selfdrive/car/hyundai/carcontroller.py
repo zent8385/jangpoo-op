@@ -432,7 +432,7 @@ class CarController():
 
         
     #self.cruise_send = self.sc_btn_type
-    str_log1 = 'CBtn={:03.0f} SAT2={:03.0f} SWT2={:03.0f} SBT={:03.0f}'.format( self.cruise_send, self.sc_active_timer2, self.sc_wait_timer2, self.sc_btn_type)
+    str_log1 = 'CSend={:03.0f} SAT2={:03.0f} SWT2={:03.0f} SBT={:03.0f}'.format( self.cruise_send, self.sc_active_timer2, self.sc_wait_timer2, self.sc_btn_type)
     str_log2 = 'D={:05.1f} V={:03.0f} S_LIM={:03.0f} S_MAX={:03.0f}'.format( dRel, vRel, steer_limit, param.STEER_MAX )
     trace1.printf( '{} {}'.format( str_log1, str_log2 ) )
 
