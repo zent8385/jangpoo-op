@@ -28,8 +28,8 @@ from selfdrive.kegman_conf import kegman_conf
 
 kegman = kegman_conf()
 
-cv_Raio = float(kegman.conf['cV_Ratio'])
-cv_Dist = float(kegman.conf['cV_Dist'])
+cv_Raio = 0.7 #float(kegman.conf['cV_Ratio']) # 0.7
+cv_Dist = -5 #float(kegman.conf['cV_Dist']) # -5
 
 MAX_SPEED = 255.0
 
@@ -185,20 +185,14 @@ class SpdController():
 
         dst_lead_distance = (CS.clu_Vanz*cv_Raio)   # 유지 거리.
         
-        #유지거리 조건 추가
-        if dst_lead_distance > 150:
-            dst_lead_distance = 150
-        elif dst_lead_distance > 100:
-            dst_lead_distance = 100
-        #유지거리 조건 추가
-        elif dst_lead_distance < 75:
-            dst_lead_distance = 70
+        if dst_lead_distance > 100:
+            dst_lead_distance = 150 #100
         elif dst_lead_distance < 50:
-            dst_lead_distance = 50
-        #유지거리 조건 추가
-        elif dst_lead_distance < 25:
-            dst_lead_distance = 25
+            dst_lead_distance = 100 #50
 
+
+        #선행차량과의 거리 100 가정
+        #d_delta 50
         if dRel < 150:
             self.time_no_lean = 0
             d_delta = dRel - dst_lead_distance
@@ -273,7 +267,6 @@ class SpdController():
                 lead_wait_cmd, lead_set_speed = self.get_tm_speed( CS, 10, 3 )
             elif lead_objspd < cv_Dist:
                 self.seq_step_debug = 18
-                print("%d lead_objspd:%d cv_Dist:%d CS.cruise_set_speed_kph:%d" % (lead_objspd, cv_Dist, CS.cruise_set_speed_kph))
                 #lead_set_speed = int(CS.VSetDis)
                 lead_set_speed = int(CS.cruise_set_speed_kph)
             elif lead_objspd < 5:
@@ -298,34 +291,34 @@ class SpdController():
         # 2. 커브 감속.
         if CS.cruise_set_speed_kph >= 100:
             if model_speed < 50:
-                set_speed = CS.cruise_set_speed_kph - 20 
+                set_speed = CS.cruise_set_speed_kph - 40 #20 
                 wait_time_cmd = 100
             elif model_speed < 70:  
-                set_speed = CS.cruise_set_speed_kph - 10 
+                set_speed = CS.cruise_set_speed_kph - 20 #10 
                 wait_time_cmd = 100
             elif model_speed < 90:  
-                set_speed = CS.cruise_set_speed_kph - 3  
+                set_speed = CS.cruise_set_speed_kph - 6 #3  
                 wait_time_cmd = 150
             elif model_speed < 130:  
-                set_speed = CS.cruise_set_speed_kph - 1 
+                set_speed = CS.cruise_set_speed_kph - 2 #1 
                 wait_time_cmd = 200
             if set_speed > model_speed:
                 set_speed = model_speed
         elif CS.cruise_set_speed_kph >= 80:
             if model_speed < 70:  
-                set_speed = CS.cruise_set_speed_kph - 5 
+                set_speed = CS.cruise_set_speed_kph - 10 #5 
                 wait_time_cmd = 100
             elif model_speed < 80:  
-                set_speed = CS.cruise_set_speed_kph - 2 
+                set_speed = CS.cruise_set_speed_kph - 4 #2 
                 wait_time_cmd = 150
                 if set_speed > model_speed:
                    set_speed = model_speed
         elif CS.cruise_set_speed_kph >= 60:
             if model_speed < 50: 
-                set_speed = CS.cruise_set_speed_kph - 3 
+                set_speed = CS.cruise_set_speed_kph - 6 #3 
                 wait_time_cmd = 100
             elif model_speed < 70:  
-                set_speed = CS.cruise_set_speed_kph - 1 
+                set_speed = CS.cruise_set_speed_kph - 2 #1 
                 wait_time_cmd = 150
                 if set_speed > model_speed:
                    set_speed = model_speed
@@ -415,20 +408,20 @@ class SpdController():
         #ver2
         # 고정 속도(2)만 가감
         #CS.VSetDis = set_speed
-        #if set_speed_diff > 1: #가속 필요
+        if set_speed_diff > 0: #가속 필요
             #크루즈 설정값은 set_speed 보다 낮아야 가속 신호를 보냄
-        #    CS.VSetDis -= 2
-        #elif set_speed_diff < -1: # 감속 필요
+            CS.VSetDis -= 2
+        elif set_speed_diff < 0: # 감속 필요
             #크루즈 설정값은 set_speed 보다 높아야 감속 신호를 보냄
-        #    CS.VSetDis += 2
+            CS.VSetDis += 2
 
 
         #ver3
         # 차이 속도 가감
-        if set_speed_diff > 1: #가속 필요
-            CS.VSetDis -= set_speed_diff
-        elif set_speed_diff < -1: # 감속 필요
-            CS.VSetDis += set_speed_diff
+        #if set_speed_diff > 0: #가속 필요
+        #    CS.VSetDis -= set_speed_diff
+        #elif set_speed_diff < 0: # 감속 필요
+        #    CS.VSetDis += set_speed_diff
         
 
         
@@ -443,8 +436,8 @@ class SpdController():
             btn_type = Buttons.NONE
         #DAt={:03.0f}/{:03.0f}/{:03.0f} 
         #CS.driverAcc_time, long_wait_cmd, self.long_curv_timer
-        str3 = 'SS={:03.0f} SSD={:03.0f} VSD={:03.0f} pVSD={:03.0f} DG/dec={:02.0f}/{:02.0f} '.format(
-            set_speed, set_speed_diff, CS.VSetDis, CS.prev_VSetDis, self.seq_step_debug, dec_step_cmd  )
+        str3 = 'SS={:03.0f} SSD={:03.0f} VSD={:03.0f} pVSD={:03.0f} DG/dec={:02.0f}/{:02.0f} LCT={:03.0f} '.format(
+            set_speed, set_speed_diff, CS.VSetDis, CS.prev_VSetDis, self.seq_step_debug, dec_step_cmd, self.long_curv_timer  )
         #str4 = ' LD/LS={:03.0f}/{:03.0f} '.format(  CS.lead_distance, CS.lead_objspd )
         str4 = ' LD/LS={:03.0f}/{:03.0f} '.format(  dRel, vRel )
 
