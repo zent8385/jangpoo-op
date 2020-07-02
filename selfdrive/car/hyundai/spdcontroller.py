@@ -336,7 +336,7 @@ class SpdController():
         set_speed = CS.cruise_set_speed_kph
         dec_step_cmd = 0
 
-        if self.long_curv_timer < 600:
+        if self.long_curv_timer < 300:
             self.long_curv_timer += 1
 
 
