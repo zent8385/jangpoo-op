@@ -77,7 +77,7 @@ static void draw_chevron(UIState *s, float x_in, float y_in, float sz,
   sz /= (x_in / 3 + 30);
   if (sz > 30) sz = 30;
   if (sz < 15) sz = 15;
-  
+
   // glow
   float g_xo = sz/5;
   float g_yo = sz/10;
@@ -300,7 +300,7 @@ static inline bool valid_frame_pt(UIState *s, float x, float y) {
   return x >= 0 && x <= s->rgb_width && y >= 0 && y <= s->rgb_height;
 
 }
-static void update_lane_line_data(UIState *s, const float *points, float off, bool is_ghost, model_path_vertices_data *pvd) {
+static void update_lane_line_data(UIState *s, const float *points, float off, model_path_vertices_data *pvd) {
   pvd->cnt = 0;
   for (int i = 0; i < MODEL_PATH_MAX_VERTICES_CNT / 2; i++) {
     float px = (float)i;
@@ -315,7 +315,7 @@ static void update_lane_line_data(UIState *s, const float *points, float off, bo
   }
   for (int i = MODEL_PATH_MAX_VERTICES_CNT / 2; i > 0; i--) {
     float px = (float)i;
-    float py = is_ghost?(points[i]-off):(points[i]+off);
+    float py = points[i] + off;
     const vec4 p_car_space = (vec4){{px, py, 0., 1.}};
     const vec3 p_full_frame = car_space_to_full_frame(s, p_car_space);
     if(!valid_frame_pt(s, p_full_frame.v[0], p_full_frame.v[1]))
@@ -327,16 +327,16 @@ static void update_lane_line_data(UIState *s, const float *points, float off, bo
 }
 
 static void update_all_lane_lines_data(UIState *s, const PathData path, model_path_vertices_data *pstart) {
-  update_lane_line_data(s, path.points, 0.025*path.prob, false, pstart);
+  update_lane_line_data(s, path.points, 0.025*path.prob, pstart);
   float var = fmin(path.std, 0.7);
-  update_lane_line_data(s, path.points, -var, true, pstart + 1);
-  update_lane_line_data(s, path.points, var, true, pstart + 2);
+  update_lane_line_data(s, path.points, -var, pstart + 1);
+  update_lane_line_data(s, path.points, var, pstart + 2);
 }
 
 static void ui_draw_lane(UIState *s, const PathData *path, model_path_vertices_data *pstart, NVGcolor color) {
   ui_draw_lane_line(s, pstart, color);
   float var = fmin(path->std, 0.7);
-  color.a /= 4;
+  color.a /= 25;
   ui_draw_lane_line(s, pstart + 1, color);
   ui_draw_lane_line(s, pstart + 2, color);
 }
@@ -387,7 +387,7 @@ static void ui_draw_world(UIState *s) {
 
   nvgSave(s->vg);
   nvgScissor(s->vg, ui_viz_rx, box_y, ui_viz_rw, box_h);
-  
+
   nvgTranslate(s->vg, ui_viz_rx+ui_viz_ro, box_y + (box_h-inner_height)/2.0);
   nvgScale(s->vg, (float)viz_w / s->fb_w, (float)inner_height / s->fb_h);
   nvgTranslate(s->vg, 240.0f, 0.0);
@@ -1150,7 +1150,7 @@ void ui_draw(UIState *s) {
   ui_draw_sidebar(s);
   if (s->started && s->active_app == cereal::UiLayoutState::App::NONE && s->status != STATUS_STOPPED && s->vision_seen) {
       ui_draw_vision(s);
-  } 
+  }
   nvgEndFrame(s->vg);
   glDisable(GL_BLEND);
 }
@@ -1249,7 +1249,14 @@ static const mat4 full_to_wide_frame_transform = {{
 
 void ui_nvg_init(UIState *s) {
   // init drawing
-  s->vg = nvgCreate(NVG_ANTIALIAS | NVG_STENCIL_STROKES | NVG_DEBUG);
+
+#ifdef QCOM
+  // on QCOM, we enable MSAA
+  s->vg = nvgCreate(0);
+#else
+  s->vg = nvgCreate(NVG_ANTIALIAS | NVG_STENCIL_STROKES | NVG_DEBUG);	  s->vg = nvgCreate(NVG_ANTIALIAS | NVG_STENCIL_STROKES | NVG_DEBUG);
+#endif
+
   assert(s->vg);
 
   s->font_courbd = nvgCreateFont(s->vg, "courbd", "../assets/fonts/courbd.ttf");
