@@ -375,9 +375,9 @@ class SpdController():
         else:
             dec_step_cmd = 1
 
-        if self.long_curv_timer < long_wait_cmd:
-            pass
-        elif CS.driverOverride == 1:  # 가속패달에 의한 속도 설정.
+        #if self.long_curv_timer < long_wait_cmd:
+        #    pass
+        if CS.driverOverride == 1:  # 가속패달에 의한 속도 설정.
             if CS.cruise_set_speed_kph > CS.clu_Vanz:
                 delta = int(CS.clu_Vanz) - int(CS.VSetDis)
                 if delta > 1:
