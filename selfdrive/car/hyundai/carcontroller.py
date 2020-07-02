@@ -75,7 +75,7 @@ class CarController():
     self.lane_change_enabled = self.params.get('LaneChangeEnabled') == b'1'
     self.speed_control_enabled = self.params.get('SpeedControlEnabled') == b'1'
 
-    self.cruise_send = 0
+
 
   def limit_ctrl(self, value, limit, offset ):
       p_limit = offset + limit
@@ -309,9 +309,9 @@ class CarController():
     vRel = int(vRel * 3.6 + 0.5)
   
     lead_objspd = CS.lead_objspd
-    #str_log1 = 'CV={:03.0f}/{:06.3f} TQ=V:{:04.0f}/S:{:04.0f}'.format( LaC.v_curvature, LaC.model_sum, apply_steer, CS.steer_torque_driver )
-    #str_log2 = 'D={:05.1f} V={:03.0f} S_LIM={:03.0f} S_MAX={:03.0f}'.format( dRel, vRel, steer_limit, param.STEER_MAX )
-    #trace1.printf( '{} {}'.format( str_log1, str_log2 ) )
+    str_log1 = 'CV={:03.0f}/{:06.3f} TQ=V:{:04.0f}/S:{:04.0f}'.format( LaC.v_curvature, LaC.model_sum, apply_steer, CS.steer_torque_driver )
+    str_log2 = 'D={:05.1f} V={:03.0f} S_LIM={:03.0f} S_MAX={:03.0f}'.format( dRel, vRel, steer_limit, param.STEER_MAX )
+    trace1.printf( '{} {}'.format( str_log1, str_log2 ) )
 
 
     self.apply_accel_last = apply_accel
@@ -385,8 +385,6 @@ class CarController():
       self.sc_active_timer2 = 0
     elif self.sc_wait_timer2:
       self.sc_wait_timer2 -= 1
-      #
-      self.cruise_send = 4
     elif self.speed_control_enabled:
       #acc_mode, clu_speed = self.long_speed_cntrl( v_ego_kph, CS, actuators )
       btn_type, clu_speed = self.SC.update( v_ego_kph, CS, sm, actuators, dRel, yRel, vRel, LaC.v_curvature )   # speed controller spdcontroller.py
@@ -408,35 +406,20 @@ class CarController():
           self.resume_cnt = 0
           self.sc_active_timer2 = 0
           self.sc_btn_type = Buttons.NONE          
-          #
-          self.cruise_send = 3
         else:
           # 0, 1, 2 모드에서는  Set 상태에서만 가감속 전달
           if CS.cruise_set:
-            #
-            self.cruise_send = self.sc_btn_type
+            #self.traceCC.add( 'sc_btn_type={}  clu_speed={}  set={:.0f} vanz={:.0f}'.format( self.sc_btn_type, self.sc_clu_speed,  CS.VSetDis, clu11_speed  ) )
+            print("cruise set-> "+ str(self.sc_btn_type))
             can_sends.append(create_clu11(self.packer, CS.scc_bus, CS.clu11, self.sc_btn_type, self.sc_clu_speed, self.resume_cnt))
           # 3 모드에서는 Set이 아니어도 가감속 신호 전달
           elif not CS.cruise_set and CS.cruise_set_mode ==3 and CS.clu_Vanz > 30:
-            #
-            self.cruise_send = self.sc_btn_type
-            #크루즈 셋 상태가 아니고 CS.prev_VSetDis 가 있다면
-            if not CS.cruise_set_speed_kph and CS.prev_VSetDis:
-              CS.cruise_set_speed_kph = CS.prev_VSetDis
-              CS.prev_VSetDis = 0
-
+            print("cruise auto set-> "+ str(self.sc_btn_type))
+            CS.cruise_set_speed_kph = CS.prev_VSetDis
             can_sends.append(create_clu11(self.packer, CS.scc_bus, CS.clu11, self.sc_btn_type, self.sc_clu_speed, self.resume_cnt))
-          #
-          
-          self.resume_cnt += 1
 
-        
-    #self.cruise_send = self.sc_btn_type
-    str_log1 = 'CSend={:03.0f} SAT2={:03.0f} SWT2={:03.0f} SBT={:03.0f}'.format( self.cruise_send, self.sc_active_timer2, self.sc_wait_timer2, self.sc_btn_type)
-    str_log2 = 'D={:05.1f} V={:03.0f} S_LIM={:03.0f} S_MAX={:03.0f}'.format( dRel, vRel, steer_limit, param.STEER_MAX )
-    trace1.printf( '{} {}'.format( str_log1, str_log2 ) )
+          self.resume_cnt += 1
 
     self.lkas11_cnt += 1
 
-    self.cruise_send = 0
     return can_sends
