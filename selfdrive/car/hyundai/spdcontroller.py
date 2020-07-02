@@ -234,7 +234,7 @@ class SpdController():
                 #설정속도가 현재 속도 보다 낮다면 가속 진행
                 else:
                     #앞차가 빨리가지만 거리가 100m 이상인 경우에만 가속 진행
-                    if dRel > dst_lead_distance:
+                    if dRel >= dst_lead_distance:
                         self.seq_step_debug = 62
                         #lead_set_speed = int(CS.VSetDis)
                         lead_wait_cmd, lead_set_speed = self.get_tm_speed(CS, 20, 1)                    
@@ -252,8 +252,9 @@ class SpdController():
                 self.seq_step_debug = 10
                 lead_wait_cmd, lead_set_speed = self.get_tm_speed(CS, 80, -2) #-1)
             else:
-                self.seq_step_debug = 11
-                lead_wait_cmd, lead_set_speed = self.get_tm_speed(CS, 50, 1)
+                if dRel >= dst_lead_distance:
+                    self.seq_step_debug = 11
+                    lead_wait_cmd, lead_set_speed = self.get_tm_speed(CS, 50, 1)
 
         # 선행차량이 멀리 있으면.
         elif lead_objspd < -20 and dRel < 50:  #거리 조건 추가
