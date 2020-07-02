@@ -180,7 +180,7 @@ class SpdController():
         self.seq_step_debug = 1
         
         #vision model 인식 거리 전달
-        dRel, yRel, vRel = self.get_lead( sm, CS )
+        #dRel, yRel, vRel = self.get_lead( sm, CS )
         #if CS.lead_distance < 150:
         #    dRel = CS.lead_distance
         #    vRel = CS.lead_objspd
