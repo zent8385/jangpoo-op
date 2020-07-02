@@ -187,7 +187,7 @@ class SpdController():
 
         dst_lead_distance = (CS.clu_Vanz*cv_Raio)   # 유지 거리.
         
-        if dst_lead_distance > 42 #> 100:  60km/h 이상은 거리 150m 유지
+        if dst_lead_distance > 42: #> 100:  60km/h 이상은 거리 150m 유지
             dst_lead_distance = 150 #100
         elif dst_lead_distance > 21:    #30km/h 이상은 거리 100m 유지
             dst_lead_distance = 100 #50
