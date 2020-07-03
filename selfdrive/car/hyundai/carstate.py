@@ -413,7 +413,6 @@ class CarState():
 
 
         elif self.prev_clu_CruiseSwState == 2:  # dn
-          print("dn vsd:%d clu_csw:%d cruise_set_first:%d clu_vanz:%d delta_vsd:%d cruise_sw_check:%d" % (self.VSetDis, self.clu_CruiseSwState, self.cruise_set_first, self.clu_Vanz, delta_vsetdis, self.curise_sw_check))
           if self.cruise_set_first:
             self.cruise_set_first = 0
             #첫 설정이면 현재 속도 입력
@@ -435,9 +434,9 @@ class CarState():
 
         #브레이크 또는 cancel 버튼 누름 또는 크루즈 상태에 따른 cruise set 초기화
         elif self.prev_clu_CruiseSwState == 4 or self.brake_pressed:  # cancel /brake/ cruise off
-          print("cancel vsd:%d prev_vsd:%d prev_clu_csw:%d clu_csw:%d cruise_set_speed_kph:%d" % (self.VSetDis, self.prev_VSetDis, self.prev_clu_CruiseSwState, self.clu_CruiseSwState, self.cruise_set_speed_kph))
           self.cruise_set_first = 1
-          self.prev_VSetDis = self.cruise_set_speed_kph
+          if not self.cruise_set_speed_kph:
+            self.prev_VSetDis = self.cruise_set_speed_kph
           cruise_set_speed_kph = 0
           self.VSetDis = 0
 
@@ -445,7 +444,6 @@ class CarState():
 
       #같은 버튼을 두번 눌렀을 때 동작인가?
       elif self.clu_CruiseSwState and delta_vsetdis > 0:
-        print("self.clu_CruiseSwState and delta_vsetdis > 0")
         self.curise_sw_check = True
         cruise_set_speed_kph =  int(self.VSetDis)
 
@@ -689,8 +687,8 @@ class CarState():
 
 
     #
-    #if( self.clu_Vanz > 30):
-    self.cruise_set_speed_kph = self.update_cruiseSW()
+    if( self.clu_Vanz >= 30):
+      self.cruise_set_speed_kph = self.update_cruiseSW()
     self.cruise_set_speed = self.cruise_set_speed_kph * speed_conv
     
     #str1 = 'C:{:.0f}  as={:.1f} set{:.1f}'.format( self.main_on,  self.pcm_acc_status,  self.cruise_set_speed )

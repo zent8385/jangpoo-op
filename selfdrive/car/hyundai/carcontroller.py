@@ -415,7 +415,8 @@ class CarController():
           # 3 모드에서는 Set이 아니어도 가감속 신호 전달
           elif not CS.cruise_set and CS.cruise_set_mode ==3 and CS.clu_Vanz > 30:
             print("cruise auto set-> "+ str(self.sc_btn_type))
-            CS.cruise_set_speed_kph = CS.prev_VSetDis
+            if not CS.cruise_set_speed_kph:
+              CS.cruise_set_speed_kph = CS.prev_VSetDis
             can_sends.append(create_clu11(self.packer, CS.scc_bus, CS.clu11, self.sc_btn_type, self.sc_clu_speed, self.resume_cnt))
 
           self.resume_cnt += 1
