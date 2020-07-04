@@ -157,9 +157,9 @@ class SpdController():
 
         delta_speed = CS.VSetDis - CS.clu_Vanz
 
-        #set_speed = int(CS.VSetDis) + add_val
+        set_speed = int(CS.VSetDis) + add_val
         #ver4
-        set_speed = int(CS.clu_Vanz) + add_val
+        #set_speed = int(CS.clu_Vanz) + add_val
         
         if add_val > 0:  # 증가
             if delta_speed > safety_dis:
@@ -399,9 +399,11 @@ class SpdController():
         
         set_speed_diff = set_speed - CS.clu_Vanz
         #ver4
-        CS.VSetDis = CS.clu_Vanz
+        #CS.VSetDis = CS.clu_Vanz
+
         #ver2, ver3
         #CS.VSetDis = set_speed
+        
         #ver1
         #CS.VSetDis = CS.clu_Vanz
         #if set_speed_diff > 2: #가속 필요
@@ -412,13 +414,13 @@ class SpdController():
 
         #ver2
         # 고정 속도(2)만 가감
-        #CS.VSetDis = set_speed
-        #if set_speed_diff > 0: #가속 필요
+        CS.VSetDis = set_speed
+        if set_speed_diff > 0: #가속 필요
             #크루즈 설정값은 set_speed 보다 낮아야 가속 신호를 보냄
-        #    CS.VSetDis -= 2
-        #elif set_speed_diff < 0: # 감속 필요
+            CS.VSetDis -= 2
+        elif set_speed_diff < 0: # 감속 필요
             #크루즈 설정값은 set_speed 보다 높아야 감속 신호를 보냄
-        #    CS.VSetDis += 2
+            CS.VSetDis += 2
 
 
         #ver3
