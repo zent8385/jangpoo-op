@@ -28,8 +28,8 @@ from selfdrive.kegman_conf import kegman_conf
 
 kegman = kegman_conf()
 
-cv_Raio = 0.7 #float(kegman.conf['cV_Ratio']) # 0.7
-cv_Dist = -5 #float(kegman.conf['cV_Dist']) # -5
+cv_Raio = float(kegman.conf['cV_Ratio']) # 0.7
+cv_Dist = float(kegman.conf['cV_Dist']) # -5
 
 MAX_SPEED = 255.0
 
@@ -187,13 +187,12 @@ class SpdController():
 
         dst_lead_distance = (CS.clu_Vanz*cv_Raio)   # 유지 거리.
         
-        if dst_lead_distance > 42: #> 100:  60km/h 이상은 거리 150m 유지
+        if dst_lead_distance > 63: #42: #> 100:  60km/h 이상은 거리 150m 유지
             dst_lead_distance = 150 #100
         elif dst_lead_distance > 21:    #30km/h 이상은 거리 100m 유지
             dst_lead_distance = 100 #50
 
-        #선행차량과의 거리 100 가정
-        #d_delta 50
+        
         if dRel < 150:
             self.time_no_lean = 0
             d_delta = dRel - dst_lead_distance
@@ -332,11 +331,11 @@ class SpdController():
     def update(self, v_ego_kph, CS, sm, actuators, dRel, yRel, vRel, model_speed):
         btn_type = Buttons.NONE
         #lead_1 = sm['radarState'].leadOne
-        long_wait_cmd = 100
+        long_wait_cmd = 500
         set_speed = CS.cruise_set_speed_kph
         dec_step_cmd = 0
 
-        if self.long_curv_timer < 120:
+        if self.long_curv_timer < 600:
             self.long_curv_timer += 1
 
 
@@ -389,7 +388,7 @@ class SpdController():
             self.seq_step_debug = 98   
             btn_type = Buttons.SET_DECEL
             self.long_curv_timer = 0
-        elif delta >= 1 and (model_speed > 200 or CS.clu_Vanz < 70) and self.long_curv_timer < long_wait_cmd:
+        elif delta >= 1 and (model_speed > 200 or CS.clu_Vanz < 70) and self.long_curv_timer > long_wait_cmd:
             set_speed = CS.VSetDis + dec_step_cmd
             self.seq_step_debug = 99
             btn_type = Buttons.RES_ACCEL
