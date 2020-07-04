@@ -389,7 +389,7 @@ class SpdController():
             self.seq_step_debug = 98   
             btn_type = Buttons.SET_DECEL
             self.long_curv_timer = 0
-        elif delta >= 1 and (model_speed > 200 or CS.clu_Vanz < 70):
+        elif delta >= 1 and (model_speed > 200 or CS.clu_Vanz < 70) and self.long_curv_timer < long_wait_cmd:
             set_speed = CS.VSetDis + dec_step_cmd
             self.seq_step_debug = 99
             btn_type = Buttons.RES_ACCEL
@@ -436,8 +436,8 @@ class SpdController():
             btn_type = Buttons.NONE
         #DAt={:03.0f}/{:03.0f}/{:03.0f} 
         #CS.driverAcc_time, long_wait_cmd, self.long_curv_timer
-        str3 = 'SS={:03.0f} SSD={:03.0f} VSD={:03.0f} pVSD={:03.0f} DG/dec={:02.0f}/{:02.0f} LCT={:03.0f} '.format(
-            set_speed, set_speed_diff, CS.VSetDis, CS.prev_VSetDis, self.seq_step_debug, dec_step_cmd, self.long_curv_timer  )
+        str3 = 'SS={:03.0f} SSD={:03.0f} VSD={:03.0f} pVSD={:03.0f} LCT/LWC={:02.0f}/{:02.0f} MS={:03.0f}'.format(
+            set_speed, set_speed_diff, CS.VSetDis, CS.prev_VSetDis, self.long_curv_timer, long_wait_cmd, self.seq_step_debug, model_speed )
         #str4 = ' LD/LS={:03.0f}/{:03.0f} '.format(  CS.lead_distance, CS.lead_objspd )
         str4 = ' LD/LS={:03.0f}/{:03.0f} '.format(  dRel, vRel )
 
