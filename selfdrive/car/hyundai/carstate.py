@@ -418,6 +418,7 @@ class CarState():
             #첫 설정이면 현재 속도 입력
             cruise_set_speed_kph =  int(self.clu_Vanz)
             self.VSetDis = int(self.clu_Vanz)
+            self.prev_VSetDis = int(self.clu_Vanz)
           #elif delta_vsetdis > 5:
           #  print("delta_vsetdis > 5:")  
             #속도차이가 2 이상이면 다시 현재 계기판 속도를 curise_set_speed

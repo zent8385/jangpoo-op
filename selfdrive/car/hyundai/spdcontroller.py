@@ -28,7 +28,7 @@ from selfdrive.kegman_conf import kegman_conf
 
 kegman = kegman_conf()
 
-cv_Raio = 0.7 #float(kegman.conf['cV_Ratio']) # 0.7
+cv_Raio = 0.6 #0.7 #float(kegman.conf['cV_Ratio']) # 0.7
 cv_Dist = -5 #float(kegman.conf['cV_Dist']) # -5
 
 MAX_SPEED = 255.0
@@ -154,9 +154,11 @@ class SpdController():
 
     def get_tm_speed(self, CS, set_time, add_val, safety_dis=5):
         time = int(set_time)
-
+        
+        #로직상 delta_speed는 0 또는 -1 1 차이 수준 밖에 예상 안됨
         delta_speed = CS.VSetDis - CS.clu_Vanz
-        #ver2,3
+
+
         #set_speed = int(CS.VSetDis) + add_val
         #ver4
         set_speed = int(CS.clu_Vanz) + add_val
@@ -174,7 +176,9 @@ class SpdController():
         lead_set_speed = CS.cruise_set_speed_kph
         lead_wait_cmd = 600
         self.seq_step_debug = 0
-        if int(CS.cruise_set_mode) in [ 0, 1]:
+
+        # 모드 2 또는 3이 아니라면 차간거리 속도 반영 안함
+        if int(CS.cruise_set_mode) not in [2, 3]:
             return lead_wait_cmd, lead_set_speed
 
         self.seq_step_debug = 1
@@ -187,12 +191,16 @@ class SpdController():
 
         dst_lead_distance = (CS.clu_Vanz*cv_Raio)   # 유지 거리.
         
-        if dst_lead_distance > 42: #> 100:  60km/h 이상은 거리 150m 유지
-            dst_lead_distance = 100 #100
-        elif dst_lead_distance > 21:    #30km/h 이상은 거리 100m 유지
-            dst_lead_distance = 50 #50
+        # 비율 0.6
+        # 시속 50km/h 이하이면 유지거리 30m
+        # 시속 60km/h 이상이면 유지거리 36m
+        # 시속 80km/h 이상이면 유지거리 42m
 
-        #선행차량과의 거리 100 가정
+        if dst_lead_distance < 30:
+            dst_lead_distance = 30
+        #elif dst_lead_distance < 50:
+        #    dst_lead_distance = 50
+              
         #d_delta 50
         if dRel < 150:
             self.time_no_lean = 0
@@ -216,26 +224,39 @@ class SpdController():
         elif CS.VSetDis >= 60 and lead_objspd < -15:
             self.seq_step_debug = 4
             lead_wait_cmd, lead_set_speed = self.get_tm_speed(CS, 15, -6) #-3)    
+
+
         # 1. 거리 유지.
+        # 차량이 가까워진다면
+        
         elif d_delta < 0:
             # 선행 차량이 가까이 있으면.
+
+            #사용안됨
             dVanz = dRel - CS.clu_Vanz
+
+
             self.seq_step_debug = 5
             #앞차가 더 빠름
             if lead_objspd >= 0:    # 속도 유지 시점 결정.
+                
+
                 self.seq_step_debug = 6
                 #현재속도보다 설정속도가 20 이상 높다면 크루즈 감속 진행
+                #투싼은 CS.VSetDis = CS.clu_vanz 이기 때문에 아래 if 의미없음
+                #무조건 else
                 if CS.VSetDis > (CS.clu_Vanz + 20):
                     self.seq_step_debug = 61
                     lead_wait_cmd = 200
                     lead_set_speed = CS.VSetDis - 1  # CS.clu_Vanz + 5
                     if lead_set_speed < 40:
                         lead_set_speed = 30 #40
-                #설정속도가 현재 속도 보다 낮다면 가속 진행
+                
+                #현 속도 유지
                 else:
                     self.seq_step_debug = 62
-                    #lead_set_speed = int(CS.VSetDis)
-                    lead_wait_cmd, lead_set_speed = self.get_tm_speed(CS, 20, 1)                    
+                    lead_wait_cmd, lead_set_speed = self.get_tm_speed(CS, 100, 0)                    
+                    
             #내차가 더 빠름        
             elif lead_objspd < -30 or (dRel < 60 and CS.clu_Vanz > 60 and lead_objspd < -5):            
                 self.seq_step_debug = 7
@@ -246,45 +267,64 @@ class SpdController():
             elif lead_objspd < -10:
                 self.seq_step_debug = 9
                 lead_wait_cmd, lead_set_speed = self.get_tm_speed(CS, 50, -2) #-1)
+            #내차 속도가 빨라지기 시작하는 시점
             elif lead_objspd < 0:
                 self.seq_step_debug = 10
                 lead_wait_cmd, lead_set_speed = self.get_tm_speed(CS, 80, -2) #-1)
-            else:
-                self.seq_step_debug = 11
-                lead_wait_cmd, lead_set_speed = self.get_tm_speed(CS, 50, 1)
+            
+            #선행 차량이 유지거리보다 가까이 있다면 가속 하지 않음
+            #else:
+            #    self.seq_step_debug = 11
+            #    lead_wait_cmd, lead_set_speed = self.get_tm_speed(CS, 50, 1)
 
         # 선행차량이 멀리 있으면.
-        elif lead_objspd < -20 and dRel < 50:  #거리 조건 추가
+        elif lead_objspd < -30 and dRel < 70:  #거리 조건 추가
+            #빠르게 가까워지며 상대거리가 50m 이하이면 속도 빨리 줄임
             self.seq_step_debug = 12
             lead_wait_cmd, lead_set_speed = self.get_tm_speed(CS, 15, -4) #-2)
+        elif lead_objspd < -20 and dRel < 50:  #거리 조건 추가
+            #빠르게 가까워지며 상대거리가 50m 이하이면 속도 빨리 줄임
+            self.seq_step_debug = 12
+            lead_wait_cmd, lead_set_speed = self.get_tm_speed(CS, 15, -4) #-2)
+        
+        #기준을 30으로잡았기 때문에 아래 코드 무시됨
         elif lead_objspd < -10 and dRel < 30:  #거리 조건 추가:
             self.seq_step_debug = 13
-            lead_wait_cmd, lead_set_speed = self.get_tm_speed(CS, 50, -2) #-1)
+            lead_wait_cmd, lead_set_speed = self.get_tm_speed(CS, 15, -2) #-1)
+        
+        #선행차량은 멀리 있지만 차량이 상대속도가 -5km/h 차이라면 가까워지고 있으므로
+        # 천천히 속도를 줄임
         elif lead_objspd < -5:
             self.seq_step_debug = 14
             lead_wait_cmd, lead_set_speed = self.get_tm_speed(CS, 150, -2) #-1)
+
+        #앞차가 멀리있으며, 
+        #크루즈 설정 속도보다 현 차속이 느리면서
+        # 목표 60 / 내차 30
         elif CS.cruise_set_speed_kph > CS.clu_Vanz:
             self.seq_step_debug = 16
             # 선행 차량이 가속하고 있으면.
             if dRel >= 150:
                 self.seq_step_debug = 17
-                lead_wait_cmd, lead_set_speed = self.get_tm_speed( CS, 10, 1) #3 )
+                lead_wait_cmd, lead_set_speed = self.get_tm_speed( CS, 100, 1) #3 )
+
+            #선행차량 가속중이지만 상대속도가 -5보다 적다면
             elif lead_objspd < cv_Dist:
                 self.seq_step_debug = 18
                 #lead_set_speed = int(CS.VSetDis)
                 lead_set_speed = int(CS.cruise_set_speed_kph)
             elif lead_objspd < 5:
                 self.seq_step_debug = 20
-                lead_wait_cmd, lead_set_speed = self.get_tm_speed(CS, 15, 1) #1)
+                lead_wait_cmd, lead_set_speed = self.get_tm_speed(CS, 100, 1) #1)
             elif lead_objspd < 10:
                 self.seq_step_debug = 21
-                lead_wait_cmd, lead_set_speed = self.get_tm_speed(CS, 15, 1) #2)
+                lead_wait_cmd, lead_set_speed = self.get_tm_speed(CS, 100, 1) #2)
             elif lead_objspd < 30:
                 self.seq_step_debug = 22
-                lead_wait_cmd, lead_set_speed = self.get_tm_speed(CS, 15, 1) #3)                
+                lead_wait_cmd, lead_set_speed = self.get_tm_speed(CS, 100, 1) #3)                
             else:
                 self.seq_step_debug = 23
-                lead_wait_cmd, lead_set_speed = self.get_tm_speed(CS, 15, 1) #5)
+                lead_wait_cmd, lead_set_speed = self.get_tm_speed(CS, 100, 1) #5)
 
         return lead_wait_cmd, lead_set_speed
 
@@ -332,34 +372,35 @@ class SpdController():
     def update(self, v_ego_kph, CS, sm, actuators, dRel, yRel, vRel, model_speed):
         btn_type = Buttons.NONE
         #lead_1 = sm['radarState'].leadOne
-        long_wait_cmd = 100
+        long_wait_cmd = 600
         set_speed = CS.cruise_set_speed_kph
         dec_step_cmd = 0
 
-        if self.long_curv_timer < 120:
+        if self.long_curv_timer < long_wait_cmd:
             self.long_curv_timer += 1
 
 
         # 선행 차량 거리유지
         lead_wait_cmd, lead_set_speed = self.update_lead( CS,  dRel, yRel, vRel)  
         # 커브 감속.
-        #curv_wait_cmd, curv_set_speed = self.update_curv(CS, sm, model_speed)
+        curv_wait_cmd, curv_set_speed = self.update_curv(CS, sm, model_speed)
 
-        # if curv_wait_cmd != 0:
-        #     if lead_set_speed > curv_set_speed:
-        #         dec_step_cmd = 1
-        #         set_speed = curv_set_speed
-        #         long_wait_cmd = curv_wait_cmd
-        #     else:
-        #         set_speed = lead_set_speed
-        #         long_wait_cmd = lead_wait_cmd
-        # else:
-        #     set_speed = lead_set_speed
-        #     long_wait_cmd = lead_wait_cmd
+        #TEST 커브 속도 반영 제외
+        curv_wait_cmd = 0
 
-        #커브 감소 제외
-        set_speed = lead_set_speed
-        long_wait_cmd = lead_wait_cmd
+        if curv_wait_cmd != 0:
+            if lead_set_speed > curv_set_speed:
+                dec_step_cmd = 1
+                set_speed = curv_set_speed
+                long_wait_cmd = curv_wait_cmd
+            else:
+                set_speed = lead_set_speed
+                long_wait_cmd = lead_wait_cmd
+        else:
+            set_speed = lead_set_speed
+            long_wait_cmd = lead_wait_cmd
+
+        
 
         if set_speed > CS.cruise_set_speed_kph:
             set_speed = CS.cruise_set_speed_kph
@@ -380,6 +421,7 @@ class SpdController():
             dec_step_cmd = 1
 
         if self.long_curv_timer < long_wait_cmd:
+            #타이머 시간동안 작동 안함
             pass
         elif CS.driverOverride == 1:  # 가속패달에 의한 속도 설정.
             if CS.cruise_set_speed_kph > CS.clu_Vanz:
@@ -388,12 +430,13 @@ class SpdController():
                     set_speed = CS.clu_Vanz               
                     self.seq_step_debug = 97
                     btn_type = Buttons.SET_DECEL
+            self.long_curv_timer = 0
         elif delta <= -1:
             set_speed = CS.VSetDis - dec_step_cmd
             self.seq_step_debug = 98   
             btn_type = Buttons.SET_DECEL
             self.long_curv_timer = 0
-        elif delta >= 1 and (model_speed > 200 or CS.clu_Vanz < 70):
+        elif delta >= 1 and (model_speed > 200 or CS.clu_Vanz < 200):
             set_speed = CS.VSetDis + dec_step_cmd
             self.seq_step_debug = 99
             btn_type = Buttons.RES_ACCEL
@@ -403,8 +446,11 @@ class SpdController():
         
         
         set_speed_diff = set_speed - CS.clu_Vanz
+
+        
         #ver4
         CS.VSetDis = CS.clu_Vanz
+
         #ver2, ver3
         #CS.VSetDis = set_speed
         #ver1
@@ -440,8 +486,8 @@ class SpdController():
             btn_type = Buttons.NONE
         #DAt={:03.0f}/{:03.0f}/{:03.0f} 
         #CS.driverAcc_time, long_wait_cmd, self.long_curv_timer
-        str3 = 'SS={:03.0f} SSD={:03.0f} VSD={:03.0f} pVSD={:03.0f} LCT={:03.0f} LAC={:03.0f}'.format(
-            set_speed, set_speed_diff, CS.VSetDis, CS.prev_VSetDis,  self.long_curv_timer , long_wait_cmd )
+        str3 = 'SS={:03.0f}/{:03.0f} SSD={:03.0f} VSD={:03.0f} pVSD={:03.0f} DAt={:03.0f}/{:03.0f}/{:03.0f} '.format(
+            set_speed, long_wait_cmd, set_speed_diff, CS.VSetDis, CS.prev_VSetDis,  CS.driverAcc_time, self.long_curv_timer, long_wait_cmd  )
         #str4 = ' LD/LS={:03.0f}/{:03.0f} '.format(  CS.lead_distance, CS.lead_objspd )
         str4 = ' LD/LS={:03.0f}/{:03.0f} '.format(  dRel, vRel )
 

@@ -385,7 +385,9 @@ class CarController():
       self.sc_active_timer2 = 0
     elif self.sc_wait_timer2:
       self.sc_wait_timer2 -= 1
-    elif self.speed_control_enabled:
+    
+    #stock 모드가 아닐 경우에만 반영
+    elif self.speed_control_enabled and CS.cruise_set_mode != 0:
       #acc_mode, clu_speed = self.long_speed_cntrl( v_ego_kph, CS, actuators )
       btn_type, clu_speed = self.SC.update( v_ego_kph, CS, sm, actuators, dRel, yRel, vRel, LaC.v_curvature )   # speed controller spdcontroller.py
 
