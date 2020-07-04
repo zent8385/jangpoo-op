@@ -174,7 +174,7 @@ class SpdController():
         lead_set_speed = CS.cruise_set_speed_kph
         lead_wait_cmd = 600
         self.seq_step_debug = 0
-        if int(CS.cruise_set_mode) != 2:
+        if int(CS.cruise_set_mode) in [ 0, 1 ]: #!= 2:
             return lead_wait_cmd, lead_set_speed
 
         self.seq_step_debug = 1
