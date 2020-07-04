@@ -391,7 +391,7 @@ class CarState():
         #  #운전자 가속 동안에는 set_speed 표기 설정 유지
         #  cruise_set_speed_kph =  int(self.VSetDis)          
 
-        if self.prev_clu_CruiseSwState == 1:   # up
+        if self.prev_clu_CruiseSwState == 1 and self.clu_Vanz >= 30:   # up
           if self.cruise_set_first:
             self.cruise_set_first = 0
             #첫 설정이 아니면 이전 속도 셋 입력
@@ -412,7 +412,7 @@ class CarState():
           #cruise_set_speed_kph = 100
 
 
-        elif self.prev_clu_CruiseSwState == 2:  # dn
+        elif self.prev_clu_CruiseSwState == 2 and self.clu_Vanz >= 30:  # dn
           if self.cruise_set_first:
             self.cruise_set_first = 0
             #첫 설정이면 현재 속도 입력
@@ -687,8 +687,8 @@ class CarState():
 
 
     #
-    if( self.clu_Vanz >= 30):
-      self.cruise_set_speed_kph = self.update_cruiseSW()
+    #if( self.clu_Vanz >= 30):
+    self.cruise_set_speed_kph = self.update_cruiseSW()
     self.cruise_set_speed = self.cruise_set_speed_kph * speed_conv
     
     #str1 = 'C:{:.0f}  as={:.1f} set{:.1f}'.format( self.main_on,  self.pcm_acc_status,  self.cruise_set_speed )
