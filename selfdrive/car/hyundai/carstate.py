@@ -395,9 +395,9 @@ class CarState():
             self.cruise_set_first = 0
             #첫 설정이 아니면 이전 속도 셋 입력
             cruise_set_speed_kph =  int(self.prev_VSetDis)
-          elif delta_vsetdis > 5:
+          #elif delta_vsetdis > 5:
             #속도차이가 2 이상이면 다시 현재 계기판 속도를 curise_set_speed
-            cruise_set_speed_kph = self.VSetDis
+          #  cruise_set_speed_kph = self.VSetDis
           elif not self.curise_sw_check:
             cruise_set_speed_kph += 2 #1
             self.VSetDis += 2
@@ -408,10 +408,10 @@ class CarState():
             cruise_set_speed_kph =  int(self.clu_Vanz)
             self.VSetDis = cruise_set_speed_kph
             self.prev_VSetDis = self.VSetDis
-          elif delta_vsetdis > 5:
+          #elif delta_vsetdis > 5:
           #  print("delta_vsetdis > 5:")  
             #속도차이가 2 이상이면 다시 현재 계기판 속도를 curise_set_speed
-            cruise_set_speed_kph =  int(self.VSetDis)
+          #  cruise_set_speed_kph =  int(self.VSetDis)
           elif not self.curise_sw_check:
             cruise_set_speed_kph -= 2 #1
             self.VSetDis -= 2
