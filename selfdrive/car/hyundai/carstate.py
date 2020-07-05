@@ -430,7 +430,7 @@ class CarState():
       #같은 버튼을 두번 눌렀을 때 동작인가?
       elif self.clu_CruiseSwState and delta_vsetdis > 0:
         self.curise_sw_check = True
-        cruise_set_speed_kph =  int(self.VSetDis)
+        #cruise_set_speed_kph =  int(self.VSetDis)
 
     else:
       self.curise_sw_check = False
