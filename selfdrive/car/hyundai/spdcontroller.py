@@ -372,7 +372,7 @@ class SpdController():
     def update(self, v_ego_kph, CS, sm, actuators, dRel, yRel, vRel, model_speed):
         btn_type = Buttons.NONE
         #lead_1 = sm['radarState'].leadOne
-        long_wait_cmd = 600
+        long_wait_cmd = 300
         set_speed = CS.cruise_set_speed_kph
         dec_step_cmd = 0
         
