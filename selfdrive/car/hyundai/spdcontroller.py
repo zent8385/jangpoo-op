@@ -271,11 +271,10 @@ class SpdController():
             elif lead_objspd < 0:
                 self.seq_step_debug = 10
                 lead_wait_cmd, lead_set_speed = self.get_tm_speed(CS, 40, -2) #-1)
-            
             #선행 차량이 유지거리보다 가까이 있다면 가속 하지 않음
-            #else:
-            #    self.seq_step_debug = 11
-            #    lead_wait_cmd, lead_set_speed = self.get_tm_speed(CS, 50, 1)
+            else:
+                self.seq_step_debug = 11
+                lead_wait_cmd, lead_set_speed = self.get_tm_speed(CS, 5, 0)
 
         # 선행차량이 멀리 있으면.
         elif lead_objspd < -30 and dRel < 70:  #거리 조건 추가
@@ -298,6 +297,9 @@ class SpdController():
             self.seq_step_debug = 14
             lead_wait_cmd, lead_set_speed = self.get_tm_speed(CS, 75, -2) #-1)
 
+        elif lead_objspd < 0:
+            self.seq_step_debug = 14
+            lead_wait_cmd, lead_set_speed = self.get_tm_speed(CS, 100, -2) #-1)
         #앞차가 멀리있으며, 
         #크루즈 설정 속도보다 현 차속이 느리면서
         # 목표 60 / 내차 30
@@ -325,7 +327,10 @@ class SpdController():
             else:
                 self.seq_step_debug = 23
                 lead_wait_cmd, lead_set_speed = self.get_tm_speed(CS, 150, 1) #5)
-
+        else:
+            #앞차는 멀리 있는데 내 차 속도가 크루즈 속도를 넘어섰을 때
+            lead_wait_cmd, lead_set_speed = self.get_tm_speed(CS, 75, -2) #-1)  
+            
         return lead_wait_cmd, lead_set_speed
 
     def update_curv(self, CS, sm, model_speed):
