@@ -375,6 +375,9 @@ class SpdController():
         long_wait_cmd = 600
         set_speed = CS.cruise_set_speed_kph
         dec_step_cmd = 0
+        
+        #ver4
+        set_speed_diff = set_speed - CS.VSetDis
 
         if self.long_curv_timer < long_wait_cmd:
             self.long_curv_timer += 1
@@ -443,11 +446,12 @@ class SpdController():
             self.long_curv_timer = 0            
             if set_speed > CS.cruise_set_speed_kph:
                 set_speed = CS.cruise_set_speed_kph
+        else:
+            self.long_curv_timer = 0
         
         
-        set_speed_diff = set_speed - CS.clu_Vanz
 
-        
+
         #ver4
         CS.VSetDis = CS.clu_Vanz
 
