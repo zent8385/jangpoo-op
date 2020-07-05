@@ -389,7 +389,7 @@ class SpdController():
         curv_wait_cmd, curv_set_speed = self.update_curv(CS, sm, model_speed)
 
         #TEST 커브 속도 반영 제외
-        curv_wait_cmd = 0
+        #curv_wait_cmd = 0
 
         if curv_wait_cmd != 0:
             if lead_set_speed > curv_set_speed:
