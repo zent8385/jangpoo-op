@@ -174,7 +174,7 @@ class SpdController():
 
     def update_lead(self, CS,  dRel, yRel, vRel):
         lead_set_speed = CS.cruise_set_speed_kph
-        lead_wait_cmd = 600
+        lead_wait_cmd = 0
         self.seq_step_debug = 0
 
         # 모드 2 또는 3이 아니라면 차간거리 속도 반영 안함
@@ -313,6 +313,7 @@ class SpdController():
                 self.seq_step_debug = 18
                 #lead_set_speed = int(CS.VSetDis)
                 lead_set_speed = int(CS.cruise_set_speed_kph)
+                lead_wait_cmd =100
             elif lead_objspd < 5:
                 self.seq_step_debug = 20
                 lead_wait_cmd, lead_set_speed = self.get_tm_speed(CS, 100, 1) #1)
