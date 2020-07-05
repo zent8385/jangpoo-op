@@ -383,14 +383,14 @@ class CarState():
       delta_vsetdis = abs(self.VSetDis - self.prev_VSetDis)
       
       if self.prev_clu_CruiseSwState != self.clu_CruiseSwState or self.brake_pressed:
-        if self.clu_CruiseSwState:
-          self.prev_VSetDis = int(self.VSetDis)
+        #if self.clu_CruiseSwState:
+        #  self.prev_VSetDis = int(self.VSetDis)
         #elif self.driverAcc_time:
         #  print("driver acc")
         #  #운전자 가속 동안에는 set_speed 표기 설정 유지
         #  cruise_set_speed_kph =  int(self.VSetDis)          
 
-        elif self.prev_clu_CruiseSwState == 1 and self.clu_Vanz >= 30:   # up
+        if self.prev_clu_CruiseSwState == 1 and self.clu_Vanz >= 30:   # up
           if self.cruise_set_first:
             self.cruise_set_first = 0
             #첫 설정이 아니면 이전 속도 셋 입력
