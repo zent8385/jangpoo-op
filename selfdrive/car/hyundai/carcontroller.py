@@ -377,6 +377,8 @@ class CarController():
     # reset lead distnce after the car starts moving
     elif self.last_lead_distance != 0:
       self.last_lead_distance = 0
+
+      
     elif CS.driverOverride == 2 or not CS.pcm_acc_status or CS.clu_CruiseSwState == 1 or CS.clu_CruiseSwState == 2:
       #self.model_speed = 300
       self.resume_cnt = 0
@@ -418,8 +420,6 @@ class CarController():
             # 3 모드에서는 Set이 아니어도 가감속 신호 전달
             elif not CS.cruise_set and CS.cruise_set_mode ==3 and CS.clu_Vanz > 30:
               print("cruise auto set-> "+ str(self.sc_btn_type))
-              if not CS.cruise_set_speed_kph:
-                CS.cruise_set_speed_kph = CS.prev_VSetDis
               can_sends.append(create_clu11(self.packer, CS.scc_bus, CS.clu11, self.sc_btn_type, self.sc_clu_speed, self.resume_cnt))
 
           self.resume_cnt += 1

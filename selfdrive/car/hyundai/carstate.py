@@ -381,6 +381,10 @@ class CarState():
     delta_vsetdis = 0
     
     if self.pcm_acc_status:
+
+      #크루즈 auto set 적용
+      if self.cruise_set_mode ==3  and not self.cruise_set_speed and self.prev_VSetDis:
+        cruise_set_speed_kph = int(self.prev_VSetDis)
       
       delta_vsetdis = abs(self.VSetDis - self.prev_VSetDis)
       

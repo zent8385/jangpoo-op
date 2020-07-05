@@ -448,9 +448,6 @@ class SpdController():
                 set_speed = CS.cruise_set_speed_kph
         else:
             self.long_curv_timer = 0
-        
-        
-
 
         #ver4
         CS.VSetDis = CS.clu_Vanz
