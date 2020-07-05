@@ -377,7 +377,9 @@ class CarState():
 
   def update_cruiseSW(self ):
     cruise_set_speed_kph = self.cruise_set_speed_kph
+    self.prev_VSetDis = self.cruise_set_speed_kph
     delta_vsetdis = 0
+    
     if self.pcm_acc_status:
       
       delta_vsetdis = abs(self.VSetDis - self.prev_VSetDis)
@@ -398,7 +400,8 @@ class CarState():
           #elif delta_vsetdis > 5:
             #속도차이가 2 이상이면 다시 현재 계기판 속도를 curise_set_speed
           #  cruise_set_speed_kph = self.VSetDis
-          elif not self.curise_sw_check:
+          #elif not self.curise_sw_check:
+          else:
             cruise_set_speed_kph += 2 #1
             self.VSetDis += 2
         elif self.prev_clu_CruiseSwState == 2 and self.clu_Vanz >= 30:  # dn
@@ -407,12 +410,13 @@ class CarState():
             #첫 설정이면 현재 속도 입력
             cruise_set_speed_kph =  int(self.clu_Vanz)
             self.VSetDis = cruise_set_speed_kph
-            self.prev_VSetDis = self.VSetDis
+            #self.prev_VSetDis = self.VSetDis
           #elif delta_vsetdis > 5:
           #  print("delta_vsetdis > 5:")  
             #속도차이가 2 이상이면 다시 현재 계기판 속도를 curise_set_speed
           #  cruise_set_speed_kph =  int(self.VSetDis)
-          elif not self.curise_sw_check:
+          #elif not self.curise_sw_check:
+          else:
             cruise_set_speed_kph -= 2 #1
             self.VSetDis -= 2
           
@@ -420,16 +424,14 @@ class CarState():
         #브레이크 또는 cancel 버튼 누름 또는 크루즈 상태에 따른 cruise set 초기화
         elif self.prev_clu_CruiseSwState == 4 or self.brake_pressed:  # cancel /brake/ cruise off
           self.cruise_set_first = 1
-          if not self.cruise_set_speed:
-            self.prev_VSetDis = self.cruise_set_speed_kph
           cruise_set_speed_kph = 0
           self.VSetDis = 0
 
         self.prev_clu_CruiseSwState = self.clu_CruiseSwState
 
       #같은 버튼을 두번 눌렀을 때 동작인가?
-      elif self.clu_CruiseSwState and delta_vsetdis > 0:
-        self.curise_sw_check = True
+      #elif self.clu_CruiseSwState and delta_vsetdis > 0:
+      #  self.curise_sw_check = True
         #cruise_set_speed_kph =  int(self.VSetDis)
 
     else:
