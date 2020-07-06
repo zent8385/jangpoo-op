@@ -384,14 +384,15 @@ class CarState():
     
     if self.pcm_acc_status:
       
-      if self.cruise_btn_time < 100:
+      if self.cruise_btn_time < 50:
             #타이머 시간동안 작동 안함
         self.cruise_btn_time += 1
         pass
       else:
-        self.cruise_btn_time = 0
+        
         #크루즈 auto set 적용
         if self.cruise_set_mode ==3  and not self.cruise_set_speed and self.prev_VSetDis:
+          self.cruise_btn_time = 0
           cruise_set_speed_kph = int(self.prev_VSetDis)
           
         delta_vsetdis = abs(self.VSetDis - self.prev_VSetDis)
@@ -399,6 +400,7 @@ class CarState():
         
         if self.clu_CruiseSwState or self.brake_pressed:        
         #if self.prev_clu_CruiseSwState != self.clu_CruiseSwState or self.brake_pressed:
+          self.cruise_btn_time = 0
           if self.clu_CruiseSwState == 1: #and self.clu_Vanz >= 30:   # up
           #if self.prev_clu_CruiseSwState == 1 and self.clu_Vanz >= 30:   # up
             if self.cruise_set_first:
