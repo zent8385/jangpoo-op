@@ -384,7 +384,7 @@ class CarState():
     
     if self.pcm_acc_status:
       
-      if self.cruise_btn_time < 50:
+      if self.cruise_btn_time < 100:
             #타이머 시간동안 작동 안함
         self.cruise_btn_time += 1
         pass
