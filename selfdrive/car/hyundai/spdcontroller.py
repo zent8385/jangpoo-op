@@ -329,6 +329,165 @@ class SpdController():
 
         return lead_wait_cmd, lead_set_speed
 
+    def update_lead2(self, CS,  dRel, yRel, vRel):
+        lead_set_speed = self.cruise_set_speed_kph
+        lead_wait_cmd = 600
+        self.seq_step_debug = 0
+
+																			 
+        if int(CS.cruise_set_mode) not in [2, 3]:
+            return lead_wait_cmd, lead_set_speed
+
+        self.seq_step_debug = 1
+		
+										  
+        #dRel, yRel, vRel = self.get_lead( sm, CS )
+        #if CS.lead_distance < 150:
+        #    dRel = CS.lead_distance
+        #    vRel = CS.lead_objspd
+
+        dst_lead_distance = (CS.clu_Vanz*cv_Raio)   # 유지 거리.
+
+        #if dst_lead_distance > 100:
+        #    dst_lead_distance = 100
+        #elif dst_lead_distance < 50:
+        #    dst_lead_distance = 50
+
+								  
+								  
+		if dst_lead_distance < 30:
+            dst_lead_distance = 30							 
+			  
+				   
+					  
+        if dRel < 150:
+            self.time_no_lean = 0
+            d_delta = dRel - dst_lead_distance
+            lead_objspd = vRel  # 선행차량 상대속도.
+        else:
+            d_delta = 0
+            lead_objspd = 0
+
+        # 가속이후 속도 설정.
+        if CS.driverAcc_time:
+          lead_set_speed = CS.clu_Vanz
+          lead_wait_cmd = 100
+          self.seq_step_debug = 2
+        elif CS.VSetDis > 70 and lead_objspd < -20:
+            self.seq_step_debug = 3
+            lead_wait_cmd, lead_set_speed = self.get_tm_speed(CS, 15, -2)
+									
+																				
+													
+        elif CS.VSetDis > 60 and lead_objspd < -15:
+            self.seq_step_debug = 4
+            lead_wait_cmd, lead_set_speed = self.get_tm_speed(CS, 15, -2)      
+
+						   
+        # 1. 거리 유지.
+		
+						 
+        elif d_delta < 0:
+            # 선행 차량이 가까이 있으면.
+						 
+									  
+            dVanz = dRel - CS.clu_Vanz
+
+								   
+            self.seq_step_debug = 5
+																  
+            if lead_objspd >= 0:    # 속도 유지 시점 결정.
+
+									   
+                self.seq_step_debug = 6
+																						   
+							   
+												   
+                if CS.VSetDis > (CS.clu_Vanz + 10):
+									   
+                    lead_wait_cmd = 200
+                    lead_set_speed = CS.VSetDis - 1  # CS.clu_Vanz + 5
+                    if lead_set_speed < 40:
+                        lead_set_speed = 30 #30
+								  
+					 
+                else:
+																									 
+                    lead_set_speed = int(CS.VSetDis)
+
+																										
+            elif lead_objspd < -30 or (dRel < 50 and CS.VSetDis > 60 and lead_objspd < -5):
+                self.seq_step_debug = 7
+                lead_wait_cmd, lead_set_speed = self.get_tm_speed(CS, 15, -2)
+            elif lead_objspd < -20 or (dRel < 70 and CS.VSetDis > 60 and lead_objspd < -5):
+                self.seq_step_debug = 8
+                lead_wait_cmd, lead_set_speed = self.get_tm_speed(CS, 20, -2)
+            elif lead_objspd < -10:
+                self.seq_step_debug = 9
+                lead_wait_cmd, lead_set_speed = self.get_tm_speed(CS, 50, -1)
+								 
+            elif lead_objspd < 0:
+                self.seq_step_debug = 10
+                lead_wait_cmd, lead_set_speed = self.get_tm_speed(CS, 80, -1)
+																						 
+				  
+            else:
+                self.seq_step_debug = 11
+                lead_set_speed = int(CS.VSetDis)
+
+        # 선행차량이 멀리 있으면.
+        elif lead_objspd < -20:
+									
+            self.seq_step_debug = 12
+            lead_wait_cmd, lead_set_speed = self.get_tm_speed(CS, 15, -2)
+        elif lead_objspd < -10:
+									
+																			  
+		
+																	  
+																	 
+									
+            self.seq_step_debug = 13
+            lead_wait_cmd, lead_set_speed = self.get_tm_speed(CS, 50, -1)
+																													
+									
+							  
+        elif lead_objspd < -5:
+            self.seq_step_debug = 14
+            lead_wait_cmd, lead_set_speed = self.get_tm_speed(CS, 150, -1)
+        elif lead_objspd < -1:
+            self.seq_step_debug = 15
+            lead_wait_cmd, lead_set_speed = self.get_tm_speed(CS, 200, -1)
+												   
+        elif self.cruise_set_speed_kph > CS.clu_Vanz:
+            self.seq_step_debug = 16
+            # 선행 차량이 가속하고 있으면.
+            if dRel >= 150:
+                self.seq_step_debug = 17
+                lead_wait_cmd, lead_set_speed = self.get_tm_speed( CS, 200, 1 )
+																			   
+									   
+            elif lead_objspd < cv_Dist:
+                self.seq_step_debug = 18
+                lead_set_speed = int(CS.VSetDis)
+            elif lead_objspd < 2:
+                self.seq_step_debug = 19
+                lead_wait_cmd, lead_set_speed = self.get_tm_speed(CS, 500, 1)
+            elif lead_objspd < 5:
+                self.seq_step_debug = 20
+                lead_wait_cmd, lead_set_speed = self.get_tm_speed(CS, 300, 1)
+            elif lead_objspd < 10:
+                self.seq_step_debug = 21
+                lead_wait_cmd, lead_set_speed = self.get_tm_speed(CS, 200, 1)
+            elif lead_objspd < 30:
+                self.seq_step_debug = 22
+                lead_wait_cmd, lead_set_speed = self.get_tm_speed(CS, 100, 1)                
+            else:
+                self.seq_step_debug = 23
+                lead_wait_cmd, lead_set_speed = self.get_tm_speed(CS, 50, 1)
+
+        return lead_wait_cmd, lead_set_speed
+
     def update_curv(self, CS, sm, model_speed):
         wait_time_cmd = 0
         set_speed = CS.cruise_set_speed_kph
@@ -373,19 +532,19 @@ class SpdController():
     def update(self, v_ego_kph, CS, sm, actuators, dRel, yRel, vRel, model_speed):
         btn_type = Buttons.NONE
         #lead_1 = sm['radarState'].leadOne
-        long_wait_cmd = 300
+        long_wait_cmd = 500
         set_speed = CS.cruise_set_speed_kph
         dec_step_cmd = 0
         
         #ver4
         set_speed_diff = set_speed - CS.VSetDis
 
-        if self.long_curv_timer < long_wait_cmd:
+        if self.long_curv_timer < 600:
             self.long_curv_timer += 1
 
 
         # 선행 차량 거리유지
-        lead_wait_cmd, lead_set_speed = self.update_lead( CS,  dRel, yRel, vRel)  
+        lead_wait_cmd, lead_set_speed = self.update_lead2( CS,  dRel, yRel, vRel)  
         # 커브 감속.
         curv_wait_cmd, curv_set_speed = self.update_curv(CS, sm, model_speed)
 
