@@ -330,7 +330,7 @@ class SpdController():
         return lead_wait_cmd, lead_set_speed
 
     def update_lead2(self, CS,  dRel, yRel, vRel):
-        lead_set_speed = self.cruise_set_speed_kph
+        lead_set_speed = CS.cruise_set_speed_kph
         lead_wait_cmd = 600
         self.seq_step_debug = 0
 
@@ -356,7 +356,7 @@ class SpdController():
         if dst_lead_distance < 30:
             dst_lead_distance = 30							 
 
-		  
+
         if dRel < 150:
             self.time_no_lean = 0
             d_delta = dRel - dst_lead_distance
@@ -456,7 +456,7 @@ class SpdController():
             self.seq_step_debug = 15
             lead_wait_cmd, lead_set_speed = self.get_tm_speed(CS, 200, -1)
 												   
-        elif self.cruise_set_speed_kph > CS.clu_Vanz:
+        elif CS.cruise_set_speed_kph > CS.clu_Vanz:
             self.seq_step_debug = 16
             # 선행 차량이 가속하고 있으면.
             if dRel >= 150:
