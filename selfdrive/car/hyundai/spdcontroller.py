@@ -352,14 +352,11 @@ class SpdController():
         #    dst_lead_distance = 100
         #elif dst_lead_distance < 50:
         #    dst_lead_distance = 50
-
-								  
-								  
-		if dst_lead_distance < 30:
+ 
+        if dst_lead_distance < 30:
             dst_lead_distance = 30							 
-			  
-				   
-					  
+
+		  
         if dRel < 150:
             self.time_no_lean = 0
             d_delta = dRel - dst_lead_distance
