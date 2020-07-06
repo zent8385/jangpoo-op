@@ -180,14 +180,30 @@ class CarInterface(CarInterfaceBase):
       ret.mass = 1640. + STD_CARGO_KG
       ret.wheelbase = 2.845
 
-      ret.steerRateCost = 0.5
+      ret.steerRateCost = 0.3
       ret.steerActuatorDelay = 0.2
-      ret.steerRatio = 13.5
+      ret.steerRatio = 13.0
 
-      ret.lateralTuning.pid.kf = 0.0001
-      ret.lateralTuning.pid.kd = 0.004
-      ret.lateralTuning.pid.kpBP, ret.lateralTuning.pid.kpV = [0], [0.35]
-      ret.lateralTuning.pid.kiBP, ret.lateralTuning.pid.kiV = [0], [0.01]
+      '''
+      ret.lateralTuning.pid.kf = 0.00005
+      ret.lateralTuning.pid.kd = 0.002
+      ret.lateralTuning.pid.kpBP, ret.lateralTuning.pid.kpV = [0], [0.30]
+      ret.lateralTuning.pid.kiBP, ret.lateralTuning.pid.kiV = [0], [0.02]
+      '''
+
+      # -----------------------------------------------------------------------------
+      # INDI
+      # -----------------------------------------------------------------------------
+      # outer and inner are gains. Higher values = more steering
+      # timeconstant is smoothing. Higher values == more smoothing
+      # actuatoreffectiveness is how much it steers. Lower values == more steering
+
+      ret.lateralTuning.init('indi')
+      ret.lateralTuning.indi.innerLoopGain = 4.0
+      ret.lateralTuning.indi.outerLoopGain = 3.0
+      ret.lateralTuning.indi.timeConstant = 1.7
+      ret.lateralTuning.indi.actuatorEffectiveness = 1.7
+      ret.steerActuatorDelay = 0.3
 
 
     ret.centerToFront = ret.wheelbase * 0.4
@@ -216,7 +232,7 @@ class CarInterface(CarInterfaceBase):
 
     # steer, gas, brake limitations VS speed
     ret.steerMaxBP = [0.]
-    ret.steerMaxV = [1.0]
+    ret.steerMaxV = [1.5]
     ret.gasMaxBP = [0.]
     ret.gasMaxV = [0.5]
     ret.brakeMaxBP = [0., 20.]
