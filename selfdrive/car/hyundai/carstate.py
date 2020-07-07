@@ -433,16 +433,14 @@ class CarState():
                 self.cruise_set_first = 0
                 cruise_set_speed_kph =  int(self.prev_VSetDis)
               else:
-                if cruise_set_speed_kph <= int(self.clu_Vanz):
-                  cruise_set_speed_kph =  int(self.clu_Vanz)
+                cruise_set_speed_kph =  int(self.clu_Vanz)
             elif self.prev_clu_CruiseSwState == 2:  # dn
               if self.cruise_set_first:
                 self.cruise_set_first = 0
                 cruise_set_speed_kph =  int(self.clu_Vanz)
                 self.VSetDis = cruise_set_speed_kph
-              else:
-                if cruise_set_speed_kph >= int(self.clu_Vanz):
-                  cruise_set_speed_kph =  int(self.clu_Vanz)
+              else:              
+                cruise_set_speed_kph =  int(self.clu_Vanz)
             #cancel 버튼 누름 또는 크루즈 상태에 따른 cruise set 초기화
             elif self.prev_clu_CruiseSwState == 4:  # cancel /brake/ cruise off
               self.cruise_set_first = 1
