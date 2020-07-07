@@ -372,13 +372,13 @@ class SpdController():
           self.seq_step_debug = 2
         elif CS.VSetDis > 70 and lead_objspd < -20:
             self.seq_step_debug = 3
-            lead_wait_cmd, lead_set_speed = self.get_tm_speed(CS, 15, -2)
+            lead_wait_cmd, lead_set_speed = self.get_tm_speed(CS, 15, -6) #-2)
 									
 																				
 													
         elif CS.VSetDis > 60 and lead_objspd < -15:
             self.seq_step_debug = 4
-            lead_wait_cmd, lead_set_speed = self.get_tm_speed(CS, 15, -2)      
+            lead_wait_cmd, lead_set_speed = self.get_tm_speed(CS, 15, -6) #-2)     
 
 						   
         # 1. 거리 유지.
@@ -415,17 +415,17 @@ class SpdController():
 																										
             elif lead_objspd < -30 or (dRel < 50 and CS.VSetDis > 60 and lead_objspd < -5):
                 self.seq_step_debug = 7
-                lead_wait_cmd, lead_set_speed = self.get_tm_speed(CS, 15, -2)
+                lead_wait_cmd, lead_set_speed = self.get_tm_speed(CS, 15, -6) #-2)
             elif lead_objspd < -20 or (dRel < 70 and CS.VSetDis > 60 and lead_objspd < -5):
                 self.seq_step_debug = 8
-                lead_wait_cmd, lead_set_speed = self.get_tm_speed(CS, 20, -2)
+                lead_wait_cmd, lead_set_speed = self.get_tm_speed(CS, 20, -6) #-2)
             elif lead_objspd < -10:
                 self.seq_step_debug = 9
-                lead_wait_cmd, lead_set_speed = self.get_tm_speed(CS, 50, -1)
+                lead_wait_cmd, lead_set_speed = self.get_tm_speed(CS, 50, -3) #-1)
 								 
             elif lead_objspd < 0:
                 self.seq_step_debug = 10
-                lead_wait_cmd, lead_set_speed = self.get_tm_speed(CS, 80, -1)
+                lead_wait_cmd, lead_set_speed = self.get_tm_speed(CS, 80, -3) #-1)
 																						 
 				  
             else:
@@ -436,7 +436,7 @@ class SpdController():
         elif lead_objspd < -20:
 									
             self.seq_step_debug = 12
-            lead_wait_cmd, lead_set_speed = self.get_tm_speed(CS, 15, -2)
+            lead_wait_cmd, lead_set_speed = self.get_tm_speed(CS, 15, -6) #-2)
         elif lead_objspd < -10:
 									
 																			  
@@ -445,16 +445,16 @@ class SpdController():
 																	 
 									
             self.seq_step_debug = 13
-            lead_wait_cmd, lead_set_speed = self.get_tm_speed(CS, 50, -1)
+            lead_wait_cmd, lead_set_speed = self.get_tm_speed(CS, 50, -3) #-1)
 																													
 									
 							  
         elif lead_objspd < -5:
             self.seq_step_debug = 14
-            lead_wait_cmd, lead_set_speed = self.get_tm_speed(CS, 150, -1)
+            lead_wait_cmd, lead_set_speed = self.get_tm_speed(CS, 150, -3) #-1)
         elif lead_objspd < -1:
             self.seq_step_debug = 15
-            lead_wait_cmd, lead_set_speed = self.get_tm_speed(CS, 200, -1)
+            lead_wait_cmd, lead_set_speed = self.get_tm_speed(CS, 200, -3) #-1)
 												   
         elif CS.cruise_set_speed_kph > CS.clu_Vanz:
             self.seq_step_debug = 16
@@ -604,6 +604,8 @@ class SpdController():
             if set_speed > CS.cruise_set_speed_kph:
                 set_speed = CS.cruise_set_speed_kph
         else:
+            if self.long_curv_timer > long_wait_cmd:
+                CS.cruise_set_speed_kph = set_speed
             self.long_curv_timer = 0
         
         
