@@ -461,7 +461,7 @@ class SpdController():
             # 선행 차량이 가속하고 있으면.
             if dRel >= 150:
                 self.seq_step_debug = 17
-                lead_wait_cmd, lead_set_speed = self.get_tm_speed( CS, 200, 1 )
+                lead_wait_cmd, lead_set_speed = self.get_tm_speed( CS, 200, 3) #1)
 																			   
 									   
             elif lead_objspd < cv_Dist:
@@ -469,19 +469,19 @@ class SpdController():
                 lead_set_speed = int(CS.VSetDis)
             elif lead_objspd < 2:
                 self.seq_step_debug = 19
-                lead_wait_cmd, lead_set_speed = self.get_tm_speed(CS, 500, 1)
+                lead_wait_cmd, lead_set_speed = self.get_tm_speed(CS, 500, 3) #1)
             elif lead_objspd < 5:
                 self.seq_step_debug = 20
-                lead_wait_cmd, lead_set_speed = self.get_tm_speed(CS, 300, 1)
+                lead_wait_cmd, lead_set_speed = self.get_tm_speed(CS, 300, 3) #1)
             elif lead_objspd < 10:
                 self.seq_step_debug = 21
-                lead_wait_cmd, lead_set_speed = self.get_tm_speed(CS, 200, 1)
+                lead_wait_cmd, lead_set_speed = self.get_tm_speed(CS, 200, 3) #1)
             elif lead_objspd < 30:
                 self.seq_step_debug = 22
-                lead_wait_cmd, lead_set_speed = self.get_tm_speed(CS, 100, 1)                
+                lead_wait_cmd, lead_set_speed = self.get_tm_speed(CS, 100, 3)# 1)                
             else:
                 self.seq_step_debug = 23
-                lead_wait_cmd, lead_set_speed = self.get_tm_speed(CS, 50, 1)
+                lead_wait_cmd, lead_set_speed = self.get_tm_speed(CS, 50, 3) #1)
 
         return lead_wait_cmd, lead_set_speed
 
