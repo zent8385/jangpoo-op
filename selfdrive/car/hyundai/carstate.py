@@ -378,58 +378,83 @@ class CarState():
 
   def update_cruiseSW(self ):
     cruise_set_speed_kph = self.cruise_set_speed_kph
-    if self.cruise_set_speed:
-      self.prev_VSetDis = cruise_set_speed_kph
+    self.prev_VSetDis = self.cruise_set_speed_kph
     delta_vsetdis = 0
     
     if self.pcm_acc_status:
+
+      #크루즈 auto set 적용
+      if self.cruise_set_mode ==3  and not self.cruise_set_speed and self.prev_VSetDis:
+        cruise_set_speed_kph = int(self.prev_VSetDis)
+        
+      delta_vsetdis = abs(self.VSetDis - self.prev_VSetDis)
       
-      if self.cruise_btn_time < 100:
-            #타이머 시간동안 작동 안함
-        self.cruise_btn_time += 1
-        pass
+      #브레이크 최우선
+      if self.brake_pressed:
+        self.cruise_set_first = 1
+        cruise_set_speed_kph = 0
+        self.VSetDis = 0
       else:
-        
-        #크루즈 auto set 적용
-        if self.cruise_set_mode ==3  and not self.cruise_set_speed and self.prev_VSetDis:
+        #버튼 한번 누름
+        if self.prev_clu_CruiseSwState != self.clu_CruiseSwState:
           self.cruise_btn_time = 0
-          cruise_set_speed_kph = int(self.prev_VSetDis)
           
-        delta_vsetdis = abs(self.VSetDis - self.prev_VSetDis)
-        
-        
-        if self.clu_CruiseSwState or self.brake_pressed:        
-        #if self.prev_clu_CruiseSwState != self.clu_CruiseSwState or self.brake_pressed:
-          self.cruise_btn_time = 0
-          if self.clu_CruiseSwState == 1: #and self.clu_Vanz >= 30:   # up
-          #if self.prev_clu_CruiseSwState == 1 and self.clu_Vanz >= 30:   # up
+          if self.prev_clu_CruiseSwState == 1:   # up
             if self.cruise_set_first:
               self.cruise_set_first = 0
-              if self.prev_VSetDis and not self.cruise_set_speed:
-                cruise_set_speed_kph =  int(self.prev_VSetDis)
+              cruise_set_speed_kph =  int(self.prev_VSetDis)
             else:
               cruise_set_speed_kph += 2 #1
-              self.VSetDis += 2
-          elif self.clu_CruiseSwState == 2: # and self.clu_Vanz >= 30:  # dn
-          #elif self.prev_clu_CruiseSwState == 2 and self.clu_Vanz >= 30:  # dn
+          elif self.prev_clu_CruiseSwState == 2:  # dn
             if self.cruise_set_first:
               self.cruise_set_first = 0
               cruise_set_speed_kph =  int(self.clu_Vanz)
-              self.VSetDis = cruise_set_speed_kph
             else:
               cruise_set_speed_kph -= 2 #1
-              self.VSetDis -= 2
-            
-
-          #브레이크 또는 cancel 버튼 누름 또는 크루즈 상태에 따른 cruise set 초기화
-          elif self.clu_CruiseSwState == 4 or self.brake_pressed:  # cancel /brake/ cruise off
-          #elif self.prev_clu_CruiseSwState == 4 or self.brake_pressed:  # cancel /brake/ cruise off
+          #cancel 버튼 누름 또는 크루즈 상태에 따른 cruise set 초기화
+          elif self.prev_clu_CruiseSwState == 4:  # cancel /brake/ cruise off
             self.cruise_set_first = 1
             cruise_set_speed_kph = 0
             self.VSetDis = 0
 
-        #self.prev_clu_CruiseSwState = self.clu_CruiseSwState
+          self.prev_clu_CruiseSwState = self.clu_CruiseSwState
 
+        #버튼을 누르고 있는 동안
+        elif self.prev_clu_CruiseSwState == self.clu_CruiseSwState:
+          #100ms 이내이면 패스
+          if self.cruise_btn_time < 100:
+            #타이머 시간동안 작동 안함
+            self.cruise_btn_time += 1
+          # 그 이상 누르고 있는 경우
+          else:
+            self.cruise_btn_time = 0
+            if self.prev_clu_CruiseSwState == 1:   # up
+              if self.cruise_set_first:
+                self.cruise_set_first = 0
+                cruise_set_speed_kph =  int(self.prev_VSetDis)
+              else:
+                if cruise_set_speed_kph <= int(self.clu_Vanz):
+                  cruise_set_speed_kph =  int(self.clu_Vanz)
+            elif self.prev_clu_CruiseSwState == 2:  # dn
+              if self.cruise_set_first:
+                self.cruise_set_first = 0
+                cruise_set_speed_kph =  int(self.clu_Vanz)
+                self.VSetDis = cruise_set_speed_kph
+              else:
+                if cruise_set_speed_kph >= int(self.clu_Vanz):
+                  cruise_set_speed_kph =  int(self.clu_Vanz)
+            #cancel 버튼 누름 또는 크루즈 상태에 따른 cruise set 초기화
+            elif self.prev_clu_CruiseSwState == 4:  # cancel /brake/ cruise off
+              self.cruise_set_first = 1
+              cruise_set_speed_kph = 0
+              self.VSetDis = 0
+
+      self.prev_clu_CruiseSwState = self.clu_CruiseSwState
+      
+      #순정 크루즈 속도정보가 제공 받을 수 있을때 동기화를 위한 로직
+      #elif self.clu_CruiseSwState and delta_vsetdis > 0:
+      #  self.curise_sw_check = True
+        #cruise_set_speed_kph =  int(self.VSetDis)
 
     else:
       self.curise_sw_check = False
@@ -453,8 +478,6 @@ class CarState():
     #  self.VSetDis = 0
 
     return cruise_set_speed_kph
-
-
 
   def update(self, cp, cp2, cp_cam, cp_avm ):
 
