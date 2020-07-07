@@ -373,46 +373,28 @@ class SpdController():
         elif CS.VSetDis > 70 and lead_objspd < -20:
             self.seq_step_debug = 3
             lead_wait_cmd, lead_set_speed = self.get_tm_speed(CS, 15, -6) #-2)
-									
-																				
-													
         elif CS.VSetDis > 60 and lead_objspd < -15:
             self.seq_step_debug = 4
             lead_wait_cmd, lead_set_speed = self.get_tm_speed(CS, 15, -6) #-2)     
 
-						   
         # 1. 거리 유지.
-		
-						 
+ 
         elif d_delta < 0:
             # 선행 차량이 가까이 있으면.
-						 
-									  
             dVanz = dRel - CS.clu_Vanz
 
-								   
             self.seq_step_debug = 5
 																  
             if lead_objspd >= 0:    # 속도 유지 시점 결정.
-
-									   
                 self.seq_step_debug = 6
-																						   
-							   
-												   
                 if CS.VSetDis > (CS.clu_Vanz + 10):
-									   
                     lead_wait_cmd = 200
                     lead_set_speed = CS.VSetDis - 1  # CS.clu_Vanz + 5
                     if lead_set_speed < 40:
                         lead_set_speed = 30 #30
-								  
-					 
                 else:
-																									 
                     lead_set_speed = int(CS.VSetDis)
-
-																										
+																			
             elif lead_objspd < -30 or (dRel < 50 and CS.VSetDis > 60 and lead_objspd < -5):
                 self.seq_step_debug = 7
                 lead_wait_cmd, lead_set_speed = self.get_tm_speed(CS, 15, -6) #-2)
@@ -422,12 +404,9 @@ class SpdController():
             elif lead_objspd < -10:
                 self.seq_step_debug = 9
                 lead_wait_cmd, lead_set_speed = self.get_tm_speed(CS, 50, -3) #-1)
-								 
             elif lead_objspd < 0:
                 self.seq_step_debug = 10
                 lead_wait_cmd, lead_set_speed = self.get_tm_speed(CS, 80, -3) #-1)
-																						 
-				  
             else:
                 self.seq_step_debug = 11
                 lead_set_speed = int(CS.VSetDis)
@@ -438,17 +417,8 @@ class SpdController():
             self.seq_step_debug = 12
             lead_wait_cmd, lead_set_speed = self.get_tm_speed(CS, 15, -6) #-2)
         elif lead_objspd < -10:
-									
-																			  
-		
-																	  
-																	 
-									
             self.seq_step_debug = 13
             lead_wait_cmd, lead_set_speed = self.get_tm_speed(CS, 50, -3) #-1)
-																													
-									
-							  
         elif lead_objspd < -5:
             self.seq_step_debug = 14
             lead_wait_cmd, lead_set_speed = self.get_tm_speed(CS, 150, -3) #-1)
@@ -607,51 +577,14 @@ class SpdController():
             if self.long_curv_timer > long_wait_cmd:
                 CS.cruise_set_speed_kph = set_speed
             self.long_curv_timer = 0
-        
-        
 
-
-        #ver4
         CS.VSetDis = CS.clu_Vanz
-
-        #ver2, ver3
-        #CS.VSetDis = set_speed
-        #ver1
-        #CS.VSetDis = CS.clu_Vanz
-        #if set_speed_diff > 2: #가속 필요
-        #    CS.VSetDis -= 2
-        #elif set_speed_diff < -2: # 감속 필요
-        #    CS.VSetDis += 2
-
-
-        #ver2
-        # 고정 속도(2)만 가감
-        #CS.VSetDis = set_speed
-        #if set_speed_diff > 0: #가속 필요
-            #크루즈 설정값은 set_speed 보다 낮아야 가속 신호를 보냄
-        #    CS.VSetDis -= 2
-        #elif set_speed_diff < 0: # 감속 필요
-            #크루즈 설정값은 set_speed 보다 높아야 감속 신호를 보냄
-        #    CS.VSetDis += 2
-
-
-        #ver3
-        # 차이 속도 가감
-        #if set_speed_diff > 0: #가속 필요
-        #    CS.VSetDis -= set_speed_diff
-        #elif set_speed_diff < 0: # 감속 필요
-        #    CS.VSetDis += set_speed_diff
-        
-
-
 
         if CS.cruise_set_mode == 0:
             btn_type = Buttons.NONE
-        #DAt={:03.0f}/{:03.0f}/{:03.0f} 
-        #CS.driverAcc_time, long_wait_cmd, self.long_curv_timer
+
         str3 = 'SS={:03.0f}/{:03.0f} SSD={:03.0f} VSD={:03.0f} pVSD={:03.0f} DAt={:03.0f}/{:03.0f}/{:03.0f} '.format(
             set_speed, long_wait_cmd, set_speed_diff, CS.VSetDis, CS.prev_VSetDis,  CS.driverAcc_time, self.long_curv_timer, long_wait_cmd  )
-        #str4 = ' LD/LS={:03.0f}/{:03.0f} '.format(  CS.lead_distance, CS.lead_objspd )
         str4 = ' LD/LS={:03.0f}/{:03.0f} '.format(  dRel, vRel )
 
         str5 = str3 +  str4
