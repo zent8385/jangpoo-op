@@ -381,7 +381,7 @@ class CarState():
 
     if self.cruise_set_speed:
       self.prev_VSetDis = cruise_set_speed_kph
-      
+
     delta_vsetdis = 0
     
     if self.pcm_acc_status:
@@ -473,6 +473,7 @@ class CarState():
         self.prev_clu_CruiseSwState = self.clu_CruiseSwState
       
     trace1.cruise_set_mode = self.cruise_set_mode
+
 
     #if cruise_set_speed_kph < 30:
     #  cruise_set_speed_kph = 0
