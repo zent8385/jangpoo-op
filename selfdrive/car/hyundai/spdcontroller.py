@@ -28,8 +28,8 @@ from selfdrive.kegman_conf import kegman_conf
 
 kegman = kegman_conf()
 
-cv_Raio = 0.6 #0.7 #float(kegman.conf['cV_Ratio']) # 0.7
-cv_Dist = -5 #float(kegman.conf['cV_Dist']) # -5
+cv_Raio = float(kegman.conf['cV_Ratio']) # 0.7
+cv_Dist = float(kegman.conf['cV_Dist']) # -5
 
 MAX_SPEED = 255.0
 
