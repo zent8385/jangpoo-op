@@ -397,7 +397,7 @@ class CarState():
         self.cruise_set_first = 1
         cruise_set_speed_kph = 0
         self.VSetDis = 0
-      else:
+      elif self.clu_Vanz> 30:
         #버튼 한번 누름
         if self.prev_clu_CruiseSwState != self.clu_CruiseSwState:
           self.cruise_btn_time = 0
