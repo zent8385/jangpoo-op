@@ -378,7 +378,10 @@ class CarState():
 
   def update_cruiseSW(self ):
     cruise_set_speed_kph = self.cruise_set_speed_kph
-    self.prev_VSetDis = self.cruise_set_speed_kph
+
+    if self.cruise_set_speed:
+      self.prev_VSetDis = cruise_set_speed_kph
+      
     delta_vsetdis = 0
     
     if self.pcm_acc_status:
