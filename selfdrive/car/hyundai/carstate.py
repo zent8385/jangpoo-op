@@ -368,6 +368,9 @@ class CarState():
                          C=[1.0, 0.0],
                          K=[[0.12287673], [0.29666309]])
 
+    self.main_on = False
+    self.acc_active = False
+
   def update_speed_kf(self, v_ego_raw):
     if abs(v_ego_raw - self.v_ego_kf.x[0][0]) > 2.0:  # Prevent large accelerations when car starts at non zero speed
       self.v_ego_kf.x = [[v_ego_raw], [0.0]]
@@ -519,10 +522,25 @@ class CarState():
     self.AVM_Version = cp_avm.vl["AVM_HU_PE_00"]["AVM_Version"]
 
 
-    self.main_on = cp.vl['EMS16']['CRUISE_LAMP_M']  #(cp_scc.vl["SCC11"]["MainMode_ACC"] != 0) if not self.no_radar else \
+
+    self.clu_Vanz = cp.vl["CLU11"]["CF_Clu_Vanz"]
+    self.clu_CruiseSwState = cp.vl["CLU11"]["CF_Clu_CruiseSwState"]
+    self.clu_CruiseSwMain = cp.vl["CLU11"]["CF_Clu_CruiseSwMain"]
+    self.clu_SldMainSW = cp.vl["CLU11"]["CF_Clu_SldMainSW"]
+    self.v_ego = self.clu_Vanz * CV.KPH_TO_MS
+
+    #구름형님 요청 반영
+    if self.clu_Vanz > 15:
+      self.main_on = True
+      self.acc_active = True
+
+
+
+      #self.main_on = cp.vl['EMS16']['CRUISE_LAMP_M']  #(cp_scc.vl["SCC11"]["MainMode_ACC"] != 0) if not self.no_radar else \
                                                     #                         cp.vl['EMS16']['CRUISE_LAMP_M']
-    self.acc_active = cp.vl['EMS16']['CRUISE_LAMP_M'] #(cp_scc.vl["SCC12"]['ACCMode'] != 0) if not self.no_radar else \
+      #self.acc_active = cp.vl['EMS16']['CRUISE_LAMP_M'] #(cp_scc.vl["SCC12"]['ACCMode'] != 0) if not self.no_radar else \
                                                       #                (cp.vl["LVR12"]['CF_Lvr_CruiseSet'] != 0)
+                                                      
     self.cruise_set = cp.vl['EMS16']['CRUISE_LAMP_S']  
 
     self.pcm_acc_status = int(self.acc_active)
@@ -538,11 +556,6 @@ class CarState():
 
 
 
-    self.clu_Vanz = cp.vl["CLU11"]["CF_Clu_Vanz"]
-    self.clu_CruiseSwState = cp.vl["CLU11"]["CF_Clu_CruiseSwState"]
-    self.clu_CruiseSwMain = cp.vl["CLU11"]["CF_Clu_CruiseSwMain"]
-    self.clu_SldMainSW = cp.vl["CLU11"]["CF_Clu_SldMainSW"]
-    self.v_ego = self.clu_Vanz * CV.KPH_TO_MS
 
     #self.VSetDis = cp_scc.vl["SCC11"]['VSetDis']
 
