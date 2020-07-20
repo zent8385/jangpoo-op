@@ -133,10 +133,10 @@ class CarState(CarStateBase):
     # cruise state
     #ret.cruiseState.available = True
     #ret.cruiseState.enabled = cp.vl["SCC12"]['ACCMode'] != 0
-    self.main_on = (cp_scc.vl["SCC11"]["MainMode_ACC"] != 0) if not self.no_radar else \
-                                            cp.vl['EMS16']['CRUISE_LAMP_M']
-    self.acc_active = (cp_scc.vl["SCC12"]['ACCMode'] != 0) if not self.no_radar else \
-                                      (cp.vl["LVR12"]['CF_Lvr_CruiseSet'] != 0)
+    self.main_on = cp.vl['EMS16']['CRUISE_LAMP_M']  #(cp_scc.vl["SCC11"]["MainMode_ACC"] != 0) if not self.no_radar else \
+                                                    #                         cp.vl['EMS16']['CRUISE_LAMP_M']
+    self.acc_active = cp.vl['EMS16']['CRUISE_LAMP_M'] #(cp_scc.vl["SCC12"]['ACCMode'] != 0) if not self.no_radar else \
+                                                      #                (cp.vl["LVR12"]['CF_Lvr_CruiseSet'] != 0)
 
     self.update_atom( cp, cp2, cp_cam )
 
@@ -315,6 +315,8 @@ class CarState(CarStateBase):
       ("CF_Lca_Stat", "LCA11", 0),
       ("CF_Lca_IndLeft", "LCA11", 0),
       ("CF_Lca_IndRight", "LCA11", 0), 
+      ("CRUISE_LAMP_M", "EMS16", 0),
+      ("CRUISE_LAMP_S", "EMS16", 0),
     ]
 
     checks = [
