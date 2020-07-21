@@ -409,6 +409,10 @@ class CarInterface(CarInterfaceBase):
         self.meg_name = EventName.steerUnavailable
       elif ret.steerWarning:
         self.meg_name = EventName.steerTempUnavailable
+      #크루즈 ON, 드라이브 모드, 속도 15km/h 이상 자동활성
+      elif ret.cruiseState.enabled:
+        if ret.gearShifter == GearShifter.drive and self.CS.clu_Vanz > 15:
+          events.add(EventName.pcmEnable)
       else:
         meg_timer = 0
         self.meg_name =  None
@@ -419,6 +423,9 @@ class CarInterface(CarInterfaceBase):
       if self.meg_timer and  self.meg_name != None:
         events.add( self.meg_name )
     
+
+      #if cs_out.cruiseState.enabled:
+      #  events.add(EventName.pcmEnable)
 
     #TODO: addd abs(self.CS.angle_steers) > 90 to 'steerTempUnavailable' event
 
