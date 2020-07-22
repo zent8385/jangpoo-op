@@ -349,6 +349,8 @@ void handle_message(UIState *s, SubMaster &sm) {
     if (data.getVCruise() != scene.v_cruise) {
       scene.v_cruise_update_ts = event.getLogMonoTime();
     }
+
+    scene.canErrorCounter = data.getCanErrorCounter();
     scene.v_cruise = data.getVCruise();
     scene.v_ego = data.getVEgo();
     scene.angleSteers = data.getAngleSteers();
@@ -361,6 +363,11 @@ void handle_message(UIState *s, SubMaster &sm) {
     scene.decel_for_model = data.getDecelForModel();
     auto alert_sound = data.getAlertSound();
     const auto sound_none = cereal::CarControl::HUDControl::AudibleAlert::NONE;
+
+    if( scene.canErrorCounter > 0)
+    {
+      is_awake_command = true;
+    }
     if (alert_sound != s->alert_sound){
       is_awake_command = true;
       if (s->alert_sound != sound_none){
@@ -528,6 +535,8 @@ void handle_message(UIState *s, SubMaster &sm) {
     scene.rightBlinker = data.getRightBlinker();
     scene.getGearShifter = data.getGearShifter();
 
+    scene.leftBlindspot = data.getLeftBlindspot();
+    scene.rightBlindspot = data.getRightBlindspot();
 
     auto cruiseState = data.getCruiseState();
 
@@ -552,6 +561,19 @@ void handle_message(UIState *s, SubMaster &sm) {
     scene.carParams.lateralsRatom.steerOffset  = lateralsRatom.getSteerOffset();
     scene.carParams.lateralsRatom.tireStiffnessFactor  = lateralsRatom.getTireStiffnessFactor();
   }
+
+/*  
+  if (sm.updated("liveParameters")) {
+    auto data = sm["liveParameters"].getLiveParametersData();
+    scene.liveParams.gyroBias = data.getGyroBias();
+    scene.liveParams.angleOffset = data.getAngleOffset();
+    scene.liveParams.angleOffsetAverage = data.getAngleOffsetAverage();
+    scene.liveParams.stiffnessFactor = data.getStiffnessFactor();
+    scene.liveParams.steerRatio = data.getSteerRatio();
+    scene.liveParams.yawRate = data.getYawRate();
+    scene.liveParams.posenetSpeed = data.getPosenetSpeed();
+  }
+  */  
 
   s->started = s->thermal_started || s->preview_started ;
   // Handle onroad/offroad transition
@@ -1085,11 +1107,12 @@ int main(int argc, char* argv[]) {
 
     if (s->volume_timeout > 0) {
       s->volume_timeout--;
-    } else {
-      int volume = fmin(MAX_VOLUME, MIN_VOLUME + s->scene.v_ego / 5);  // up one notch every 5 m/s
-      int cur_volume = scene.params.nOpkrUIVolumeBoost + volume;
-      if( cur_volume < 0  ) cur_volume = 0;
-      set_volume( cur_volume );
+    } else  {
+      //if( scene.params.nOpkrUIVolumeBoost )
+      //{
+          int volume = fmin(MAX_VOLUME, MIN_VOLUME + s->scene.v_ego / 5);  // up one notch every 5 m/s
+          set_volume( volume );
+      //}
       s->volume_timeout = 5 * UI_FREQ;
     }
 

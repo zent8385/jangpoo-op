@@ -41,7 +41,7 @@ Desire = log.PathPlan.Desire
 
 LaneChangeState = log.PathPlan.LaneChangeState
 LaneChangeDirection = log.PathPlan.LaneChangeDirection
-LaneChangeBSM = log.PathPlan.LaneChangeBSM
+
 
 EventName = car.CarEvent.EventName
 
@@ -183,7 +183,7 @@ class Controls:
     # Handle startup event
     if self.startup_event is not None:
       self.events.add(self.startup_event)
-      self.startup_event = None    
+      self.startup_event = None
 
     # Create events for battery, temperature, disk space, and memory
     if self.sm['thermal'].batteryPercent < 1 and self.sm['thermal'].chargingError:
@@ -208,17 +208,17 @@ class Controls:
 
     # Handle lane change
     # lane change bsm alerts 
-    if self.sm['pathPlan'].laneChangeBSM == LaneChangeBSM.right:
-      self.events.add(EventName.rightBlindspot)
-    elif self.sm['pathPlan'].laneChangeBSM == LaneChangeBSM.left:
-      self.events.add(EventName.leftBlindspot)
-    elif self.sm['pathPlan'].laneChangeState == LaneChangeState.preLaneChange:
-      if self.sm['pathPlan'].laneChangeDirection == LaneChangeDirection.left:
-        self.events.add(EventName.preLaneChangeLeft)
+    if self.sm['pathPlan'].laneChangeState == LaneChangeState.preLaneChange:
+      direction = self.sm['pathPlan'].laneChangeDirection
+      if (CS.leftBlindspot and direction == LaneChangeDirection.left) or \
+         (CS.rightBlindspot and direction == LaneChangeDirection.right):
+        self.events.add(EventName.laneChangeBlocked)
       else:
-        self.events.add(EventName.preLaneChangeRight)
-    elif self.sm['pathPlan'].laneChangeState in [LaneChangeState.laneChangeStarting, \
-                                        LaneChangeState.laneChangeFinishing]:
+        if direction == LaneChangeDirection.left:
+          self.events.add(EventName.preLaneChangeLeft)
+        else:
+          self.events.add(EventName.preLaneChangeRight)
+    elif self.sm['pathPlan'].laneChangeState in [LaneChangeState.laneChangeStarting, LaneChangeState.laneChangeFinishing, LaneChangeState.laneChangeDone]:
       self.events.add(EventName.laneChange)
 
     if self.can_rcv_error or (not CS.canValid and self.sm.frame > 5 / DT_CTRL):
@@ -239,7 +239,7 @@ class Controls:
     if not self.sm['pathPlan'].mpcSolutionValid:
       self.events.add(EventName.plannerError)
     if not self.sm['liveLocationKalman'].inputsOK and os.getenv("NOSENSOR") is None:
-      if self.sm.frame > 10 / DT_CTRL:  # Give locationd some time to receive all the inputs
+      if self.sm.frame > 20 / DT_CTRL:  # Give locationd some time to receive all the inputs
         self.events.add(EventName.sensorDataInvalid)
     if not self.sm['pathPlan'].paramsValid:
       self.events.add(EventName.vehicleModelInvalid)

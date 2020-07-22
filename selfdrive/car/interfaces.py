@@ -92,20 +92,20 @@ class CarInterfaceBase():
       events.add(EventName.doorOpen)
     elif cs_out.seatbeltUnlatched:
       events.add(EventName.seatbeltNotLatched)
+    elif cs_out.gearShifter != GearShifter.drive and cs_out.gearShifter not in extra_gears:
+      events.add(EventName.wrongGear)
+    elif cs_out.gearShifter == GearShifter.reverse:
+      events.add(EventName.reverseGear)
     elif not cs_out.cruiseState.available:
       events.add(EventName.wrongCarMode)
     elif cs_out.espDisabled:
       events.add(EventName.espDisabled)
-    elif cs_out.gasPressed:
+    elif cs_out.gasPressed and self.CP.longcontrolEnabled:
       events.add(EventName.gasPressed)
     elif cs_out.stockFcw:
       events.add(EventName.stockFcw)
     elif cs_out.stockAeb:
       events.add(EventName.stockAeb)
-    elif cs_out.gearShifter != GearShifter.drive and cs_out.gearShifter not in extra_gears:
-      events.add(EventName.wrongGear)
-    elif cs_out.gearShifter == GearShifter.reverse:
-      events.add(EventName.reverseGear)
 
 
 
@@ -128,7 +128,6 @@ class CarInterfaceBase():
     if not pcm_enable:
       pass
     elif cs_out.cruiseState.enabled != self.cruise_enabled_prev:
-      self.CS.cruise_engaged_on = self.CS.main_on
       if cs_out.cruiseState.enabled:
         events.add(EventName.pcmEnable)
       else:

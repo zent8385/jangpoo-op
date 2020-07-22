@@ -298,7 +298,7 @@ class SpdController():
         active_time = 10
         btn_type = Buttons.NONE
         #lead_1 = sm['radarState'].leadOne
-        long_wait_cmd = 500
+        long_wait_cmd = 500 
         set_speed = self.cruise_set_speed_kph
 
         if self.long_curv_timer < 600:
@@ -331,7 +331,17 @@ class SpdController():
         # control process
         target_set_speed = set_speed
         delta = int(set_speed) - int(CS.VSetDis)
-        dec_step_cmd = 1
+        if dec_step_cmd == 0 and delta < -1:
+            if delta < -3:
+                dec_step_cmd = 4
+            elif  delta < -2:
+                dec_step_cmd = 3
+            else:
+                dec_step_cmd = 2
+        else:
+            dec_step_cmd = 1
+            
+        #dec_step_cmd = 1
 
 
         if self.long_curv_timer < long_wait_cmd:
@@ -342,16 +352,23 @@ class SpdController():
                 if delta > 1:
                     set_speed = CS.clu_Vanz
                     btn_type = Buttons.SET_DECEL
-        elif delta <= -1:
+        elif delta <= -2:
             set_speed = CS.VSetDis - dec_step_cmd
             btn_type = Buttons.SET_DECEL
             self.long_curv_timer = 0
-        elif delta >= 1 and (model_speed > 200 or CS.clu_Vanz < 70):
+        elif delta >= 2 and (model_speed > 200 or CS.clu_Vanz < 70):
             set_speed = CS.VSetDis + dec_step_cmd
             btn_type = Buttons.RES_ACCEL
             self.long_curv_timer = 0            
             if set_speed > self.cruise_set_speed_kph:
                 set_speed = self.cruise_set_speed_kph
+        #else:
+        #    if self.long_curv_timer > long_wait_cmd:
+        #        CS.cruise_set_speed_kph = set_speed
+        #    self.long_curv_timer = 0
+        
+        CS.VSetDis = CS.clu_Vanz
+        
         if self.cruise_set_mode == 0:
             btn_type = Buttons.NONE
 
@@ -396,4 +413,7 @@ class SpdController():
                     self.btn_type = Buttons.NONE          
                 else:
                     return 1
+
+
+
         return  0   

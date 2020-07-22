@@ -42,7 +42,7 @@ deltas = []
 psis = []
 times = []
 
-CP = CarInterface.get_params( CAR.GRANDEUR_HYBRID )
+CP = CarInterface.get_params( CAR.GRANDEUR_HEV )
 print( 'CP.steerRatio1={}'.format( CP.steerRatio ) )
 CP = CarInterface.live_tune( CP )
 

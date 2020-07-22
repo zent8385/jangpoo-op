@@ -191,6 +191,15 @@ def thermald_thread():
   pm = PowerMonitoring()
   no_panda_cnt = 0
 
+  IsOpenpilotViewEnabled = 0
+
+  OpkrLoadStep = 0
+  OpkrAutoShutdown = 0
+  do_uninstall = 0
+  accepted_terms = 0
+  completed_training = 0
+  panda_signature = 0
+
   ts_last_ip = 0
   ip_addr = '255.255.255.255'
 
@@ -201,22 +210,23 @@ def thermald_thread():
   env['LD_LIBRARY_PATH'] = mediaplayer
 
   getoff_alert = Params().get('OpkrEnableGetoffAlert') == b'1'
-  if int( params.get("OpkrAutoShutdown") ) == 0:
-    OpkrAutoShutdown = 0
-  elif int( params.get("OpkrAutoShutdown") ) == 1:
-    OpkrAutoShutdown = 10
-  elif int( params.get("OpkrAutoShutdown") ) == 2:
-    OpkrAutoShutdown = 20
-  elif int( params.get("OpkrAutoShutdown") ) == 3:
-    OpkrAutoShutdown = 30
-  elif int( params.get("OpkrAutoShutdown") ) == 4:
-    OpkrAutoShutdown = 60
-  elif int( params.get("OpkrAutoShutdown") ) == 5:
-    OpkrAutoShutdown = 120
-  elif int( params.get("OpkrAutoShutdown") ) == 6:
-    OpkrAutoShutdown = 240
 
   while 1:
+    OpkrLoadStep += 1
+    if OpkrLoadStep == 1:
+      OpkrAutoShutdown = params.get_OpkrAutoShutdown()
+    elif OpkrLoadStep == 2:
+      do_uninstall = params.get("DoUninstall") == b"1"
+    elif OpkrLoadStep == 3:
+      accepted_terms = params.get("HasAcceptedTerms") == terms_version 
+    elif OpkrLoadStep == 4:
+      completed_training = params.get("CompletedTrainingVersion") == training_version
+    elif OpkrLoadStep == 5:      
+      panda_signature = params.get("PandaFirmware")
+    else:
+      OpkrLoadStep = 0
+
+
     ts = sec_since_boot()
     health = messaging.recv_sock(health_sock, wait=True)
     location = messaging.recv_sock(location_sock)
@@ -236,6 +246,7 @@ def thermald_thread():
       else:
         no_panda_cnt = 0
         ignition = health.health.ignitionLine or health.health.ignitionCan
+     
 
       # Setup fan handler on first connect to panda
       if handle_fan is None and health.health.hwType != log.HealthData.HwType.unknown:
@@ -256,8 +267,10 @@ def thermald_thread():
           params.panda_disconnect()
       health_prev = health
     elif ignition == False or IsOpenpilotViewEnabled:
-      IsOpenpilotViewEnabled = params.get("IsOpenpilotViewEnabled") == b"1"
+      IsOpenpilotViewEnabled = int( params.get("IsOpenpilotViewEnabled") )      
       ignition = IsOpenpilotViewEnabled
+
+
 
     # get_network_type is an expensive call. update every 10s
     if (count % int(10. / DT_TRML)) == 0:
@@ -371,13 +384,11 @@ def thermald_thread():
 #      current_connectivity_alert = None
 #      params.delete("Offroad_ConnectivityNeeded")
 #      params.delete("Offroad_ConnectivityNeededPrompt")
-    
 
-    do_uninstall = params.get("DoUninstall") == b"1"
-    accepted_terms = params.get("HasAcceptedTerms") == terms_version
-    completed_training = params.get("CompletedTrainingVersion") == training_version
+    #accepted_terms = params.get("HasAcceptedTerms") == terms_version
+    #completed_training = params.get("CompletedTrainingVersion") == training_version
+    #panda_signature = params.get("PandaFirmware")
 
-    panda_signature = params.get("PandaFirmware")
     fw_version_match = (panda_signature is None) or (panda_signature == FW_SIGNATURE)   # don't show alert is no panda is connected (None)
 
     should_start = ignition
@@ -415,13 +426,14 @@ def thermald_thread():
       if thermal_status_prev >= ThermalStatus.danger:
         params.delete("Offroad_TemperatureTooHigh")
 
+    current_ts = sec_since_boot()
     if should_start:
       if not should_start_prev:
         params.delete("IsOffroad")
 
       off_ts = None
       if started_ts is None:
-        started_ts = sec_since_boot()
+        started_ts = current_ts
         started_seen = True
         os.system('echo performance > /sys/class/devfreq/soc:qcom,cpubw/governor')
     else:
@@ -430,7 +442,7 @@ def thermald_thread():
 
       started_ts = None
       if off_ts is None:
-        off_ts = sec_since_boot()
+        off_ts = current_ts
         os.system('echo powersave > /sys/class/devfreq/soc:qcom,cpubw/governor')
 
       if sound_trigger == 1 and msg.thermal.batteryStatus == "Discharging" and started_seen and (sec_since_boot() - off_ts) > 1 and getoff_alert:
@@ -439,12 +451,33 @@ def thermald_thread():
 
       # shutdown if the battery gets lower than 3%, it's discharging, we aren't running for
       # more than a minute but we were running
-      if msg.thermal.batteryPercent <= BATT_PERC_OFF and msg.thermal.batteryStatus == "Discharging" and \
-         started_seen and (sec_since_boot() - off_ts) >= OpkrAutoShutdown and not OpkrAutoShutdown == 0:
-        os.system('LD_LIBRARY_PATH="" svc power shutdown')
+      power_shutdown = False
+      if msg.thermal.batteryStatus == "Discharging":
+        delta_ts = current_ts - off_ts
+        
+        if started_seen:
+          if msg.thermal.batteryPercent <= BATT_PERC_OFF and (OpkrAutoShutdown and  delta_ts > OpkrAutoShutdown):
+            power_shutdown = True
+        elif  delta_ts > 240 and msg.thermal.batteryPercent < 10:
+          power_shutdown = True
 
+
+        if power_shutdown:
+          os.system('LD_LIBRARY_PATH="" svc power shutdown')
+          print( 'power_shutdown batterypercent={} should_start={}'.format(msg.thermal.batteryPercent, should_start) )
+
+      else:
+        off_ts = current_ts
+
+
+      #print( 'OpkrAutoShutdown = {}'.format( OpkrAutoShutdown ) )
+      #if msg.thermal.batteryPercent < BATT_PERC_OFF and msg.thermal.batteryStatus == "Discharging" and \
+      #   started_seen and (current_ts - off_ts) > 60:
+      #  os.system('LD_LIBRARY_PATH="" svc power shutdown')
+
+    # print( 'batterypercent={} should_start={}'.format(msg.thermal.batteryPercent, should_start) )
     # Offroad power monitoring
-    pm.calculate(health, msg)
+    pm.calculate(health, msg )
     msg.thermal.offroadPowerUsage = pm.get_power_used()
 
     msg.thermal.chargingError = current_filter.x > 0. and msg.thermal.batteryPercent < 90  # if current is positive, then battery is being discharged

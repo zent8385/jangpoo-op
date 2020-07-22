@@ -18,7 +18,7 @@ import common.log as trace1
 
 LaneChangeState = log.PathPlan.LaneChangeState
 LaneChangeDirection = log.PathPlan.LaneChangeDirection
-LaneChangeBSM = log.PathPlan.LaneChangeBSM
+
 
 LOG_MPC = os.environ.get('LOG_MPC', False)
 
@@ -31,18 +31,21 @@ DESIRES = {
     LaneChangeState.preLaneChange: log.PathPlan.Desire.none,
     LaneChangeState.laneChangeStarting: log.PathPlan.Desire.none,
     LaneChangeState.laneChangeFinishing: log.PathPlan.Desire.none,
+    LaneChangeState.laneChangeDone: log.PathPlan.Desire.none,
   },
   LaneChangeDirection.left: {
     LaneChangeState.off: log.PathPlan.Desire.none,
     LaneChangeState.preLaneChange: log.PathPlan.Desire.none,
     LaneChangeState.laneChangeStarting: log.PathPlan.Desire.laneChangeLeft,
     LaneChangeState.laneChangeFinishing: log.PathPlan.Desire.laneChangeLeft,
+    LaneChangeState.laneChangeDone: log.PathPlan.Desire.laneChangeLeft,
   },
   LaneChangeDirection.right: {
     LaneChangeState.off: log.PathPlan.Desire.none,
     LaneChangeState.preLaneChange: log.PathPlan.Desire.none,
     LaneChangeState.laneChangeStarting: log.PathPlan.Desire.laneChangeRight,
     LaneChangeState.laneChangeFinishing: log.PathPlan.Desire.laneChangeRight,
+    LaneChangeState.laneChangeDone: log.PathPlan.Desire.laneChangeRight,
   },
 }
 
@@ -69,19 +72,10 @@ class PathPlanner():
 
     # Lane change 
     self.lane_change_enabled = self.params.get('LaneChangeEnabled') == b'1'
-    lane_change_delay = int( self.params.get('OpkrAutoLanechangedelay') )
-    if lane_change_delay == 1:
-      self.lane_change_auto_delay = 1.0
-    elif lane_change_delay == 2:
-      self.lane_change_auto_delay = 1.5
-    elif lane_change_delay == 3:
-      self.lane_change_auto_delay = 2.0
-    else:
-      self.lane_change_auto_delay = 0
+    self.lane_change_auto_delay = self.params.get_OpkrAutoLanechangedelay()  #int( self.params.get('OpkrAutoLanechangedelay') )
+
       
 
-    
-    self.lane_change_BSM = LaneChangeBSM.none
     self.lane_change_state = LaneChangeState.off
     self.lane_change_direction = LaneChangeDirection.none
     self.lane_change_run_timer = 0.0
@@ -151,9 +145,9 @@ class PathPlanner():
     if CP.lateralsRatom.learnerParams:
       pass
     else:
-      angle_offset = 0
-      angleOffsetAverage = 0
-      stiffnessFactor = CP.lateralsRatom.tireStiffnessFactor
+      #angle_offset = 0
+      #angleOffsetAverage = 0
+      #stiffnessFactor = CP.lateralsRatom.tireStiffnessFactor
 
       # atom
       self.steer_rate_cost = sm['carParams'].steerRateCost   
@@ -197,11 +191,13 @@ class PathPlanner():
     if (not active) or (self.lane_change_run_timer > LANE_CHANGE_TIME_MAX) or (not one_blinker) or (not self.lane_change_enabled):
       self.lane_change_state = LaneChangeState.off
       self.lane_change_direction = LaneChangeDirection.none
-      self.lane_change_BSM = LaneChangeBSM.none
     else:
       torque_applied = sm['carState'].steeringPressed and \
                         ((sm['carState'].steeringTorque > 0 and self.lane_change_direction == LaneChangeDirection.left) or \
                           (sm['carState'].steeringTorque < 0 and self.lane_change_direction == LaneChangeDirection.right))
+
+      blindspot_detected = ((sm['carState'].leftBlindspot and self.lane_change_direction == LaneChangeDirection.left) or
+                            (sm['carState'].rightBlindspot and self.lane_change_direction == LaneChangeDirection.right))                          
 
       lane_change_prob = self.LP.l_lane_change_prob + self.LP.r_lane_change_prob
 
@@ -210,23 +206,17 @@ class PathPlanner():
       if self.lane_change_state == LaneChangeState.off and one_blinker and not self.prev_one_blinker and not below_lane_change_speed:
         self.lane_change_state = LaneChangeState.preLaneChange
         self.lane_change_ll_prob = 1.0
-        self.lane_change_BSM = LaneChangeBSM.none
         self.lane_change_wait_timer = 0
 
       # pre
       elif self.lane_change_state == LaneChangeState.preLaneChange:
         self.lane_change_wait_timer += DT_MDL
-        lane_change_BSM = LaneChangeBSM.none  
+
         if not one_blinker or below_lane_change_speed:
           self.lane_change_state = LaneChangeState.off
-        elif leftBlindspot:
-          lane_change_BSM = LaneChangeBSM.left
-        elif rightBlindspot:
-          lane_change_BSM = LaneChangeBSM.right
-        elif torque_applied or (self.lane_change_auto_delay and self.lane_change_wait_timer > self.lane_change_auto_delay):
+        elif not blindspot_detected and (torque_applied or (self.lane_change_auto_delay and self.lane_change_wait_timer > self.lane_change_auto_delay)):
           self.lane_change_state = LaneChangeState.laneChangeStarting
 
-        self.lane_change_BSM = lane_change_BSM
       # starting
       elif self.lane_change_state == LaneChangeState.laneChangeStarting:
         # fade out over .5s
@@ -239,9 +229,12 @@ class PathPlanner():
       elif self.lane_change_state == LaneChangeState.laneChangeFinishing:
         # fade in laneline over 1s
         self.lane_change_ll_prob = min(self.lane_change_ll_prob + DT_MDL, 1.0)
-        if one_blinker and self.lane_change_ll_prob > 0.99:
-          self.lane_change_state = LaneChangeState.preLaneChange
-        elif self.lane_change_ll_prob > 0.99:
+        if self.lane_change_ll_prob > 0.99:
+          self.lane_change_state = LaneChangeState.laneChangeDone
+
+      # done
+      elif self.lane_change_state == LaneChangeState.laneChangeDone:
+        if not one_blinker:
           self.lane_change_state = LaneChangeState.off
 
     if self.lane_change_state in [LaneChangeState.off, LaneChangeState.preLaneChange]:
@@ -283,7 +276,7 @@ class PathPlanner():
     # atom
     if v_ego_kph < 30:
         xp = [5,15,30]
-        fp2 = [1,5,7]
+        fp2 = [1,3,5]
         limit_steers = interp( v_ego_kph, xp, fp2 )
         self.angle_steers_des_mpc = self.limit_ctrl( org_angle_steers_des, limit_steers, angle_steers )
 
@@ -322,7 +315,6 @@ class PathPlanner():
     plan_send.pathPlan.desire = desire
     plan_send.pathPlan.laneChangeState = self.lane_change_state
     plan_send.pathPlan.laneChangeDirection = self.lane_change_direction
-    plan_send.pathPlan.laneChangeBSM = self.lane_change_BSM
     pm.send('pathPlan', plan_send)
 
     if self.solution_invalid_cnt > 0:

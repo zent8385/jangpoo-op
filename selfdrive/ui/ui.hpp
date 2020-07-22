@@ -106,6 +106,7 @@ typedef struct UIScene {
   bool world_objects_visible;
   mat4 extrinsic_matrix;      // Last row is 0 so we can use mat4.
 
+  int  canErrorCounter;
   float v_cruise;
   uint64_t v_cruise_update_ts;
   float v_ego;
@@ -190,6 +191,9 @@ typedef struct UIScene {
   bool leftBlinker;
   bool rightBlinker;
 
+  bool leftBlindspot;
+  bool  rightBlindspot;  
+
   cereal::CarState::GearShifter  getGearShifter;  
 
   struct _STATUS_
@@ -197,8 +201,6 @@ typedef struct UIScene {
       char text1[512];
       char text2[512];
   } alert;
-
-
 
 
   struct LateralsRatom {
@@ -213,6 +215,17 @@ typedef struct UIScene {
       float steerRatio;
       struct LateralsRatom  lateralsRatom;
   } carParams;
+
+  struct _LiveParams
+  {
+    float gyroBias;
+    float angleOffset;
+    float angleOffsetAverage;
+    float stiffnessFactor;
+    float steerRatio;
+    float yawRate;
+    float posenetSpeed;
+  } liveParams;
 
   struct _CRUISE_STATE
   {
