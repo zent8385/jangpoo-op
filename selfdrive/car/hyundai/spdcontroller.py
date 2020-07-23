@@ -163,7 +163,7 @@ class SpdController():
                 set_speed_kph = int(self.prev_VSetDis)
 
                   #브레이크 최우선
-            if CS.brake_pressed:
+            if CS.out.brakePressed:
                 self.cruise_set_first = 1
                 set_speed_kph = 0
                 self.VSetDis = 0
@@ -401,7 +401,8 @@ class SpdController():
         else:
             btn_type, clu_speed, active_time = self.lead_control( CS, sm, CC )   # speed controller spdcontroller.py
 
-            if CS.clu_Vanz < 20:
+            #if CS.clu_Vanz < 20:
+            if CS.clu_Vanz < 30:                
                 self.btn_type = Buttons.NONE
             elif self.btn_type != Buttons.NONE:
                 pass
