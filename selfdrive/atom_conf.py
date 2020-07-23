@@ -74,4 +74,4 @@ class AtomConf():
     self.tire_stiffness_factor = conf['tire_stiffness_factor']
     self.steerActuatorDelay = conf['steerActuatorDelay']
     self.steerLimitTimer = conf['steerLimitTimer']
-    self.steerTorqueOverMax = conf['steerTorqueOver']
+    self.steerTorqueOverMax = conf['steerTorqueOverMax']
