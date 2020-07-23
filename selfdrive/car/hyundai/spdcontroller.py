@@ -148,16 +148,18 @@ class SpdController():
 
 
     def update_cruiseSW(self, CS ):
+        #cruise_set_speed_kph = self.cruise_set_speed_kph
         set_speed_kph = self.cruise_set_speed_kph
 
-        if CS.cruise_set_speed:
+        #if CS.cruise_set_speed:
+        if self.cruise_set_speed_kph:
             self.prev_VSetDis = set_speed_kph
 
         delta_vsetdis = 0
         if CS.acc_active:
 
             #크루즈 auto set 적용
-            if self.cruise_set_mode ==3  and not CS.cruise_set_speed and self.prev_VSetDis:
+            if self.cruise_set_mode ==3  and not self.cruise_set_speed_kph and self.prev_VSetDis:
                 set_speed_kph = int(self.prev_VSetDis)
 
                   #브레이크 최우선
@@ -167,7 +169,7 @@ class SpdController():
                 self.VSetDis = 0
             elif CS.clu_Vanz> 30:    
                 #버튼 한번 누름
-                if self.prev_clu_CruiseSwState != CS.clu_CruiseSwState:
+                if self.prev_clu_CruiseSwState !=  CS.cruise_buttons:
                     self.cruise_btn_time = 0
                 
                     if self.prev_clu_CruiseSwState == 1:   # up
@@ -188,10 +190,10 @@ class SpdController():
                         set_speed_kph = 0
                         self.VSetDis = 0
 
-                    self.prev_clu_CruiseSwState = CS.clu_CruiseSwState
+                    self.prev_clu_CruiseSwState =  CS.cruise_buttons
 
                 #버튼을 누르고 있는 동안
-                elif self.prev_clu_CruiseSwState == CS.clu_CruiseSwState:
+                elif self.prev_clu_CruiseSwState ==  CS.cruise_buttons:
                     #100ms 이내이면 패스
                     if self.cruise_btn_time < 100:
                         #타이머 시간동안 작동 안함
@@ -218,7 +220,7 @@ class SpdController():
                             set_speed_kph = 0
                             self.VSetDis = 0
 
-            self.prev_clu_CruiseSwState = CS.clu_CruiseSwState
+            self.prev_clu_CruiseSwState =  CS.cruise_buttons
             
             #순정 크루즈 속도정보가 제공 받을 수 있을때 동기화를 위한 로직
             #elif self.clu_CruiseSwState and delta_vsetdis > 0:
@@ -227,20 +229,26 @@ class SpdController():
         else:
             self.curise_sw_check = False
             self.curise_set_first = 1
-            self.prev_VSetDis = int(CS.VSetDis)
-            set_speed_kph = CS.VSetDis
+
+            #self.prev_VSetDis = int(CS.VSetDis)
+            #set_speed_kph = CS.VSetDis
+            self.prev_VSetDis = 0 #int(self.VSetDis)
+            self.VSetDis = 0
+            set_speed_kph = 0 #self.VSetDis
+
             if self.prev_clu_CruiseSwState != CS.cruise_buttons:  # MODE 전환.
                 if CS.cruise_buttons == Buttons.CANCEL: 
                     self.cruise_set_mode += 1
                 if self.cruise_set_mode > 3:
                     self.cruise_set_mode = 0
                 self.prev_clu_CruiseSwState = CS.cruise_buttons
-            
+
 
         if set_speed_kph < 30:
-            set_speed_kph = 30
+            set_speed_kph = 0
 
         self.cruise_set_speed_kph = set_speed_kph
+        
         return self.cruise_set_mode, set_speed_kph
 
 

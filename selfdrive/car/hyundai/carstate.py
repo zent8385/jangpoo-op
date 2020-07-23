@@ -152,8 +152,10 @@ class CarState(CarStateBase):
     ret.cruiseState.modeSel, speed_kph = self.SC.update_cruiseSW( self )
     if self.acc_active:
       speed_conv = CV.MPH_TO_MS if self.is_set_speed_in_mph else CV.KPH_TO_MS
-      ret.cruiseState.speed = cp_scc.vl["SCC11"]['VSetDis'] * speed_conv if not self.no_radar else \
-                                         cp.vl["LVR12"]["CF_Lvr_CruiseSet"] * speed_conv
+      
+      ret.cruiseState.speed = speed_kph * speed_conv
+      #ret.cruiseState.speed = cp_scc.vl["SCC11"]['VSetDis'] * speed_conv if not self.no_radar else \
+      #                                   cp.vl["LVR12"]["CF_Lvr_CruiseSet"] * speed_conv
       #ret.cruiseState.speed = self.VSetDis * speed_conv
     else:
       ret.cruiseState.speed = 0
