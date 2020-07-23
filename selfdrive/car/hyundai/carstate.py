@@ -48,6 +48,9 @@ class CarState(CarStateBase):
     self.TSigRHSw = 0
     self.driverAcc_time = 0
 
+    #janpoo6427 add variable
+    self.brakePressed = 0
+
     self.SC = SpdController()
 
   def update(self, cp, cp2, cp_cam):
@@ -164,6 +167,7 @@ class CarState(CarStateBase):
     # TODO: Find brake pressure
     ret.brake = 0
     ret.brakePressed = cp.vl["TCS13"]['DriverBraking'] != 0
+    self.brakePressed = ret.brakePressed
 
     # TODO: Check this
     ret.brakeLights = bool(cp.vl["TCS13"]['BrakeLight'] or ret.brakePressed)
