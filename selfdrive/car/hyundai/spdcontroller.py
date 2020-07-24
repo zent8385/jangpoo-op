@@ -391,6 +391,7 @@ class SpdController():
     def update(self, CS, sm, CC ):
         self.cruise_set_mode = CS.out.cruiseState.modeSel
         self.cruise_set_speed_kph = CS.out.cruiseState.speed * CV.MS_TO_KPH
+        #사용자 가감 개입 상태
         if CS.driverOverride == 2 or not CS.acc_active or CS.cruise_buttons == Buttons.RES_ACCEL or CS.cruise_buttons == Buttons.SET_DECEL:
             self.resume_cnt = 0
             self.btn_type = Buttons.NONE
@@ -420,8 +421,10 @@ class SpdController():
                     self.resume_cnt = 0
                     self.active_timer2 = 0
                     self.btn_type = Buttons.NONE          
-                else:
+                elif CS.cruise_lamp_set or (self.cruise_set_mode ==3 and CS.clu_Vanz > 30):
                     return 1
+                else:
+                    return 0
 
 
 

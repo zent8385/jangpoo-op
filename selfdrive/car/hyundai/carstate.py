@@ -48,6 +48,9 @@ class CarState(CarStateBase):
     self.TSigRHSw = 0
     self.driverAcc_time = 0
 
+    #janpoo6427 add variable
+    self.cruise_lamp_set = False
+
 
     self.SC = SpdController()
 
@@ -142,6 +145,8 @@ class CarState(CarStateBase):
     self.acc_active = bool(cp.vl['EMS16']['CRUISE_LAMP_M']) #(cp_scc.vl["SCC12"]['ACCMode'] != 0) if not self.no_radar else \
                                                       #                (cp.vl["LVR12"]['CF_Lvr_CruiseSet'] != 0)
 
+    self.cruise_lamp_set = bool(cp.vl['EMS16']['CRUISE_LAMP_S'])
+    
     self.update_atom( cp, cp2, cp_cam )
 
     ret.cruiseState.available = self.main_on if not self.no_radar else \
