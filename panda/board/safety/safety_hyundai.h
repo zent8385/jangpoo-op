@@ -186,7 +186,7 @@ static int hyundai_rx_hook(CAN_FIFOMailBox_TypeDef *to_push) {
       }
       // disable on cancel rising edge
       if (cruise_button == 4) {
-        controls_allowed = 1;
+        controls_allowed = 0;
       }
       cruise_engaged_prev = cruise_button;
     }
