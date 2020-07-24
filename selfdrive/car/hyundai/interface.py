@@ -12,6 +12,8 @@ params = Params()
 
 EventName = car.CarEvent.EventName
 ButtonType = car.CarState.ButtonEvent.Type
+GearShifter = car.CarState.GearShifter
+
 class CarInterface(CarInterfaceBase):
   def __init__(self, CP, CarController, CarState):
     super().__init__(CP, CarController, CarState )
