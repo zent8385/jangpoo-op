@@ -596,7 +596,7 @@ def main():
     ("OpkrWhoisDriver", "0"),
     ("OpkrTuneProfile", "0"),
     ("OpkrTuneStartAt", "0"),
-    ("OpkrAccelProfile", "0"),   #악셀프로파일 0:미사용, 1:브드럽게,2:보통,3:빠르게
+    ("OpkrAccelProfile", "0"),   #악셀프로파일 0:보통, 1:브드럽게,2:보통,3:빠르게(아직 없음)
     ("OpkrAutoLanechangedelay", "0"),
     ("OpkrDevelMode1", "1"),
     ("OpkrDevelMode2", "1"),

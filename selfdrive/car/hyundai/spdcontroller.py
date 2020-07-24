@@ -421,6 +421,7 @@ class SpdController():
                     self.resume_cnt = 0
                     self.active_timer2 = 0
                     self.btn_type = Buttons.NONE          
+                #크루즈 set 상태 또는 모드 3 (속도30이상 )에서만 개입
                 elif CS.cruise_lamp_set or (self.cruise_set_mode ==3 and CS.clu_Vanz > 30):
                     return 1
                 else:
