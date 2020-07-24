@@ -1,4 +1,4 @@
-//0.7.6
+//0.7.6 opkr
 
 const int HYUNDAI_MAX_STEER = 409;             // like stock
 const int HYUNDAI_MAX_RT_DELTA = 112;          // max delta torque allowed for real time checks
@@ -15,12 +15,6 @@ const CanMsg HYUNDAI_TX_MSGS[] = {
   {593, 2, 8},  // MDPS12, Bus 2
   {1056, 0, 8}, //   SCC11,  Bus 0
   {1057, 0, 8}, //   SCC12,  Bus 0
-  {1290, 0, 8}, //   SCC13,  Bus 0
-  {905, 0, 8},  //   SCC14,  Bus 0
-  {1186, 0, 8},  //   4a2SCC, Bus 0
-  {790, 1, 8}, // EMS11, Bus 1
-  {912, 0, 7}, {912,1, 7}, // SPAS11, Bus 0, 1
-  {1268, 0, 8}, {1268,1, 8}, // SPAS12, Bus 0, 1
  };
 
 // TODO: missing checksum for wheel speeds message,worst failure case is
@@ -92,7 +86,6 @@ int OP_MDPS_live = 0;
 int OP_CLU_live = 0;
 int OP_SCC_live = 0;
 int car_SCC_live = 0;
-int OP_EMS_live = 0;
 int hyundai_mdps_bus = 0;
 bool hyundai_LCAN_on_bus1 = false;
 bool hyundai_forward_bus1 = false;
@@ -147,7 +140,7 @@ static int hyundai_rx_hook(CAN_FIFOMailBox_TypeDef *to_push) {
         controls_allowed = 1;
       }
       if (!cruise_engaged) {
-        controls_allowed = 1;
+        controls_allowed = 0;
       }
       cruise_engaged_prev = cruise_engaged;
     }
@@ -159,7 +152,7 @@ static int hyundai_rx_hook(CAN_FIFOMailBox_TypeDef *to_push) {
         controls_allowed = 1;
       }
       if (!cruise_engaged) {
-        controls_allowed = 1;
+        controls_allowed = 0;
       }
       cruise_engaged_prev = cruise_engaged;
     }
@@ -172,7 +165,7 @@ static int hyundai_rx_hook(CAN_FIFOMailBox_TypeDef *to_push) {
         controls_allowed = 1;
       }
       if (!cruise_engaged) {
-        controls_allowed = 1;
+        controls_allowed = 0;
       }
       cruise_engaged_prev = cruise_engaged;
     }
@@ -186,7 +179,7 @@ static int hyundai_rx_hook(CAN_FIFOMailBox_TypeDef *to_push) {
       }
       // disable on cancel rising edge
       if (cruise_button == 4) {
-        controls_allowed = 1;
+        controls_allowed = 0;
       }
       cruise_engaged_prev = cruise_button;
     }
@@ -194,7 +187,7 @@ static int hyundai_rx_hook(CAN_FIFOMailBox_TypeDef *to_push) {
     if (addr == 608 && OP_SCC_live && bus == 0) {
       bool gas_pressed = (GET_BYTE(to_push, 7) >> 6) != 0;
       if (!unsafe_allow_gas && gas_pressed && !gas_pressed_prev) {
-        controls_allowed = 1;
+        controls_allowed = 0;
       }
       gas_pressed_prev = gas_pressed;
     }
@@ -211,7 +204,7 @@ static int hyundai_rx_hook(CAN_FIFOMailBox_TypeDef *to_push) {
     if (addr == 916 && OP_SCC_live && bus == 0) {
       bool brake_pressed = (GET_BYTE(to_push, 6) >> 7) != 0;
       if (brake_pressed && (!brake_pressed_prev || vehicle_moving)) {
-        controls_allowed = 1;
+        controls_allowed = 0;
       }
       brake_pressed_prev = brake_pressed;
     }
@@ -299,7 +292,6 @@ static int hyundai_tx_hook(CAN_FIFOMailBox_TypeDef *to_send) {
   if (addr == 593) {OP_MDPS_live = 20;}
   if (addr == 1265 && bus == 1) {OP_CLU_live = 20;} // only count mesage created for MDPS
   if (addr == 1057) {OP_SCC_live = 20; if (car_SCC_live > 0) {car_SCC_live -= 1;}}
-  if (addr == 790) {OP_EMS_live = 20;}
 
   // 1 allows the message through
   return tx;
@@ -317,12 +309,7 @@ static int hyundai_fwd_hook(int bus_num, CAN_FIFOMailBox_TypeDef *to_fwd) {
     if (bus_num == 0) {
       if (!OP_CLU_live || addr != 1265 || !hyundai_mdps_bus) {
         if (!OP_MDPS_live || addr != 593) {
-          if (!OP_EMS_live || addr != 790) {
-            bus_fwd = hyundai_forward_bus1 ? 12 : 2;
-          } else {
-            bus_fwd = 2;  // EON create EMS11 for MDPS
-            OP_EMS_live -= 1;
-          }
+          bus_fwd = 2;  // EON create EMS11 for MDPS
         } else {
           bus_fwd = fwd_to_bus1;  // EON create MDPS for LKAS
           OP_MDPS_live -= 1;

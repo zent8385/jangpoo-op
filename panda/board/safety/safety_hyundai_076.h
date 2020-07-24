@@ -1,4 +1,4 @@
-//0.7.6 opkr
+//0.7.6
 
 const int HYUNDAI_MAX_STEER = 409;             // like stock
 const int HYUNDAI_MAX_RT_DELTA = 112;          // max delta torque allowed for real time checks
