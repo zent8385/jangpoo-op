@@ -1,3 +1,5 @@
+//0.7.6 opkr
+
 const int HYUNDAI_MAX_STEER = 409;             // like stock
 const int HYUNDAI_MAX_RT_DELTA = 112;          // max delta torque allowed for real time checks
 const uint32_t HYUNDAI_RT_INTERVAL = 250000;   // 250ms between real time checks
@@ -145,7 +147,7 @@ static int hyundai_rx_hook(CAN_FIFOMailBox_TypeDef *to_push) {
         controls_allowed = 1;
       }
       if (!cruise_engaged) {
-        controls_allowed = 0;
+        controls_allowed = 1;
       }
       cruise_engaged_prev = cruise_engaged;
     }
@@ -157,7 +159,7 @@ static int hyundai_rx_hook(CAN_FIFOMailBox_TypeDef *to_push) {
         controls_allowed = 1;
       }
       if (!cruise_engaged) {
-        controls_allowed = 0;
+        controls_allowed = 1;
       }
       cruise_engaged_prev = cruise_engaged;
     }
@@ -170,7 +172,7 @@ static int hyundai_rx_hook(CAN_FIFOMailBox_TypeDef *to_push) {
         controls_allowed = 1;
       }
       if (!cruise_engaged) {
-        controls_allowed = 0;
+        controls_allowed = 1;
       }
       cruise_engaged_prev = cruise_engaged;
     }
@@ -184,7 +186,7 @@ static int hyundai_rx_hook(CAN_FIFOMailBox_TypeDef *to_push) {
       }
       // disable on cancel rising edge
       if (cruise_button == 4) {
-        controls_allowed = 0;
+        controls_allowed = 1;
       }
       cruise_engaged_prev = cruise_button;
     }
@@ -192,7 +194,7 @@ static int hyundai_rx_hook(CAN_FIFOMailBox_TypeDef *to_push) {
     if (addr == 608 && OP_SCC_live && bus == 0) {
       bool gas_pressed = (GET_BYTE(to_push, 7) >> 6) != 0;
       if (!unsafe_allow_gas && gas_pressed && !gas_pressed_prev) {
-        controls_allowed = 0;
+        controls_allowed = 1;
       }
       gas_pressed_prev = gas_pressed;
     }
@@ -209,7 +211,7 @@ static int hyundai_rx_hook(CAN_FIFOMailBox_TypeDef *to_push) {
     if (addr == 916 && OP_SCC_live && bus == 0) {
       bool brake_pressed = (GET_BYTE(to_push, 6) >> 7) != 0;
       if (brake_pressed && (!brake_pressed_prev || vehicle_moving)) {
-        controls_allowed = 0;
+        controls_allowed = 1;
       }
       brake_pressed_prev = brake_pressed;
     }
