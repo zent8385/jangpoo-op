@@ -6,7 +6,7 @@ import datetime
 import psutil
 from smbus2 import SMBus
 from cereal import log
-from common.android import ANDROID, get_network_type, get_network_strength
+from common.android import ANDROID, get_network_type, get_network_strength, get_ip_address
 from common.basedir import BASEDIR
 from common.params import Params, put_nonblocking
 from common.realtime import sec_since_boot, DT_TRML
