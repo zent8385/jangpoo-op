@@ -21,7 +21,7 @@ class SpdctrlNormal(SpdController):
         #if int(self.cruise_set_mode) != 2:
         #    return lead_wait_cmd, lead_set_speed
                 # 모드 2 또는 3이 아니라면 차간거리 속도 반영 안함
-        if int(CS.cruise_set_mode) not in [2, 3]:
+        if int(CS.cruise_set_mode) = 0:
             return lead_wait_cmd, lead_set_speed
 
         #dRel, yRel, vRel = self.get_lead( sm, CS )
