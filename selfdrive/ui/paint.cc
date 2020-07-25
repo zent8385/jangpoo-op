@@ -506,7 +506,7 @@ static void bb_ui_draw_measures_left(UIState *s, int bb_x, int bb_y, int bb_w ) 
         val_color = nvgRGBA(255, 0, 0, 200);
       }
       // steering is in degrees
-      snprintf(val_str, sizeof(val_str), "%.1f째",(scene->angleSteers));
+      snprintf(val_str, sizeof(val_str), "%.1f吏?,(scene->angleSteers));
 
       snprintf(uom_str, sizeof(uom_str), "");
     bb_h +=bb_ui_draw_measure(s,  val_str, uom_str, "REAL STEER",
@@ -531,7 +531,7 @@ static void bb_ui_draw_measures_left(UIState *s, int bb_x, int bb_y, int bb_w ) 
         val_color = nvgRGBA(255, 255, 255, 200);
       }
       // steering is in degrees
-      snprintf(val_str, sizeof(val_str), "%.1f째",(scene->angleSteersDes));
+      snprintf(val_str, sizeof(val_str), "%.1f吏?,(scene->angleSteersDes));
     } else {
        snprintf(val_str, sizeof(val_str), "-");
     }
@@ -577,7 +577,7 @@ static void bb_ui_draw_measures_right(UIState *s, int bb_x, int bb_y, int bb_w )
         val_color = nvgRGBA(255, 0, 0, 200);
       }
       // temp is alway in C * 10
-      snprintf(val_str, sizeof(val_str), "%d째C", (int)(scene->maxCpuTemp/10));
+      snprintf(val_str, sizeof(val_str), "%d吏퇒", (int)(scene->maxCpuTemp/10));
       snprintf(uom_str, sizeof(uom_str), "");
     bb_h +=bb_ui_draw_measure(s,  val_str, uom_str, "CPU TEMP",
         bb_rx, bb_ry, bb_uom_dx,
@@ -598,7 +598,7 @@ static void bb_ui_draw_measures_right(UIState *s, int bb_x, int bb_y, int bb_w )
       val_color = nvgRGBA(255, 0, 0, 200);
     }
     // temp is alway in C * 1000
-    snprintf(val_str, sizeof(val_str), "%d째C", (int)(scene->maxBatTemp/1000));
+    snprintf(val_str, sizeof(val_str), "%d吏퇒", (int)(scene->maxBatTemp/1000));
     snprintf(uom_str, sizeof(uom_str), "");
     bb_h +=bb_ui_draw_measure(s,  val_str, uom_str, "BAT TEMP",
         bb_rx, bb_ry, bb_uom_dx,

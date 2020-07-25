@@ -72,7 +72,7 @@ static void ui_draw_sidebar_network_type(UIState *s) {
   nvgTextBox(s->vg, network_x, network_y, network_w, network_type ? network_type : "--", NULL);
 
   nvgFontSize(s->vg, 40);
-  nvgTextBox(s->vg, network_x-20, network_y + 55, 250, s->scene.wifiIpAddress.c_str(), NULL);
+  nvgTextBox(s->vg, network_x-20, network_y + 55, 250, s->scene.thermal.getWifiIpAddress().cStr(), NULL);
 }
 
 static void ui_draw_sidebar_metric(UIState *s, const char* label_str, const char* value_str, const int severity, const int y_offset, const char* message_str) {
@@ -162,7 +162,7 @@ static void ui_draw_sidebar_temp_metric(UIState *s) {
   char temp_value_unit[32];
   const int temp_y_offset = 45;
   snprintf(temp_value_str, sizeof(temp_value_str), "%d", s->scene.thermal.getPa0());
-  snprintf(temp_value_unit, sizeof(temp_value_unit), "%s", "째C");
+  snprintf(temp_value_unit, sizeof(temp_value_unit), "%s", "°C");
   //snprintf(temp_label_str, sizeof(temp_label_str), "%s", "TEMP");
   temp_label_str[0] = 0;
   strcat(temp_value_str, temp_value_unit);

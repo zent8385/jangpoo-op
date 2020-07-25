@@ -54,6 +54,7 @@ const int nav_w = 640;
 const int nav_ww= 760;
 const int sbr_w = 300;
 const int bdr_s = 30;
+const int bdr_is = 30;
 const int box_x = sbr_w+bdr_s;
 const int box_y = bdr_s;
 const int box_w = vwp_w-sbr_w-(bdr_s*2);
@@ -150,8 +151,6 @@ typedef struct UIScene {
   float gpsAccuracy;
   bool recording;
 
-  std::string wifiIpAddress;
-
 } UIScene;
 
 typedef struct {
@@ -188,6 +187,7 @@ typedef struct UIState {
   int img_turn;
   int img_face;
   int img_map;
+  int img_brake;
   int img_button_settings;
   int img_button_home;
   int img_battery;
