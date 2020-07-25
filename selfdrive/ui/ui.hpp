@@ -132,6 +132,26 @@ typedef struct UIScene {
   cereal::RadarState::LeadData::Reader lead_data[2];
   cereal::ControlsState::Reader controls_state;
   cereal::DriverState::Reader driver_state;
+
+  // dev ui
+  uint16_t maxCpuTemp;
+  uint32_t maxBatTemp;
+
+  float angleSteers;
+  float angleSteersDes;
+  bool brakeLights;
+
+  float pCurvature;
+  float curvMaxSpeed;
+
+  cereal::CarControl::Actuators::Reader actuators;
+  cereal::ControlsState::LateralLQRState::Reader lqr;
+
+  float gpsAccuracy;
+  bool recording;
+
+  std::string wifiIpAddress;
+
 } UIScene;
 
 typedef struct {

@@ -168,7 +168,8 @@ static void ui_init(UIState *s) {
 
   pthread_mutex_init(&s->lock, NULL);
   s->sm = new SubMaster({"model", "controlsState", "uiLayoutState", "liveCalibration", "radarState", "thermal",
-                         "health", "ubloxGnss", "driverState", "dMonitoringState"
+                         "health", "ubloxGnss", "driverState", "dMonitoringState",
+                         "carControl", "gpsLocationExternal", "carState"
 #ifdef SHOW_SPEEDLIMIT
                                     , "liveMapData"
 #endif
@@ -214,6 +215,7 @@ static void ui_init_vision(UIState *s, const VisionStreamBufs back_bufs,
   s->scene.front_box_height = ui_info.front_box_height;
   s->scene.world_objects_visible = false;  // Invisible until we receive a calibration message.
   s->scene.gps_planner_active = false;
+  s->scene.recording = false;
 
   s->rgb_width = back_bufs.width;
   s->rgb_height = back_bufs.height;
@@ -326,7 +328,51 @@ void handle_message(UIState *s, SubMaster &sm) {
         }
       }
     }
+
+    scene.angleSteers = scene.controls_state.getAngleSteers();
+    scene.angleSteersDes = scene.controls_state.getAngleSteersDes();
+
+    scene.lqr = scene.controls_state.getLateralControlState().getLqrState();
+
   }
+
+   /*if (sm.updated("liveParameters"))
+   {
+    auto data = sm["liveParameters"].getLiveParameters();
+    scene.lp_steerRatio = data.getSteerRatio();
+    scene.lp_angleOffset = data.getAngleOffset();
+    scene.lp_stiffnessFactor = data.getStiffnessFactor();
+   }*/
+
+   if (sm.updated("carState"))
+   {
+    auto data = sm["carState"].getCarState();
+    scene.brakeLights = data.getBrakeLights();
+   }
+
+   if (sm.updated("carControl"))
+   {
+    auto data = sm["carControl"].getCarControl();
+    scene.actuators = data.getActuators();
+   }
+
+   if (sm.updated("gpsLocationExternal"))
+   {
+    auto data = sm["gpsLocationExternal"].getGpsLocationExternal();
+    scene.gpsAccuracy = data.getAccuracy();
+
+    if (scene.gpsAccuracy > 100)
+    {
+      scene.gpsAccuracy = 99.99;
+    }
+    else if (scene.gpsAccuracy == 0)
+    {
+      scene.gpsAccuracy = 99.8;
+    }
+
+   }
+
+
   if (sm.updated("radarState")) {
     auto data = sm["radarState"].getRadarState();
     scene.lead_data[0] = data.getLeadOne();
@@ -364,6 +410,18 @@ void handle_message(UIState *s, SubMaster &sm) {
 #endif
   if (sm.updated("thermal")) {
     scene.thermal = sm["thermal"].getThermal();
+
+    auto data = scene.thermal;
+
+    scene.maxCpuTemp = data.getCpu1();
+    if (scene.maxCpuTemp < data.getCpu1())
+      scene.maxCpuTemp = data.getCpu1();
+    else if (scene.maxCpuTemp < data.getCpu2())
+      scene.maxCpuTemp = data.getCpu2();
+    else if (scene.maxCpuTemp < data.getCpu3())
+      scene.maxCpuTemp = data.getCpu3();
+
+    scene.maxBatTemp = data.getBat();
   }
   if (sm.updated("ubloxGnss")) {
     auto data = sm["ubloxGnss"].getUbloxGnss();

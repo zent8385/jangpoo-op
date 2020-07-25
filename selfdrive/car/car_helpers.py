@@ -15,10 +15,12 @@ HwType = log.HealthData.HwType
 
 
 def get_startup_event(car_recognized, controller_available):
-  if comma_remote and tested_branch:
-    event = EventName.startup
-  else:
-    event = EventName.startupMaster
+  #if comma_remote and tested_branch:
+  #  event = EventName.startup
+  #else:
+  #  event = EventName.startupMaster
+
+  event = EventName.startup
 
   if not car_recognized:
     event = EventName.startupNoCar
