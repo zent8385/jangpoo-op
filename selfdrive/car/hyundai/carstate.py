@@ -530,15 +530,15 @@ class CarState():
     self.v_ego = self.clu_Vanz * CV.KPH_TO_MS
 
     #구름형님 요청 반영
-    if self.clu_Vanz > 15:
-      self.main_on = True
-      self.acc_active = True
+    # if self.clu_Vanz > 15:
+    #   self.main_on = True
+    #   self.acc_active = True
 
 
 
-      #self.main_on = cp.vl['EMS16']['CRUISE_LAMP_M']  #(cp_scc.vl["SCC11"]["MainMode_ACC"] != 0) if not self.no_radar else \
+    self.main_on = cp.vl['EMS16']['CRUISE_LAMP_M']  #(cp_scc.vl["SCC11"]["MainMode_ACC"] != 0) if not self.no_radar else \
                                                     #                         cp.vl['EMS16']['CRUISE_LAMP_M']
-      #self.acc_active = cp.vl['EMS16']['CRUISE_LAMP_M'] #(cp_scc.vl["SCC12"]['ACCMode'] != 0) if not self.no_radar else \
+    self.acc_active = cp.vl['EMS16']['CRUISE_LAMP_M'] #(cp_scc.vl["SCC12"]['ACCMode'] != 0) if not self.no_radar else \
                                                       #                (cp.vl["LVR12"]['CF_Lvr_CruiseSet'] != 0)
                                                       
     self.cruise_set = cp.vl['EMS16']['CRUISE_LAMP_S']  
