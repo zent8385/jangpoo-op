@@ -282,8 +282,8 @@ class CarInterface(CarInterfaceBase):
 
         if self.CC.longcontrol and self.CS.cruise_unavail:
             events.add(EventName.brakeUnavailable)
-        if abs(ret.steeringAngle) > 90. and EventName.steerTempUnavailable not in events.events:
-            events.add(EventName.steerTempUnavailable)
+        #if abs(ret.steeringAngle) > 90. and EventName.steerTempUnavailable not in events.events:
+        #    events.add(EventName.steerTempUnavailable)
         if self.low_speed_alert and not self.CS.mdps_bus:
             events.add(EventName.belowSteerSpeed)
         if self.CC.turning_indicator_alert:
