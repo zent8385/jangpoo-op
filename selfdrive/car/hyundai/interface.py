@@ -297,6 +297,11 @@ class CarInterface(CarInterfaceBase):
             events.add(EventName.lkasButtonOff)
         if not self.CC.longcontrol and EventName.pedalPressed in events.events:
             events.events.remove(EventName.pedalPressed)
+        
+        #크루즈 자동활성 로직
+        if ret.cruiseState.enabled:
+            if ret.gearShifter == GearShifter.drive and self.CS.clu_Vanz > 15:
+                events.add(EventName.pcmEnable)
 
         # handle button presses
         for b in ret.buttonEvents:
