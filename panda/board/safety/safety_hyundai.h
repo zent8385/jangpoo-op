@@ -156,7 +156,7 @@ static int hyundai_rx_hook(CAN_FIFOMailBox_TypeDef *to_push) {
         controls_allowed = 1;
       }
       if (!cruise_engaged) {
-        controls_allowed = 0;
+        controls_allowed = 1;
       }
       cruise_engaged_prev = cruise_engaged;
     }
@@ -168,7 +168,7 @@ static int hyundai_rx_hook(CAN_FIFOMailBox_TypeDef *to_push) {
         controls_allowed = 1;
       }
       if (!cruise_engaged) {
-        controls_allowed = 0;
+        controls_allowed = 1;
       }
       cruise_engaged_prev = cruise_engaged;
     }
@@ -180,7 +180,7 @@ static int hyundai_rx_hook(CAN_FIFOMailBox_TypeDef *to_push) {
         controls_allowed = 1;
       }
       if (!cruise_engaged) {
-        controls_allowed = 0;
+        controls_allowed = 1;
       }
       cruise_engaged_prev = cruise_engaged;
     }
@@ -194,7 +194,7 @@ static int hyundai_rx_hook(CAN_FIFOMailBox_TypeDef *to_push) {
       }
       // disable on cancel rising edge
       if (cruise_button == 4) {
-        controls_allowed = 0;
+        controls_allowed = 1;
       }
       cruise_engaged_prev = cruise_button;
     }

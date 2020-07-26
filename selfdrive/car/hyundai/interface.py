@@ -137,7 +137,10 @@ class CarInterface(CarInterfaceBase):
             ret.wheelbase = 2.845
             tire_stiffness_factor = 0.6
 
-
+        elif candidate == CAR.TUCSON_TL:
+            ret.mass = 1985. + STD_CARGO_KG
+            ret.wheelbase = 2.78
+            ret.minSteerSpeed = 0.    
 
 
         # LQR control by default
