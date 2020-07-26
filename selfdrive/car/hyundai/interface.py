@@ -433,7 +433,7 @@ class CarInterface(CarInterfaceBase):
         else:
             events.append(create_event('pcmDisable', [ET.USER_DISABLE]))
         self.cruise_enabled_prev = ret.cruiseState.enabled
-   elif  ret.cruiseState.enabled:
+    elif  ret.cruiseState.enabled:
         if ret.gearShifter == GearShifter.drive and self.CS.clu_Vanz > 15:
           events.append(create_event('pcmEnable', [ET.ENABLE]))
 
