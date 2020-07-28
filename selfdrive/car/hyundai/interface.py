@@ -166,7 +166,23 @@ class CarInterface(CarInterfaceBase):
       ret.lateralTuning.pid.kiBP, ret.lateralTuning.pid.kpBP = [[0.], [0.]]
       ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.25], [0.05]]
       ret.minSteerSpeed = 0.
-
+    elif candidate == CAR.TUCSON_TL:
+      tire_stiffness_factor = 0.6
+      ret.mass = 1985. + STD_CARGO_KG
+      ret.wheelbase = 2.78
+      ret.lateralTuning.init('lqr')
+      ret.lateralTuning.lqr.scale = 2000.0
+      ret.lateralTuning.lqr.ki = 0.01
+      ret.lateralTuning.lqr.a = [0., 1., -0.22619643, 1.21822268]
+      ret.lateralTuning.lqr.b = [-1.92006585e-04, 3.95603032e-05]
+      ret.lateralTuning.lqr.c = [1., 0.]
+      ret.lateralTuning.lqr.k = [-100., 450.]
+      ret.lateralTuning.lqr.l = [0.22, 0.318]
+      ret.lateralTuning.lqr.dcGain = 0.003
+      ret.steerRatio = 14.4 * 1.1 #13.7
+      ret.steerActuatorDelay = 0.3
+      ret.steerRateCost = 0.5
+      ret.steerLimitTimer = 0.8
     elif candidate in [CAR.SONATA, CAR.SONATA_H, CAR.SONATA_TURBO]:
       tire_stiffness_factor = 0.6
       ret.mass = 1565. + STD_CARGO_KG
@@ -313,6 +329,9 @@ class CarInterface(CarInterfaceBase):
     #  events.append(create_event('steerTempUnavailable', [ET.NO_ENTRY, ET.WARNING]))
 
     if ret.cruiseState.enabled and not self.CS.out.cruiseState.enabled:
+      events.append(create_event('pcmEnable', [ET.ENABLE]))
+    #speed over 15, auto engaged
+    elif ret.cruiseState.enabled and ret.gearShifter == GearShifter.drive and self.CS.clu_Vanz > 15:
       events.append(create_event('pcmEnable', [ET.ENABLE]))
     elif not ret.cruiseState.enabled:
       events.append(create_event('pcmDisable', [ET.USER_DISABLE]))
