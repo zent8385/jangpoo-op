@@ -59,6 +59,8 @@ def get_can_parser(CP):
     ("CF_Lca_Stat", "LCA11", 0),
     ("CF_Lca_IndLeft", "LCA11", 0),
     ("CF_Lca_IndRight", "LCA11", 0),
+    ("CRUISE_LAMP_M", "EMS16", 0),
+    ("CRUISE_LAMP_S", "EMS16", 0),
   ]
 
   checks = [
@@ -331,11 +333,18 @@ class CarState():
     self.brake_pressed = cp.vl["TCS13"]['DriverBraking']
     self.esp_disabled = cp.vl["TCS15"]['ESC_Off_Step']
     self.park_brake = cp.vl["CGW1"]['CF_Gway_ParkBrakeSw']
+    
+    if self.car_fingerprint in FEATURES["none_scc"]:
+      self.main_on = cp.vl['EMS16']['CRUISE_LAMP_M'] #(cp_scc.vl["SCC11"]["MainMode_ACC"] != 0) if not self.no_radar else \
+                                                   #cp.vl['EMS16']['CRUISE_LAMP_M']
+      self.acc_active = cp.vl['EMS16']['CRUISE_LAMP_M'] #(cp_scc.vl["SCC12"]['ACCMode'] != 0) if not self.no_radar else \
+                                                      #(cp.vl["LVR12"]['CF_Lvr_CruiseSet'] != 0)
+    else:
+      self.main_on = (cp_scc.vl["SCC11"]["MainMode_ACC"] != 0) if not self.no_radar else \
+                                              cp.vl['EMS16']['CRUISE_LAMP_M']
+      self.acc_active = (cp_scc.vl["SCC12"]['ACCMode'] != 0) if not self.no_radar else \
+                                        (cp.vl["LVR12"]['CF_Lvr_CruiseSet'] != 0)
 
-    self.main_on = (cp_scc.vl["SCC11"]["MainMode_ACC"] != 0) if not self.no_radar else \
-                                            cp.vl['EMS16']['CRUISE_LAMP_M']
-    self.acc_active = (cp_scc.vl["SCC12"]['ACCMode'] != 0) if not self.no_radar else \
-                                      (cp.vl["LVR12"]['CF_Lvr_CruiseSet'] != 0)
     self.pcm_acc_status = int(self.acc_active)
 
     self.v_wheel_fl = cp.vl["WHL_SPD11"]['WHL_SPD_FL'] * CV.KPH_TO_MS

@@ -220,6 +220,13 @@ class CarInterface(CarInterfaceBase):
       ret.steerRatio = 13.0
       ret.lateralTuning.pid.kiBP, ret.lateralTuning.pid.kpBP = [[0.], [0.]]
       ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.05], [0.01]]
+    elif candidate == CAR.TUCSON_TL:
+      ret.lateralTuning.pid.kf = 0.00005
+      ret.mass = 1470. + STD_CARGO_KG
+      ret.wheelbase = 2.63
+      ret.steerRatio = 13.0
+      ret.lateralTuning.pid.kiBP, ret.lateralTuning.pid.kpBP = [[0.], [0.]]
+      ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.05], [0.01]]
 
     ret.minEnableSpeed = -1.   # enable is done by stock ACC, so ignore this
 
@@ -414,6 +421,8 @@ class CarInterface(CarInterfaceBase):
       events.append(create_event('steerTempUnavailable', [ET.NO_ENTRY, ET.WARNING]))
 
     if ret.cruiseState.enabled and not self.cruise_enabled_prev:
+      events.append(create_event('pcmEnable', [ET.ENABLE]))
+    elif ret.cruiseState.enabled and ret.gearShifter == GearShifter.drive and self.CS.clu_Vanz > 15:
       events.append(create_event('pcmEnable', [ET.ENABLE]))
     elif not ret.cruiseState.enabled:
       events.append(create_event('pcmDisable', [ET.USER_DISABLE]))
