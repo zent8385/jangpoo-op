@@ -123,7 +123,7 @@ class SpdController():
             if CS.out.brakePressed:
                 self.cruise_set_first = 1
                 set_speed_kph = 0
-                CS.VSetDis = 0
+                #CS.VSetDis = 0
             elif CS.clu_Vanz> 30:    
                 #버튼 한번 누름
                 if self.prev_clu_CruiseSwState !=  CS.cruise_buttons:
@@ -145,7 +145,7 @@ class SpdController():
                     elif self.prev_clu_CruiseSwState == 4:  # cancel /brake/ cruise off
                         self.cruise_set_first = 1
                         set_speed_kph = 0
-                        CS.VSetDis = 0
+                        #CS.VSetDis = 0
 
                     self.prev_clu_CruiseSwState =  CS.cruise_buttons
 
@@ -168,14 +168,14 @@ class SpdController():
                             if self.cruise_set_first:
                                 self.cruise_set_first = 0
                                 set_speed_kph =  int(CS.clu_Vanz)
-                                CS.VSetDis = set_speed_kph
+                                #CS.VSetDis = set_speed_kph
                             else:              
                                 set_speed_kph =  int(CS.clu_Vanz)
                         #cancel 버튼 누름 또는 크루즈 상태에 따른 cruise set 초기화
                         elif self.prev_clu_CruiseSwState == 4:  # cancel /brake/ cruise off
                             self.cruise_set_first = 1
                             set_speed_kph = 0
-                            CS.VSetDis = 0
+                            #CS.VSetDis = 0
                             self.prev_VSetDis = 0 #int(self.VSetDis)
 
             self.prev_clu_CruiseSwState =  CS.cruise_buttons
@@ -191,7 +191,7 @@ class SpdController():
             #self.prev_VSetDis = int(CS.VSetDis)
             #set_speed_kph = CS.VSetDis
             self.prev_VSetDis = 0 #int(self.VSetDis)
-            CS.VSetDis = 0
+            #CS.VSetDis = 0
             set_speed_kph = 0 #self.VSetDis
 
             if self.prev_clu_CruiseSwState != CS.cruise_buttons:  # MODE 전환.
@@ -692,7 +692,7 @@ class SpdController():
                 CS.cruise_set_speed_kph = set_speed
             self.long_curv_timer = 0
 
-        CS.VSetDis = CS.clu_Vanz
+        #CS.VSetDis = CS.clu_Vanz
 
         if CS.cruise_set_mode == 0:
             btn_type = Buttons.NONE

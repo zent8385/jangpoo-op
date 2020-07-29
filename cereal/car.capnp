@@ -180,6 +180,7 @@ struct CarState {
   struct CruiseState {
     enabled @0 :Bool;
     speed @1 :Float32;
+    speed_kph @1 :Float32;
     available @2 :Bool;
     speedOffset @3 :Float32;
     standstill @4 :Bool;

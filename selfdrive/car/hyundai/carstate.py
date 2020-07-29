@@ -23,6 +23,7 @@ class CarState(CarStateBase):
     self.lkas_button_on = True
 
     self.SC = SpdController()
+    self.clu_Vanz = 0
 
   def update(self, cp, cp2, cp_cam):
     cp_mdps = cp2 if self.mdps_bus else cp
@@ -72,16 +73,19 @@ class CarState(CarStateBase):
     ret.cruiseState.standstill = cp_scc.vl["SCC11"]['SCCInfoDisplay'] == 4. if not self.no_radar else False
     self.is_set_speed_in_mph = int(cp.vl["CLU11"]["CF_Clu_SPEED_UNIT"])
 
-    ret.cruiseState.modeSel, speed_kph = self.SC.update_cruiseSW( self )
+    
     if ret.cruiseState.enabled:
       speed_conv = CV.MPH_TO_MS if self.is_set_speed_in_mph else CV.KPH_TO_MS
-
-      #if self.car_fingerprint in FEATURES["none_scc"]:
-      #  ret.cruiseState.speed = speed_kph * speed_conv
-      #else:
       
-      ret.cruiseState.speed = cp_scc.vl["SCC11"]['VSetDis'] * speed_conv if not self.no_radar else \
+      ret.cruiseState.modeSel, speed_kph = self.SC.update_cruiseSW( self )
+
+      if self.car_fingerprint in FEATURES["none_scc"]:
+        ret.cruiseState.speed = speed_kph * speed_conv
+        ret.cruiseState.speed_kph = speed_kph
+      else:
+        ret.cruiseState.speed = cp_scc.vl["SCC11"]['VSetDis'] * speed_conv if not self.no_radar else \
                                          (cp.vl["LVR12"]["CF_Lvr_CruiseSet"] * speed_conv)
+        ret.cruiseState.speed_kph = cp_scc.vl["SCC11"]['VSetDis']
     else:
       ret.cruiseState.speed = 0
 
