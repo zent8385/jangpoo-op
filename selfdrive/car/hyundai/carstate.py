@@ -21,11 +21,8 @@ class CarState(CarStateBase):
     self.leftBlinker = False
     self.rightBlinker = False
     self.lkas_button_on = True
-    self.VSetDis = 0
-    self.clu_Vanz = 0
 
     self.SC = SpdController()
-    self.clu_Vanz = 0
 
   def update(self, cp, cp2, cp_cam):
     cp_mdps = cp2 if self.mdps_bus else cp
