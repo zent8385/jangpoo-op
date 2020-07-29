@@ -24,6 +24,8 @@ class CarState(CarStateBase):
 
     self.SC = SpdController()
 
+    self.VSetDis = 0
+
   def update(self, cp, cp2, cp_cam):
     cp_mdps = cp2 if self.mdps_bus else cp
     cp_sas = cp2 if self.sas_bus else cp
@@ -72,7 +74,13 @@ class CarState(CarStateBase):
       ret.cruiseState.available = (cp_scc.vl["SCC11"]["MainMode_ACC"] != 0) if not self.no_radar else \
                                               cp.vl['EMS16']['CRUISE_LAMP_M']
 
+    #janpoo6427
+    self.VSetDis = cp_scc.vl["SCC11"]['VSetDis']
+
     ret.cruiseState.standstill = cp_scc.vl["SCC11"]['SCCInfoDisplay'] == 4. if not self.no_radar else False
+
+    ret.cruiseState.cruiseButtons = cp.vl["CLU11"]["CF_Clu_CruiseSwState"]
+
     self.is_set_speed_in_mph = int(cp.vl["CLU11"]["CF_Clu_SPEED_UNIT"])
 
     
@@ -90,6 +98,7 @@ class CarState(CarStateBase):
         ret.cruiseState.speed_kph = cp_scc.vl["SCC11"]['VSetDis']
     else:
       ret.cruiseState.speed = 0
+      
 
     # TODO: Find brake pressure
     ret.brake = 0
