@@ -47,6 +47,9 @@ class CarState(CarStateBase):
     ret.vEgoRaw = (ret.wheelSpeeds.fl + ret.wheelSpeeds.fr + ret.wheelSpeeds.rl + ret.wheelSpeeds.rr) / 4.
     ret.vEgo, ret.aEgo = self.update_speed_kf(ret.vEgoRaw)
 
+    #janpoo6427
+    ret.clu_Vanz = cp.vl["CLU11"]["CF_Clu_Vanz"]
+    
     ret.standstill = ret.vEgoRaw < 0.1
 
     ret.steeringAngle = cp_sas.vl["SAS11"]['SAS_Angle']
