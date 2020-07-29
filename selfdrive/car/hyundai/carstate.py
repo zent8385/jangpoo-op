@@ -19,7 +19,8 @@ class CarState(CarStateBase):
     self.leftBlinker = False
     self.rightBlinker = False
     self.lkas_button_on = True
-    self.VSetDis = 0
+
+    #janpoo6427
     self.clu_Vanz = 0
 
   def update(self, cp, cp2, cp_cam):
@@ -45,6 +46,9 @@ class CarState(CarStateBase):
     ret.vEgoRaw = (ret.wheelSpeeds.fl + ret.wheelSpeeds.fr + ret.wheelSpeeds.rl + ret.wheelSpeeds.rr) / 4.
     ret.vEgo, ret.aEgo = self.update_speed_kf(ret.vEgoRaw)
 
+    #janpoo6427
+    ret.clu_Vanz = cp.vl["CLU11"]["CF_Clu_Vanz"]
+    
     ret.standstill = ret.vEgoRaw < 0.1
 
     ret.steeringAngle = cp_sas.vl["SAS11"]['SAS_Angle']
