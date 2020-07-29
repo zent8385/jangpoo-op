@@ -50,7 +50,7 @@ class CarState(CarStateBase):
     ret.vEgo, ret.aEgo = self.update_speed_kf(ret.vEgoRaw)
 
     #janpoo6427
-    ret.clu_Vanz = cp.vl["CLU11"]["CF_Clu_Vanz"]
+    ret.cluVanz = cp.vl["CLU11"]["CF_Clu_Vanz"]
     
     ret.standstill = ret.vEgoRaw < 0.1
 
