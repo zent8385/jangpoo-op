@@ -24,7 +24,6 @@ class CarState(CarStateBase):
 
     self.SC = SpdController()
 
-    self.VSetDis = 0
 
   def update(self, cp, cp2, cp_cam):
     cp_mdps = cp2 if self.mdps_bus else cp
