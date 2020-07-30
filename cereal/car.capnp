@@ -119,7 +119,6 @@ struct CarState {
   yawRate @22 :Float32;     # best estimate of yaw rate
   standstill @18 :Bool;
   wheelSpeeds @2 :WheelSpeeds;
-  cluVanz @37 :Float32;         # Cluster Speed
 
   # gas pedal, 0.0-1.0
   gas @3 :Float32;        # this is user + computer
@@ -181,11 +180,10 @@ struct CarState {
   struct CruiseState {
     enabled @0 :Bool;
     speed @1 :Float32;
-    speed_kph @2 :Float32;
-    available @3 :Bool;
-    speedOffset @4 :Float32;
-    standstill @5 :Bool;
-    modeSel @6 :Int16;
+    available @2 :Bool;
+    speedOffset @3 :Float32;
+    standstill @4 :Bool;
+    modeSel @5 :Int16;
   }
 
   enum GearShifter {
