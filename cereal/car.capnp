@@ -171,8 +171,8 @@ struct CarState {
 
   # LKAS
   # ldw warning
-  lkasLdwsRHWarning @37 :Bool;
-  lkasLdwsLHWarning @38 :Bool;
+  lkasLdwsRhWarning @37 :Bool;
+  lkasLdwsLhWarning @38 :Bool;
 
   struct WheelSpeeds {
     # optional wheel speeds

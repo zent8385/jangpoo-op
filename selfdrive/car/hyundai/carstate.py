@@ -150,8 +150,8 @@ class CarState(CarStateBase):
 
     
     # LKAS ldw warning
-    ret.lkasLdwsRHWarning = cp_cam.vl["LKAS11"]["CF_Lkas_LdwsRHWarning"]
-    ret.lkasLdwsLHWarning = cp_cam.vl["LKAS11"]["CF_Lkas_LdwsLHWarning"]
+    ret.lkasLdwsRhWarning = cp_cam.vl["LKAS11"]["CF_Lkas_LdwsRHWarning"]
+    ret.lkasLdwsLhWarning = cp_cam.vl["LKAS11"]["CF_Lkas_LdwsLHWarning"]
 
 
     # save the entire LKAS11, CLU11, SCC12 and MDPS12
