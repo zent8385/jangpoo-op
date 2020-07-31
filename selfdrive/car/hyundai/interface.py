@@ -325,8 +325,8 @@ class CarInterface(CarInterfaceBase):
       events.append(create_event('wrongCarMode', [ET.NO_ENTRY, ET.USER_DISABLE]))
     if ret.gearShifter == GearShifter.reverse:
       events.append(create_event('reverseGear', [ET.NO_ENTRY, ET.USER_DISABLE]))
-    if ret.lkasLdwsLHWarning or ret.lkasLdwsRHWarning:
-      events.append(create_event('ldwPermanent', [ET.WARNING]))
+    if ret.lkasLdwsLHWarning or ret.lkasLdwsRHWarning:
+      events.append(create_event('ldwPermanent', [ET.WARNING]))
 
     #if ret.steerWarning or abs(ret.steeringAngle) > 120.:
     
