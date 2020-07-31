@@ -102,6 +102,7 @@ struct CarEvent @0x9b1657f34caf3ad3 {
     leftLCAbsm @77;
     preventLCA @78;
     turningIndicatorOn @79;
+    ldwPermanent @80;
   }
 }
 
