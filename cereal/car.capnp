@@ -102,6 +102,7 @@ struct CarEvent @0x9b1657f34caf3ad3 {
     leftLCAbsm @77;
     preventLCA @78;
     turningIndicatorOn @79;
+    ldwPermanent @80;
   }
 }
 
@@ -168,6 +169,11 @@ struct CarState {
   # blindspot sensors
   leftBlindspot @33 :Bool; # Is there something blocking the left lane change
   rightBlindspot @34 :Bool; # Is there something blocking the right lane change
+
+  # LKAS
+  # ldw warning
+  lkasLdwsRhWarning @37 :Bool;
+  lkasLdwsLhWarning @38 :Bool;
 
   struct WheelSpeeds {
     # optional wheel speeds
