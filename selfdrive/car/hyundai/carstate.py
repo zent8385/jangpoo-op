@@ -17,8 +17,8 @@ class CarState(CarStateBase):
     self.sas_bus = CP.sasBus
     self.scc_bus = CP.sccBus
 
-    self.leftBlinker = False
-    self.rightBlinker = False
+    self.left_blinker = False
+    self.right_blinker = False
     self.lkas_button_on = True
 
 
@@ -27,8 +27,8 @@ class CarState(CarStateBase):
     cp_sas = cp2 if self.sas_bus else cp
     cp_scc = cp2 if self.scc_bus == 1 else cp_cam if self.scc_bus == 2 else cp
 
-    self.prev_left_blinker = self.leftBlinker
-    self.prev_right_blinker = self.rightBlinker
+    self.prev_left_blinker = self.left_blinker
+    self.prev_right_blinker = self.right_blinker
     self.prev_lkas_button_on = self.lkas_button_on
 
     ret = car.CarState.new_message()
@@ -53,8 +53,8 @@ class CarState(CarStateBase):
     ret.yawRate = cp.vl["ESP12"]['YAW_RATE']
     
 
-    ret.leftBlinker = self.leftBlinker = cp.vl["CGW1"]['CF_Gway_TSigLHSw'] != 0
-    ret.rightBlinker = self.rightBlinker = cp.vl["CGW1"]['CF_Gway_TSigRHSw'] != 0
+    ret.leftBlinker = self.left_blinker = cp.vl["CGW1"]['CF_Gway_TSigLHSw'] != 0
+    ret.rightBlinker = self.right_blinker = cp.vl["CGW1"]['CF_Gway_TSigRHSw'] != 0
 
     ret.steeringTorque = cp_mdps.vl["MDPS12"]['CR_Mdps_StrColTq']
     ret.steeringTorqueEps = cp_mdps.vl["MDPS12"]['CR_Mdps_OutTq']

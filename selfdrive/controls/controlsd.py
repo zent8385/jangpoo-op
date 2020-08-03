@@ -238,7 +238,7 @@ def state_control(frame, rcv_frame, plan, path_plan, CS, CP, state, events, v_cr
   enabled = isEnabled(state)
   active = isActive(state)
 
-  if CS.leftBlinker or CS.rightBlinker:
+  if CS.left_blinker or CS.right_blinker:
     last_blinker_frame = frame
 
   if plan.fcw:
