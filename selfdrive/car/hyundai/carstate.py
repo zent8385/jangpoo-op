@@ -16,6 +16,7 @@ class CarState(CarStateBase):
     self.mdps_bus = CP.mdpsBus
     self.sas_bus = CP.sasBus
     self.scc_bus = CP.sccBus
+
     self.leftBlinker = False
     self.rightBlinker = False
     self.lkas_button_on = True

@@ -349,16 +349,16 @@ class CarInterface(CarInterfaceBase):
     #0.7.3 atom
     buttonEvents = []
 
-    if self.CS.left_blinker_on != self.CS.prev_left_blinker_on:
+    if self.CS.leftBlinker != self.CS.prev_left_blinker:
       be = car.CarState.ButtonEvent.new_message()
       be.type = ButtonType.leftBlinker
-      be.pressed = self.CS.left_blinker_on != 0
+      be.pressed = self.CS.leftBlinker != 0
       buttonEvents.append(be)
 
-    if self.CS.right_blinker_on != self.CS.prev_right_blinker_on:
+    if self.CS.rightBlinker != self.CS.prev_right_blinker:
       be = car.CarState.ButtonEvent.new_message()
       be.type = ButtonType.rightBlinker
-      be.pressed = self.CS.right_blinker_on != 0
+      be.pressed = self.CS.rightBlinker != 0
       buttonEvents.append(be)
 
 
