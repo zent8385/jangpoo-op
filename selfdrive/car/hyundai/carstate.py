@@ -18,6 +18,7 @@ class CarState(CarStateBase):
     self.mdps_bus = CP.mdpsBus
     self.sas_bus = CP.sasBus
     self.scc_bus = CP.sccBus
+
     self.leftBlinker = False
     self.rightBlinker = False
     self.lkas_button_on = True
@@ -54,8 +55,11 @@ class CarState(CarStateBase):
     ret.steeringAngle = cp_sas.vl["SAS11"]['SAS_Angle']
     ret.steeringRate = cp_sas.vl["SAS11"]['SAS_Speed']
     ret.yawRate = cp.vl["ESP12"]['YAW_RATE']
+    
+
     ret.leftBlinker = self.leftBlinker = cp.vl["CGW1"]['CF_Gway_TSigLHSw'] != 0
     ret.rightBlinker = self.rightBlinker = cp.vl["CGW1"]['CF_Gway_TSigRHSw'] != 0
+
     ret.steeringTorque = cp_mdps.vl["MDPS12"]['CR_Mdps_StrColTq']
     ret.steeringTorqueEps = cp_mdps.vl["MDPS12"]['CR_Mdps_OutTq']
     ret.steeringPressed = abs(ret.steeringTorque) > STEER_THRESHOLD

@@ -7,12 +7,17 @@ from selfdrive.car import STD_CARGO_KG, scale_rot_inertia, scale_tire_stiffness,
 from selfdrive.car.interfaces import CarInterfaceBase
 
 GearShifter = car.CarState.GearShifter
+ButtonType = car.CarState.ButtonEvent.Type
 
 class CarInterface(CarInterfaceBase):
   def __init__(self, CP, CarController, CarState):
     super().__init__(CP, CarController, CarState)
     self.cp2 = self.CS.get_can2_parser(CP)
     self.lkas_button_alert = False
+
+    #janpoo6427
+    self.blinker_status = 0
+    self.blinker_timer = 0
 
   @staticmethod
   def compute_gb(accel, speed):
@@ -288,10 +293,40 @@ class CarInterface(CarInterfaceBase):
 
     # most HKG cars has no long control, it is safer and easier to engage by main on
     ret.cruiseState.enabled = ret.cruiseState.available if not self.CC.longcontrol else ret.cruiseState.enabled
+    
     # some Optima only has blinker flash signal
-    if self.CP.carFingerprint == CAR.KIA_OPTIMA:
+    if self.CP.carFingerprint in [CAR.KIA_OPTIMA]:
       ret.leftBlinker = self.CS.left_blinker_flash or self.CS.prev_left_blinker and self.CC.turning_signal_timer
       ret.rightBlinker = self.CS.right_blinker_flash or self.CS.prev_right_blinker and self.CC.turning_signal_timer
+
+    # 0.7.3 atom 
+    if self.CS.left_blinker_flash and self.CS.right_blinker_flash:
+      self.blinker_status = 3
+      self.blinker_timer = 50
+    elif self.CS.left_blinker_flash:
+      self.blinker_status = 2
+      self.blinker_timer = 50
+    elif self.CS.right_blinker_flash:
+      self.blinker_status = 1
+      self.blinker_timer = 50
+    elif not self.blinker_timer:
+      self.blinker_status = 0
+
+    if self.blinker_status == 3:
+      ret.leftBlinker = bool(self.blinker_timer)
+      ret.rightBlinker = bool(self.blinker_timer)
+    elif self.blinker_status == 2:
+      ret.rightBlinker = False
+      ret.leftBlinker = bool(self.blinker_timer)
+    elif self.blinker_status == 1:
+      ret.leftBlinker = False
+      ret.rightBlinker = bool(self.blinker_timer)
+    else:
+      ret.leftBlinker = False
+      ret.rightBlinker = False
+
+    if self.blinker_timer:
+      self.blinker_timer -= 1
 
     # turning indicator alert logic
     if (ret.leftBlinker or ret.rightBlinker or self.CC.turning_signal_timer) and ret.vEgo < 16.7:
@@ -310,7 +345,25 @@ class CarInterface(CarInterfaceBase):
     if ret.vEgo > (self.CP.minSteerSpeed + 0.7):
       self.low_speed_alert = False
 
-    ret.buttonEvents = []
+
+    #0.7.3 atom
+    buttonEvents = []
+
+    if self.CS.leftBlinker != self.CS.prev_left_blinker:
+      be = car.CarState.ButtonEvent.new_message()
+      be.type = ButtonType.leftBlinker
+      be.pressed = self.CS.leftBlinker != 0
+      buttonEvents.append(be)
+
+    if self.CS.rightBlinker != self.CS.prev_right_blinker:
+      be = car.CarState.ButtonEvent.new_message()
+      be.type = ButtonType.rightBlinker
+      be.pressed = self.CS.rightBlinker != 0
+      buttonEvents.append(be)
+
+
+    ret.buttonEvents = buttonEvents
+
 
     events = []
     if not ret.gearShifter == GearShifter.drive:
@@ -361,6 +414,7 @@ class CarInterface(CarInterfaceBase):
       events.append(create_event('leftLCAbsm', [ET.WARNING]))
 
     ret.events = events
+    
 
     self.CS.out = ret.as_reader()
     return self.CS.out
