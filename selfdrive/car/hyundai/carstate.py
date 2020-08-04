@@ -89,6 +89,7 @@ class CarState(CarStateBase):
       speed_conv = CV.MPH_TO_MS if self.is_set_speed_in_mph else CV.KPH_TO_MS
       
       #ret.cruiseState.modeSel, speed_kph = self.SC.update_cruiseSW( self )
+      # mile 속도 기준
       ret.cruiseState.modeSel, speed = self.SC.update_cruiseSW( self )
 
       if self.car_fingerprint in FEATURES["none_scc"]:

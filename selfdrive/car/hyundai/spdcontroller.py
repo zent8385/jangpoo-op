@@ -105,31 +105,36 @@ class SpdController():
         self.cruise_btn_time = 0
         
         #carstate로 옮기기 고려
+        #->가능한 값이 변하는 것은 해당 파일 내에서만 쓰는 것으로
         self.prev_VSetDis = 0
+        self.VSetDis = 0
 
 
     def update_cruiseSW(self, CS ):
         #cruise_set_speed = self.cruise_set_speed
-        set_speed = self.cruise_set_speed
+        #mile 속도 기준
+
+        set_speed = CS.out.cruiseState.speed
+        #set_speed = self.cruise_set_speed
 
         #if CS.cruise_set_speed:
-        if self.cruise_set_speed:
+        if CS.out.cruiseState.speed:
             self.prev_VSetDis = set_speed
 
         #delta_vsetdis = 0
         if CS.out.cruiseState.enabled:
 
             #크루즈 auto set 적용
-            if self.cruise_set_mode ==3  and not self.cruise_set_speed and self.prev_VSetDis:
-                set_speed = int(self.prev_VSetDis)
+            if self.cruise_set_mode ==3  and not CS.out.cruiseState.speed and self.prev_VSetDis:
+                set_speed = self.prev_VSetDis
 
                   #브레이크 최우선
             if CS.out.brakePressed:
                 self.cruise_set_first = 1
                 set_speed = 0
-                CS.VSetDis = 0
+                self.VSetDis = 0
             #elif CS.out.clu_Vanz> 30:    
-            elif CS.out.vEgo> 7.8: #30: 30km/h
+            elif CS.out.vEgo > 7.8: #30: 30km/h
                 #버튼 한번 누름
                 if self.prev_clu_CruiseSwState !=  CS.out.cruiseButtons:
                     self.cruise_btn_time = 0
@@ -137,20 +142,20 @@ class SpdController():
                     if self.prev_clu_CruiseSwState == 1:   # up
                         if self.cruise_set_first:
                             self.cruise_set_first = 0
-                            set_speed =  int(self.prev_VSetDis)
+                            set_speed =  self.prev_VSetDis
                         else:
-                            set_speed += 0.5 #2km/h #1
+                            set_speed += 0.55 #2km/h #1
                     elif self.prev_clu_CruiseSwState == 2:  # dn
                         if self.cruise_set_first:
                             self.cruise_set_first = 0
-                            set_speed =  int(CS.out.vEgo)
+                            set_speed =  CS.out.vEgo
                         else:
-                            set_speed -= 0.5 #2km/h #1
+                            set_speed -= 0.55 #2km/h #1
                     #cancel 버튼 누름 또는 크루즈 상태에 따른 cruise set 초기화
                     elif self.prev_clu_CruiseSwState == 4:  # cancel /brake/ cruise off
                         self.cruise_set_first = 1
                         set_speed = 0
-                        CS.VSetDis = 0
+                        self.VSetDis = 0
 
                     self.prev_clu_CruiseSwState =  CS.out.cruiseButtons
 
@@ -166,22 +171,23 @@ class SpdController():
                         if self.prev_clu_CruiseSwState == 1:   # up
                             if self.cruise_set_first:
                                 self.cruise_set_first = 0
-                                set_speed =  int(self.prev_VSetDis)
+                                set_speed =  self.prev_VSetDis
                             else:
-                                set_speed =  int(CS.out.vEgo)
+                                set_speed =  CS.out.vEgo
                         elif self.prev_clu_CruiseSwState == 2:  # dn
                             if self.cruise_set_first:
                                 self.cruise_set_first = 0
-                                set_speed =  int(CS.out.vEgo)
-                                CS.VSetDis = set_speed
+                                set_speed =  CS.out.vEgo
+                                self.VSetDis = set_speed
                             else:              
-                                set_speed =  int(CS.out.vEgo)
+                                set_speed =  CS.out.vEgo
                         #cancel 버튼 누름 또는 크루즈 상태에 따른 cruise set 초기화
                         elif self.prev_clu_CruiseSwState == 4:  # cancel /brake/ cruise off
                             self.cruise_set_first = 1
                             set_speed = 0
-                            CS.VSetDis = 0
+                            self.VSetDis = 0
                             self.prev_VSetDis = 0 #int(self.VSetDis)
+                            #set_speed = self.VSetDis = self.prev_VSetDis = 0 #int(self.VSetDis)
 
             self.prev_clu_CruiseSwState =  CS.out.cruiseButtons
             
@@ -199,18 +205,18 @@ class SpdController():
             #CS.VSetDis = 0
             set_speed = 0 #self.VSetDis
 
-            if self.prev_clu_CruiseSwState != CS.cruise_buttons:  # MODE 전환.
-                if CS.cruise_buttons == Buttons.CANCEL: 
+            if self.prev_clu_CruiseSwState != CS.out.cruiseState.cruiseButtons:  # MODE 전환.
+                if CS.out.cruiseState.cruiseButtons == Buttons.CANCEL: 
                     self.cruise_set_mode += 1
                 if self.cruise_set_mode > 5:
                     self.cruise_set_mode = 0
-                self.prev_clu_CruiseSwState = CS.cruise_buttons
+                self.prev_clu_CruiseSwState = CS.out.cruiseState.cruiseButtons
 
 
         if set_speed < 7.8 #30: 30km/h
             set_speed = 0
 
-        self.cruise_set_speed = set_speedh
+        #self.cruise_set_speed = set_speedh
         
         return self.cruise_set_mode, set_speed
 
@@ -465,7 +471,9 @@ class SpdController():
         #    dRel = CS.lead_distance
         #    vRel = CS.lead_objspd
 
-        dst_lead_distance = (CS.clu_Vanz*cv_Raio)   # 유지 거리.
+        #dst_lead_distance = (CS.clu_Vanz*cv_Raio)   # 유지 거리.
+        #마일로 변경
+        dst_lead_distance = (CS.out.vEgo * CV.KPH_TO_MS *cv_Raio)   # 유지 거리.
 
         #if dst_lead_distance > 100:
         #    dst_lead_distance = 100
