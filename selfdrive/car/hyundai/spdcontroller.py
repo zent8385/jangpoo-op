@@ -136,7 +136,7 @@ class SpdController():
             #elif CS.out.clu_Vanz> 30:    
             elif CS.out.vEgo > 7.8: #30: 30km/h
                 #버튼 한번 누름
-                if self.prev_clu_CruiseSwState !=  CS.out.cruiseButtons:
+                if self.prev_clu_CruiseSwState !=  CS.out.cruiseState.cruiseButtons:
                     self.cruise_btn_time = 0
                 
                     if self.prev_clu_CruiseSwState == 1:   # up
@@ -157,10 +157,10 @@ class SpdController():
                         set_speed = 0
                         self.VSetDis = 0
 
-                    self.prev_clu_CruiseSwState =  CS.out.cruiseButtons
+                    self.prev_clu_CruiseSwState =  CS.out.cruiseState.cruiseButtons
 
                 #버튼을 누르고 있는 동안
-                elif self.prev_clu_CruiseSwState ==  CS.out.cruiseButtons:
+                elif self.prev_clu_CruiseSwState ==  CS.out.cruiseState.cruiseButtons:
                     #100ms 이내이면 패스
                     if self.cruise_btn_time < 100:
                         #타이머 시간동안 작동 안함
@@ -189,7 +189,7 @@ class SpdController():
                             self.prev_VSetDis = 0 #int(self.VSetDis)
                             #set_speed = self.VSetDis = self.prev_VSetDis = 0 #int(self.VSetDis)
 
-            self.prev_clu_CruiseSwState =  CS.out.cruiseButtons
+            self.prev_clu_CruiseSwState =  CS.out.cruiseState.cruiseButtons
             
             #순정 크루즈 속도정보가 제공 받을 수 있을때 동기화를 위한 로직
             #elif self.clu_CruiseSwState and delta_vsetdis > 0:
