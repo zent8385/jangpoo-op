@@ -134,10 +134,11 @@ class SpdController():
                 set_speed = 0
                 self.VSetDis = 0
             #elif CS.out.clu_Vanz> 30:    
-            elif CS.out.vEgo > 7.8: #30: 30km/h
+            else:
+            #elif CS.out.vEgo > 7.8: #30: 30km/h
                 #버튼 한번 누름
                 if self.prev_clu_CruiseSwState !=  CS.out.cruiseState.cruiseButtons:
-                    print("버튼 누름 "+ str(self.prev_clu_CruiseSwState))
+                    print("버튼 누름 "+ str(self.prev_clu_CruiseSwState) + " " + str(CS.out.cruiseState.cruiseButtons))
                     self.cruise_btn_time = 0
                 
                     if self.prev_clu_CruiseSwState == 1:   # up
@@ -160,7 +161,7 @@ class SpdController():
 
                 #버튼을 누르고 있는 동안
                 elif self.prev_clu_CruiseSwState ==  CS.out.cruiseState.cruiseButtons:
-                    print("버튼 연속 누름 " + str(self.prev_clu_CruiseSwState))
+                    print("버튼 연속 누름 "+ str(self.prev_clu_CruiseSwState) + " " + str(CS.out.cruiseState.cruiseButtons))
                     #100ms 이내이면 패스
                     if self.cruise_btn_time < 100:
                         #타이머 시간동안 작동 안함
