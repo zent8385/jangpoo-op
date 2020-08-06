@@ -217,8 +217,8 @@ class SpdController():
         self.prev_clu_CruiseSwState = CS.out.cruiseState.cluCruiseSwState
 
 
-        if set_speed < 7.8: #30: 30km/h
-            set_speed = 0
+        #if set_speed < 7.8: #30: 30km/h
+        #    set_speed = 0
 
         #self.cruise_set_speed = set_speedh
         
