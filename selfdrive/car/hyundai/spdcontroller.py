@@ -111,6 +111,7 @@ class SpdController():
 
 
     def update_cruiseSW(self, CS ):
+        print(str(CS.out.cruiseState.cluCruiseSwState))
         #cruise_set_speed = self.cruise_set_speed
         #mile 속도 기준
 
