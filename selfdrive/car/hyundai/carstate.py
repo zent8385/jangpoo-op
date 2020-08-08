@@ -48,6 +48,7 @@ class CarState(CarStateBase):
     ret.wheelSpeeds.rr = cp.vl["WHL_SPD11"]['WHL_SPD_RR'] * CV.KPH_TO_MS
     ret.vEgoRaw = (ret.wheelSpeeds.fl + ret.wheelSpeeds.fr + ret.wheelSpeeds.rl + ret.wheelSpeeds.rr) / 4.
     ret.vEgo, ret.aEgo = self.update_speed_kf(ret.vEgoRaw)
+    ret.vEgo_kph = ret.vEgo * CV.MS_TO_KPH
 
     
     ret.standstill = ret.vEgoRaw < 0.1
@@ -254,6 +255,7 @@ class CarState(CarStateBase):
       ("ACCEnable", "TCS13", 0),
       ("BrakeLight", "TCS13", 0),
       ("DriverBraking", "TCS13", 0),
+      ("DriverOverride", "TCS13", 0),
 
       ("ESC_Off_Step", "TCS15", 0),
 
