@@ -3,6 +3,8 @@ from selfdrive.car.hyundai.values import DBC, STEER_THRESHOLD, FEATURES
 from selfdrive.car.interfaces import CarStateBase
 from opendbc.can.parser import CANParser
 from selfdrive.config import Conversions as CV
+from selfdrive.car.hyundai.spdcontroller import SpdController
+
 
 GearShifter = car.CarState.GearShifter
 
@@ -20,6 +22,8 @@ class CarState(CarStateBase):
     self.left_blinker = False
     self.right_blinker = False
     self.lkas_button_on = True
+
+    self.SC = SpdController()
 
 
   def update(self, cp, cp2, cp_cam):
@@ -71,14 +75,35 @@ class CarState(CarStateBase):
       ret.cruiseState.available = (cp_scc.vl["SCC11"]["MainMode_ACC"] != 0) if not self.no_radar else \
                                               cp.vl['EMS16']['CRUISE_LAMP_M']
 
+    #janpoo6427
+    #self.VSetDis = cp_scc.vl["SCC11"]['VSetDis']
+
     ret.cruiseState.standstill = cp_scc.vl["SCC11"]['SCCInfoDisplay'] == 4. if not self.no_radar else False
+
+    ret.cruiseState.cluCruiseSwState = cp.vl["CLU11"]["CF_Clu_CruiseSwState"]
+    print("CF_Clu_CruiseSwState "+ str(ret.cruiseState.cluCruiseSwState), end= ' ')
+
     self.is_set_speed_in_mph = int(cp.vl["CLU11"]["CF_Clu_SPEED_UNIT"])
+
+    
     if ret.cruiseState.enabled:
       speed_conv = CV.MPH_TO_MS if self.is_set_speed_in_mph else CV.KPH_TO_MS
-      ret.cruiseState.speed = cp_scc.vl["SCC11"]['VSetDis'] * speed_conv if not self.no_radar else \
+      
+      #ret.cruiseState.modeSel, speed_kph = self.SC.update_cruiseSW( self )
+      # mile 속도 기준
+      ret.cruiseState.modeSel, speed = self.SC.update_cruiseSW( self )
+
+      if self.car_fingerprint in FEATURES["none_scc"]:
+        #ret.cruiseState.speed = speed_kph * speed_conv # CV.KPH_TO_MS
+        ret.cruiseState.speed = speed
+        #ret.cruiseState.speed_kph = speed_kph
+      else:
+        ret.cruiseState.speed = cp_scc.vl["SCC11"]['VSetDis'] * speed_conv if not self.no_radar else \
                                          (cp.vl["LVR12"]["CF_Lvr_CruiseSet"] * speed_conv)
+        #ret.cruiseState.speed_kph = cp_scc.vl["SCC11"]['VSetDis']
     else:
       ret.cruiseState.speed = 0
+      
 
     # TODO: Find brake pressure
     ret.brake = 0
