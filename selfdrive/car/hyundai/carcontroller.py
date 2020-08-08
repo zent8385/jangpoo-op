@@ -6,6 +6,7 @@ from selfdrive.car.hyundai.hyundaican import create_lkas11, create_clu11, create
 from selfdrive.car.hyundai.values import Buttons, SteerLimitParams, CAR
 from opendbc.can.packer import CANPacker
 from selfdrive.config import Conversions as CV
+from selfdrive.car.hyundai.spdcontroller  import SpdController
 
 VisualAlert = car.CarControl.HUDControl.VisualAlert
 
@@ -70,10 +71,19 @@ class CarController():
     self.turning_signal_timer = 0
     self.lkas_button_on = True
     self.longcontrol = False #TODO: make auto
+    
+    self.SC = SpdController()
+    self.sc_wait_timer2 = 0
+    self.sc_active_timer2 = 0     
+    self.sc_btn_type = Buttons.NONE
+    self.sc_clu_speed = 0
+    self.speed_control_enabled = 1
+
 
   def update(self, enabled, CS, frame, actuators, pcm_cancel_cmd, visual_alert,
-             left_lane, right_lane, left_lane_depart, right_lane_depart):
+             left_lane, right_lane, left_lane_depart, right_lane_depart, sm, LaC):
 
+    path_plan = sm['pathPlan']
     # *** compute control surfaces ***
 
     # gas and brake
@@ -167,6 +177,57 @@ class CarController():
     # reset lead distnce after the car starts moving
     elif self.last_lead_distance != 0:
       self.last_lead_distance = 0  
+
+    elif CS.out.driverOverride == 2 or not CS.out.cruiseState.enabled or CS.out.cluCruiseSwState == 1 or CS.out.cluCruiseSwState == 2:
+      #self.model_speed = 300
+      self.resume_cnt = 0
+      self.sc_btn_type = Buttons.NONE
+      self.sc_wait_timer2 = 10
+      self.sc_active_timer2 = 0
+    elif self.sc_wait_timer2:
+      self.sc_wait_timer2 -= 1
+
+    #stock 모드가 아닐 경우에만 반영
+    elif self.speed_control_enabled and CS.out.cruiseState.modeSel != 0:
+      #acc_mode, clu_speed = self.long_speed_cntrl( v_ego_kph, CS, actuators )
+      
+      
+      #btn_type, clu_speed = self.SC.update2(v_ego_kph, CS, sm, actuators, dRel, yRel, vRel, LaC.v_curvature )   # speed controller spdcontroller.py
+      #btn_type, clu_speed = self.SC.update2(CS, sm, LaC.v_curvature )   # speed controller spdcontroller.py
+      btn_type = 0 
+      clu_speed = 0
+
+      if CS.out.vEgo * CV.MS_TO_KPH < 5: #5km/h:
+        self.sc_btn_type = Buttons.NONE
+      elif self.sc_btn_type != Buttons.NONE:
+        pass
+      elif btn_type != Buttons.NONE:
+        self.resume_cnt = 0
+        self.sc_active_timer2 = 0
+        self.sc_btn_type = btn_type
+        self.sc_clu_speed = clu_speed
+
+      if self.sc_btn_type != Buttons.NONE:
+        self.sc_active_timer2 += 1
+        if self.sc_active_timer2 > 10:
+          self.sc_wait_timer2 = 5
+          self.resume_cnt = 0
+          self.sc_active_timer2 = 0
+          self.sc_btn_type = Buttons.NONE          
+        else:
+          # 0, 1, 2 모드에서는  Set 상태에서만 가감속 전달
+          #if CS.cruise_set:
+            #self.traceCC.add( 'sc_btn_type={}  clu_speed={}  set={:.0f} vanz={:.0f}'.format( self.sc_btn_type, self.sc_clu_speed,  CS.VSetDis, clu11_speed  ) )
+            #print("cruise set-> "+ str(self.sc_btn_type))
+            #can_sends.append(create_clu11(self.packer, CS.scc_bus, CS.clu11, self.sc_btn_type, self.sc_clu_speed, self.resume_cnt))
+          # Set이 아니면서 3 모드이면 가감속 신호 전달
+          #elif CS.cruise_set_mode ==3 and CS.clu_Vanz > 30:
+          print("cruise auto set-> "+ str(self.sc_btn_type))
+            #can_sends.append(create_clu11(self.packer, CS.scc_bus, CS.clu11, self.sc_btn_type, self.sc_clu_speed, self.resume_cnt))
+
+          self.resume_cnt += 1
+
+
 
     # 20 Hz LFA MFA message
     if frame % 5 == 0 and self.car_fingerprint in [CAR.SONATA, CAR.PALISADE, CAR.SONATA_H, CAR.SANTA_FE]:

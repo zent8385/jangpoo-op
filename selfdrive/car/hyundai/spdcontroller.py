@@ -111,23 +111,22 @@ class SpdController():
 
 
     def update_cruiseSW(self, CS ):
-        print(str(CS.out.cruiseState.cluCruiseSwState))
-        #cruise_set_speed = self.cruise_set_speed
-        #mile 속도 기준
+        
+        
 
-        set_speed = CS.out.cruiseState.speed
+        set_speed_kph = CS.out.cruiseState.speed * CV.MS_TO_KPH
         #set_speed = self.cruise_set_speed
 
         #if CS.cruise_set_speed:
         if CS.out.cruiseState.speed:
-            self.prev_VSetDis = set_speed
+            self.prev_VSetDis = set_speed_kph
 
         #delta_vsetdis = 0
         if CS.out.cruiseState.enabled:
 
             #크루즈 auto set 적용
             if self.cruise_set_mode ==3  and not CS.out.cruiseState.speed and self.prev_VSetDis:
-                set_speed = self.prev_VSetDis
+                set_speed_kph = self.prev_VSetDis
 
             #브레이크 최우선
             #if CS.out.brakePressed:
@@ -145,19 +144,19 @@ class SpdController():
                 if self.prev_clu_CruiseSwState == 1:   # up
                     if self.cruise_set_first:
                         self.cruise_set_first = 0
-                        set_speed =  self.prev_VSetDis
+                        set_speed_kph =  self.prev_VSetDis
                     else:
-                        set_speed += 0.55 #2km/h #1
+                        set_speed_kph += 2 #2km/h #1
                 elif self.prev_clu_CruiseSwState == 2:  # dn
                     if self.cruise_set_first:
                         self.cruise_set_first = 0
-                        set_speed =  CS.out.vEgo
+                        set_speed_kph =  CS.out.vEgo * CV.MS_TO_KPH
                     else:
-                        set_speed -= 0.55 #2km/h #1
+                        set_speed_kph -= 2 #2km/h #1
                 #cancel 버튼 누름 또는 크루즈 상태에 따른 cruise set 초기화
                 elif self.prev_clu_CruiseSwState == 4:  # cancel /brake/ cruise off
                     self.cruise_set_first = 1
-                    set_speed = 0
+                    set_speed_kph = 0
                     self.VSetDis = 0
 
             #버튼을 누르고 있는 동안
@@ -173,20 +172,20 @@ class SpdController():
                     if self.prev_clu_CruiseSwState == 1:   # up
                         if self.cruise_set_first:
                             self.cruise_set_first = 0
-                            set_speed =  self.prev_VSetDis
+                            set_speed_kph =  self.prev_VSetDis
                         else:
-                            set_speed =  CS.out.vEgo
+                            set_speed_kph =  CS.out.vEgo * CV.MS_TO_KPH
                     elif self.prev_clu_CruiseSwState == 2:  # dn
                         if self.cruise_set_first:
                             self.cruise_set_first = 0
-                            set_speed =  CS.out.vEgo
-                            self.VSetDis = set_speed
+                            set_speed_kph =  CS.out.vEgo * CV.MS_TO_KPH
+                            self.VSetDis = set_speed_kph
                         else:              
-                            set_speed =  CS.out.vEgo
+                            set_speed_kph =  CS.out.vEgo * CV.MS_TO_KPH
                     #cancel 버튼 누름 또는 크루즈 상태에 따른 cruise set 초기화
                     elif self.prev_clu_CruiseSwState == 4:  # cancel /brake/ cruise off
                         self.cruise_set_first = 1
-                        set_speed = 0
+                        set_speed_kph = 0
                         self.VSetDis = 0
                         self.prev_VSetDis = 0 #int(self.VSetDis)
                         #set_speed = self.VSetDis = self.prev_VSetDis = 0 #int(self.VSetDis)
@@ -205,7 +204,7 @@ class SpdController():
             #set_speed = CS.VSetDis
             self.prev_VSetDis = 0 #int(self.VSetDis)
             #CS.VSetDis = 0
-            set_speed = 0 #self.VSetDis
+            set_speed_kph = 0 #self.VSetDis
 
             if self.prev_clu_CruiseSwState != CS.out.cruiseState.cluCruiseSwState:  # MODE 전환.
                 if CS.out.cruiseState.cluCruiseSwState == Buttons.CANCEL: 
@@ -222,7 +221,7 @@ class SpdController():
 
         #self.cruise_set_speed = set_speedh
         
-        return self.cruise_set_mode, set_speed
+        return self.cruise_set_mode, set_speed_kph
 
 
     def reset(self):
@@ -273,7 +272,7 @@ class SpdController():
             dRel = float(lead_msg.dist - RADAR_TO_CAMERA)
             yRel = float(lead_msg.relY)
             vRel = float(lead_msg.relVel)
-            vLead = float(CS.v_ego + lead_msg.relVel)
+            vLead = float(CS.out.vEgo + lead_msg.relVel)
         else:
             dRel = 150
             yRel = 0
@@ -285,12 +284,12 @@ class SpdController():
         time = int(set_time)
         
         #로직상 delta_speed는 0 또는 -1 1 차이 수준 밖에 예상 안됨
-        delta_speed = CS.VSetDis - CS.clu_Vanz
+        delta_speed = self.VSetDis - (CS.out.vEgo * CV.MS_TO_KPH)
 
 
         #set_speed = int(CS.VSetDis) + add_val
         #ver4
-        set_speed = int(CS.clu_Vanz) + add_val
+        set_speed = float(CS.out.vEgo * CV.MS_TO_KPH) + add_val
         
         if add_val > 0:  # 증가
             if delta_speed > safety_dis:
@@ -586,6 +585,134 @@ class SpdController():
 
         return lead_wait_cmd, lead_set_speed
 
+    def update_lead3(self, CS,  dRel, yRel, vRel):
+        lead_set_speed = CS.cruiseState.speed * CV.MS_TO_KPH
+        lead_wait_cmd = 600
+        self.seq_step_debug = 0
+
+																			 
+        if int(CS.cruiseState.modeSel) not in [2, 3]:
+            return lead_wait_cmd, lead_set_speed
+
+        self.seq_step_debug = 1
+		
+										  
+        #dRel, yRel, vRel = self.get_lead( sm, CS )
+        #if CS.lead_distance < 150:
+        #    dRel = CS.lead_distance
+        #    vRel = CS.lead_objspd
+
+        #dst_lead_distance = (CS.clu_Vanz*cv_Raio)   # 유지 거리.
+        #마일로 변경
+        dst_lead_distance = (CS.out.vEgo * CV.KPH_TO_MS *cv_Raio)   # 유지 거리.
+
+        #if dst_lead_distance > 100:
+        #    dst_lead_distance = 100
+        #elif dst_lead_distance < 50:
+        #    dst_lead_distance = 50
+ 
+        if dst_lead_distance < 30:
+            dst_lead_distance = 30							 
+
+
+        if dRel < 150:
+            self.time_no_lean = 0
+            d_delta = dRel - dst_lead_distance
+            lead_objspd = vRel  # 선행차량 상대속도.
+        else:
+            d_delta = 0
+            lead_objspd = 0
+
+        # 가속이후 속도 설정.
+        if CS.out.driverAccTime:
+          lead_set_speed = CS.out.vEgo * CV.MS_TO_KPH
+          lead_wait_cmd = 100
+          self.seq_step_debug = 2
+        elif CS.VSetDis > 70 and lead_objspd < -20:
+            self.seq_step_debug = 3
+            lead_wait_cmd, lead_set_speed = self.get_tm_speed(CS, 15, -6) #-2)
+        elif CS.VSetDis > 60 and lead_objspd < -15:
+            self.seq_step_debug = 4
+            lead_wait_cmd, lead_set_speed = self.get_tm_speed(CS, 15, -6) #-2)     
+
+        # 1. 거리 유지.
+ 
+        elif d_delta < 0:
+            # 선행 차량이 가까이 있으면.
+            dVanz = dRel - CS.clu_Vanz
+
+            self.seq_step_debug = 5
+																  
+            if lead_objspd >= 0:    # 속도 유지 시점 결정.
+                self.seq_step_debug = 6
+                if self.VSetDis > (CS.clu_Vanz + 10):
+                    lead_wait_cmd = 200
+                    lead_set_speed = CS.VSetDis - 1  # CS.clu_Vanz + 5
+                    if lead_set_speed < 40:
+                        lead_set_speed = 30 #30
+                else:
+                    lead_set_speed = int(self.VSetDis)
+																			
+            elif lead_objspd < -30 or (dRel < 50 and self.VSetDis > 60 and lead_objspd < -5):
+                self.seq_step_debug = 7
+                lead_wait_cmd, lead_set_speed = self.get_tm_speed(CS, 15, -6) #-2)
+            elif lead_objspd < -20 or (dRel < 70 and self.VSetDis > 60 and lead_objspd < -5):
+                self.seq_step_debug = 8
+                lead_wait_cmd, lead_set_speed = self.get_tm_speed(CS, 20, -6) #-2)
+            elif lead_objspd < -10:
+                self.seq_step_debug = 9
+                lead_wait_cmd, lead_set_speed = self.get_tm_speed(CS, 50, -3) #-1)
+            elif lead_objspd < 0:
+                self.seq_step_debug = 10
+                lead_wait_cmd, lead_set_speed = self.get_tm_speed(CS, 80, -3) #-1)
+            else:
+                self.seq_step_debug = 11
+                lead_set_speed = int(self.VSetDis)
+
+        # 선행차량이 멀리 있으면.
+        elif lead_objspd < -20:
+									
+            self.seq_step_debug = 12
+            lead_wait_cmd, lead_set_speed = self.get_tm_speed(CS, 15, -6) #-2)
+        elif lead_objspd < -10:
+            self.seq_step_debug = 13
+            lead_wait_cmd, lead_set_speed = self.get_tm_speed(CS, 50, -3) #-1)
+        elif lead_objspd < -5:
+            self.seq_step_debug = 14
+            lead_wait_cmd, lead_set_speed = self.get_tm_speed(CS, 150, -3) #-1)
+        elif lead_objspd < -1:
+            self.seq_step_debug = 15
+            lead_wait_cmd, lead_set_speed = self.get_tm_speed(CS, 200, -3) #-1)
+												   
+        elif CS.out.cruiseState.speed  > CS.out.vEgo:
+            self.seq_step_debug = 16
+            # 선행 차량이 가속하고 있으면.
+            if dRel >= 150:
+                self.seq_step_debug = 17
+                lead_wait_cmd, lead_set_speed = self.get_tm_speed( CS, 200, 3) #1)
+																			   
+									   
+            elif lead_objspd < cv_Dist:
+                self.seq_step_debug = 18
+                lead_set_speed = int(self.VSetDis)
+            elif lead_objspd < 2:
+                self.seq_step_debug = 19
+                lead_wait_cmd, lead_set_speed = self.get_tm_speed(CS, 500, 3) #1)
+            elif lead_objspd < 5:
+                self.seq_step_debug = 20
+                lead_wait_cmd, lead_set_speed = self.get_tm_speed(CS, 300, 3) #1)
+            elif lead_objspd < 10:
+                self.seq_step_debug = 21
+                lead_wait_cmd, lead_set_speed = self.get_tm_speed(CS, 200, 3) #1)
+            elif lead_objspd < 30:
+                self.seq_step_debug = 22
+                lead_wait_cmd, lead_set_speed = self.get_tm_speed(CS, 100, 3)# 1)                
+            else:
+                self.seq_step_debug = 23
+                lead_wait_cmd, lead_set_speed = self.get_tm_speed(CS, 50, 3) #1)
+
+        return lead_wait_cmd, lead_set_speed
+
     def update_curv(self, CS, sm, model_speed):
         wait_time_cmd = 0
         set_speed = CS.cruise_set_speed_kph
@@ -626,6 +753,30 @@ class SpdController():
                    set_speed = model_speed
 
         return wait_time_cmd, set_speed
+
+
+    def update2(self, CS, sm, model_speed):
+        dRel, yRel, vRel = self.get_lead(sm, CS)
+
+        btn_type = Buttons.NONE
+        #lead_1 = sm['radarState'].leadOne
+        long_wait_cmd = 500
+        set_speed = CS.out.cruiseState.speed #마일
+        dec_step_cmd = 0
+        
+        #ver4
+        set_speed_diff = set_speed - self.VSetDis
+
+        if self.long_curv_timer < 600:
+            self.long_curv_timer += 1
+
+         # 선행 차량 거리유지
+        #lead_wait_cmd, lead_set_speed = self.update_lead2( CS,  dRel, yRel, vRel)  
+        # 커브 감속.
+        #curv_wait_cmd, curv_set_speed = self.update_curv(CS, sm, model_speed)
+        print("call spdcontroller")
+        return btn_type, set_speed
+
 
     def update(self, v_ego_kph, CS, sm, actuators, dRel, yRel, vRel, model_speed):
         btn_type = Buttons.NONE

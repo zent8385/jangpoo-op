@@ -91,11 +91,11 @@ class CarState(CarStateBase):
       
       #ret.cruiseState.modeSel, speed_kph = self.SC.update_cruiseSW( self )
       # mile 속도 기준
-      ret.cruiseState.modeSel, speed = self.SC.update_cruiseSW( self )
+      ret.cruiseState.modeSel, speed_kph = self.SC.update_cruiseSW( self )
 
       if self.car_fingerprint in FEATURES["none_scc"]:
         #ret.cruiseState.speed = speed_kph * speed_conv # CV.KPH_TO_MS
-        ret.cruiseState.speed = speed
+        ret.cruiseState.speed = speed_kph * CV.KPH_TO_MS
         #ret.cruiseState.speed_kph = speed_kph
       else:
         ret.cruiseState.speed = cp_scc.vl["SCC11"]['VSetDis'] * speed_conv if not self.no_radar else \
@@ -104,6 +104,18 @@ class CarState(CarStateBase):
     else:
       ret.cruiseState.speed = 0
       
+
+    ret.driverOverride = cp.vl["TCS13"]["DriverOverride"]     # 1 Acc,  2 bracking, 0 Normal
+
+     #운전자 개입
+    if ret.driverOverride == 1:
+      ret.driverAccTime = 100
+    
+
+    #100ms 동안 개입 카운트 -1
+    if ret.driverAccTime:
+      ret.driverAccTime -= 1
+
 
     # TODO: Find brake pressure
     ret.brake = 0

@@ -130,6 +130,10 @@ struct CarState {
   brakePressed @6 :Bool;  # this is user pedal only
   brakeLights @19 :Bool;
 
+  #driveOverride
+  driverOverride @39 :Int16;
+  driverAccTime @40 :Int16;
+
   # steering wheel
   steeringAngle @7 :Float32;       # deg
   steeringRate @15 :Float32;       # deg/s
