@@ -76,8 +76,10 @@ class CarState(CarStateBase):
       ret.cruiseState.available = (cp_scc.vl["SCC11"]["MainMode_ACC"] != 0) if not self.no_radar else \
                                               cp.vl['EMS16']['CRUISE_LAMP_M']
 
+
+
     #janpoo6427
-    #self.VSetDis = cp_scc.vl["SCC11"]['VSetDis']
+    ret.cruiseState.cruiseLampSet = cp.vl['EMS16']['CRUISE_LAMP_S']
 
     ret.cruiseState.standstill = cp_scc.vl["SCC11"]['SCCInfoDisplay'] == 4. if not self.no_radar else False
 

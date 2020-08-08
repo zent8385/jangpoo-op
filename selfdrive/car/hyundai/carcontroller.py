@@ -197,7 +197,7 @@ class CarController():
       btn_type = 0 
       clu_speed = 0
 
-      if CS.out.vEgo * CV.MS_TO_KPH < 5: #5km/h:
+      if CS.out.vEgo_kph < 5: #5km/h:
         self.sc_btn_type = Buttons.NONE
       elif self.sc_btn_type != Buttons.NONE:
         pass
@@ -216,13 +216,13 @@ class CarController():
           self.sc_btn_type = Buttons.NONE          
         else:
           # 0, 1, 2 모드에서는  Set 상태에서만 가감속 전달
-          #if CS.cruise_set:
+          if CS.out.cruiseState.cruiseLampSet:
             #self.traceCC.add( 'sc_btn_type={}  clu_speed={}  set={:.0f} vanz={:.0f}'.format( self.sc_btn_type, self.sc_clu_speed,  CS.VSetDis, clu11_speed  ) )
-            #print("cruise set-> "+ str(self.sc_btn_type))
+            print("cruiseLampSet-> "+ str(self.sc_btn_type))
             #can_sends.append(create_clu11(self.packer, CS.scc_bus, CS.clu11, self.sc_btn_type, self.sc_clu_speed, self.resume_cnt))
           # Set이 아니면서 3 모드이면 가감속 신호 전달
-          #elif CS.cruise_set_mode ==3 and CS.clu_Vanz > 30:
-          print("cruise auto set-> "+ str(self.sc_btn_type))
+          elif CS.out.cruiseState.modeSel ==3 and CS.out.vEgo_kph > 30:
+            print("cruise auto set-> "+ str(self.sc_btn_type))
             #can_sends.append(create_clu11(self.packer, CS.scc_bus, CS.clu11, self.sc_btn_type, self.sc_clu_speed, self.resume_cnt))
 
           self.resume_cnt += 1
