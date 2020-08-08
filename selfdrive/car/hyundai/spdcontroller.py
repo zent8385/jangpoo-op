@@ -150,7 +150,7 @@ class SpdController():
                 elif self.prev_clu_CruiseSwState == 2:  # dn
                     if self.cruise_set_first:
                         self.cruise_set_first = 0
-                        set_speed_kph =  CS.out.vEgo_kph
+                        set_speed_kph =  CS.out.vEgoKph
                     else:
                         set_speed_kph -= 2 #2km/h #1
                 #cancel 버튼 누름 또는 크루즈 상태에 따른 cruise set 초기화
@@ -174,14 +174,14 @@ class SpdController():
                             self.cruise_set_first = 0
                             set_speed_kph =  self.prev_VSetDis
                         else:
-                            set_speed_kph =  CS.out.vEgo_kph
+                            set_speed_kph =  CS.out.vEgoKph
                     elif self.prev_clu_CruiseSwState == 2:  # dn
                         if self.cruise_set_first:
                             self.cruise_set_first = 0
-                            set_speed_kph =  CS.out.vEgo_kph
+                            set_speed_kph =  CS.out.vEgoKph
                             self.VSetDis = set_speed_kph
                         else:              
-                            set_speed_kph =  CS.out.vEgo_kph
+                            set_speed_kph =  CS.out.vEgoKph
                     #cancel 버튼 누름 또는 크루즈 상태에 따른 cruise set 초기화
                     elif self.prev_clu_CruiseSwState == 4:  # cancel /brake/ cruise off
                         self.cruise_set_first = 1
@@ -272,7 +272,7 @@ class SpdController():
             dRel = float(lead_msg.dist - RADAR_TO_CAMERA)
             yRel = float(lead_msg.relY)
             vRel = float(lead_msg.relVel)
-            vLead = float(CS.out.vEgo_kph + lead_msg.relVel)
+            vLead = float(CS.out.vEgoKph + lead_msg.relVel)
         else:
             dRel = 150
             yRel = 0
@@ -284,12 +284,12 @@ class SpdController():
         time = int(set_time)
         
         #로직상 delta_speed는 0 또는 -1 1 차이 수준 밖에 예상 안됨
-        delta_speed = self.VSetDis - CS.out.vEgo_kph
+        delta_speed = self.VSetDis - CS.out.vEgoKph
 
 
         #set_speed = int(CS.VSetDis) + add_val
         #ver4
-        set_speed = CS.out.vEgo_kph + add_val
+        set_speed = CS.out.vEgoKph + add_val
         
         if add_val > 0:  # 증가
             if delta_speed > safety_dis:
@@ -604,7 +604,7 @@ class SpdController():
 
         #dst_lead_distance = (CS.clu_Vanz*cv_Raio)   # 유지 거리.
         #마일로 변경
-        dst_lead_distance = CS.out.vEgo_kph *cv_Raio   # 유지 거리.
+        dst_lead_distance = CS.out.vEgoKph *cv_Raio   # 유지 거리.
 
         #if dst_lead_distance > 100:
         #    dst_lead_distance = 100
@@ -625,7 +625,7 @@ class SpdController():
 
         # 가속이후 속도 설정.
         if CS.out.driverAccTime:
-          lead_set_speed = CS.out.vEgo_kph
+          lead_set_speed = CS.out.vEgoKph
           lead_wait_cmd = 100
           self.seq_step_debug = 2
         elif CS.VSetDis > 70 and lead_objspd < -20:
@@ -639,13 +639,13 @@ class SpdController():
  
         elif d_delta < 0:
             # 선행 차량이 가까이 있으면.
-            dVanz = dRel - CS.out.vEgo_kph
+            dVanz = dRel - CS.out.vEgoKph
 
             self.seq_step_debug = 5
 																  
             if lead_objspd >= 0:    # 속도 유지 시점 결정.
                 self.seq_step_debug = 6
-                if self.VSetDis > (CS.out.vEgo_kph + 10):
+                if self.VSetDis > (CS.out.vEgoKph + 10):
                     lead_wait_cmd = 200
                     lead_set_speed = self.VSetDis - 1  # CS.clu_Vanz + 5
                     if lead_set_speed < 40:
