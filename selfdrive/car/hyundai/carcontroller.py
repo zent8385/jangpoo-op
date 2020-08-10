@@ -178,7 +178,7 @@ class CarController():
     elif self.last_lead_distance != 0:
       self.last_lead_distance = 0  
 
-    elif CS.out.driverOverride == 2 or not CS.out.cruiseState.enabled or CS.out.cluCruiseSwState == 1 or CS.out.cluCruiseSwState == 2:
+    elif CS.out.driverOverride == 2 or not CS.out.cruiseState.enabled or CS.out.cruiseState.cluCruiseSwState in [1, 2]:
       #self.model_speed = 300
       self.resume_cnt = 0
       self.sc_btn_type = Buttons.NONE
