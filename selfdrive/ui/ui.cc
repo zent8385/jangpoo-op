@@ -476,10 +476,11 @@ void handle_message(UIState *s,  Message* msg) {
       scene.alert.text2[0] = '\0';
 
 
-    auto cruiseState = data.getCruiseState();
+    //auto cruiseState = data.getModeSel();
 
-    scene.cruiseState.standstill = cruiseState.getStandstill();
-    scene.cruiseState.modeSel = cruiseState.getModeSel();
+    //scene.cruiseState.standstill = cruiseState.getStandstill();
+    //scene.cruiseState.modeSel = cruiseState.getModeSel();
+    scene.cruiseState.modeSel = data.getModeSel();
 
 
 
