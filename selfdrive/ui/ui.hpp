@@ -93,6 +93,7 @@ const uint8_t bg_colors[][4] = {
 };
 
 
+
 typedef struct UIScene {
   int frontview;
   int fullview;
@@ -200,7 +201,15 @@ typedef struct UIScene {
   cereal::ControlsState::LateralINDIState::Reader indi;
   cereal::ControlsState::LateralLQRState::Reader lqr;
 
+  struct _CRUISE_STATE
+  {
+    bool standstill;
+    int  modeSel;
+  } cruiseState;
+
 } UIScene;
+
+
 
 typedef struct {
   float x, y;

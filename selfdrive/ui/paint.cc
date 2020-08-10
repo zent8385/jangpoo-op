@@ -32,6 +32,21 @@ const uint8_t alert_colors[][4] = {
   [STATUS_ALERT] = {0xC9, 0x22, 0x31, 0xf1},
 };
 
+//ui 적용
+float  fFontSize = 0.8;
+static void ui_print(UIState *s, int x, int y,  const char* fmt, ... )
+{
+  //char speed_str[512];  
+  char* msg_buf = NULL;
+  va_list args;
+  va_start(args, fmt);
+  vasprintf( &msg_buf, fmt, args);
+  va_end(args);
+
+  nvgText(s->vg, x, y, msg_buf, NULL);
+}
+
+
 // Projects a point in car to space to the corresponding point in full frame
 // image space.
 vec3 car_space_to_full_frame(const UIState *s, vec4 car_space_projective) {
@@ -918,6 +933,61 @@ static void ui_draw_vision_speedlimit(UIState *s) {
   }
 }
 
+
+
+static void ui_draw_debug(UIState *s) 
+{
+  UIScene &scene = s->scene;
+  int ui_viz_rx = scene.ui_viz_rx;
+  int ui_viz_rw = scene.ui_viz_rw;
+
+  char str_msg[512];
+
+  const int viz_speed_w = 280;
+  const int viz_speed_x = ui_viz_rx+((ui_viz_rw/2)-(viz_speed_w/2));
+
+  int  y_pos = 0;
+  int  x_pos = 0;
+
+
+  nvgTextAlign(s->vg, NVG_ALIGN_LEFT | NVG_ALIGN_BASELINE);
+  nvgFontSize(s->vg, 36*1.5*fFontSize);
+
+
+  //ui_print( s, ui_viz_rx+10, 50, "S:%d",  s->awake_timeout );
+
+  x_pos = ui_viz_rx + 300;
+  y_pos = 100; 
+  
+
+  //ui_print( s, x_pos, y_pos+0, "%d, %d, %d, %d, %d", scene.params.nOpkrUIBrightness, scene.params.nLightSensor, scene.params.nSmoothBrightness, scene.params.nOpkrUIVolumeBoost, scene.params.nOpkrAutoLanechangedelay );
+
+  
+     
+  ui_print( s, 0, 1020, "%s", scene.alert.text1 );
+  ui_print( s, 0, 1078, "%s", scene.alert.text2 );
+
+
+  
+  NVGcolor nColor = COLOR_WHITE;
+  x_pos = viz_speed_x + 320;
+  y_pos = 120;
+
+
+  nvgFontSize(s->vg, 80);
+  switch( scene.cruiseState.modeSel  )
+  {
+    case 0: strcpy( str_msg, "0.오파모드" ); nColor = COLOR_WHITE; break;
+    case 1: strcpy( str_msg, "1.커브모드" );    nColor = nvgRGBA(200, 200, 255, 255);  break;
+    case 2: strcpy( str_msg, "2.선행차" );  nColor = nvgRGBA(200, 255, 255, 255);  break;
+    case 3: strcpy( str_msg, "3.순정모드" );  nColor = nvgRGBA(200, 255, 255, 255);  break;
+    case 4: strcpy( str_msg, "4.오토모드" );  nColor = nvgRGBA(200, 255, 255, 255);  break;
+    default :  sprintf( str_msg, "%d", scene.cruiseState.modeSel ); nColor = COLOR_WHITE;  break;
+  }
+  nvgFillColor(s->vg, nColor);  
+  ui_print( s, x_pos, y_pos+80, str_msg );  
+}
+
 static void ui_draw_vision_speed(UIState *s) {
   const UIScene *scene = &s->scene;
   float speed = s->scene.v_ego * 2.2369363 + 0.5;
@@ -935,6 +1005,8 @@ static void ui_draw_vision_speed(UIState *s) {
   snprintf(speed_str, sizeof(speed_str), "%d", (int)speed);
   ui_draw_text(s->vg, viz_speed_x + viz_speed_w / 2, 240, speed_str, 96*2.5, COLOR_WHITE, s->font_sans_bold);
   ui_draw_text(s->vg, viz_speed_x + viz_speed_w / 2, 320, s->is_metric?"km/h":"mi/h", 36*2.5, COLOR_WHITE_ALPHA(200), s->font_sans_regular);
+
+  ui_draw_debug( s );
 }
 
 static void ui_draw_vision_event(UIState *s) {

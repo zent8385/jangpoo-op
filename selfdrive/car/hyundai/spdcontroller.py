@@ -761,7 +761,8 @@ class SpdController():
         btn_type = Buttons.NONE
         #lead_1 = sm['radarState'].leadOne
         long_wait_cmd = 500
-        set_speed = CS.out.cruiseState.speed #마일
+        #set_speed = CS.out.cruiseState.speed * CV.MS_TO_KPH #kph
+        set_speed = CS.out.cruiseState.speed * CV.MS_TO_KPH #kph
         dec_step_cmd = 0
         
         #ver4
@@ -771,10 +772,89 @@ class SpdController():
             self.long_curv_timer += 1
 
          # 선행 차량 거리유지
-        #lead_wait_cmd, lead_set_speed = self.update_lead2( CS,  dRel, yRel, vRel)  
+        lead_wait_cmd, lead_set_speed = self.update_lead3( CS,  dRel, yRel, vRel)  
         # 커브 감속.
         #curv_wait_cmd, curv_set_speed = self.update_curv(CS, sm, model_speed)
-        print("call spdcontroller")
+        curv_wait_cmd = 0
+        curv_set_speed = 0
+        #print("call spdcontroller")
+        
+        if curv_wait_cmd != 0:
+            if lead_set_speed > curv_set_speed:
+                dec_step_cmd = 1
+                set_speed = curv_set_speed
+                long_wait_cmd = curv_wait_cmd
+            else:
+                set_speed = lead_set_speed
+                long_wait_cmd = lead_wait_cmd
+        else:
+            set_speed = lead_set_speed
+            long_wait_cmd = lead_wait_cmd
+
+        
+        #
+        if set_speed > CS.out.cruiseState.speed * CV.MS_TO_KPH:
+            set_speed = CS.out.cruiseState.speed * CV.MS_TO_KPH
+        elif set_speed < 30:
+            set_speed = 30
+
+        # control process
+        target_set_speed = set_speed
+        delta = int(set_speed) - int(self.VSetDis)
+        if dec_step_cmd == 0 and delta < -1:
+            if delta < -3:
+                dec_step_cmd = 4
+            elif  delta < -2:
+                dec_step_cmd = 3
+            else:
+                dec_step_cmd = 2
+        else:
+            dec_step_cmd = 1
+
+        if self.long_curv_timer < long_wait_cmd:
+            #타이머 시간동안 작동 안함
+            pass
+        elif CS.out.driverOverride == 1:  # 가속패달에 의한 속도 설정.
+            if CS.cruise_set_speed_kph > CS.out.vEgoKph:
+                delta = int(CS.out.vEgoKph) - int(self.VSetDis)
+                if delta > 1:
+                    set_speed = CS.out.vEgoKph
+                    self.seq_step_debug = 97
+                    btn_type = Buttons.SET_DECEL
+            self.long_curv_timer = 0
+        elif delta <= -2:
+            set_speed = self.VSetDis - dec_step_cmd
+            self.seq_step_debug = 98   
+            btn_type = Buttons.SET_DECEL
+            self.long_curv_timer = 0
+        elif delta >= 2 and (model_speed > 200 or CS.out.vEgoKph < 200):
+            set_speed = self.VSetDis + dec_step_cmd
+            self.seq_step_debug = 99
+            btn_type = Buttons.RES_ACCEL
+            self.long_curv_timer = 0            
+            if set_speed > CS.out.cruiseState.speed * CV.MS_TO_KPH:
+                set_speed = CS.cruise_set_speed_kph
+        #else:
+        #    if self.long_curv_timer > long_wait_cmd:
+        #        CS.cruise_set_speed_kph = set_speed
+        #    self.long_curv_timer = 0
+
+        #CS.VSetDis = CS.clu_Vanz
+
+        if CS.out.cruiseState.modeSel == 0:
+            btn_type = Buttons.NONE
+
+
+
+
+        str3 = 'SS={:03.0f}/{:03.0f} SSD={:03.0f} VSD={:03.0f} pVSD={:03.0f} DAt={:03.0f}/{:03.0f}/{:03.0f} '.format(
+            set_speed, long_wait_cmd, set_speed_diff, self.VSetDis, self.prev_VSetDis, CS.out.driverAccTime, self.long_curv_timer, long_wait_cmd  )
+        str4 = ' LD/LS={:03.0f}/{:03.0f} '.format(  dRel, vRel )
+
+        str5 = str3 +  str4
+        trace1.printf2( str5 )
+
+
         return btn_type, set_speed
 
 
@@ -866,7 +946,7 @@ class SpdController():
             btn_type = Buttons.NONE
 
         str3 = 'SS={:03.0f}/{:03.0f} SSD={:03.0f} VSD={:03.0f} pVSD={:03.0f} DAt={:03.0f}/{:03.0f}/{:03.0f} '.format(
-            set_speed, long_wait_cmd, set_speed_diff, CS.VSetDis, CS.prev_VSetDis,  CS.driverAcc_time, self.long_curv_timer, long_wait_cmd  )
+            set_speed, long_wait_cmd, set_speed_diff, self.VSetDis, CS.prev_VSetDis,  CS.driverAcc_time, self.long_curv_timer, long_wait_cmd  )
         str4 = ' LD/LS={:03.0f}/{:03.0f} '.format(  dRel, vRel )
 
         str5 = str3 +  str4

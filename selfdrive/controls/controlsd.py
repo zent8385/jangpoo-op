@@ -2,6 +2,9 @@
 import os
 import gc
 import capnp
+
+import common.log as  trace1
+
 from cereal import car, log
 from common.numpy_fast import clip
 from common.realtime import sec_since_boot, set_realtime_priority, Ratekeeper, DT_CTRL
@@ -311,6 +314,7 @@ def data_send(sm, pm, CS, CI, CP, VM, state, events, actuators, v_cruise_kph, rk
               LaC, LoC, read_only, start_time, v_acc, a_acc, lac_log, events_prev,
               last_blinker_frame, is_ldw_enabled, can_error_counter):
   """Send actuators and hud commands to the car, send controlsstate and MPC logging"""
+  global trace1
 
   CC = car.CarControl.new_message()
   CC.enabled = isEnabled(state)
@@ -408,6 +412,8 @@ def data_send(sm, pm, CS, CI, CP, VM, state, events, actuators, v_cruise_kph, rk
     "canErrorCounter": can_error_counter,
     "pCurvature": sm['plan'].pCurvature,
     "curvMaxSpeed": sm['plan'].curvMaxSpeed,
+    "alertTextMsg1": str(trace1.global_alertTextMsg1),
+    "alertTextMsg2": str(trace1.global_alertTextMsg2),
   }
 
   if CP.lateralTuning.which() == 'pid':
