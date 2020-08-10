@@ -207,6 +207,13 @@ typedef struct UIScene {
     int  modeSel;
   } cruiseState;
 
+
+  struct _STATUS_
+  {
+      char text1[512];
+      char text2[512];
+  } alert;
+
 } UIScene;
 
 
