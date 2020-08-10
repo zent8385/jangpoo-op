@@ -795,6 +795,10 @@ static void bb_ui_draw_L_Extra(UIState *s)
     y += height;
     snprintf(str, sizeof(str), "sR: %.3f", scene->lp_steerRatio);
     ui_draw_text(s->vg, text_x, y, str, 25 * 2.5, COLOR_WHITE_ALPHA(200), s->font_sans_regular);
+
+    y += height;
+    snprintf(str, sizeof(str), "modeSel: %.3d", scene->cruiseState.modeSel);
+    ui_draw_text(s->vg, text_x, y, str, 25 * 2.5, COLOR_WHITE_ALPHA(200), s->font_sans_regular);
 }
 
 
@@ -973,7 +977,7 @@ static void ui_draw_debug(UIState *s)
   x_pos = viz_speed_x + 320;
   y_pos = 120;
 
-
+  /*
   nvgFontSize(s->vg, 80);
   switch( scene.cruiseState.modeSel  )
   {
@@ -986,6 +990,8 @@ static void ui_draw_debug(UIState *s)
   }
   nvgFillColor(s->vg, nColor);  
   ui_print( s, x_pos, y_pos+80, str_msg );  
+  */
+
 }
 
 static void ui_draw_vision_speed(UIState *s) {
