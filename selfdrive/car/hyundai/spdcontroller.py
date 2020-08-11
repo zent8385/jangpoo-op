@@ -815,7 +815,7 @@ class SpdController():
             #타이머 시간동안 작동 안함
             pass
         elif CS.out.driverOverride == 1:  # 가속패달에 의한 속도 설정.
-            if CS.cruise_set_speed_kph > CS.out.vEgoKph:
+            if CS.out.cruiseState.speed * CV.MS_TO_KPH > CS.out.vEgoKph:
                 delta = int(CS.out.vEgoKph) - int(self.VSetDis)
                 if delta > 1:
                     set_speed = CS.out.vEgoKph
