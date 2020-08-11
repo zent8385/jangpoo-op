@@ -755,7 +755,7 @@ class SpdController():
         return wait_time_cmd, set_speed
 
 
-    def update2(self, CS, sm, model_speed):
+    def update2(self, CS, sm): #, model_speed):
         dRel, yRel, vRel = self.get_lead(sm, CS)
 
         btn_type = Buttons.NONE
@@ -827,13 +827,16 @@ class SpdController():
             self.seq_step_debug = 98   
             btn_type = Buttons.SET_DECEL
             self.long_curv_timer = 0
-        elif delta >= 2 and (model_speed > 200 or CS.out.vEgoKph < 200):
-            set_speed = self.VSetDis + dec_step_cmd
-            self.seq_step_debug = 99
-            btn_type = Buttons.RES_ACCEL
-            self.long_curv_timer = 0            
-            if set_speed > CS.out.cruiseState.speed * CV.MS_TO_KPH:
-                set_speed = CS.cruise_set_speed_kph
+        #커브 추가시 활성
+        # elif delta >= 2 and (model_speed > 200 or CS.out.vEgoKph < 200):
+        #     set_speed = self.VSetDis + dec_step_cmd
+        #     self.seq_step_debug = 99
+        #     btn_type = Buttons.RES_ACCEL
+        #     self.long_curv_timer = 0            
+        #     if set_speed > CS.out.cruiseState.speed * CV.MS_TO_KPH:
+        #         set_speed = CS.cruise_set_speed_kph
+
+
         #else:
         #    if self.long_curv_timer > long_wait_cmd:
         #        CS.cruise_set_speed_kph = set_speed
