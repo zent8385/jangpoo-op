@@ -842,8 +842,8 @@ class SpdController():
         #        CS.cruise_set_speed_kph = set_speed
         #    self.long_curv_timer = 0
 
-        #CS.VSetDis = CS.clu_Vanz
-
+        CS.VSetDis = CS.out.vEgoKph
+        
         if CS.out.cruiseState.modeSel == 0:
             btn_type = Buttons.NONE
 
