@@ -586,12 +586,12 @@ class SpdController():
         return lead_wait_cmd, lead_set_speed
 
     def update_lead3(self, CS,  dRel, yRel, vRel):
-        lead_set_speed = CS.cruiseState.speed * CV.MS_TO_KPH
+        lead_set_speed = CS.out.cruiseState.speed * CV.MS_TO_KPH
         lead_wait_cmd = 600
         self.seq_step_debug = 0
 
 																			 
-        if int(CS.cruiseState.modeSel) not in [2, 3]:
+        if int(CS.out.cruiseState.modeSel) not in [2, 3]:
             return lead_wait_cmd, lead_set_speed
 
         self.seq_step_debug = 1
@@ -628,10 +628,10 @@ class SpdController():
           lead_set_speed = CS.out.vEgoKph
           lead_wait_cmd = 100
           self.seq_step_debug = 2
-        elif CS.VSetDis > 70 and lead_objspd < -20:
+        elif self.VSetDis > 70 and lead_objspd < -20:
             self.seq_step_debug = 3
             lead_wait_cmd, lead_set_speed = self.get_tm_speed(CS, 15, -6) #-2)
-        elif CS.VSetDis > 60 and lead_objspd < -15:
+        elif self.VSetDis > 60 and lead_objspd < -15:
             self.seq_step_debug = 4
             lead_wait_cmd, lead_set_speed = self.get_tm_speed(CS, 15, -6) #-2)     
 
