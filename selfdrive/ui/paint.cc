@@ -33,7 +33,7 @@ const uint8_t alert_colors[][4] = {
 };
 
 //ui 적용
-float  fFontSize = 0.8;
+float  fFontSize = 1;
 static void ui_print(UIState *s, int x, int y,  const char* fmt, ... )
 {
   //char speed_str[512];  
