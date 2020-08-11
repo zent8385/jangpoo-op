@@ -193,9 +193,9 @@ class CarController():
       
       
       #btn_type, clu_speed = self.SC.update2(v_ego_kph, CS, sm, actuators, dRel, yRel, vRel, LaC.v_curvature )   # speed controller spdcontroller.py
-      #btn_type, clu_speed = self.SC.update2(CS, sm, LaC.v_curvature )   # speed controller spdcontroller.py
-      btn_type = 0 
-      clu_speed = 0
+      btn_type, clu_speed = self.SC.update2(CS, sm, LaC.v_curvature )   # speed controller spdcontroller.py
+      #btn_type = 0 
+      #clu_speed = 0
 
       if CS.out.vEgoKph < 5: #5km/h:
         self.sc_btn_type = Buttons.NONE
