@@ -116,7 +116,7 @@ class SpdController():
 
         set_speed_kph = CS.out.cruiseState.speed * CV.MS_TO_KPH
         #set_speed = self.cruise_set_speed
-
+        print(self.prev_VSetDis)
         #if CS.cruise_set_speed:
         if CS.out.cruiseState.speed:
             self.prev_VSetDis = set_speed_kph
