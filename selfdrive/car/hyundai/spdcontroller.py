@@ -157,6 +157,7 @@ class SpdController():
                         self.cruise_set_first = 1
                         set_speed_kph = 0
                         self.VSetDis = 0
+                        self.prev_VSetDis = 0
 
                 #버튼을 누르고 있는 동안
                 elif self.prev_clu_CruiseSwState ==  CS.out.cruiseState.cluCruiseSwState:
