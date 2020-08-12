@@ -754,9 +754,67 @@ class SpdController():
                    set_speed = model_speed
 
         return wait_time_cmd, set_speed
+    
+    def update_curv2(self, CS, sm, v_curvature):
+        wait_time_cmd = 0
+        #set_speed = self.cruise_set_speed_kph
+        set_speed_kph = CS.out.cruiseState.speed * CV.MS_TO_KPH
+
+        # 2. 커브 감속.
+        #if self.cruise_set_speed_kph >= 100:
+        if CS.out.vEgoKph >= 100:            
+            if v_curvature < 50:
+                set_speed_kph -= 7
+                self.seq_step_debug = 30
+                wait_time_cmd = 50
+            elif v_curvature < 60:  
+                set_speed_kph -= 4
+                self.seq_step_debug = 31
+                wait_time_cmd = 70
+            elif v_curvature < 80:  
+                set_speed_kph -= 2
+                self.seq_step_debug = 32
+                wait_time_cmd = 100
+            elif v_curvature < 90:  
+                set_speed_kph -= 1
+                self.seq_step_debug = 33
+                wait_time_cmd = 150
+            if set_speed_kph > v_curvature:
+                self.seq_step_debug = 34
+                set_speed_kph = v_curvature
+        elif CS.out.vEgoKph >= 85:
+            if v_curvature < 80:  
+                set_speed_kph -= 2
+                self.seq_step_debug = 35
+                wait_time_cmd = 70
+            elif v_curvature < 90:  
+                set_speed_kph -= 1
+                self.seq_step_debug = 36
+                wait_time_cmd = 100
+                if set_speed_kph > v_curvature:
+                   self.seq_step_debug = 37
+                   set_speed_kph = v_curvature
+        elif CS.out.vEgoKph >= 70:
+            if v_curvature < 50: 
+                set_speed_kph -= 2
+                self.seq_step_debug = 38
+                wait_time_cmd = 70
+            elif v_curvature < 70:  
+                set_speed_kph -= 1
+                self.seq_step_debug = 39
+                wait_time_cmd = 100
+                if set_speed_kph > v_curvature:
+                   self.seq_step_debug = 40
+                   set_speed_kph = v_curvature
+        else:
+            if set_speed_kph > v_curvature:
+                self.seq_step_debug = 41
+                set_speed_kph = v_curvature
+
+        return wait_time_cmd, set_speed_kph
 
 
-    def update2(self, CS, sm): #, model_speed):
+    def update2(self, CS, sm, v_curvature):
         dRel, yRel, vRel = self.get_lead(sm, CS)
 
         btn_type = Buttons.NONE
@@ -775,9 +833,9 @@ class SpdController():
          # 선행 차량 거리유지
         lead_wait_cmd, lead_set_speed = self.update_lead3( CS,  dRel, yRel, vRel)  
         # 커브 감속.
-        #curv_wait_cmd, curv_set_speed = self.update_curv(CS, sm, model_speed)
-        curv_wait_cmd = 0
-        curv_set_speed = 0
+        curv_wait_cmd, curv_set_speed = self.update_curv2(CS, sm, v_curvature)
+        #curv_wait_cmd = 0
+        #curv_set_speed = 0
         #print("call spdcontroller")
         
         if curv_wait_cmd != 0:
@@ -829,13 +887,14 @@ class SpdController():
             btn_type = Buttons.SET_DECEL
             self.long_curv_timer = 0
         #커브 추가시 활성
-        # elif delta >= 2 and (model_speed > 200 or CS.out.vEgoKph < 200):
-        #     set_speed = self.VSetDis + dec_step_cmd
-        #     self.seq_step_debug = 99
-        #     btn_type = Buttons.RES_ACCEL
-        #     self.long_curv_timer = 0            
-        #     if set_speed > CS.out.cruiseState.speed * CV.MS_TO_KPH:
-        #         set_speed = CS.cruise_set_speed_kph
+        #커브 수치 확인 필요
+        elif delta >= 2 and (v_curvature > 200 or CS.out.vEgoKph < 200):
+            set_speed = self.VSetDis + dec_step_cmd
+            self.seq_step_debug = 99
+            btn_type = Buttons.RES_ACCEL
+            self.long_curv_timer = 0            
+            if set_speed > CS.out.cruiseState.speed * CV.MS_TO_KPH:
+                 set_speed = CS.out.cruiseState.speed * CV.MS_TO_KPH:
 
 
         #else:
@@ -853,7 +912,7 @@ class SpdController():
 
         str3 = 'SS={:03.0f}/{:03.0f} SSD={:03.0f} VSD={:03.0f} pVSD={:03.0f} DAt={:03.0f}/{:03.0f}/{:03.0f} '.format(
             set_speed, long_wait_cmd, set_speed_diff, self.VSetDis, self.prev_VSetDis, CS.out.driverAccTime, self.long_curv_timer, long_wait_cmd  )
-        str4 = ' LD/LS={:03.0f}/{:03.0f} '.format(  dRel, vRel )
+        str4 = ' curv={:03.0f}'.format(  v_curvature )
 
         str5 = str3 +  str4
         trace1.printf2( str5 )

@@ -195,12 +195,13 @@ class CarController():
     #stock 모드가 아닐 경우에만 반영
     elif self.speed_control_enabled and CS.out.cruiseState.modeSel != 0:
       #acc_mode, clu_speed = self.long_speed_cntrl( v_ego_kph, CS, actuators )
-      
+      v_curvature = sm['plan'].pCurvature
       
       #btn_type, clu_speed = self.SC.update2(v_ego_kph, CS, sm, actuators, dRel, yRel, vRel, LaC.v_curvature )   # speed controller spdcontroller.py
       btn_type, clu_speed = self.SC.update2(CS, sm) #, LaC.v_curvature )   # speed controller spdcontroller.py
       #btn_type = 0 
       #clu_speed = 0
+      
 
       if CS.out.vEgoKph < 5: #5km/h:
         self.sc_btn_type = Buttons.NONE
