@@ -8,6 +8,8 @@ from opendbc.can.packer import CANPacker
 from selfdrive.config import Conversions as CV
 from selfdrive.car.hyundai.spdcontroller  import SpdController
 
+import common.log as trace1
+
 VisualAlert = car.CarControl.HUDControl.VisualAlert
 
 # Accel limits
@@ -225,16 +227,24 @@ class CarController():
           # 0, 1, 2 모드에서는  Set 상태에서만 가감속 전달
           if CS.out.cruiseState.cruiseLampSet:
             #self.traceCC.add( 'sc_btn_type={}  clu_speed={}  set={:.0f} vanz={:.0f}'.format( self.sc_btn_type, self.sc_clu_speed,  CS.VSetDis, clu11_speed  ) )
-            print("cruiseLampSet-> "+ str(self.sc_btn_type))
+            print("2btn_type:"+ str(self.sc_btn_type) + " resume: " + str(self.resume_cnt)+ " clu_cnt:" + self.clu11_cnt)
             #can_sends.append(create_clu11(self.packer, frame, CS.scc_bus, CS.clu11, self.sc_btn_type, clu11_speed))
             can_sends.append(create_clu11(self.packer, self.resume_cnt, CS.scc_bus, CS.clu11, self.sc_btn_type, self.sc_clu_speed))
             #can_sends.append(create_clu11(self.packer, CS.scc_bus, CS.clu11, self.sc_btn_type, self.sc_clu_speed, ))
           # Set이 아니면서 3 모드이면 가감속 신호 전달
           elif CS.out.cruiseState.modeSel ==3 and CS.out.vEgoKph > 30:
-            print("cruise auto set-> "+ str(self.sc_btn_type))
+            print("3btn_type:"+ str(self.sc_btn_type) + " resume: " + str(self.resume_cnt)+ " clu_cnt:" + self.clu11_cnt)
             #can_sends.append(create_clu11(self.packer, frame, CS.scc_bus, CS.clu11, self.sc_btn_type, clu11_speed))
             can_sends.append(create_clu11(self.packer, self.resume_cnt, CS.scc_bus, CS.clu11, self.sc_btn_type, self.sc_clu_speed))
             #can_sends.append(create_clu11(self.packer, CS.scc_bus, CS.clu11, self.sc_btn_type, self.sc_clu_speed, self.resume_cnt))
+
+
+          str1 = 'btn_type={:03.0f} sc_clu_speed={:03.0f} resumeCnt={:03.0f} cluCnt={:03.0f} frame={:03.0f} '.format(
+            self.sc_btn_type, self.sc_clu_speed, self.resume_cnt, self.clu11_cnt, frame )
+          str2 = ' curv={:0.3f}'.format(  v_curvature )
+
+          str3 = str1 +  str2
+          trace1.printf( str3 )
 
           self.resume_cnt += 1
 
