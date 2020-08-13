@@ -894,7 +894,7 @@ class SpdController():
             btn_type = Buttons.RES_ACCEL
             self.long_curv_timer = 0            
             if set_speed > CS.out.cruiseState.speed * CV.MS_TO_KPH:
-                 set_speed = CS.out.cruiseState.speed * CV.MS_TO_KPH:
+                 set_speed = CS.out.cruiseState.speed * CV.MS_TO_KPH
 
 
         #else:
