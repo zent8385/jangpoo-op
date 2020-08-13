@@ -116,7 +116,7 @@ class SpdController():
 
         set_speed_kph = CS.out.cruiseState.speed * CV.MS_TO_KPH
         #set_speed = self.cruise_set_speed
-        print(self.prev_VSetDis)
+        #print(self.prev_VSetDis)
         #if CS.cruise_set_speed:
         if CS.out.cruiseState.speed:
             self.prev_VSetDis = set_speed_kph
@@ -209,8 +209,7 @@ class SpdController():
             if self.prev_clu_CruiseSwState != CS.out.cruiseState.cluCruiseSwState:  # MODE 전환.
                 if CS.out.cruiseState.cluCruiseSwState == Buttons.CANCEL: 
                     self.cruise_set_mode += 1
-                    print("모드변경 버튼 누름"+ str(self.cruise_set_mode))
-                if self.cruise_set_mode > 5:
+                if self.cruise_set_mode > 3:
                     self.cruise_set_mode = 0
                 
         
