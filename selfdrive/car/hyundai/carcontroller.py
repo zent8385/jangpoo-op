@@ -234,18 +234,15 @@ class CarController():
             #can_sends.append(create_clu11(self.packer, frame, CS.scc_bus, CS.clu11, self.sc_btn_type, clu11_speed))
             can_sends.append(create_clu11(self.packer, self.resume_cnt, CS.scc_bus, CS.clu11, self.sc_btn_type, self.sc_clu_speed))
             #can_sends.append(create_clu11(self.packer, CS.scc_bus, CS.clu11, self.sc_btn_type, self.sc_clu_speed, self.resume_cnt))
-
-          
-          str1 = 'btn_type={:03.0f} sc_clu_speed={:03.0f} resumeCnt={:03.0f} cluCnt={:03.0f} frame={:03.0f} '.format(
-            self.sc_btn_type, self.sc_clu_speed, self.resume_cnt, self.clu11_cnt, frame )
-          str2 = ' curv={:0.3f}'.format(  v_curvature )
-
-          str3 = str1 +  str2
-          print(str3)
-          trace1.printf( str3 )
-
           self.resume_cnt += 1
 
+    str1 = 'btn_type={:03.0f} sc_clu_speed={:03.0f} resumeCnt={:03.0f} cluCnt={:03.0f} frame={:03.0f} '.format(
+            self.sc_btn_type, self.sc_clu_speed, self.resume_cnt, self.clu11_cnt, frame )
+    str2 = ' curv={:0.3f}'.format(  v_curvature )
+
+    str3 = str1 +  str2
+    print("spdBtnCtrl:" + str3)
+    trace1.printf( str3 )
 
 
     # 20 Hz LFA MFA message
