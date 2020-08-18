@@ -19,9 +19,10 @@ class CarInterfaceBase():
     self.frame = 0
     self.low_speed_alert = False
 
-    self.CS = CarState(CP)
-    self.cp = self.CS.get_can_parser(CP)
-    self.cp_cam = self.CS.get_cam_can_parser(CP)
+    if CarState is not None:
+      self.CS = CarState(CP)
+      self.cp = self.CS.get_can_parser(CP)
+      self.cp_cam = self.CS.get_cam_can_parser(CP)
 
     self.CC = None
     if CarController is not None:
@@ -136,7 +137,8 @@ class CarStateBase:
   def __init__(self, CP):
     self.CP = CP
     self.car_fingerprint = CP.carFingerprint
-    self.cruise_buttons = 0
+    #076_atom
+    #self.cruise_buttons = 0
     self.out = car.CarState.new_message()
 
     # Q = np.matrix([[10.0, 0.0], [0.0, 100.0]])
