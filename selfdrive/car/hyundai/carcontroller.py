@@ -227,15 +227,15 @@ class CarController():
         else:
           # 0, 1, 2 모드에서는  Set 상태에서만 가감속 전달
           # clu_cnt 짝수일때만 전달
-          if self.resume_cnt % 2 == 0:
+          if self.clu11_cnt % 2 == 0:
             if CS.out.cruiseState.cruiseLampSet:
-              can_sends.append(create_clu11(self.packer, self.resume_cnt, CS.scc_bus, CS.clu11, self.sc_btn_type, self.sc_clu_speed))
+              can_sends.append(create_clu11(self.packer, self.clu11_cnt, CS.scc_bus, CS.clu11, self.sc_btn_type, self.sc_clu_speed))
               #can_sends.append(create_clu11(self.packer, self.resume_cnt, CS.scc_bus, CS.clu11, self.sc_btn_type, self.sc_clu_speed))
               #can_sends.append(create_clu11(self.packer, frame, CS.scc_bus, CS.clu11, self.sc_btn_type, clu11_speed))
               #can_sends.append(create_clu11(self.packer, CS.scc_bus, CS.clu11, self.sc_btn_type, self.sc_clu_speed, ))
             # Set이 아니면서 3 모드이면 가감속 신호 전달
             elif CS.out.cruiseState.modeSel ==3 and CS.out.vEgoKph > 30:
-              can_sends.append(create_clu11(self.packer, self.resume_cnt, CS.scc_bus, CS.clu11, self.sc_btn_type, self.sc_clu_speed))
+              can_sends.append(create_clu11(self.packer, self.clu11_cnt, CS.scc_bus, CS.clu11, self.sc_btn_type, self.sc_clu_speed))
               #can_sends.append(create_clu11(self.packer, self.resume_cnt, CS.scc_bus, CS.clu11, self.sc_btn_type, self.sc_clu_speed))
               #can_sends.append(create_clu11(self.packer, frame, CS.scc_bus, CS.clu11, self.sc_btn_type, clu11_speed))
               #can_sends.append(create_clu11(self.packer, CS.scc_bus, CS.clu11, self.sc_btn_type, self.sc_clu_speed, self.resume_cnt))
