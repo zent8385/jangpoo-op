@@ -140,8 +140,11 @@ class SpdController():
                 if self.prev_clu_CruiseSwState !=  CS.out.cruiseState.cluCruiseSwState:
                     print("userBtnCtl :" + str(CS.out.cruiseState.cluCruiseSwState))
                     self.cruise_btn_time = 0
+
+                    if CS.out.driverOverride:
+                        set_speed_kph = CS.out.cruiseState.speed * CV.MS_TO_KPH        
                 
-                    if self.prev_clu_CruiseSwState == 1:   # up
+                    elif self.prev_clu_CruiseSwState == 1:   # up
                         if self.cruise_set_first:
                             self.cruise_set_first = 0
                             set_speed_kph =  self.prev_VSetDis
