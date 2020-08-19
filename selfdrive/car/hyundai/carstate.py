@@ -22,6 +22,7 @@ class CarState(CarStateBase):
     self.left_blinker = False
     self.right_blinker = False
     self.lkas_button_on = True
+    self.speed_kph
 
     self.SC = SpdController()
 
@@ -97,14 +98,14 @@ class CarState(CarStateBase):
     if ret.cruiseState.enabled:
       speed_conv = CV.MPH_TO_MS if self.is_set_speed_in_mph else CV.KPH_TO_MS
       
-      #ret.cruiseState.modeSel, speed_kph = self.SC.update_cruiseSW( self )
+      #ret.cruiseState.modeSel, self.speed_kph = self.SC.update_cruiseSW( self )
       # mile 속도 기준
       
 
       if self.car_fingerprint in FEATURES["none_scc"]:
-        #ret.cruiseState.speed = speed_kph * speed_conv # CV.KPH_TO_MS
-        ret.cruiseState.speed = speed_kph * CV.KPH_TO_MS
-        #ret.cruiseState.speed_kph = speed_kph
+        #ret.cruiseState.speed = self.speed_kph * speed_conv # CV.KPH_TO_MS
+        ret.cruiseState.speed = self.speed_kph * CV.KPH_TO_MS
+        #ret.cruiseState.speed_kph = self.speed_kph
       else:
         ret.cruiseState.speed = cp_scc.vl["SCC11"]['VSetDis'] * speed_conv if not self.no_radar else \
                                          (cp.vl["LVR12"]["CF_Lvr_CruiseSet"] * speed_conv)
