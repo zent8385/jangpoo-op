@@ -246,7 +246,7 @@ class CarController():
             #str2 = ' curv={:0.3f}'.format(  v_curvature )
 
             str3 = str1
-            print("spdBtnCtrl:" + str3)
+            print("spdBtnCtrl2:" + str3)
             trace1.printf( str3 )
     
 
