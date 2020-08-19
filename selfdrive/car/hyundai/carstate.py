@@ -92,8 +92,8 @@ class CarState(CarStateBase):
     #print("CF_Clu_AliveCnt1:" +  str(cp.vl["CLU11"]["CF_Clu_AliveCnt1"]))
     
     #cnt 홀수일때만 전달
-    if int(cp.vl["CLU11"]["CF_Clu_AliveCnt1"] % 2) == 1:
-      ret.cruiseState.modeSel, self.speed_kph = self.SC.update_cruiseSW( self )
+    #if int(cp.vl["CLU11"]["CF_Clu_AliveCnt1"] % 2) == 1:
+    ret.cruiseState.modeSel, self.speed_kph = self.SC.update_cruiseSW( self )
     
     if ret.cruiseState.enabled:
       speed_conv = CV.MPH_TO_MS if self.is_set_speed_in_mph else CV.KPH_TO_MS

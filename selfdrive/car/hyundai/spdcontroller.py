@@ -135,10 +135,10 @@ class SpdController():
                 self.VSetDis = 0
             
             elif CS.out.vEgoKph > 30: #30: 30km/h
-                print("userBtnCtl :" + str(CS.out.cruiseState.cluCruiseSwState))
+                
                 #버튼 한번 누름
                 if self.prev_clu_CruiseSwState !=  CS.out.cruiseState.cluCruiseSwState:
-                    #print("버튼 누름 "+ str(self.prev_clu_CruiseSwState) + " " + str(CS.out.cruiseState.cluCruiseSwState))
+                    print("userBtnCtl :" + str(CS.out.cruiseState.cluCruiseSwState))
                     self.cruise_btn_time = 0
                 
                     if self.prev_clu_CruiseSwState == 1:   # up
