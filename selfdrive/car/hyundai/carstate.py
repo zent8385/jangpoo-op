@@ -22,7 +22,7 @@ class CarState(CarStateBase):
     self.left_blinker = False
     self.right_blinker = False
     self.lkas_button_on = True
-    self.speed_kph
+    self.speed_kph = 0
 
     self.SC = SpdController()
 
