@@ -88,7 +88,7 @@ class CarState(CarStateBase):
 
     self.is_set_speed_in_mph = int(cp.vl["CLU11"]["CF_Clu_SPEED_UNIT"])
 
-    print("CF_Clu_AliveCnt1:" +  str(cp.vl["CLU11"]["CF_Clu_AliveCnt1"]))
+    #print("CF_Clu_AliveCnt1:" +  str(cp.vl["CLU11"]["CF_Clu_AliveCnt1"]))
     
     #cnt 홀수일때만 전달
     if int(cp.vl["CLU11"]["CF_Clu_AliveCnt1"] % 2) == 1:
