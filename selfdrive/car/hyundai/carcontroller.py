@@ -215,8 +215,8 @@ class CarController():
     #stock 모드가 아닐 경우에만 반영
     elif self.speed_control_enabled and CS.cruise_set_mode != 0:
       #acc_mode, clu_speed = self.long_speed_cntrl( v_ego_kph, CS, actuators )
-      #btn_type, clu_speed = self.SC.update( v_ego_kph, CS, sm, actuators, dRel, yRel, vRel, LaC.v_curvature )   # speed controller spdcontroller.py
-      btn_type, clu_speed = self.SC.update( v_ego_kph, CS, sm, actuators, dRel, yRel, vRel)   # speed controller spdcontroller.py
+      btn_type, clu_speed = self.SC.update( v_ego_kph, CS, sm, actuators, dRel, yRel, vRel, LaC.v_curvature )   # speed controller spdcontroller.py 
+      #btn_type, clu_speed = self.SC.update( v_ego_kph, CS, sm, actuators, dRel, yRel, vRel)   # speed controller spdcontroller.py
 
       if CS.clu_Vanz < 5:
         self.sc_btn_type = Buttons.NONE
