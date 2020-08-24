@@ -312,6 +312,11 @@ class CarState():
     self.clu_CruiseSwState = 0
     self.driverAcc_time = 0
     self.cruise_btn_time = 0
+    self.cruise_set_speed = 0
+    self.cruise_set_speed_kph = 0
+    self.cruise_set_first = 0
+    self.curise_sw_check = 0
+    self.prev_clu_CruiseSwState = 0
 
     # Q = np.matrix([[10.0, 0.0], [0.0, 100.0]])
     # R = 1e3
@@ -417,6 +422,7 @@ class CarState():
       cruise_set_speed_kph = 0 #self.VSetDis
       
       if self.prev_clu_CruiseSwState != self.clu_CruiseSwState:
+        print("캔슬 누름")
         if self.clu_CruiseSwState == 4:
           self.cruise_set_mode += 1
           if self.cruise_set_mode > 3:
@@ -452,6 +458,13 @@ class CarState():
     self.park_brake = cp.vl["CGW1"]['CF_Gway_ParkBrakeSw']
     
     self.cruise_set = cp.vl['EMS16']['CRUISE_LAMP_S']  
+
+    self.clu_Vanz = cp.vl["CLU11"]["CF_Clu_Vanz"]
+    self.clu_CruiseSwState = cp.vl["CLU11"]["CF_Clu_CruiseSwState"]
+    self.clu_CruiseSwMain = cp.vl["CLU11"]["CF_Clu_CruiseSwMain"]
+    self.clu_SldMainSW = cp.vl["CLU11"]["CF_Clu_SldMainSW"]
+    
+
     if self.car_fingerprint in FEATURES["none_scc"]:
       self.main_on = cp.vl['EMS16']['CRUISE_LAMP_M'] #(cp_scc.vl["SCC11"]["MainMode_ACC"] != 0) if not self.no_radar else \
                                                    #cp.vl['EMS16']['CRUISE_LAMP_M']
