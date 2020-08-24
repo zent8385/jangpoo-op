@@ -303,13 +303,15 @@ class CarState():
     self.sas_bus = CP.sasBus
     self.scc_bus = CP.sccBus
 
-    #
+    #janpoo6427
     self.cruise_set_speed_kph = 0
     self.cruise_set_mode = 2
     self.VSetDis = 0
     self.prev_VSetDis = 0
     self.prev_clu_CruiseSwState = 0
     self.clu_CruiseSwState = 0
+    self.driverAcc_time = 0
+    self.cruise_btn_time = 0
 
     # Q = np.matrix([[10.0, 0.0], [0.0, 100.0]])
     # R = 1e3
@@ -499,7 +501,7 @@ class CarState():
 
     #janpoo6427
     self.driverOverride = cp.vl["TCS13"]["DriverOverride"]     # 1 Acc,  2 bracking, 0 Normal
-    
+
     self.user_brake = 0
 
     self.brake_pressed = cp.vl["TCS13"]['DriverBraking']
