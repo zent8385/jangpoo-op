@@ -514,9 +514,9 @@ class SpdController():
         # 선행 차량 거리유지
         lead_wait_cmd, lead_set_speed = self.update_lead2( CS,  dRel, yRel, vRel)  
         # 커브 감속.
-        curv_wait_cmd, curv_set_speed = self.update_curv(CS, sm, model_speed)
-        #curv_wait_cmd = 0 
-        #curv_set_speed = 0 
+        #curv_wait_cmd, curv_set_speed = self.update_curv(CS, sm, model_speed)
+        curv_wait_cmd = 0 
+        curv_set_speed = 0 
 
         #TEST 커브 속도 반영 제외
         #curv_wait_cmd = 0
