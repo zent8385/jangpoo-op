@@ -188,6 +188,16 @@ typedef struct UIScene {
   int hwType;
   int satelliteCount;
   uint8_t athenaStatus;
+  
+  struct _STATUS_
+  {
+      float vCurvature; 
+      int  nCanError;
+      int  cruise_set_mode;
+      char alert_text1[512];
+      char alert_text2[512];
+  } status;
+
 } UIScene;
 
 typedef struct {
