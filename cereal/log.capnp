@@ -528,6 +528,7 @@ struct ControlsState @0x97ff69c53601abf1 {
 
   decelForModel @54 :Bool;
   canErrorCounter @57 :UInt32;
+  cruiseSetMode @58 :UInt32;
 
   lateralControlState :union {
     indiState @52 :LateralINDIState;
