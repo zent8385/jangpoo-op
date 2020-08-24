@@ -618,6 +618,68 @@ static void ui_draw_vision_speedlimit(UIState *s) {
     nvgText(s->vg, viz_speedlim_x+viz_speedlim_w/2, viz_speedlim_y + (is_speedlim_valid ? 170 : 165), "N/A", NULL);
   }
 }
+static void ui_draw_debug(UIState *s) 
+{
+  const UIScene *scene = &s->scene;
+  int ui_viz_rx = scene->ui_viz_rx;
+  int ui_viz_rw = scene->ui_viz_rw;
+
+
+  const int viz_speed_w = 280;
+  const int viz_speed_x = ui_viz_rx+((ui_viz_rw/2)-(viz_speed_w/2));
+
+  char speed_str[100];
+
+  int  y_pos = 0;
+  int  x_pos = 0;
+
+  x_pos = ui_viz_rx + 300;
+  y_pos = 150; 
+  
+
+
+  nvgTextAlign(s->vg, NVG_ALIGN_LEFT | NVG_ALIGN_BASELINE);
+  nvgFontFace(s->vg, "courbd");
+  nvgFontSize(s->vg, 36*1.5);
+
+
+
+  // snprintf(speed_str, sizeof(speed_str), "P:%8.5f", scene->pid.p );
+  // nvgText(s->vg, x_pos, y_pos+0, speed_str, NULL);
+  // snprintf(speed_str, sizeof(speed_str), "I:%8.5f", scene->pid.i );
+  // nvgText(s->vg, x_pos, y_pos+50, speed_str, NULL);
+  // snprintf(speed_str, sizeof(speed_str), "F:%8.5f", scene->pid.f );
+  // nvgText(s->vg, x_pos, y_pos+100, speed_str, NULL);
+
+  int   cruise_set_mode = scene->status.cruise_set_mode;
+  if (cruise_set_mode == 0)
+  {
+    snprintf(speed_str, sizeof(speed_str), "%d:STOCK", cruise_set_mode );
+  }
+  else if (cruise_set_mode == 1)
+  {
+    snprintf(speed_str, sizeof(speed_str), "%d:CURVE", cruise_set_mode );
+  }
+  else if (cruise_set_mode == 2)
+  {
+    snprintf(speed_str, sizeof(speed_str), "%d:CURVE+DIST", cruise_set_mode );
+  }
+  else if (cruise_set_mode == 3)
+  {
+    snprintf(speed_str, sizeof(speed_str), "%d:CUR+DIS+AUTO", cruise_set_mode );
+  }
+    
+  nvgText(s->vg, x_pos, y_pos+170, speed_str, NULL);
+ 
+
+
+  // snprintf(speed_str, sizeof(speed_str), "%s", scene->status.alert_text1 );
+  // nvgText(s->vg, 0, 1020, speed_str, NULL);  
+
+  // snprintf(speed_str, sizeof(speed_str), "%s", scene->status.alert_text2 );
+  // nvgText(s->vg, 0, 1078, speed_str, NULL);
+
+}
 
 static void ui_draw_vision_speed(UIState *s) {
   const UIScene *scene = &s->scene;
@@ -678,6 +740,7 @@ static void ui_draw_vision_speed(UIState *s) {
     nvgText(s->vg, viz_speed_x+viz_speed_w/2, 320, "m/h", NULL);
   }
   
+  ui_draw_debug( s );
   
   /*
   //uptime
