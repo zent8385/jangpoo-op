@@ -451,6 +451,7 @@ class CarState():
     self.esp_disabled = cp.vl["TCS15"]['ESC_Off_Step']
     self.park_brake = cp.vl["CGW1"]['CF_Gway_ParkBrakeSw']
     
+    self.cruise_set = cp.vl['EMS16']['CRUISE_LAMP_S']  
     if self.car_fingerprint in FEATURES["none_scc"]:
       self.main_on = cp.vl['EMS16']['CRUISE_LAMP_M'] #(cp_scc.vl["SCC11"]["MainMode_ACC"] != 0) if not self.no_radar else \
                                                    #cp.vl['EMS16']['CRUISE_LAMP_M']
