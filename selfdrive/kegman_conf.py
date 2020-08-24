@@ -114,7 +114,7 @@ class kegman_conf():
         self.element_updated = True
 
       if "steerTorqueOver" not in self.config:
-        self.config.update({"steerTorqueOver":"200"})
+        self.config.update({"steerTorqueOver":"360"})
         self.element_updated = True
 
       if "ALCtimer" not in self.config:
