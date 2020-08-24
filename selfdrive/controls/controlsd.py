@@ -409,7 +409,9 @@ def data_send(sm, pm, CS, CI, CP, VM, state, events, actuators, v_cruise_kph, rk
     "mapValid": sm['plan'].mapValid,
     "forceDecel": bool(force_decel),
     "canErrorCounter": can_error_counter,
-    "cruiseSetMode" : trace1.cruise_set_mode
+    "cruiseSetMode" : trace1.cruise_set_mode,
+    "alertTextMsg1": str(trace1.global_alertTextMsg1),
+    "alertTextMsg2": str(trace1.global_alertTextMsg2),
   }
 
   if CP.lateralTuning.which() == 'pid':
