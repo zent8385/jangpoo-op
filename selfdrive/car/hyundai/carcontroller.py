@@ -6,6 +6,10 @@ from selfdrive.car.hyundai.hyundaican import create_lkas11, create_clu11, \
 from selfdrive.car.hyundai.values import Buttons, SteerLimitParams, CAR
 from opendbc.can.packer import CANPacker
 
+#janpoo6427
+from selfdrive.config import Conversions as CV
+from selfdrive.car.hyundai.spdcontroller  import SpdController
+
 VisualAlert = car.CarControl.HUDControl.VisualAlert
 
 # Accel limits
@@ -83,7 +87,7 @@ class CarController():
     self.sc_clu_speed = 0
 
   def update(self, enabled, CS, frame, actuators, pcm_cancel_cmd, visual_alert,
-              left_line, right_line, left_lane_depart, right_lane_depart, sm, Lac):
+              left_line, right_line, left_lane_depart, right_lane_depart, sm, LaC):
 
     # *** compute control surfaces ***
 
@@ -119,7 +123,11 @@ class CarController():
     # Fix for sharp turns mdps fault and Genesis hard fault at low speed
     if CS.v_ego < 15.5 and self.car_fingerprint == CAR.GENESIS and not CS.mdps_bus:
       self.turning_signal_timer = 100
-      
+
+    #janpoo6427
+    dRel, yRel, vRel = self.SC.get_lead( sm, CS )
+    vRel = int(vRel * 3.6 + 0.5)
+
     # Disable steering while turning blinker on and speed below 60 kph
     if CS.left_blinker_on or CS.right_blinker_on:
       if self.car_fingerprint in [CAR.IONIQ, CAR.KONA]:
