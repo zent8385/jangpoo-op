@@ -73,10 +73,24 @@ class CarController():
     self.lkas_button_last = 0
     self.longcontrol = 0 #TODO: make auto
 
+    #janpoo6427
+    self.speed_control_enabled = 1 #self.params.get('SpeedControlEnabled') == b'1'
+    self.timer_curvature = 0
+    self.SC = SpdController()
+    self.sc_wait_timer2 = 0
+    self.sc_active_timer2 = 0     
+    self.sc_btn_type = Buttons.NONE
+    self.sc_clu_speed = 0
+
   def update(self, enabled, CS, frame, actuators, pcm_cancel_cmd, visual_alert,
-              left_line, right_line, left_lane_depart, right_lane_depart):
+              left_line, right_line, left_lane_depart, right_lane_depart, sm, Lac):
 
     # *** compute control surfaces ***
+
+
+    #janpoo6427
+    v_ego_kph = CS.v_ego * CV.MS_TO_KPH
+
 
     # gas and brake
     apply_accel = actuators.gas - actuators.brake
@@ -178,6 +192,52 @@ class CarController():
     # reset lead distnce after the car starts moving
     elif self.last_lead_distance != 0:
       self.last_lead_distance = 0  
+    
+
+    #janpoo6427
+    elif CS.driverOverride == 2 or not CS.pcm_acc_status or CS.clu_CruiseSwState == 1 or CS.clu_CruiseSwState == 2:
+      #self.model_speed = 300
+      self.resume_cnt = 0
+      self.sc_btn_type = Buttons.NONE
+      self.sc_wait_timer2 = 10
+      self.sc_active_timer2 = 0
+    elif self.sc_wait_timer2:
+      self.sc_wait_timer2 -= 1
+    
+    #stock 모드가 아닐 경우에만 반영
+    elif self.speed_control_enabled and CS.cruise_set_mode != 0:
+      #acc_mode, clu_speed = self.long_speed_cntrl( v_ego_kph, CS, actuators )
+      btn_type, clu_speed = self.SC.update( v_ego_kph, CS, sm, actuators, dRel, yRel, vRel, LaC.v_curvature )   # speed controller spdcontroller.py
+
+      if CS.clu_Vanz < 5:
+        self.sc_btn_type = Buttons.NONE
+      elif self.sc_btn_type != Buttons.NONE:
+        pass
+      elif btn_type != Buttons.NONE:
+        self.resume_cnt = 0
+        self.sc_active_timer2 = 0
+        self.sc_btn_type = btn_type
+        self.sc_clu_speed = clu_speed
+
+      if self.sc_btn_type != Buttons.NONE:
+        self.sc_active_timer2 += 1
+        if self.sc_active_timer2 > 10:
+          self.sc_wait_timer2 = 5
+          self.resume_cnt = 0
+          self.sc_active_timer2 = 0
+          self.sc_btn_type = Buttons.NONE          
+        else:
+          # 0, 1, 2 모드에서는  Set 상태에서만 가감속 전달
+          if CS.cruise_set:
+            #self.traceCC.add( 'sc_btn_type={}  clu_speed={}  set={:.0f} vanz={:.0f}'.format( self.sc_btn_type, self.sc_clu_speed,  CS.VSetDis, clu11_speed  ) )
+            print("cruise set-> "+ str(self.sc_btn_type))
+            can_sends.append(create_clu11(self.packer, CS.scc_bus, CS.clu11, self.sc_btn_type, self.sc_clu_speed, self.resume_cnt))
+          # Set이 아니면서 3 모드이면 가감속 신호 전달
+          elif CS.cruise_set_mode ==3 and CS.clu_Vanz > 30:
+            print("cruise auto set-> "+ str(self.sc_btn_type))
+            can_sends.append(create_clu11(self.packer, CS.scc_bus, CS.clu11, self.sc_btn_type, self.sc_clu_speed, self.resume_cnt))
+
+          self.resume_cnt += 1
 
     self.lkas11_cnt += 1
 
