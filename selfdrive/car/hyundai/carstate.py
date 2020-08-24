@@ -422,7 +422,6 @@ class CarState():
       cruise_set_speed_kph = 0 #self.VSetDis
       
       if self.prev_clu_CruiseSwState != self.clu_CruiseSwState:
-        print("캔슬 누름")
         if self.clu_CruiseSwState == 4:
           self.cruise_set_mode += 1
           if self.cruise_set_mode > 3:
