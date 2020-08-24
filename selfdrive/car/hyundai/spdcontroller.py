@@ -496,7 +496,8 @@ class SpdController():
 
         return wait_time_cmd, set_speed
 
-    def update(self, v_ego_kph, CS, sm, actuators, dRel, yRel, vRel, model_speed):
+    #def update(self, v_ego_kph, CS, sm, actuators, dRel, yRel, vRel, model_speed):
+    def update(self, v_ego_kph, CS, sm, actuators, dRel, yRel, vRel):
         btn_type = Buttons.NONE
         #lead_1 = sm['radarState'].leadOne
         long_wait_cmd = 500
@@ -513,7 +514,9 @@ class SpdController():
         # 선행 차량 거리유지
         lead_wait_cmd, lead_set_speed = self.update_lead2( CS,  dRel, yRel, vRel)  
         # 커브 감속.
-        curv_wait_cmd, curv_set_speed = self.update_curv(CS, sm, model_speed)
+        #curv_wait_cmd, curv_set_speed = self.update_curv(CS, sm, model_speed)
+        curv_wait_cmd = 0 
+        curv_set_speed = 0 
 
         #TEST 커브 속도 반영 제외
         #curv_wait_cmd = 0
@@ -566,7 +569,8 @@ class SpdController():
             self.seq_step_debug = 98   
             btn_type = Buttons.SET_DECEL
             self.long_curv_timer = 0
-        elif delta >= 2 and (model_speed > 200 or CS.clu_Vanz < 200):
+        #elif delta >= 2 and (model_speed > 200 or CS.clu_Vanz < 200):
+        elif delta >= 2 and CS.clu_Vanz < 200:
             set_speed = CS.VSetDis + dec_step_cmd
             self.seq_step_debug = 99
             btn_type = Buttons.RES_ACCEL
