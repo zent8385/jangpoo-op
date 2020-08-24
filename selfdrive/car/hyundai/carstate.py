@@ -496,6 +496,10 @@ class CarState():
     self.stopped = cp_scc.vl["SCC11"]['SCCInfoDisplay'] == 4. if not self.no_radar else False
     self.lead_distance = cp_scc.vl["SCC11"]['ACC_ObjDist'] if not self.no_radar else 0
 
+
+    #janpoo6427
+    self.driverOverride = cp.vl["TCS13"]["DriverOverride"]     # 1 Acc,  2 bracking, 0 Normal
+    
     self.user_brake = 0
 
     self.brake_pressed = cp.vl["TCS13"]['DriverBraking']
