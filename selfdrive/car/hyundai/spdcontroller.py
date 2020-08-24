@@ -496,8 +496,8 @@ class SpdController():
 
         return wait_time_cmd, set_speed
 
-    def update(self, v_ego_kph, CS, sm, actuators, dRel, yRel, vRel, model_speed):
-    #def update(self, v_ego_kph, CS, sm, actuators, dRel, yRel, vRel):
+    #def update(self, v_ego_kph, CS, sm, actuators, dRel, yRel, vRel, model_speed):
+    def update(self, v_ego_kph, CS, sm, actuators, dRel, yRel, vRel):
         btn_type = Buttons.NONE
         #lead_1 = sm['radarState'].leadOne
         long_wait_cmd = 500
