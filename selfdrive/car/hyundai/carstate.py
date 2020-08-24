@@ -332,13 +332,13 @@ class CarState():
     v_ego_x = self.v_ego_kf.update(v_ego_raw)
     return float(v_ego_x[0]), float(v_ego_x[1])
   
-  def update_cruiseSW(self ):
+  def update_cruiseSWnoneSCC(self ):
     cruise_set_speed_kph = self.cruise_set_speed_kph
 
     if self.cruise_set_speed:
       self.prev_VSetDis = cruise_set_speed_kph
 
-    delta_vsetdis = 0
+    #delta_vsetdis = 0
     
     if self.pcm_acc_status:
 
@@ -346,7 +346,7 @@ class CarState():
       if self.cruise_set_mode ==3  and not self.cruise_set_speed and self.prev_VSetDis:
         cruise_set_speed_kph = int(self.prev_VSetDis)
         
-      delta_vsetdis = abs(self.VSetDis - self.prev_VSetDis)
+        #delta_vsetdis = abs(self.VSetDis - self.prev_VSetDis)
       
       #브레이크 최우선
       if self.brake_pressed:
@@ -487,6 +487,7 @@ class CarState():
     self.clu_Vanz = cp.vl["CLU11"]["CF_Clu_Vanz"]
     self.v_ego = self.clu_Vanz * CV.KPH_TO_MS
 
+    #print("clu_vanz : " + str(self.clu_Vanz) + " vEgo : " + str(self.v_ego))
     self.low_speed_lockout = self.v_ego_raw < 1.0
 
     self.is_set_speed_in_mph = int(cp.vl["CLU11"]["CF_Clu_SPEED_UNIT"])
@@ -589,5 +590,5 @@ class CarState():
     self.scc12 = cp_scc.vl["SCC12"]
     self.mdps12 = cp_mdps.vl["MDPS12"]
 
-    self.cruise_set_speed_kph = self.update_cruiseSW()
+    self.cruise_set_speed_kph = self.update_cruiseSWnoneSCC()
     self.cruise_set_speed = self.cruise_set_speed_kph * speed_conv
