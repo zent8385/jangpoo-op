@@ -4,6 +4,8 @@ from opendbc.can.parser import CANParser
 from selfdrive.config import Conversions as CV
 from common.kalman.simple_kalman import KF1D
 from common.realtime import DT_CTRL
+#
+import common.log as trace1
 
 GearShifter = car.CarState.GearShifter
 
@@ -301,6 +303,14 @@ class CarState():
     self.sas_bus = CP.sasBus
     self.scc_bus = CP.sccBus
 
+    #
+    self.cruise_set_speed_kph = 0
+    self.cruise_set_mode = 2
+    self.VSetDis = 0
+    self.prev_VSetDis = 0
+    self.prev_clu_CruiseSwState = 0
+    self.clu_CruiseSwState = 0
+
     # Q = np.matrix([[10.0, 0.0], [0.0, 100.0]])
     # R = 1e3
     self.v_ego_kf = KF1D(x0=[[0.0], [0.0]],
@@ -314,6 +324,111 @@ class CarState():
 
     v_ego_x = self.v_ego_kf.update(v_ego_raw)
     return float(v_ego_x[0]), float(v_ego_x[1])
+  
+  def update_cruiseSW(self ):
+    cruise_set_speed_kph = self.cruise_set_speed_kph
+
+    if self.cruise_set_speed:
+      self.prev_VSetDis = cruise_set_speed_kph
+
+    delta_vsetdis = 0
+    
+    if self.pcm_acc_status:
+
+      #크루즈 auto set 적용
+      if self.cruise_set_mode ==3  and not self.cruise_set_speed and self.prev_VSetDis:
+        cruise_set_speed_kph = int(self.prev_VSetDis)
+        
+      delta_vsetdis = abs(self.VSetDis - self.prev_VSetDis)
+      
+      #브레이크 최우선
+      if self.brake_pressed:
+        self.cruise_set_first = 1
+        cruise_set_speed_kph = 0
+        self.VSetDis = 0
+      elif self.clu_Vanz> 30:
+        #버튼 한번 누름
+        if self.prev_clu_CruiseSwState != self.clu_CruiseSwState:
+          self.cruise_btn_time = 0
+          
+          if self.prev_clu_CruiseSwState == 1:   # up
+            if self.cruise_set_first:
+              self.cruise_set_first = 0
+              cruise_set_speed_kph =  int(self.prev_VSetDis)
+            else:
+              cruise_set_speed_kph += 2 #1
+          elif self.prev_clu_CruiseSwState == 2:  # dn
+            if self.cruise_set_first:
+              self.cruise_set_first = 0
+              cruise_set_speed_kph =  int(self.clu_Vanz)
+            else:
+              cruise_set_speed_kph -= 2 #1
+          #cancel 버튼 누름 또는 크루즈 상태에 따른 cruise set 초기화
+          elif self.prev_clu_CruiseSwState == 4:  # cancel /brake/ cruise off
+            self.cruise_set_first = 1
+            cruise_set_speed_kph = 0
+            self.VSetDis = 0
+
+          self.prev_clu_CruiseSwState = self.clu_CruiseSwState
+
+        #버튼을 누르고 있는 동안
+        elif self.prev_clu_CruiseSwState == self.clu_CruiseSwState:
+          #100ms 이내이면 패스
+          if self.cruise_btn_time < 100:
+            #타이머 시간동안 작동 안함
+            self.cruise_btn_time += 1
+          # 그 이상 누르고 있는 경우
+          else:
+            self.cruise_btn_time = 0
+            if self.prev_clu_CruiseSwState == 1:   # up
+              if self.cruise_set_first:
+                self.cruise_set_first = 0
+                cruise_set_speed_kph =  int(self.prev_VSetDis)
+              else:
+                cruise_set_speed_kph =  int(self.clu_Vanz)
+            elif self.prev_clu_CruiseSwState == 2:  # dn
+              if self.cruise_set_first:
+                self.cruise_set_first = 0
+                cruise_set_speed_kph =  int(self.clu_Vanz)
+                self.VSetDis = cruise_set_speed_kph
+              else:              
+                cruise_set_speed_kph =  int(self.clu_Vanz)
+            #cancel 버튼 누름 또는 크루즈 상태에 따른 cruise set 초기화
+            elif self.prev_clu_CruiseSwState == 4:  # cancel /brake/ cruise off
+              self.cruise_set_first = 1
+              cruise_set_speed_kph = 0
+              self.VSetDis = 0
+
+      self.prev_clu_CruiseSwState = self.clu_CruiseSwState
+      
+      #순정 크루즈 속도정보가 제공 받을 수 있을때 동기화를 위한 로직
+      #elif self.clu_CruiseSwState and delta_vsetdis > 0:
+      #  self.curise_sw_check = True
+        #cruise_set_speed_kph =  int(self.VSetDis)
+
+    else:
+      self.curise_sw_check = False
+      self.cruise_set_first = 1
+
+      self.prev_VSetDis = 0 #int(self.VSetDis)
+      self.VSetDis = 0
+      cruise_set_speed_kph = 0 #self.VSetDis
+      
+      if self.prev_clu_CruiseSwState != self.clu_CruiseSwState:
+        if self.clu_CruiseSwState == 4:
+          self.cruise_set_mode += 1
+          if self.cruise_set_mode > 3:
+            self.cruise_set_mode = 0
+        self.prev_clu_CruiseSwState = self.clu_CruiseSwState
+      
+    trace1.cruise_set_mode = self.cruise_set_mode
+
+
+    #if cruise_set_speed_kph < 30:
+    #  cruise_set_speed_kph = 0
+    #  self.VSetDis = 0
+
+    return cruise_set_speed_kph
 	
   def update(self, cp, cp2, cp_cam):
 
@@ -454,3 +569,6 @@ class CarState():
     self.clu11 = cp.vl["CLU11"]
     self.scc12 = cp_scc.vl["SCC12"]
     self.mdps12 = cp_mdps.vl["MDPS12"]
+
+    self.cruise_set_speed_kph = self.update_cruiseSW()
+    self.cruise_set_speed = self.cruise_set_speed_kph * speed_conv
