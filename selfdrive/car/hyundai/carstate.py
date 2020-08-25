@@ -337,7 +337,7 @@ class CarState():
 
     if self.cruise_set_speed:
       self.prev_VSetDis = cruise_set_speed_kph
-
+    print("prev_VSetDis:"+str(self.prev_VSetDis))
     #delta_vsetdis = 0
     
     if self.pcm_acc_status:
@@ -424,7 +424,7 @@ class CarState():
       if self.prev_clu_CruiseSwState != self.clu_CruiseSwState:
         if self.clu_CruiseSwState == 4:
           self.cruise_set_mode += 1
-          if self.cruise_set_mode > 3:
+          if self.cruise_set_mode > 2:
             self.cruise_set_mode = 0
         self.prev_clu_CruiseSwState = self.clu_CruiseSwState
       

@@ -652,16 +652,16 @@ static void ui_draw_debug(UIState *s)
   }
   else if (cruise_set_mode == 1)
   {
-    snprintf(speed_str, sizeof(speed_str), "%d:CURVE", cruise_set_mode );
+    snprintf(speed_str, sizeof(speed_str), "%d:SpdCtrl", cruise_set_mode );
   }
   else if (cruise_set_mode == 2)
   {
-    snprintf(speed_str, sizeof(speed_str), "%d:CURVE+DIST", cruise_set_mode );
+    snprintf(speed_str, sizeof(speed_str), "%d:SpdCtrl+Auto", cruise_set_mode );
   }
-  else if (cruise_set_mode == 3)
-  {
-    snprintf(speed_str, sizeof(speed_str), "%d:CUR+DIS+AUTO", cruise_set_mode );
-  }
+  // else if (cruise_set_mode == )
+  // {
+  //   snprintf(speed_str, sizeof(speed_str), "%d:CUR+DIS+AUTO", cruise_set_mode );
+  // }
     
   nvgText(s->vg, x_pos, y_pos, speed_str, NULL);
  
