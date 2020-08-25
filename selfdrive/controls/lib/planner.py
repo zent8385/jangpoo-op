@@ -155,9 +155,11 @@ class Planner():
       v_curvature = np.sqrt(a_y_max / np.clip(np.abs(curv), 1e-4, None))
       model_speed = np.min(v_curvature)
       model_speed = max(20.0 * CV.MPH_TO_MS, model_speed) # Don't slow down below 20mph
+
+      curvature = np.mean(curv[1:4])
     else:
       model_speed = MAX_SPEED
-
+      curvature = 0.
     # Calculate speed for normal cruise control
     if enabled and not self.first_loop:
       accel_limits = [float(x) for x in calc_cruise_accel_limits(v_ego, following)]
@@ -252,6 +254,8 @@ class Planner():
     plan_send.plan.fcw = fcw
 
     pm.send('plan', plan_send)
+    plan_send.plan.pCurvature = float(curvature)
+    plan_send.plan.curvMaxSpeed = float(model_speed)
 
     # Interpolate 0.05 seconds and save as starting point for next iteration
     a_acc_sol = self.a_acc_start + (CP.radarTimeStep / LON_MPC_STEP) * (self.a_acc - self.a_acc_start)
