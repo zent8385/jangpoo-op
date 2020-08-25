@@ -6,9 +6,11 @@ from selfdrive.car.hyundai.hyundaican import create_lkas11, create_clu11, \
 from selfdrive.car.hyundai.values import Buttons, SteerLimitParams, CAR
 from opendbc.can.packer import CANPacker
 
+
 #janpoo6427
 from selfdrive.config import Conversions as CV
 from selfdrive.car.hyundai.spdcontroller  import SpdController
+from selfdrive.kegman_conf import kegman_conf
 
 VisualAlert = car.CarControl.HUDControl.VisualAlert
 
@@ -86,6 +88,12 @@ class CarController():
     self.sc_btn_type = Buttons.NONE
     self.sc_clu_speed = 0
 
+    self.steer_torque_over_timer = 0
+    self.steer_torque_over = False
+    
+    kegman = kegman_conf()
+    self.steer_torque_over_max = float(kegman.conf['steerTorqueOver'])
+
   def update(self, enabled, CS, frame, actuators, pcm_cancel_cmd, visual_alert,
               left_line, right_line, left_lane_depart, right_lane_depart, sm, LaC):
 
@@ -106,6 +114,17 @@ class CarController():
     new_steer = actuators.steer * SteerLimitParams.STEER_MAX
     apply_steer = apply_std_steer_torque_limits(new_steer, self.apply_steer_last, CS.steer_torque_driver, SteerLimitParams)
     self.steer_rate_limited = new_steer != apply_steer
+
+    if abs( CS.steer_torque_driver ) > self.steer_torque_over_max: #200:
+      self.steer_torque_over_timer += 1
+      if self.steer_torque_over_timer > 5:
+        self.steer_torque_over = True
+        self.steer_torque_over_timer = 100
+    elif self.steer_torque_over_timer:
+      self.steer_torque_over_timer -= 1
+    else:
+      self.steer_torque_over = False
+
 
     ### LKAS button to temporarily disable steering
 #    if not CS.lkas_error:
@@ -131,9 +150,11 @@ class CarController():
 
     # Disable steering while turning blinker on and speed below 60 kph
     if CS.left_blinker_on or CS.right_blinker_on:
+      self.steer_torque_over = False
       if self.car_fingerprint in [CAR.IONIQ, CAR.KONA]:
         self.turning_signal_timer = 100  # Disable for 1.0 Seconds after blinker turned off
       elif CS.left_blinker_flash or CS.right_blinker_flash:
+        self.steer_torque_over = False
         self.turning_signal_timer = 100
     if self.turning_signal_timer and CS.v_ego < 16.666667:
       lkas_active = 0

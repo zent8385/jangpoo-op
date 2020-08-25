@@ -109,6 +109,13 @@ ALERTS = [
       Priority.LOW, VisualAlert.none, AudibleAlert.none, 1., 2., 3.),
 
   Alert(
+      "steerTorqueOver",
+      "운전자 핸들 조향중",
+      "조향 토크가 일시 비활성화 됩니다",
+      AlertStatus.userPrompt, AlertSize.mid,
+      Priority.LOW, VisualAlert.none, AudibleAlert.none, 1., 2., 3.),
+
+  Alert(
       "steerTempUnavailable",
       "핸들을 잡아주세요",
       "조향제어가 일시적으로 비활성화 되었습니다",

@@ -103,6 +103,7 @@ struct CarEvent @0x9b1657f34caf3ad3 {
     speedTooHigh @77;
     laneChangeBlocked @78;
     relayMalfunction @79;
+    steerTorqueOver @80;
   }
 }
 

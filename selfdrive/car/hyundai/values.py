@@ -1,5 +1,6 @@
 from cereal import car
 from selfdrive.car import dbc_dict
+from selfdrive.kegman_conf import kegman_conf
 Ecu = car.CarParams.Ecu
 
 # Steer torque limits
@@ -301,4 +302,6 @@ DBC = {
   CAR.TUCSON_TL: dbc_dict('hyundai_kia_generic', None),
 }
 
-STEER_THRESHOLD = 150
+
+kegman = kegman_conf()
+STEER_THRESHOLD = int(kegman.conf['threshold'])

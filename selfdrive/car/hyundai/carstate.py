@@ -513,8 +513,10 @@ class CarState():
     self.lead_distance = cp_scc.vl["SCC11"]['ACC_ObjDist'] if not self.no_radar else 0
 
 
+
     #janpoo6427
     self.driverOverride = cp.vl["TCS13"]["DriverOverride"]     # 1 Acc,  2 bracking, 0 Normal
+    self.steer_override = abs(self.steer_torque_driver) > STEER_THRESHOLD
 
     self.user_brake = 0
 

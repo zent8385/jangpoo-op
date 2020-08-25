@@ -272,7 +272,7 @@ class CarInterface(CarInterfaceBase):
 
     # steer, gas, brake limitations VS speed
     ret.steerMaxBP = [0.]
-    ret.steerMaxV = [1.0]
+    ret.steerMaxV = [1.3]
     ret.gasMaxBP = [0.]
     ret.gasMaxV = [0.5]
     ret.brakeMaxBP = [0., 20.]
@@ -438,12 +438,22 @@ class CarInterface(CarInterfaceBase):
       events.append(create_event('steerTempUnavailable', [ET.NO_ENTRY, ET.WARNING]))
 
     if ret.cruiseState.enabled and not self.cruise_enabled_prev:
-      events.append(create_event('pcmEnable', [ET.ENABLE]))
-    elif ret.cruiseState.enabled and ret.gearShifter == GearShifter.drive and self.CS.clu_Vanz > 15:
-      events.append(create_event('pcmEnable', [ET.ENABLE]))
-    elif not ret.cruiseState.enabled:
-      events.append(create_event('pcmDisable', [ET.USER_DISABLE]))
+      if ret.cruiseState.enabled:
+        events.append(create_event('pcmEnable', [ET.ENABLE]))
+      else:
+        events.append(create_event('pcmDisable', [ET.USER_DISABLE]))
+      self.cruise_enabled_prev = ret.cruiseState.enabled
+    elif ret.cruiseState.enabled:
+      if ret.gearShifter == GearShifter.drive and self.CS.clu_Vanz > 15:
+        events.append(create_event('pcmEnable', [ET.ENABLE]))
 
+      if self.turning_indicator_alert:
+        events.append(create_event('turningIndicatorOn', [ET.WARNING]))
+      elif self.CC.steer_torque_over:
+        events.append(create_event('steerTorqueOver', [ET.WARNING]))          
+
+      
+    
     # disable on pedals rising edge or when brake is pressed and speed isn't zero
     if ((ret.gasPressed and not self.gas_pressed_prev) or \
       (ret.brakePressed and (not self.brake_pressed_prev or ret.vEgoRaw > 0.1))) and self.CC.longcontrol:
@@ -454,8 +464,7 @@ class CarInterface(CarInterfaceBase):
 
     if self.low_speed_alert and not self.CS.mdps_bus :
       events.append(create_event('belowSteerSpeed', [ET.WARNING]))
-    if self.turning_indicator_alert:
-      events.append(create_event('turningIndicatorOn', [ET.WARNING]))
+    
 #    if self.lkas_button_alert:
 #      events.append(create_event('lkasButtonOff', [ET.WARNING]))
     #TODO Varible for min Speed for LCA
