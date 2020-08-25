@@ -337,7 +337,7 @@ class CarState():
 
     if self.cruise_set_speed_kph:
       self.prev_VSetDis = cruise_set_speed_kph
-    print("prev_VSetDis:"+str(self.prev_VSetDis))
+    #print("prev_VSetDis:"+str(self.prev_VSetDis))
     #delta_vsetdis = 0
     
     if self.pcm_acc_status:
@@ -353,6 +353,7 @@ class CarState():
         self.cruise_set_first = 1
         cruise_set_speed_kph = 0
         self.VSetDis = 0
+        
       elif self.clu_Vanz> 30:
         #버튼 한번 누름
         if self.prev_clu_CruiseSwState != self.clu_CruiseSwState:
@@ -405,6 +406,7 @@ class CarState():
               self.cruise_set_first = 1
               cruise_set_speed_kph = 0
               self.VSetDis = 0
+              self.prev_VSetDis = 0
 
       self.prev_clu_CruiseSwState = self.clu_CruiseSwState
       
@@ -431,9 +433,9 @@ class CarState():
     trace1.cruise_set_mode = self.cruise_set_mode
 
 
-    #if cruise_set_speed_kph < 30:
-    #  cruise_set_speed_kph = 0
-    #  self.VSetDis = 0
+    if cruise_set_speed_kph < 30:
+      cruise_set_speed_kph = 0
+      self.VSetDis = 0
 
     return cruise_set_speed_kph
 	
