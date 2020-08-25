@@ -335,7 +335,7 @@ class CarState():
   def update_cruiseSWnoneSCC(self ):
     cruise_set_speed_kph = self.cruise_set_speed_kph
 
-    if self.cruise_set_speed:
+    if self.cruise_set_speed_kph:
       self.prev_VSetDis = cruise_set_speed_kph
     print("prev_VSetDis:"+str(self.prev_VSetDis))
     #delta_vsetdis = 0
