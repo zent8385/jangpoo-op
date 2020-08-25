@@ -188,7 +188,11 @@ typedef struct UIScene {
   int hwType;
   int satelliteCount;
   uint8_t athenaStatus;
+  //janpoo6427
+  float pCurvature;
+  float curvMaxSpeed;
   
+  //janpoo6427
   struct _STATUS_
   {
       float vCurvature; 

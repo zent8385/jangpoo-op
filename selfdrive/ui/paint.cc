@@ -632,6 +632,7 @@ static void ui_draw_debug(UIState *s)
 
   int  y_pos = 0;
   int  x_pos = 0;
+  int height = 50;
 
   x_pos = ui_viz_rx + 300;
   y_pos = 150; 
@@ -643,14 +644,7 @@ static void ui_draw_debug(UIState *s)
   nvgFontSize(s->vg, 36*1.5);
 
 
-
-  // snprintf(speed_str, sizeof(speed_str), "P:%8.5f", scene->pid.p );
-  // nvgText(s->vg, x_pos, y_pos+0, speed_str, NULL);
-  // snprintf(speed_str, sizeof(speed_str), "I:%8.5f", scene->pid.i );
-  // nvgText(s->vg, x_pos, y_pos+50, speed_str, NULL);
-  // snprintf(speed_str, sizeof(speed_str), "F:%8.5f", scene->pid.f );
-  // nvgText(s->vg, x_pos, y_pos+100, speed_str, NULL);
-
+  
   int   cruise_set_mode = scene->status.cruise_set_mode;
   if (cruise_set_mode == 0)
   {
@@ -669,8 +663,22 @@ static void ui_draw_debug(UIState *s)
     snprintf(speed_str, sizeof(speed_str), "%d:CUR+DIS+AUTO", cruise_set_mode );
   }
     
-  nvgText(s->vg, x_pos, y_pos+170, speed_str, NULL);
+  nvgText(s->vg, x_pos, y_pos, speed_str, NULL);
  
+
+  y_pos += height;
+  snprintf(str, sizeof(str), "CURV: %.3f", scene->pCurvature * 1000.);
+  nvgText(s->vg, x_pos, y_pos, speed_str, NULL);
+  
+  // snprintf(speed_str, sizeof(speed_str), "P:%8.5f", scene->pid.p );
+  // nvgText(s->vg, x_pos, y_pos+0, speed_str, NULL);
+
+  // snprintf(speed_str, sizeof(speed_str), "I:%8.5f", scene->pid.i );
+  // nvgText(s->vg, x_pos, y_pos+50, speed_str, NULL);
+  // snprintf(speed_str, sizeof(speed_str), "F:%8.5f", scene->pid.f );
+  // nvgText(s->vg, x_pos, y_pos+100, speed_str, NULL);
+
+
 
 
   snprintf(speed_str, sizeof(speed_str), "%s", scene->status.alert_text1 );

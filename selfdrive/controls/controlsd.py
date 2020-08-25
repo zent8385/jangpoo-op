@@ -412,6 +412,8 @@ def data_send(sm, pm, CS, CI, CP, VM, state, events, actuators, v_cruise_kph, rk
     "cruiseSetMode" : trace1.cruise_set_mode,
     "alertTextMsg1": str(trace1.global_alertTextMsg1),
     "alertTextMsg2": str(trace1.global_alertTextMsg2),
+    "pCurvature": sm['plan'].pCurvature,
+    "curvMaxSpeed": sm['plan'].curvMaxSpeed,
   }
 
   if CP.lateralTuning.which() == 'pid':

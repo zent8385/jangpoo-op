@@ -532,6 +532,9 @@ struct ControlsState @0x97ff69c53601abf1 {
   alertTextMsg1  @59 :Text;
   alertTextMsg2  @60 :Text;
 
+  pCurvature @61 :Float32;
+  curvMaxSpeed @62 :Float32;
+
   lateralControlState :union {
     indiState @52 :LateralINDIState;
     pidState @53 :LateralPIDState;
@@ -762,6 +765,9 @@ struct Plan {
   radarCanError @30 :Bool;
 
   processingDelay @29 :Float32;
+
+  pCurvature @32 :Float32;
+  curvMaxSpeed @33 :Float32;
 
 
   struct GpsTrajectory {
