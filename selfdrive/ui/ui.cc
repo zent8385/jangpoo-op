@@ -438,8 +438,8 @@ void handle_message(UIState *s, Message * msg) {
     //curise_set_mode 추가
     s->scene.status.cruise_set_mode = datad.cruiseSetMode;    
 
-    s->scene.pCurvature = data.pCurvature();
-    s->scene.curvMaxSpeed = data.curvMaxSpeed();
+    s->scene.pCurvature = datad.pCurvature;
+    s->scene.curvMaxSpeed = datad.curvMaxSpeed;
 
     if (datad.alertSound != cereal_CarControl_HUDControl_AudibleAlert_none && datad.alertSound != s->alert_sound) {
       if (s->alert_sound != cereal_CarControl_HUDControl_AudibleAlert_none) {
