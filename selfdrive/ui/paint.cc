@@ -537,7 +537,7 @@ static void ui_draw_vision_maxspeed(UIState *s) {
 
   // Draw Background
   nvgBeginPath(s->vg);
-  nvgRoundedRect(s->vg, viz_maxspeed_x+300, viz_maxspeed_y, viz_maxspeed_w, viz_maxspeed_h, 30);
+  nvgRoundedRect(s->vg, viz_maxspeed_x+200, viz_maxspeed_y, viz_maxspeed_w, viz_maxspeed_h, 30);
   if (is_set_over_limit) {
     nvgFillColor(s->vg, nvgRGBA(218, 111, 37, 180));
   } else {
@@ -663,7 +663,7 @@ static void ui_draw_debug(UIState *s)
   int height = 50;
 
 
-  x_pos = ui_viz_rx + 900;
+  x_pos = ui_viz_rx + 1200;
   y_pos = 150; 
   
 
