@@ -592,6 +592,7 @@ class SpdController():
         str4 = ' LD/LS={:03.0f}/{:03.0f} '.format(  dRel, vRel )
 
         str5 = str3 +  str4
+        
         trace1.printf2( str5 )
 
         return btn_type, set_speed
