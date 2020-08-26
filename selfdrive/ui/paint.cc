@@ -532,6 +532,34 @@ static void ui_draw_vision_maxspeed(UIState *s) {
     nvgText(s->vg, viz_maxspeed_x+(viz_maxspeed_xo/2)+(viz_maxspeed_w/2), 242, "-", NULL);
   }
 
+  //taretspeed
+
+
+  // Draw Background
+  nvgBeginPath(s->vg);
+  nvgRoundedRect(s->vg, viz_maxspeed_x+300, viz_maxspeed_y, viz_maxspeed_w, viz_maxspeed_h, 30);
+  if (is_set_over_limit) {
+    nvgFillColor(s->vg, nvgRGBA(218, 111, 37, 180));
+  } else {
+    nvgFillColor(s->vg, COLOR_BLACK_ALPHA(100));
+  }
+  nvgFill(s->vg);
+
+  // Draw Border
+  nvgBeginPath(s->vg);
+  nvgRoundedRect(s->vg, viz_maxspeed_x+300, viz_maxspeed_y, viz_maxspeed_w, viz_maxspeed_h, 20);
+  if (is_set_over_limit) {
+    nvgStrokeColor(s->vg, COLOR_OCHRE);
+  } else if (is_speedlim_valid && !s->is_ego_over_limit) {
+    nvgStrokeColor(s->vg, COLOR_WHITE);
+  } else if (is_speedlim_valid && s->is_ego_over_limit) {
+    nvgStrokeColor(s->vg, COLOR_WHITE_ALPHA(20));
+  } else {
+    nvgStrokeColor(s->vg, COLOR_WHITE_ALPHA(100));
+  }
+  nvgStrokeWidth(s->vg, 10);
+  nvgStroke(s->vg);
+
 }
 
 static void ui_draw_vision_speedlimit(UIState *s) {
@@ -634,7 +662,8 @@ static void ui_draw_debug(UIState *s)
   int  x_pos = 0;
   int height = 50;
 
-  x_pos = ui_viz_rx + 300;
+
+  x_pos = ui_viz_rx + 900;
   y_pos = 150; 
   
 
