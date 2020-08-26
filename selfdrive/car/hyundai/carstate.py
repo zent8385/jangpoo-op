@@ -350,9 +350,10 @@ class CarState():
       
       #브레이크 최우선
       if self.brake_pressed:
-        self.cruise_set_first = 1
-        cruise_set_speed_kph = 0
-        self.VSetDis = 0
+        if self.cruise_set_mode !=2:
+          self.cruise_set_first = 1
+          cruise_set_speed_kph = 0
+          self.VSetDis = 0
         
       elif self.clu_Vanz> 30:
         #버튼 한번 누름
