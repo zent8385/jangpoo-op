@@ -377,6 +377,7 @@ class CarState():
             self.cruise_set_first = 1
             cruise_set_speed_kph = 0
             self.VSetDis = 0
+            self.prev_VSetDis = 0
 
           self.prev_clu_CruiseSwState = self.clu_CruiseSwState
 

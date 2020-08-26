@@ -331,7 +331,7 @@ class SpdController():
 
     def update_lead2(self, CS,  dRel, yRel, vRel):
         lead_set_speed = CS.cruise_set_speed_kph
-        lead_wait_cmd = 600
+        lead_wait_cmd = 300
         self.seq_step_debug = 0
 
 																			 
