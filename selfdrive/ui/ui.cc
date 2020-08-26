@@ -441,6 +441,25 @@ void handle_message(UIState *s, Message * msg) {
     s->scene.pCurvature = datad.pCurvature;
     s->scene.curvMaxSpeed = datad.curvMaxSpeed;
 
+    if (datad.alertTextMsg1.str) 
+    {
+      snprintf(s->scene.status.alert_text1, sizeof(s->scene.status.alert_text1), "%s", datad.alertTextMsg1.str);
+    } 
+    else 
+    {
+      s->scene.status.alert_text1[0] = '\0';
+    }
+
+    if (datad.alertTextMsg2.str) 
+    {
+      snprintf(s->scene.status.alert_text2, sizeof(s->scene.status.alert_text2), "%s", datad.alertTextMsg2.str);
+    } 
+    else 
+    {
+      s->scene.status.alert_text2[0] = '\0';
+    }
+
+
     if (datad.alertSound != cereal_CarControl_HUDControl_AudibleAlert_none && datad.alertSound != s->alert_sound) {
       if (s->alert_sound != cereal_CarControl_HUDControl_AudibleAlert_none) {
         stop_alert_sound(s->alert_sound);
