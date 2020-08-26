@@ -534,10 +534,10 @@ static void ui_draw_vision_maxspeed(UIState *s) {
 
   //taretspeed
 
-
+  viz_maxspeed_x += 210;
   // Draw Background
   nvgBeginPath(s->vg);
-  nvgRoundedRect(s->vg, viz_maxspeed_x+200, viz_maxspeed_y, viz_maxspeed_w, viz_maxspeed_h, 30);
+  nvgRoundedRect(s->vg, viz_maxspeed_x, viz_maxspeed_y, viz_maxspeed_w, viz_maxspeed_h, 30);
   if (is_set_over_limit) {
     nvgFillColor(s->vg, nvgRGBA(218, 111, 37, 180));
   } else {
@@ -547,7 +547,7 @@ static void ui_draw_vision_maxspeed(UIState *s) {
 
   // Draw Border
   nvgBeginPath(s->vg);
-  nvgRoundedRect(s->vg, viz_maxspeed_x+300, viz_maxspeed_y, viz_maxspeed_w, viz_maxspeed_h, 20);
+  nvgRoundedRect(s->vg, viz_maxspeed_x, viz_maxspeed_y, viz_maxspeed_w, viz_maxspeed_h, 20);
   if (is_set_over_limit) {
     nvgStrokeColor(s->vg, COLOR_OCHRE);
   } else if (is_speedlim_valid && !s->is_ego_over_limit) {
@@ -559,6 +559,17 @@ static void ui_draw_vision_maxspeed(UIState *s) {
   }
   nvgStrokeWidth(s->vg, 10);
   nvgStroke(s->vg);
+
+  // Draw "TARGET"" Text
+  nvgTextAlign(s->vg, NVG_ALIGN_CENTER | NVG_ALIGN_BASELINE);
+  nvgFontFaceId(s->vg,  s->font_sans_regular);
+  nvgFontSize(s->vg, 26*1.7);
+  if (is_cruise_set) {
+    nvgFillColor(s->vg, COLOR_WHITE_ALPHA(200));
+  } else {
+    nvgFillColor(s->vg, COLOR_WHITE_ALPHA(100));
+  }
+  nvgText(s->vg, viz_maxspeed_x+(viz_maxspeed_xo/2)+(viz_maxspeed_w/2), 130, "목표속도", NULL);
 
 }
 
@@ -685,7 +696,7 @@ static void ui_draw_debug(UIState *s)
   }
   else if (cruise_set_mode == 2)
   {
-    snprintf(speed_str, sizeof(speed_str), "%d:SpdCtrl+Auto", cruise_set_mode );
+    snprintf(speed_str, sizeof(speed_str), "%d:SpdCtrl+", cruise_set_mode );
   }
   // else if (cruise_set_mode == )
   // {
