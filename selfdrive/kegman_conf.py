@@ -137,6 +137,10 @@ class kegman_conf():
       if "steerTorqueOver" not in self.config:
         self.config.update({"steerTorqueOver":"360"})
         self.element_updated = True
+        
+      if "threshold" not in self.config:
+        self.config.update({"threshold":"150"})
+        self.element_updated = True
 
       if self.element_updated:
         print("updated")
@@ -153,7 +157,7 @@ class kegman_conf():
                      "steerRatio":"-1", "steerRateCost":"-1", "slowOnCurves":"0", "Kf":"-1", \
                      "sR_boost":"0", "sR_BP0":"0", "sR_BP1":"0", "sR_time":"0.2", \
                      "ALCnudgeLess":"0", "ALCminSpeed":"16.666667", "ALCtimer":"1.0", "CruiseDelta":"8", \
-                     "CruiseEnableMin":"0", "epsModded": "0", "steerTorqueOver":"360"}
+                     "CruiseEnableMin":"0", "epsModded": "0", "steerTorqueOver":"360", "threshold":"150"}
 
 
       self.write_config(self.config)
