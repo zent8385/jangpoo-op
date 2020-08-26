@@ -137,10 +137,19 @@ class kegman_conf():
       if "steerTorqueOver" not in self.config:
         self.config.update({"steerTorqueOver":"360"})
         self.element_updated = True
-        
+
       if "threshold" not in self.config:
         self.config.update({"threshold":"150"})
         self.element_updated = True
+
+      if "cV_Ratio" not in self.config:
+        self.config.update({"cV_Ratio":"0.7"})
+        self.element_updated = True
+
+      if "cV_Dist" not in self.config:
+        self.config.update({"cV_Dist":"-5"})
+        self.element_updated = True
+
 
       if self.element_updated:
         print("updated")
@@ -148,7 +157,7 @@ class kegman_conf():
 
     else:
       self.config = {"cameraOffset":"0.06", "lastTrMode":"1", "battChargeMin":"70", "battChargeMax":"80", \
-                     "wheelTouchSeconds":"180", "battPercOff":"30", "carVoltageMinEonShutdown":"11800", \
+                     "wheelTouchSeconds":"30000", "battPercOff":"30", "carVoltageMinEonShutdown":"11800", \
                      "brakeStoppingTarget":"0.25", "tuneGernby":"1", \
                      "Kp":"-1", "Ki":"-1", "liveParams":"1", "leadDistance":"5", "deadzone":"10.0", \
                      "1barBP0":"-0.1", "1barBP1":"2.25", "2barBP0":"-0.1", "2barBP1":"2.5", "3barBP0":"0.0", \
@@ -157,7 +166,10 @@ class kegman_conf():
                      "steerRatio":"-1", "steerRateCost":"-1", "slowOnCurves":"0", "Kf":"-1", \
                      "sR_boost":"0", "sR_BP0":"0", "sR_BP1":"0", "sR_time":"0.2", \
                      "ALCnudgeLess":"0", "ALCminSpeed":"16.666667", "ALCtimer":"1.0", "CruiseDelta":"8", \
-                     "CruiseEnableMin":"0", "epsModded": "0", "steerTorqueOver":"360", "threshold":"150"}
+                     "CruiseEnableMin":"0", "epsModded": "0", "steerTorqueOver":"360", "threshold":"150" \
+                     "cv_Ratio":"0.7", "cv_Dist":"-5"}
+
+
 
 
       self.write_config(self.config)
