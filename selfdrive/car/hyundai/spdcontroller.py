@@ -594,8 +594,8 @@ class SpdController():
         str5 = str3 +  str4
         
         trace1.printf2( str5 )
-        trace1.target_speed = 30 #set_speed
-        trace1.long_wait_cmd = 40 #long_wait_cmd
-        trace1.long_timer_cmd = 50 #self.long_timer_cmd
+        trace1.target_speed = set_speed
+        trace1.long_wait_cmd = long_wait_cmd
+        trace1.long_timer_cmd = self.long_timer_cmd
 
         return btn_type, set_speed
