@@ -535,6 +535,10 @@ struct ControlsState @0x97ff69c53601abf1 {
   pCurvature @61 :Float32;
   curvMaxSpeed @62 :Float32;
 
+  targetSpeed @63 :Float32;
+  longWaitCmd @64 :Float32;
+  longTimerCmd @65 :Float32;
+
   lateralControlState :union {
     indiState @52 :LateralINDIState;
     pidState @53 :LateralPIDState;
