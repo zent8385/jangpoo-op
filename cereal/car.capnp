@@ -104,6 +104,7 @@ struct CarEvent @0x9b1657f34caf3ad3 {
     laneChangeBlocked @78;
     relayMalfunction @79;
     steerTorqueOver @80;
+    ldwPermanent @81;
   }
 }
 
