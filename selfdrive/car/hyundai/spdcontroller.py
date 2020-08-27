@@ -335,7 +335,7 @@ class SpdController():
         self.seq_step_debug = 0
 
 																			 
-        if int(CS.cruise_set_mode) not in [2, 3]:
+        if int(CS.cruise_set_mode) not in [1, 2]:
             return lead_wait_cmd, lead_set_speed
 
         self.seq_step_debug = 1
