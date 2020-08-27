@@ -543,7 +543,7 @@ static void ui_draw_vision_maxspeed(UIState *s) {
   }
 
   //taretspeed
-  if (cruise_set_mode != 0) {
+  //if (cruise_set_mode != 0) {
     viz_maxspeed_x += 210;
     // Draw Background
     nvgBeginPath(s->vg);
@@ -601,7 +601,7 @@ static void ui_draw_vision_maxspeed(UIState *s) {
 
     snprintf(targetspeed_str, sizeof(targetspeed_str), "%3d/%3d", longTimerCmd, longWaitCmd );
     nvgText(s->vg, viz_maxspeed_x+(viz_maxspeed_xo/2)+(viz_maxspeed_w/2), 300, targetspeed_str, NULL);
-  }
+  //}
   
 
 }
