@@ -7,6 +7,9 @@ ROOT_LOG = '/data/media/0/realdata/'
 global_alertTextMsg1 = 'T1'
 global_alertTextMsg2 = 'T2'
 cruise_set_mode = 0
+target_speed = 0
+long_wait_cmd = 0
+long_timer_cmd = 0
 
 
 def printf( txt ):

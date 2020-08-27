@@ -73,7 +73,7 @@ class SpdController():
         self.long_control_state = 0  # initialized to off
 
         self.seq_step_debug = 0
-        self.long_curv_timer = 0
+        self.long_timer_cmd = 0
 
         self.path_x = np.arange(192)
 
@@ -507,8 +507,8 @@ class SpdController():
         #ver4
         set_speed_diff = set_speed - CS.VSetDis
 
-        if self.long_curv_timer < 600:
-            self.long_curv_timer += 1
+        if self.long_timer_cmd < 600:
+            self.long_timer_cmd += 1
 
 
         # 선행 차량 거리유지
@@ -553,7 +553,7 @@ class SpdController():
         else:
             dec_step_cmd = 1
 
-        if self.long_curv_timer < long_wait_cmd:
+        if self.long_timer_cmd < long_wait_cmd:
             #타이머 시간동안 작동 안함
             pass
         elif CS.driverOverride == 1:  # 가속패달에 의한 속도 설정.
@@ -563,24 +563,24 @@ class SpdController():
                     set_speed = CS.clu_Vanz               
                     self.seq_step_debug = 97
                     btn_type = Buttons.SET_DECEL
-            self.long_curv_timer = 0
+            self.long_timer_cmd = 0
         elif delta <= -2:
             set_speed = CS.VSetDis - dec_step_cmd
             self.seq_step_debug = 98   
             btn_type = Buttons.SET_DECEL
-            self.long_curv_timer = 0
+            self.long_timer_cmd = 0
         #elif delta >= 2 and (model_speed > 200 or CS.clu_Vanz < 200):
         elif delta >= 2 and CS.clu_Vanz < 200:
             set_speed = CS.VSetDis + dec_step_cmd
             self.seq_step_debug = 99
             btn_type = Buttons.RES_ACCEL
-            self.long_curv_timer = 0            
+            self.long_timer_cmd = 0            
             if set_speed > CS.cruise_set_speed_kph:
                 set_speed = CS.cruise_set_speed_kph
         else:
-            if self.long_curv_timer > long_wait_cmd:
+            if self.long_timer_cmd > long_wait_cmd:
                 CS.cruise_set_speed_kph = set_speed
-            self.long_curv_timer = 0
+            self.long_timer_cmd = 0
 
         CS.VSetDis = CS.clu_Vanz
 
@@ -588,11 +588,14 @@ class SpdController():
             btn_type = Buttons.NONE
 
         str3 = 'SS={:03.0f}/{:03.0f} SSD={:03.0f} VSD={:03.0f} pVSD={:03.0f} DAt={:03.0f}/{:03.0f}/{:03.0f} '.format(
-            set_speed, long_wait_cmd, set_speed_diff, CS.VSetDis, CS.prev_VSetDis,  CS.driverAcc_time, self.long_curv_timer, long_wait_cmd  )
+            set_speed, long_wait_cmd, set_speed_diff, CS.VSetDis, CS.prev_VSetDis,  CS.driverAcc_time, self.long_timer_cmd, long_wait_cmd  )
         str4 = ' LD/LS={:03.0f}/{:03.0f} '.format(  dRel, vRel )
 
         str5 = str3 +  str4
         
         trace1.printf2( str5 )
+        trace1.target_speed = 30 #set_speed
+        trace1.long_wait_cmd = 40 #long_wait_cmd
+        trace1.long_timer_cmd = 50 #self.long_timer_cmd
 
         return btn_type, set_speed
