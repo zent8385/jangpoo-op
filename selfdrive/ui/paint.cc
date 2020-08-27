@@ -458,16 +458,26 @@ static void ui_draw_vision_maxspeed(UIState *s) {
   float speedlimit = s->scene.speedlimit;
   int speedlim_calc = speedlimit * 2.2369363 + 0.5;
   int speed_lim_off = s->speed_lim_off * 2.2369363 + 0.5;
+  
+  char targetspeed_str[32];
+  float targetspeed = scene->status.target_speed;
+  int targetspeed_calc = targetspeed;
+  int longWaitCmd = scene->status.long_wait_cmd;
+  int longTimerCmd = scene->status.long_timer_cmd;
+
   if (s->is_metric) {
     maxspeed_calc = maxspeed + 0.5;
     speedlim_calc = speedlimit * 3.6 + 0.5;
     speed_lim_off = s->speed_lim_off * 3.6 + 0.5;
+  }else {
+    targetspeed_calc = targetspeed / 3.6;
   }
 
   bool is_cruise_set = (maxspeed != 0 && maxspeed != SET_SPEED_NA);
   bool is_speedlim_valid = s->scene.speedlimit_valid;
   bool is_set_over_limit = is_speedlim_valid && s->scene.engaged &&
                        is_cruise_set && maxspeed_calc > (speedlim_calc + speed_lim_off);
+  int cruise_set_mode = scene->status.cruise_set_mode;
 
   int viz_maxspeed_w = 184;
   int viz_maxspeed_h = 202;
@@ -531,6 +541,68 @@ static void ui_draw_vision_maxspeed(UIState *s) {
     nvgFillColor(s->vg, COLOR_WHITE_ALPHA(100));
     nvgText(s->vg, viz_maxspeed_x+(viz_maxspeed_xo/2)+(viz_maxspeed_w/2), 242, "-", NULL);
   }
+
+  //taretspeed
+  //if (cruise_set_mode != 0) {
+    viz_maxspeed_x += 210;
+    // Draw Background
+    nvgBeginPath(s->vg);
+    nvgRoundedRect(s->vg, viz_maxspeed_x, viz_maxspeed_y, viz_maxspeed_w, viz_maxspeed_h, 30);
+    if (is_set_over_limit) {
+      nvgFillColor(s->vg, nvgRGBA(218, 111, 37, 180));
+    } else {
+      nvgFillColor(s->vg, COLOR_BLACK_ALPHA(100));
+    }
+    nvgFill(s->vg);
+
+    // Draw Border
+    nvgBeginPath(s->vg);
+    nvgRoundedRect(s->vg, viz_maxspeed_x, viz_maxspeed_y, viz_maxspeed_w, viz_maxspeed_h, 20);
+    if (is_set_over_limit) {
+      nvgStrokeColor(s->vg, COLOR_OCHRE);
+    } else if (is_speedlim_valid && !s->is_ego_over_limit) {
+      nvgStrokeColor(s->vg, COLOR_WHITE);
+    } else if (is_speedlim_valid && s->is_ego_over_limit) {
+      nvgStrokeColor(s->vg, COLOR_WHITE_ALPHA(20));
+    } else {
+      nvgStrokeColor(s->vg, COLOR_WHITE_ALPHA(100));
+    }
+    nvgStrokeWidth(s->vg, 10);
+    nvgStroke(s->vg);
+
+    // Draw "TARGET"" Text
+    nvgTextAlign(s->vg, NVG_ALIGN_CENTER | NVG_ALIGN_BASELINE);
+    nvgFontFaceId(s->vg,  s->font_sans_regular);
+    nvgFontSize(s->vg, 26*1.7);
+    if (is_cruise_set) {
+      nvgFillColor(s->vg, COLOR_WHITE_ALPHA(200));
+    } else {
+      nvgFillColor(s->vg, COLOR_WHITE_ALPHA(100));
+    }
+    nvgText(s->vg, viz_maxspeed_x+(viz_maxspeed_xo/2)+(viz_maxspeed_w/2), 130, "목표속도", NULL);
+
+      // Draw Speed Text
+    nvgFontFaceId(s->vg, s->font_sans_bold);
+    nvgFontSize(s->vg, 48*2);
+    if (is_cruise_set) {
+      snprintf(targetspeed_str, sizeof(targetspeed_str), "%d", targetspeed_calc);
+      nvgFillColor(s->vg, COLOR_WHITE);
+      nvgText(s->vg, viz_maxspeed_x+(viz_maxspeed_xo/2)+(viz_maxspeed_w/2), 242, targetspeed_str, NULL);
+    } else {
+      nvgFontFaceId(s->vg, s->font_sans_semibold);
+      nvgFontSize(s->vg, 42*2);
+      nvgFillColor(s->vg, COLOR_WHITE_ALPHA(100));
+      nvgText(s->vg, viz_maxspeed_x+(viz_maxspeed_xo/2)+(viz_maxspeed_w/2), 242, "-", NULL);
+    }
+  
+    nvgTextAlign(s->vg, NVG_ALIGN_CENTER | NVG_ALIGN_BASELINE);
+    nvgFontFace(s->vg, "courbd");  
+    nvgFontSize(s->vg, 36*1.5);
+
+    snprintf(targetspeed_str, sizeof(targetspeed_str), "%03d/%-03d", longTimerCmd, longWaitCmd );
+    nvgText(s->vg, viz_maxspeed_x+(viz_maxspeed_xo/2)+(viz_maxspeed_w/2), 305, targetspeed_str, NULL);
+  //}
+  
 
 }
 
@@ -634,7 +706,8 @@ static void ui_draw_debug(UIState *s)
   int  x_pos = 0;
   int height = 50;
 
-  x_pos = ui_viz_rx + 300;
+
+  x_pos = ui_viz_rx + 1200;
   y_pos = 150; 
   
 
@@ -656,7 +729,7 @@ static void ui_draw_debug(UIState *s)
   }
   else if (cruise_set_mode == 2)
   {
-    snprintf(speed_str, sizeof(speed_str), "%d:SpdCtrl+Auto", cruise_set_mode );
+    snprintf(speed_str, sizeof(speed_str), "%d:SpdCtrl+", cruise_set_mode );
   }
   // else if (cruise_set_mode == )
   // {

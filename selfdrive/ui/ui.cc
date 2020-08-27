@@ -437,6 +437,10 @@ void handle_message(UIState *s, Message * msg) {
 
     //curise_set_mode 추가
     s->scene.status.cruise_set_mode = datad.cruiseSetMode;    
+    s->scene.status.target_speed = datad.targetSpeed;    
+    s->scene.status.long_wait_cmd = datad.longWaitCmd;    
+    s->scene.status.long_timer_cmd = datad.longTimerCmd;    
+
 
     s->scene.pCurvature = datad.pCurvature;
     s->scene.curvMaxSpeed = datad.curvMaxSpeed;

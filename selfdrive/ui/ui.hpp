@@ -198,6 +198,10 @@ typedef struct UIScene {
       float vCurvature; 
       int  nCanError;
       int  cruise_set_mode;
+      int target_speed;
+      int long_wait_cmd;
+      int long_timer_cmd;
+      
       char alert_text1[512];
       char alert_text2[512];
   } status;
