@@ -599,8 +599,8 @@ static void ui_draw_vision_maxspeed(UIState *s) {
     nvgFontFace(s->vg, "courbd");  
     nvgFontSize(s->vg, 36*1.5);
 
-    snprintf(targetspeed_str, sizeof(targetspeed_str), "%03d/%-03d", longTimerCmd, longWaitCmd );
-    nvgText(s->vg, viz_maxspeed_x+(viz_maxspeed_xo/2)+(viz_maxspeed_w/2), 305, targetspeed_str, NULL);
+    snprintf(targetspeed_str, sizeof(targetspeed_str), "%03d/%03d", longTimerCmd, longWaitCmd );
+    nvgText(s->vg, viz_maxspeed_x+(viz_maxspeed_xo/2)+(viz_maxspeed_w/2), 310, targetspeed_str, NULL);
   //}
   
 
