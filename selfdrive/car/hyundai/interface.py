@@ -317,6 +317,11 @@ class CarInterface(CarInterfaceBase):
     ret.wheelSpeeds.rl = self.CS.v_wheel_rl
     ret.wheelSpeeds.rr = self.CS.v_wheel_rr
 
+    # LKAS button alert logic
+    #self.lkas_button_alert = not self.CC.lkas_button
+    #self.low_speed_alert = self.CC.low_speed_car
+    self.steer_angle_over_alert = self.CC.streer_angle_over
+
     # gear shifter
     ret.gearShifter = self.CS.gear_shifter
 
@@ -435,6 +440,8 @@ class CarInterface(CarInterfaceBase):
     elif ret.gearShifter == GearShifter.reverse:
       events.append(create_event('reverseGear', [ET.NO_ENTRY, ET.IMMEDIATE_DISABLE]))
     elif self.CS.steer_error:
+      events.append(create_event('steerTempUnavailable', [ET.NO_ENTRY, ET.WARNING]))
+    elif self.steer_angle_over_alert or self.CS.steer_error:
       events.append(create_event('steerTempUnavailable', [ET.NO_ENTRY, ET.WARNING]))
 
     if ret.cruiseState.enabled and not self.cruise_enabled_prev:

@@ -88,6 +88,10 @@ class CarController():
     self.sc_btn_type = Buttons.NONE
     self.sc_clu_speed = 0
 
+    self.streer_angle_over = False
+    self.turning_indicator = 0 
+    
+    self.steer_timer = 0
     self.steer_torque_over_timer = 0
     self.steer_torque_over = False
     
@@ -138,6 +142,21 @@ class CarController():
     else:
 #     lkas_active = enabled and self.lkas_button
       lkas_active = enabled
+
+    # streer over check
+    if enabled and abs(CS.angle_steers) > 100. or CS.steer_error:
+      self.streer_angle_over =  True
+      self.steer_timer = 250
+    elif abs(CS.angle_steers) < 7.5 or not self.steer_timer:
+      self.streer_angle_over =  False
+    elif self.steer_timer:
+      self.steer_timer -= 1
+
+    if self.streer_angle_over:
+      lkas_active = 0
+    elif self.turning_indicator:
+      lkas_active = 0
+
 
     # Fix for sharp turns mdps fault and Genesis hard fault at low speed
     if CS.v_ego < 15.5 and self.car_fingerprint == CAR.GENESIS and not CS.mdps_bus:
