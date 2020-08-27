@@ -943,7 +943,7 @@ static void ui_draw_debug(UIState *s)
   int  y_pos = 0;
   int  x_pos = 0;
 
-  x_pos = ui_viz_rx + 150;
+  x_pos = ui_viz_rx + 300;
   y_pos = 150; 
   
 
