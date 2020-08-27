@@ -707,7 +707,7 @@ static void ui_draw_debug(UIState *s)
   int height = 50;
 
 
-  x_pos = ui_viz_rx + 1200;
+  x_pos = ui_viz_rx + 930;
   y_pos = 150; 
   
 
