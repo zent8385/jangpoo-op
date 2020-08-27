@@ -497,7 +497,7 @@ class SpdController():
         return wait_time_cmd, set_speed
 
     #def update(self, v_ego_kph, CS, sm, actuators, dRel, yRel, vRel, model_speed):
-    def update(self, v_ego_kph, CS, sm, actuators, dRel, yRel, vRel):
+    def update(self, v_ego_kph, CS, sm, actuators, dRel, yRel, vRel, v_curvature):
         btn_type = Buttons.NONE
         #lead_1 = sm['radarState'].leadOne
         long_wait_cmd = 500
@@ -597,7 +597,7 @@ class SpdController():
 
         str3 = 'SS={:03.0f}/{:03.0f} SSD={:03.0f} VSD={:03.0f} pVSD={:03.0f} DAt={:03.0f}/{:03.0f}/{:03.0f} '.format(
             set_speed, long_wait_cmd, set_speed_diff, CS.VSetDis, CS.prev_VSetDis,  CS.driverAcc_time, self.long_timer_cmd, long_wait_cmd  )
-        str4 = ' LD/LS={:03.0f}/{:03.0f} '.format(  dRel, vRel )
+        str4 = 'v_curvature{:0.03f} '.format(  v_curvature )
 
         str5 = str3 +  str4
         
