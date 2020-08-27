@@ -329,13 +329,13 @@ class SpdController():
 
         return lead_wait_cmd, lead_set_speed
 
-    def update_lead2(self, CS,  dRel, yRel, vRel):
+    def update_lead_none_scc(self, CS,  dRel, yRel, vRel):
         lead_set_speed = CS.cruise_set_speed_kph
         lead_wait_cmd = 300
         self.seq_step_debug = 0
 
 																			 
-        if int(CS.cruise_set_mode) not in [1, 2]:
+        if int(CS.cruise_set_mode) == 0:
             return lead_wait_cmd, lead_set_speed
 
         self.seq_step_debug = 1
@@ -503,7 +503,7 @@ class SpdController():
         long_wait_cmd = 500
         set_speed = CS.cruise_set_speed_kph
         dec_step_cmd = 0
-        
+        prev_delta = 0
         #ver4
         set_speed_diff = set_speed - CS.VSetDis
 
@@ -512,7 +512,7 @@ class SpdController():
 
 
         # 선행 차량 거리유지
-        lead_wait_cmd, lead_set_speed = self.update_lead2( CS,  dRel, yRel, vRel)  
+        lead_wait_cmd, lead_set_speed = self.update_lead_none_scc( CS,  dRel, yRel, vRel)  
         # 커브 감속.
         #curv_wait_cmd, curv_set_speed = self.update_curv(CS, sm, model_speed)
         curv_wait_cmd = 0 
@@ -555,7 +555,12 @@ class SpdController():
 
         if self.long_timer_cmd < long_wait_cmd:
             #타이머 시간동안 작동 안함
-            pass
+            if prev_delta >=2 and delta <=-2:
+                #이전에 가속이었고 지금 감속이라면(타이머 시간 동안 가속 진행중이라면)
+                self.long_timer_cmd = long_wait_cmd
+                #-> 가속보다 감속이 우선
+            #else:
+            #    pass
         elif CS.driverOverride == 1:  # 가속패달에 의한 속도 설정.
             if CS.cruise_set_speed_kph > CS.clu_Vanz:
                 delta = int(CS.clu_Vanz) - int(CS.VSetDis)
@@ -569,6 +574,7 @@ class SpdController():
             self.seq_step_debug = 98   
             btn_type = Buttons.SET_DECEL
             self.long_timer_cmd = 0
+            
         #elif delta >= 2 and (model_speed > 200 or CS.clu_Vanz < 200):
         elif delta >= 2 and CS.clu_Vanz < 200:
             set_speed = CS.VSetDis + dec_step_cmd
@@ -577,11 +583,13 @@ class SpdController():
             self.long_timer_cmd = 0            
             if set_speed > CS.cruise_set_speed_kph:
                 set_speed = CS.cruise_set_speed_kph
+            
         else:
             if self.long_timer_cmd > long_wait_cmd:
                 CS.cruise_set_speed_kph = set_speed
             self.long_timer_cmd = 0
-
+        
+        prev_delta = delta            
         CS.VSetDis = CS.clu_Vanz
 
         if CS.cruise_set_mode == 0:
