@@ -165,7 +165,7 @@ class CarController():
     #janpoo6427
     dRel, yRel, vRel = self.SC.get_lead( sm, CS )
     vRel = int(vRel * 3.6 + 0.5)
-    v_curvature = sm['plan'].pCurvature
+    #v_curvature = sm['plan'].pCurvature
     model_speed = sm['plan'].curvMaxSpeed
 
     # Disable steering while turning blinker on and speed below 60 kph
