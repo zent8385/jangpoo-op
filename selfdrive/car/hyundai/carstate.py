@@ -305,7 +305,7 @@ class CarState():
 
     #janpoo6427
     self.cruise_set_speed_kph = 0
-    self.cruise_set_mode = 2
+    self.cruise_set_mode = 1
     self.VSetDis = 0
     self.prev_VSetDis = 0
     self.prev_clu_CruiseSwState = 0
