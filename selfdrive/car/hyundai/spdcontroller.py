@@ -496,8 +496,57 @@ class SpdController():
 
         return wait_time_cmd, set_speed
 
+    def update_curv_none_scc(self, CS, sm, model_speed):
+        wait_time_cmd = 0
+        set_speed = CS.cruise_set_speed_kph
+
+        # 2. 커브 감속.
+        if set_speed >= 100:
+            #곡률 적용
+            if model_speed < 50:
+                set_speed -= 40 #20 
+                wait_time_cmd = 100
+            elif model_speed < 70:  
+                set_speed -= 20 #10 
+                wait_time_cmd = 100
+            elif model_speed < 90:  
+                set_speed -= 6 #3  
+                wait_time_cmd = 150
+            elif model_speed < 130:  
+                set_speed -= 2 #1 
+                wait_time_cmd = 200
+            #if set_speed > v_curvature:
+            #    set_speed = v_curvature
+        elif set_speed >= 80:
+            if model_speed < 70:  
+                set_speed -= 10 #5 
+                wait_time_cmd = 100
+            elif model_speed < 80:  
+                set_speed -= 4 #2 
+                wait_time_cmd = 150
+                #if set_speed > v_curvature:
+                #   set_speed = v_curvature
+        elif set_speed >= 60:
+            if model_speed < 50: 
+                set_speed -= 6 #3 
+                wait_time_cmd = 100
+            elif model_speed < 70:  
+                set_speed -= 2 #1 
+                wait_time_cmd = 150
+        elif set_speed >= 40:
+            if model_speed < 50: 
+                set_speed -= 6 #3 
+                wait_time_cmd = 100
+            elif model_speed < 70:  
+                set_speed -= 2 #1 
+                wait_time_cmd = 150
+                #if set_speed > v_curvature:
+                #   set_speed = v_curvature
+
+        return wait_time_cmd, set_speed
+
     #def update(self, v_ego_kph, CS, sm, actuators, dRel, yRel, vRel, model_speed):
-    def update(self, v_ego_kph, CS, sm, actuators, dRel, yRel, vRel, v_curvature):
+    def update(self, v_ego_kph, CS, sm, actuators, dRel, yRel, vRel, model_speed):
         btn_type = Buttons.NONE
         #lead_1 = sm['radarState'].leadOne
         long_wait_cmd = 500
@@ -514,9 +563,9 @@ class SpdController():
         # 선행 차량 거리유지
         lead_wait_cmd, lead_set_speed = self.update_lead_none_scc( CS,  dRel, yRel, vRel)  
         # 커브 감속.
-        #curv_wait_cmd, curv_set_speed = self.update_curv(CS, sm, model_speed)
-        curv_wait_cmd = 0 
-        curv_set_speed = 0 
+        curv_wait_cmd, curv_set_speed = self.update_curv(CS, sm, model_speed)
+        #curv_wait_cmd = 0 
+        #curv_set_speed = 0 
 
         #TEST 커브 속도 반영 제외
         #curv_wait_cmd = 0
@@ -597,7 +646,7 @@ class SpdController():
 
         str3 = 'SS={:03.0f}/{:03.0f} SSD={:03.0f} VSD={:03.0f} pVSD={:03.0f} DAt={:03.0f}/{:03.0f}/{:03.0f} '.format(
             set_speed, long_wait_cmd, set_speed_diff, CS.VSetDis, CS.prev_VSetDis,  CS.driverAcc_time, self.long_timer_cmd, long_wait_cmd  )
-        str4 = 'v_curvature{:0.03f} '.format(  v_curvature )
+        str4 = 'model_speed{:0.03f} '.format(  model_speed )
 
         str5 = str3 +  str4
         

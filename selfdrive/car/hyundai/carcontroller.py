@@ -166,6 +166,7 @@ class CarController():
     dRel, yRel, vRel = self.SC.get_lead( sm, CS )
     vRel = int(vRel * 3.6 + 0.5)
     v_curvature = sm['plan'].pCurvature
+    model_speed = sm['plan'].curvMaxSpeed
 
     # Disable steering while turning blinker on and speed below 60 kph
     if CS.left_blinker_on or CS.right_blinker_on:
@@ -257,7 +258,7 @@ class CarController():
     elif self.speed_control_enabled and CS.cruise_set_mode != 0:
       #acc_mode, clu_speed = self.long_speed_cntrl( v_ego_kph, CS, actuators )
       #btn_type, clu_speed = self.SC.update( v_ego_kph, CS, sm, actuators, dRel, yRel, vRel, LaC.v_curvature )   # speed controller spdcontroller.py 
-      btn_type, clu_speed = self.SC.update( v_ego_kph, CS, sm, actuators, dRel, yRel, vRel, v_curvature)   # speed controller spdcontroller.py
+      btn_type, clu_speed = self.SC.update( v_ego_kph, CS, sm, actuators, dRel, yRel, vRel, model_speed)   # speed controller spdcontroller.py
       #print("v_curvature:" + str(v_curvature))
       if CS.clu_Vanz < 5:
         self.sc_btn_type = Buttons.NONE
