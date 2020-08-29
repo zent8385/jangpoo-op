@@ -47,6 +47,10 @@ def calc_d_poly(l_poly, r_poly, p_poly, l_prob, r_prob, lane_width, v_ego):
 
   lr_prob = l_prob + r_prob - l_prob * r_prob
 
+  #차선인식 0.7 (70%) 이상시 차선위주로 인식되게끔
+  if lr_prob > 0.70:
+    lr_prob = max(0.95, lr_prob)
+
   d_poly_lane = (l_prob * path_from_left_lane + r_prob * path_from_right_lane) / (l_prob + r_prob + 0.0001)
   return lr_prob * d_poly_lane + (1.0 - lr_prob) * p_poly
 

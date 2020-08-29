@@ -439,7 +439,8 @@ class CarInterface(CarInterfaceBase):
       events.append(create_event('wrongCarMode', [ET.NO_ENTRY, ET.USER_DISABLE]))
     elif ret.gearShifter == GearShifter.reverse:
       events.append(create_event('reverseGear', [ET.NO_ENTRY, ET.IMMEDIATE_DISABLE]))
-    elif self.steer_angle_over_alert or self.CS.steer_error:
+    #elif self.steer_angle_over_alert or self.CS.steer_error:
+    elif self.CS.steer_error:
       events.append(create_event('steerTempUnavailable', [ET.NO_ENTRY, ET.WARNING]))
     elif self.CS.lkas_LdwsLHWarning or self.CS.lkas_LdwsRHWarning:
       events.append(create_event('ldwPermanent', [ET.WARNING]))    
