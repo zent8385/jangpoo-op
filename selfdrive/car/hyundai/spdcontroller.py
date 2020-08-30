@@ -651,7 +651,7 @@ class SpdController():
             set_speed, long_wait_cmd, set_speed_diff, CS.VSetDis, CS.prev_VSetDis,  CS.driverAcc_time, self.long_timer_cmd, long_wait_cmd  )
         str4 = 'model_speed_kph{:0.03f} '.format(  model_speed_kph )
 
-        str5 = str3 +  str4
+        str5 = str4
         
         trace1.printf2( str5 )
         trace1.target_speed = set_speed
