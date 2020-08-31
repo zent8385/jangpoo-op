@@ -438,6 +438,10 @@ class CarState():
     if cruise_set_speed_kph < 30:
       cruise_set_speed_kph = 0
       self.VSetDis = 0
+    #설정속도가 홀수이면 +1 로 짝수로 바꾸어준다.
+    elif cruise_set_speed_kph % 2 == 1:
+      cruise_set_speed_kph +=1
+
 
     return cruise_set_speed_kph
 	
