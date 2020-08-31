@@ -142,7 +142,7 @@ class Planner():
     
     if len(sm['model'].path.poly) and int(self.kegman.conf['slowOnCurves']):
       path = list(sm['model'].path.poly)
-
+      print("slowOnCurves ON")
       # Curvature of polynomial https://en.wikipedia.org/wiki/Curvature#Curvature_of_the_graph_of_a_function
       # y = a x^3 + b x^2 + c x + d, y' = 3 a x^2 + 2 b x + c, y'' = 6 a x + 2 b
       # k = y'' / (1 + y'^2)^1.5
