@@ -142,7 +142,6 @@ class Planner():
     
     if len(sm['model'].path.poly) and int(self.kegman.conf['slowOnCurves']):
       path = list(sm['model'].path.poly)
-      print("slowOnCurves ON")
       # Curvature of polynomial https://en.wikipedia.org/wiki/Curvature#Curvature_of_the_graph_of_a_function
       # y = a x^3 + b x^2 + c x + d, y' = 3 a x^2 + 2 b x + c, y'' = 6 a x + 2 b
       # k = y'' / (1 + y'^2)^1.5
@@ -157,6 +156,8 @@ class Planner():
       model_speed = max(20.0 * CV.MPH_TO_MS, model_speed) # Don't slow down below 20mph
 
       curvature = np.mean(curv[1:4])
+      print("model_speed:"+str(model_speed) + " curvature:" + str(curvature))
+      
     else:
       model_speed = MAX_SPEED
       curvature = 0.
