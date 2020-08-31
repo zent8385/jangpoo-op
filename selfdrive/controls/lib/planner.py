@@ -254,9 +254,12 @@ class Planner():
     # Send out fcw
     plan_send.plan.fcw = fcw
 
-    pm.send('plan', plan_send)
+
     plan_send.plan.pCurvature = float(curvature)
     plan_send.plan.curvMaxSpeed = float(model_speed)
+    
+    pm.send('plan', plan_send)
+    
 
     # Interpolate 0.05 seconds and save as starting point for next iteration
     a_acc_sol = self.a_acc_start + (CP.radarTimeStep / LON_MPC_STEP) * (self.a_acc - self.a_acc_start)
