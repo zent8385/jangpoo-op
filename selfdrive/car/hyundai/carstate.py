@@ -6,6 +6,7 @@ from common.kalman.simple_kalman import KF1D
 from common.realtime import DT_CTRL
 #
 import common.log as trace1
+from selfdrive.kegman_conf import kegman_conf
 
 GearShifter = car.CarState.GearShifter
 
@@ -289,7 +290,9 @@ def get_camera_parser(CP):
 class CarState():
 
   def __init__(self, CP):
+    self.kegman = kegman_conf()
     self.CP = CP
+    
     # initialize can parser
     self.car_fingerprint = CP.carFingerprint
     self.left_blinker_on = 0
@@ -305,7 +308,7 @@ class CarState():
 
     #janpoo6427
     self.cruise_set_speed_kph = 0
-    self.cruise_set_mode = 1
+    self.cruise_set_mode = int(self.kegman.conf['cruise_set_mode']) # 1
     self.VSetDis = 0
     self.prev_VSetDis = 0
     self.prev_clu_CruiseSwState = 0
@@ -430,6 +433,8 @@ class CarState():
           self.cruise_set_mode += 1
           if self.cruise_set_mode > 2:
             self.cruise_set_mode = 0
+          self.kegman.conf['cruise_set_mode'] = str(self.cruise_set_mode)
+          self.kegman.write_config(self.kegman.conf)
         self.prev_clu_CruiseSwState = self.clu_CruiseSwState
       
     trace1.cruise_set_mode = self.cruise_set_mode

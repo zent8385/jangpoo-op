@@ -149,6 +149,11 @@ class kegman_conf():
       if "cV_Dist" not in self.config:
         self.config.update({"cV_Dist":"-5"})
         self.element_updated = True
+      
+      
+      if "cruise_set_mode" not in self.config:
+        self.config.update({"cruise_set_mode":"0"})
+        self.element_updated = True
 
 
       if self.element_updated:
@@ -167,7 +172,7 @@ class kegman_conf():
                      "sR_boost":"0", "sR_BP0":"0", "sR_BP1":"0", "sR_time":"0.2", \
                      "ALCnudgeLess":"0", "ALCminSpeed":"16.666667", "ALCtimer":"1.0", "CruiseDelta":"8", \
                      "CruiseEnableMin":"0", "epsModded": "0", "steerTorqueOver":"360", "threshold":"150", \
-                     "cv_Ratio":"0.7", "cv_Dist":"-5"}
+                     "cv_Ratio":"0.7", "cv_Dist":"-5", "cruise_set_mode": "0"}
 
 
 
