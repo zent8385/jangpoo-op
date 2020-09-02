@@ -746,7 +746,7 @@ static void ui_draw_debug(UIState *s)
   
 
   y_pos += height;
-  snprintf(speed_str, sizeof(speed_str), "CurvMax: %3d", scene->curvMaxSpeed);
+  snprintf(speed_str, sizeof(speed_str), "CurvMax: %s", scene->status.alert_text2);
   nvgText(s->vg, x_pos, y_pos, speed_str, NULL);
   // snprintf(speed_str, sizeof(speed_str), "P:%8.5f", scene->pid.p );
   // nvgText(s->vg, x_pos, y_pos+0, speed_str, NULL);
