@@ -707,8 +707,8 @@ static void ui_draw_debug(UIState *s)
   int height = 50;
 
 
-  x_pos = ui_viz_rx + 1450;
-  y_pos = 950; 
+  x_pos = ui_viz_rx + 1250;
+  y_pos = 150; 
   
 
 
@@ -739,10 +739,15 @@ static void ui_draw_debug(UIState *s)
   nvgText(s->vg, x_pos, y_pos, speed_str, NULL);
  
 
-  y_pos += height;
-  snprintf(speed_str, sizeof(speed_str), "CURV: %.3f", scene->pCurvature * 1000.);
+  //y_pos += height;
+  y_pos += 800;
+  snprintf(speed_str, sizeof(speed_str), "Curv: %.3f", scene->pCurvature * 1000.);
   nvgText(s->vg, x_pos, y_pos, speed_str, NULL);
   
+
+  y_pos += height;
+  snprintf(speed_str, sizeof(speed_str), "CurvMax: %3d", scene->curvMaxSpeed);
+  nvgText(s->vg, x_pos, y_pos, speed_str, NULL);
   // snprintf(speed_str, sizeof(speed_str), "P:%8.5f", scene->pid.p );
   // nvgText(s->vg, x_pos, y_pos+0, speed_str, NULL);
 
@@ -754,11 +759,11 @@ static void ui_draw_debug(UIState *s)
 
 
 
-  snprintf(speed_str, sizeof(speed_str), "%s", scene->status.alert_text1 );
-  nvgText(s->vg, 0, 1020, speed_str, NULL);  
+//  snprintf(speed_str, sizeof(speed_str), "%s", scene->status.alert_text1 );
+//  nvgText(s->vg, 0, 1020, speed_str, NULL);  
 
-  snprintf(speed_str, sizeof(speed_str), "%s", scene->status.alert_text2 );
-  nvgText(s->vg, 0, 1078, speed_str, NULL);
+//  snprintf(speed_str, sizeof(speed_str), "%s", scene->status.alert_text2 );
+//  nvgText(s->vg, 0, 1078, speed_str, NULL);
 
 }
 
