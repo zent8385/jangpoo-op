@@ -708,7 +708,7 @@ static void ui_draw_debug(UIState *s)
 
 
   x_pos = ui_viz_rx + 1200;
-  y_pos = 150; 
+  y_pos = 950; 
   
 
 
