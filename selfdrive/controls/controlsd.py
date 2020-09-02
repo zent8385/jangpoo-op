@@ -416,7 +416,7 @@ def data_send(sm, pm, CS, CI, CP, VM, state, events, actuators, v_cruise_kph, rk
     "alertTextMsg1": str(trace1.global_alertTextMsg1),
     "alertTextMsg2": str(trace1.global_alertTextMsg2),
     "pCurvature": sm['plan'].pCurvature,
-    "curvMaxSpeed": sm['plan'].curvMaxSpeed,
+    "curvMaxSpeed": float(sm['plan'].curvMaxSpeed) * CV.MS_TO_KPH,
   }
 
   if CP.lateralTuning.which() == 'pid':
