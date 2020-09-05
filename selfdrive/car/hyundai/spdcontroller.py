@@ -660,7 +660,7 @@ class SpdController():
 
         str3 = 'SS={:03.0f}/{:03.0f} SSD={:03.0f} VSD={:03.0f} pVSD={:03.0f} DAt={:03.0f}/{:03.0f}/{:03.0f} '.format(
             set_speed, long_wait_cmd, set_speed_diff, CS.VSetDis, CS.prev_VSetDis,  CS.driverAcc_time, self.long_timer_cmd, long_wait_cmd  )
-        str4 = 'CurvMax{:0.03f} '.format(  model_speed_kph )
+        str4 = 'CurvMax: {:0.03f} '.format(  model_speed_kph )
 
         str5 = str4
         
