@@ -239,11 +239,11 @@ class CarInterface(CarInterfaceBase):
       ret.lateralTuning.lqr.k = [-100., 450.]
       ret.lateralTuning.lqr.l = [0.22, 0.318]
       ret.lateralTuning.lqr.dcGain = 0.003
-      ret.lateralTuning.lqr.scale = 1900 #2000.0
+      ret.lateralTuning.lqr.scale = 2000 #2000.0
       ret.steerRatio = 13.5 #13.5 #14.4 * 1.1 #13.7
-      ret.steerActuatorDelay = 0.3
-      ret.steerRateCost = 0.7 #0.5
-      ret.steerLimitTimer = 1.5 #0.8
+      ret.steerActuatorDelay = 0.1
+      ret.steerRateCost = 0.5
+      ret.steerLimitTimer = 0.8
 
     ret.minEnableSpeed = -1.   # enable is done by stock ACC, so ignore this
 
@@ -272,7 +272,7 @@ class CarInterface(CarInterfaceBase):
 
     # steer, gas, brake limitations VS speed
     ret.steerMaxBP = [0.]
-    ret.steerMaxV = [1.5] #[1.1] #[1.3]
+    ret.steerMaxV = [1.1] #[1.3]
     ret.gasMaxBP = [0.]
     ret.gasMaxV = [0.5]
     ret.brakeMaxBP = [0., 20.]
