@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+
 from cereal import car
 from selfdrive.config import Conversions as CV
 from selfdrive.controls.lib.drive_helpers import EventTypes as ET, create_event
@@ -247,20 +248,20 @@ class CarInterface(CarInterfaceBase):
     #   ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.05], [0.01]]
     elif candidate == CAR.TUCSON_TL:
       tire_stiffness_factor = 0.6
-      ret.mass = 1705. + STD_CARGO_KG
-      ret.wheelbase = 2.67
+      ret.mass = 1985. + STD_CARGO_KG
+      ret.wheelbase = 2.78
       ret.lateralTuning.init('lqr')
-      ret.lateralTuning.lqr.ki = 0.01 #0.01
+      ret.lateralTuning.lqr.ki = 0.01
       ret.lateralTuning.lqr.a = [0., 1., -0.22619643, 1.21822268]
       ret.lateralTuning.lqr.b = [-1.92006585e-04, 3.95603032e-05]
       ret.lateralTuning.lqr.c = [1., 0.]
       ret.lateralTuning.lqr.k = [-100., 450.]
       ret.lateralTuning.lqr.l = [0.22, 0.318]
       ret.lateralTuning.lqr.dcGain = 0.003
-      ret.lateralTuning.lqr.scale = 2000 #2000.0
-      ret.steerRatio = 13 #13.7
-      ret.steerActuatorDelay = 0.2 #0.3
-      ret.steerRateCost = 1#0.5
+      ret.lateralTuning.lqr.scale = 2000
+      ret.steerRatio = 14.4 * 1.1
+      ret.steerActuatorDelay = 0.3
+      ret.steerRateCost = 1 #0.5
       ret.steerLimitTimer = 0.8
 
     ret.minEnableSpeed = -1.   # enable is done by stock ACC, so ignore this

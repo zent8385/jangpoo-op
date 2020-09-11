@@ -148,8 +148,8 @@ class PathPlanner():
         self.sR_delay_counter = 0
     else:
       self.steerRatio = self.sR[0]
-    #sr 학습
-    #self.steerRatio = VM.sr
+    #kegman  무시 sr 학습값 사용
+    self.steerRatio = VM.sr
 
     
 
