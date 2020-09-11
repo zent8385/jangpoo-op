@@ -69,12 +69,30 @@ class CarInterface(CarInterfaceBase):
       ret.lateralTuning.pid.kiBP, ret.lateralTuning.pid.kpBP = [[0.], [0.]]
       ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.05], [0.01]]
     elif candidate == CAR.SORENTO:
-      ret.lateralTuning.pid.kf = 0.00005
+      #ret.lateralTuning.pid.kf = 0.00005
+      #ret.mass = 1950. + STD_CARGO_KG
+      #ret.wheelbase = 2.78
+      #ret.steerRatio = 14.4 * 1.15
+      #ret.lateralTuning.pid.kiBP, ret.lateralTuning.pid.kpBP = [[0.], [0.]]
+      #ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.05], [0.01]]
+
+      #tire_stiffness_factor = 0.6
       ret.mass = 1950. + STD_CARGO_KG
       ret.wheelbase = 2.78
-      ret.steerRatio = 14.4 * 1.15
-      ret.lateralTuning.pid.kiBP, ret.lateralTuning.pid.kpBP = [[0.], [0.]]
-      ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.05], [0.01]]
+      ret.lateralTuning.init('lqr')
+      ret.lateralTuning.lqr.ki = 0.01 #0.01
+      ret.lateralTuning.lqr.a = [0., 1., -0.22619643, 1.21822268]
+      ret.lateralTuning.lqr.b = [-1.92006585e-04, 3.95603032e-05]
+      ret.lateralTuning.lqr.c = [1., 0.]
+      ret.lateralTuning.lqr.k = [-100., 450.]
+      ret.lateralTuning.lqr.l = [0.22, 0.318]
+      ret.lateralTuning.lqr.dcGain = 0.003
+      ret.lateralTuning.lqr.scale = 2600 #2000.0
+      ret.steerRatio = 14 #13.7
+      ret.steerActuatorDelay = 0.3 #0.3
+      ret.steerRateCost = 0.5
+      ret.steerLimitTimer = 0.8
+
     elif candidate in [CAR.AVANTE, CAR.I30]:
       ret.lateralTuning.pid.kf = 0.00006
       ret.mass = 1275. + STD_CARGO_KG
@@ -229,8 +247,8 @@ class CarInterface(CarInterfaceBase):
     #   ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.05], [0.01]]
     elif candidate == CAR.TUCSON_TL:
       tire_stiffness_factor = 0.6
-      ret.mass = 1985. + STD_CARGO_KG
-      ret.wheelbase = 2.63
+      ret.mass = 1705. + STD_CARGO_KG
+      ret.wheelbase = 2.67
       ret.lateralTuning.init('lqr')
       ret.lateralTuning.lqr.ki = 0.01 #0.01
       ret.lateralTuning.lqr.a = [0., 1., -0.22619643, 1.21822268]
@@ -240,9 +258,9 @@ class CarInterface(CarInterfaceBase):
       ret.lateralTuning.lqr.l = [0.22, 0.318]
       ret.lateralTuning.lqr.dcGain = 0.003
       ret.lateralTuning.lqr.scale = 2000 #2000.0
-      ret.steerRatio = 14 #13.7
-      ret.steerActuatorDelay = 0.3 #0.3
-      ret.steerRateCost = 0.5
+      ret.steerRatio = 13 #13.7
+      ret.steerActuatorDelay = 0.2 #0.3
+      ret.steerRateCost = 1#0.5
       ret.steerLimitTimer = 0.8
 
     ret.minEnableSpeed = -1.   # enable is done by stock ACC, so ignore this
