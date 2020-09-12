@@ -56,9 +56,9 @@ class CarInterface(CarInterfaceBase):
     ret.communityFeature = True #False
 
     ret.steerActuatorDelay = 0.1  # Default delay
-    ret.steerRateCost = 0.5
+    ret.steerRateCost = 0.45
     ret.steerLimitTimer = 0.8
-    tire_stiffness_factor = 1.
+    tire_stiffness_factor = 0.7
 
     if candidate in [CAR.SANTAFE, CAR.SANTAFE_1]:
       ret.lateralTuning.pid.kf = 0.00005
@@ -240,11 +240,11 @@ class CarInterface(CarInterfaceBase):
       ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.05], [0.01]]
     elif candidate == CAR.TUCSON_TL:
       ret.lateralTuning.pid.kf = 0.00005
-      ret.mass = 1985. + STD_CARGO_KG
-      ret.wheelbase = 2.78
-      ret.steerRatio = 13.0
-      ret.lateralTuning.pid.kiBP, ret.lateralTuning.pid.kpBP = [[0.], [0.]]
-      ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.05], [0.01]]
+      ret.mass = 2250. + STD_CARGO_KG
+      ret.wheelbase = 2.895
+      ret.steerRatio = 14.1
+      ret.lateralTuning.pid.kiBP, ret.lateralTuning.pid.kpBP = [[9., 22.], [9., 22.]]   # 9m/s = 32.4km/h  ~  22m/s = 79.2 km/h
+      ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.18,0.20], [0.02,0.05]]
     # elif candidate == CAR.TUCSON_TL:
     #   tire_stiffness_factor = 0.6
     #   ret.mass = 1985. + STD_CARGO_KG
@@ -290,7 +290,7 @@ class CarInterface(CarInterfaceBase):
 
     # steer, gas, brake limitations VS speed
     ret.steerMaxBP = [0.]
-    ret.steerMaxV = [1.3]
+    ret.steerMaxV = [1.0]
     ret.gasMaxBP = [0.]
     ret.gasMaxV = [0.5]
     ret.brakeMaxBP = [0., 20.]
