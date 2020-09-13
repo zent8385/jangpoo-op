@@ -59,6 +59,8 @@ class CarInterface(CarInterfaceBase):
     ret.steerRateCost = 0.45
     ret.steerLimitTimer = 0.8
     tire_stiffness_factor = 0.7
+  
+    
 
     if candidate in [CAR.SANTAFE, CAR.SANTAFE_1]:
       ret.lateralTuning.pid.kf = 0.00005
@@ -238,39 +240,34 @@ class CarInterface(CarInterfaceBase):
       ret.steerRatio = 13.0
       ret.lateralTuning.pid.kiBP, ret.lateralTuning.pid.kpBP = [[0.], [0.]]
       ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.05], [0.01]]
-    elif candidate == CAR.TUCSON_TL:
-      ret.lateralTuning.pid.kf = 0.00005
-      ret.mass = 2250. + STD_CARGO_KG
-      ret.wheelbase = 2.895
-      ret.steerRatio = 14.1
-      ret.lateralTuning.pid.kiBP, ret.lateralTuning.pid.kpBP = [[9., 22.], [9., 22.]]   # 9m/s = 32.4km/h  ~  22m/s = 79.2 km/h
-      ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.18,0.20], [0.02,0.05]]
     # elif candidate == CAR.TUCSON_TL:
-    #   tire_stiffness_factor = 0.6
-    #   ret.mass = 1985. + STD_CARGO_KG
-    #   ret.wheelbase = 2.78
-    #   ret.lateralTuning.init('lqr')
-    #   ret.lateralTuning.lqr.ki = 0.01
-    #   ret.lateralTuning.lqr.a = [0., 1., -0.22619643, 1.21822268]
-    #   ret.lateralTuning.lqr.b = [-1.92006585e-04, 3.95603032e-05]
-    #   ret.lateralTuning.lqr.c = [1., 0.]
-    #   ret.lateralTuning.lqr.k = [-100., 450.]
-    #   ret.lateralTuning.lqr.l = [0.22, 0.318]
-    #   ret.lateralTuning.lqr.dcGain = 0.003
-    #   ret.lateralTuning.lqr.scale = 2000
-    #   ret.steerRatio = 13.5 #14.4 * 1.1
-    #   ret.steerActuatorDelay = 0.1
-    #   ret.steerRateCost = 1.5
-    #   ret.steerLimitTimer = 0.8
+    #   ret.lateralTuning.pid.kf = 0.00005
+    #   ret.mass = 2250. + STD_CARGO_KG
+    #   ret.wheelbase = 2.895
+    #   ret.steerRatio = 14.1
+    #   ret.lateralTuning.pid.kiBP, ret.lateralTuning.pid.kpBP = [[9., 22.], [9., 22.]]   # 9m/s = 32.4km/h  ~  22m/s = 79.2 km/h
+    #   ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.18,0.20], [0.02,0.05]]
+    elif candidate == CAR.TUCSON_TL:
+      tire_stiffness_factor = 0.6
+      ret.mass = 1985. + STD_CARGO_KG
+      ret.wheelbase = 2.78
+      ret.lateralTuning.init('lqr')
+      ret.lateralTuning.lqr.scale = 2000.0
+      ret.lateralTuning.lqr.ki = 0.01
+      ret.lateralTuning.lqr.a = [0., 1., -0.22619643, 1.21822268]
+      ret.lateralTuning.lqr.b = [-1.92006585e-04, 3.95603032e-05]
+      ret.lateralTuning.lqr.c = [1., 0.]
+      ret.lateralTuning.lqr.k = [-100., 450.]
+      ret.lateralTuning.lqr.l = [0.22, 0.318]
+      ret.lateralTuning.lqr.dcGain = 0.003
+      ret.steerRatio = 14.4 * 1.1 #13.7
+      ret.steerActuatorDelay = 0.3
+      ret.steerRateCost = 0.5
+      ret.steerLimitTimer = 0.8
 
     ret.minEnableSpeed = -1.   # enable is done by stock ACC, so ignore this
 
-    ret.longitudinalTuning.kpBP = [0., 5., 35.]
-    ret.longitudinalTuning.kpV = [1.2, 0.8, 0.5]
-    ret.longitudinalTuning.kiBP = [0., 35.]
-    ret.longitudinalTuning.kiV = [0.18, 0.12]
-    ret.longitudinalTuning.deadzoneBP = [0.]
-    ret.longitudinalTuning.deadzoneV = [0.]
+
 
     ret.centerToFront = ret.wheelbase * 0.4
 
@@ -289,9 +286,17 @@ class CarInterface(CarInterfaceBase):
     ret.steerControlType = car.CarParams.SteerControlType.torque
 
 
+    ret.longitudinalTuning.kpBP = [0., 5., 35.]
+    ret.longitudinalTuning.kpV = [1.2, 0.8, 0.5]
+    ret.longitudinalTuning.kiBP = [0., 35.]
+    ret.longitudinalTuning.kiV = [0.18, 0.12]
+    ret.longitudinalTuning.deadzoneBP = [0.]
+    ret.longitudinalTuning.deadzoneV = [0.]
+
+    
     # steer, gas, brake limitations VS speed
     ret.steerMaxBP = [0.]
-    ret.steerMaxV = [1.0]
+    ret.steerMaxV = [1.3]
     ret.gasMaxBP = [0.]
     ret.gasMaxV = [0.5]
     ret.brakeMaxBP = [0., 20.]
