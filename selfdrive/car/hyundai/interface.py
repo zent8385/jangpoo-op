@@ -249,8 +249,8 @@ class CarInterface(CarInterfaceBase):
     #   ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.18,0.20], [0.02,0.05]]
     elif candidate == CAR.TUCSON_TL:
       tire_stiffness_factor = 0.6
-      ret.mass = 1985. + STD_CARGO_KG
-      ret.wheelbase = 2.78
+      ret.mass = 1730 + STD_CARGO_KG #1985. + STD_CARGO_KG
+      ret.wheelbase = 2.67 #2.78
       ret.lateralTuning.init('lqr')
       ret.lateralTuning.lqr.scale = 2000.0
       ret.lateralTuning.lqr.ki = 0.01
@@ -261,8 +261,8 @@ class CarInterface(CarInterfaceBase):
       ret.lateralTuning.lqr.l = [0.22, 0.318]
       ret.lateralTuning.lqr.dcGain = 0.003
       ret.steerRatio = 13.82 #14.1 * 1.1 #13.7
-      ret.steerActuatorDelay = 0.15
-      ret.steerRateCost = 0.5
+      ret.steerActuatorDelay = 0.25 #0.3
+      ret.steerRateCost = 0.7 #0.5
       ret.steerLimitTimer = 0.8
 
     ret.minEnableSpeed = -1.   # enable is done by stock ACC, so ignore this
@@ -296,7 +296,7 @@ class CarInterface(CarInterfaceBase):
     
     # steer, gas, brake limitations VS speed
     ret.steerMaxBP = [0.]
-    ret.steerMaxV = [1.3]
+    ret.steerMaxV = [1.0]
     ret.gasMaxBP = [0.]
     ret.gasMaxV = [0.5]
     ret.brakeMaxBP = [0., 20.]
