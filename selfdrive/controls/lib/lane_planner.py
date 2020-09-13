@@ -4,12 +4,7 @@ from selfdrive.kegman_conf import kegman_conf
 from cereal import log
 
 kegman = kegman_conf()
-CAMERA_OFFSET = 0.06 #float(kegman.conf['cameraOffset'])  # m from center car to camera
-
-#zorrobyte
-def mean(numbers): 
-     return float(sum(numbers)) / max(len(numbers), 1) 
-
+CAMERA_OFFSET = float(kegman.conf['cameraOffset'])  # m from center car to camera
 
 def compute_path_pinv(l=50):
   deg = 3
