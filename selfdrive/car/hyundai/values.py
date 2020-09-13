@@ -5,6 +5,7 @@ Ecu = car.CarParams.Ecu
 
 # Steer torque limits
 class SteerLimitParams:
+  kegman = kegman_conf()
   STEER_MAX = int(kegman.conf['steerMax']) #255   # 409 is the max, 255 is stock
   STEER_DELTA_UP = int(kegman.conf['deltaUp'])
   STEER_DELTA_DOWN = int(kegman.conf['deltaDown'])
