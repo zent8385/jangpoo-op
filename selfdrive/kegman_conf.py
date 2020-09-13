@@ -154,6 +154,18 @@ class kegman_conf():
       if "cruise_set_mode" not in self.config:
         self.config.update({"cruise_set_mode":"0"})
         self.element_updated = True
+      
+      if "deltaUp" not in self.config:
+        self.config.update({"deltaUp":"3"})
+        self.element_updated = True
+
+      if "deltaDown" not in self.config:
+        self.config.update({"deltaDown":"5"})
+        self.element_updated = True
+        
+      if "steerMax" not in self.config:
+        self.config.update({"steerMax":"409"})
+        self.element_updated = True
 
 
       if self.element_updated:
@@ -172,7 +184,7 @@ class kegman_conf():
                      "sR_boost":"0", "sR_BP0":"0", "sR_BP1":"0", "sR_time":"0.2", \
                      "ALCnudgeLess":"0", "ALCminSpeed":"16.666667", "ALCtimer":"1.0", "CruiseDelta":"8", \
                      "CruiseEnableMin":"0", "epsModded": "0", "steerTorqueOver":"360", "threshold":"150", \
-                     "cv_Ratio":"0.7", "cv_Dist":"-5", "cruise_set_mode": "0"}
+                     "cv_Ratio":"0.7", "cv_Dist":"-5", "cruise_set_mode": "0", "deltaUp": "3", "deltaDown": "5", "steerMax":"409"}
 
 
 

@@ -288,6 +288,7 @@ class CarInterface(CarInterfaceBase):
     ret.steerRatioRear = 0.
     ret.steerControlType = car.CarParams.SteerControlType.torque
 
+
     # steer, gas, brake limitations VS speed
     ret.steerMaxBP = [0.]
     ret.steerMaxV = [1.0]
