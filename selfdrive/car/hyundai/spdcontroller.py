@@ -513,41 +513,41 @@ class SpdController():
         # 2. 커브 감속.
         if set_speed >= 100:
             #곡률 적용
-            if model_speed < 50:
+            if model_speed < 100:
                 set_speed -= 40 #20 
                 wait_time_cmd = 100
-            elif model_speed < 70:  
+            elif model_speed < 140:  
                 set_speed -= 20 #10 
                 wait_time_cmd = 100
-            elif model_speed < 90:  
+            elif model_speed < 180:  
                 set_speed -= 6 #3  
                 wait_time_cmd = 150
-            elif model_speed < 130:  
+            elif model_speed < 225:  
                 set_speed -= 2 #1 
                 wait_time_cmd = 200
             #if set_speed > v_curvature:
             #    set_speed = v_curvature
         elif set_speed >= 80:
-            if model_speed < 70:  
+            if model_speed < 140:  
                 set_speed -= 10 #5 
                 wait_time_cmd = 100
-            elif model_speed < 80:  
+            elif model_speed < 160:  
                 set_speed -= 4 #2 
                 wait_time_cmd = 150
                 #if set_speed > v_curvature:
                 #   set_speed = v_curvature
         elif set_speed >= 60:
-            if model_speed < 50: 
+            if model_speed < 100: 
                 set_speed -= 6 #3 
                 wait_time_cmd = 100
-            elif model_speed < 70:  
+            elif model_speed < 140:  
                 set_speed -= 2 #1 
                 wait_time_cmd = 150
         elif set_speed >= 40:
-            if model_speed < 50: 
+            if model_speed < 100: 
                 set_speed -= 6 #3 
                 wait_time_cmd = 100
-            elif model_speed < 70:  
+            elif model_speed < 140:  
                 set_speed -= 2 #1 
                 wait_time_cmd = 150
                 #if set_speed > v_curvature:
