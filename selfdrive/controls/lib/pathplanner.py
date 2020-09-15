@@ -11,16 +11,13 @@ from common.params import Params
 from common.numpy_fast import interp
 import cereal.messaging as messaging
 from cereal import log
-#combine
+#opkr75
 
 LaneChangeState = log.PathPlan.LaneChangeState
 LaneChangeDirection = log.PathPlan.LaneChangeDirection
 LaneChangeBSM = log.PathPlan.LaneChangeBSM
 
 LOG_MPC = os.environ.get('LOG_MPC', True)
-
-LANE_CHANGE_SPEED_MIN = 50 * CV.KPH_TO_MS
-LANE_CHANGE_TIME_MAX = 10.
 
 DESIRES = {
   LaneChangeDirection.none: {
@@ -161,14 +158,14 @@ class PathPlanner():
 
     # Lane change logic
     one_blinker = sm['carState'].leftBlinker != sm['carState'].rightBlinker
-    below_lane_change_speed = LANE_CHANGE_SPEED_MIN #v_ego < 60 * CV.KPH_TO_MS
+    below_lane_change_speed = v_ego < 60 * CV.KPH_TO_MS
 
     if sm['carState'].leftBlinker:
       self.lane_change_direction = LaneChangeDirection.left
     elif sm['carState'].rightBlinker:
       self.lane_change_direction = LaneChangeDirection.right
 
-    if (not active) or (self.lane_change_timer > LANE_CHANGE_TIME_MAX) or (not one_blinker) or (not self.lane_change_enabled) or (sm['carState'].steeringPressed and ((sm['carState'].steeringTorque > 0 and self.lane_change_direction == LaneChangeDirection.right) or (sm['carState'].steeringTorque < 0 and self.lane_change_direction == LaneChangeDirection.left))):
+    if (not active) or (self.lane_change_timer > 10.0) or (not one_blinker) or (not self.lane_change_enabled) or (sm['carState'].steeringPressed and ((sm['carState'].steeringTorque > 0 and self.lane_change_direction == LaneChangeDirection.right) or (sm['carState'].steeringTorque < 0 and self.lane_change_direction == LaneChangeDirection.left))):
       self.lane_change_state = LaneChangeState.off
       self.lane_change_direction = LaneChangeDirection.none
     else:
@@ -179,11 +176,11 @@ class PathPlanner():
 
       if self.lane_change_direction == LaneChangeDirection.left:
         torque_applied = sm['carState'].steeringTorque > 0 and sm['carState'].steeringPressed
-        if CP.autoLcaEnabled and 2.5 > self.pre_auto_LCA_timer > 2.0 and not lca_left:
+        if CP.autoLcaEnabled and 1.6 > self.pre_auto_LCA_timer > 1.1 and not lca_left:
           torque_applied = True # Enable auto LCA only once after 1 sec 
       else:
         torque_applied = sm['carState'].steeringTorque < 0 and sm['carState'].steeringPressed
-        if CP.autoLcaEnabled and 2.5 > self.pre_auto_LCA_timer > 2.0 and not lca_right:
+        if CP.autoLcaEnabled and 1.6 > self.pre_auto_LCA_timer > 1.1 and not lca_right:
           torque_applied = True # Enable auto LCA only once after 1 sec 
 
       lane_change_prob = self.LP.l_lane_change_prob + self.LP.r_lane_change_prob
