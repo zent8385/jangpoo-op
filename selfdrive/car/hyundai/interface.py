@@ -261,8 +261,8 @@ class CarInterface(CarInterfaceBase):
       ret.lateralTuning.lqr.l = [0.22, 0.318]
       ret.lateralTuning.lqr.dcGain = 0.003
       ret.steerRatio = 13.82 #14.1 * 1.1 #13.7
-      ret.steerActuatorDelay = 0.1
-      ret.steerRateCost = 1.0 #0.5
+      ret.steerActuatorDelay = 0.25
+      ret.steerRateCost = 0.8 #0.5
       ret.steerLimitTimer = 0.8
 
     ret.minEnableSpeed = -1.   # enable is done by stock ACC, so ignore this
