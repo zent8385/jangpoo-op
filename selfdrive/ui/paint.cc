@@ -740,6 +740,7 @@ static void ui_draw_debug(UIState *s)
  
 
   //y_pos += height;
+  x_pos -=200;
   y_pos += 800;
   snprintf(speed_str, sizeof(speed_str), "Curv: %.3f", scene->pCurvature * 1000.);
   nvgText(s->vg, x_pos, y_pos, speed_str, NULL);
