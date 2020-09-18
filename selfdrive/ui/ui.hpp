@@ -191,7 +191,6 @@ typedef struct UIScene {
   //janpoo6427
   float pCurvature;
   float curvMaxSpeed;
-  
   //janpoo6427
   struct _STATUS_
   {
