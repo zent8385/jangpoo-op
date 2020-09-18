@@ -1,5 +1,5 @@
 #include <time.h>
-//#include <dirent.h>
+#include <dirent.h>
 
 #define CAPTURE_STATE_NONE 0
 #define CAPTURE_STATE_CAPTURING 1
@@ -83,7 +83,7 @@ void save_file(char *videos_dir, char *filename) {
 }
 
 void stop_capture() {
-  char videos_dir[50] = "/sdcard/videos";
+  char videos_dir[50] = "/storage/emulated/0/videos";
 
   if (captureState == CAPTURE_STATE_CAPTURING) {
     system("killall -SIGINT screenrecord");
@@ -105,7 +105,7 @@ void stop_capture() {
 void start_capture() {
   captureState = CAPTURE_STATE_CAPTURING;
   char cmd[128] = "";
-  char videos_dir[50] = "/sdcard/videos";
+  char videos_dir[50] = "/storage/emulated/0/videos";
 
   //////////////////////////////////
   // NOTE: make sure videos_dir folder exists on the device!
@@ -117,7 +117,7 @@ void start_capture() {
   /*if (captureNum == 0 && files_created == 0) {
     DIR *dir;
     struct dirent *ent;
-    if ((dir = opendir ("/sdcard/videos")) != NULL) {
+    if ((dir = opendir ("/storage/emulated/0/videos")) != NULL) {
       while ((ent = readdir (dir)) != NULL) {
         strcpy(filenames[files_created++], ent->d_name);
       }
@@ -140,8 +140,8 @@ void start_capture() {
   char filename[64];
   struct tm tm = get_time_struct();
   snprintf(filename,sizeof(filename),"%04d%02d%02d-%02d%02d%02d.mp4", tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
-  //snprintf(cmd,sizeof(cmd),"screenrecord --size 1280x720 --bit-rate 10000000 %s/%s&",videos_dir,filename);
-  snprintf(cmd,sizeof(cmd),"screenrecord --size 960x540 --bit-rate 5000000 %s/%s&",videos_dir,filename);
+  snprintf(cmd,sizeof(cmd),"screenrecord --size 1280x720 --bit-rate 5000000 %s/%s&",videos_dir,filename);
+  //snprintf(cmd,sizeof(cmd),"screenrecord --size 960x540 --bit-rate 5000000 %s/%s&",videos_dir,filename);
   strcpy(filenames[captureNum],filename);
 
   printf("Capturing to file: %s\n",cmd);
@@ -256,7 +256,7 @@ void draw_lock_button(UIState *s) {
 
 static void screen_draw_button(UIState *s, int touch_x, int touch_y) {
   // Set button to bottom left of screen
-  //if (s->vision_connected && s->plus_state == 0) {
+//  if (s->vision_connected && s->plus_state == 0) {
   if (s->vision_connected){
 
     if (captureState == CAPTURE_STATE_CAPTURING) {
@@ -284,7 +284,7 @@ static void screen_draw_button(UIState *s, int touch_x, int touch_y) {
       else {
         nvgFillColor(s->vg, nvgRGBA(255, 255, 255, 200));
       }
-      nvgText(s->vg,btn_x-88,btn_y+50,"REC",NULL);
+      nvgText(s->vg,btn_x-38,btn_y+50,"REC",NULL);
   }
 
   if (captureState == CAPTURE_STATE_CAPTURING) {
@@ -337,11 +337,11 @@ void dashcam( UIState *s, int touch_x, int touch_y ) {
     // Assume car is not in drive so stop recording
     stop_capture();
   }
-  if (s->scene.v_ego > 3.1 && captureState == CAPTURE_STATE_PAUSED) {
-    start_capture();
-  } else if (s->scene.v_ego < 2.9 && captureState == CAPTURE_STATE_CAPTURING) {
+//  if (s->scene.v_ego > 2.1 && captureState == CAPTURE_STATE_NOT_CAPTURING && !s->scene.engaged) {
+//    start_capture();
+//  } else if (s->scene.v_ego < 1.5 && !s->scene.engaged) {
+  if (s->scene.v_ego < 1.5 && !s->scene.engaged) {
     stop_capture();
-    captureState = CAPTURE_STATE_PAUSED;
   }
   s->scene.recording = (captureState != CAPTURE_STATE_NOT_CAPTURING);
 }
