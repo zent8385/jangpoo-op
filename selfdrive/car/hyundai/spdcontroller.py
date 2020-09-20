@@ -515,10 +515,10 @@ class SpdController():
             #곡률 적용
             if model_speed < 100:
                 set_speed -= 40 #20 
-                wait_time_cmd = 100
+                wait_time_cmd = 200
             elif model_speed < 140:  
                 set_speed -= 20 #10 
-                wait_time_cmd = 100
+                wait_time_cmd = 200
             elif model_speed < 180:  
                 set_speed -= 6 #3  
                 wait_time_cmd = 150
@@ -530,7 +530,7 @@ class SpdController():
         elif set_speed >= 80:
             if model_speed < 140:  
                 set_speed -= 10 #5 
-                wait_time_cmd = 100
+                wait_time_cmd = 200
             elif model_speed < 160:  
                 set_speed -= 4 #2 
                 wait_time_cmd = 150
@@ -539,14 +539,14 @@ class SpdController():
         elif set_speed >= 60:
             if model_speed < 100: 
                 set_speed -= 6 #3 
-                wait_time_cmd = 100
+                wait_time_cmd = 200
             elif model_speed < 140:  
                 set_speed -= 2 #1 
                 wait_time_cmd = 150
         elif set_speed >= 40:
             if model_speed < 100: 
                 set_speed -= 6 #3 
-                wait_time_cmd = 100
+                wait_time_cmd = 200
             elif model_speed < 140:  
                 set_speed -= 2 #1 
                 wait_time_cmd = 150
