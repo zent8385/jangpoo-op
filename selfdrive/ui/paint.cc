@@ -958,8 +958,8 @@ static void ui_draw_vision_event(UIState *s) {
   const int viz_event_h = (header_h - (bdr_is*1.5));
   if (s->scene.decel_for_model && s->scene.engaged) {
     // draw winding road sign
-    const int img_turn_size = 96*1.5;
-    ui_draw_image(s->vg, viz_event_x - (img_turn_size / 2), viz_event_y + bdr_s - 25, img_turn_size, img_turn_size, s->img_turn, 1.0f);
+    const int img_turn_size = 96*1.5; 
+    ui_draw_image(s->vg, viz_event_x - (img_turn_size / 8), viz_event_y + bdr_s - 25, img_turn_size, img_turn_size, s->img_turn, 1.0f);
   } else {
     // draw steering wheel
     const int bg_wheel_size = 96;
