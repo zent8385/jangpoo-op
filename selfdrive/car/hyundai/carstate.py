@@ -346,13 +346,13 @@ class CarState():
     if self.pcm_acc_status:
 
       #크루즈 auto set 적용
-      if self.cruise_set_mode ==2  and not self.cruise_set_speed and self.prev_VSetDis:
-        cruise_set_speed_kph = int(self.prev_VSetDis)
+      #if self.cruise_set_mode ==2  and not self.cruise_set_speed and self.prev_VSetDis:
+      #  cruise_set_speed_kph = int(self.prev_VSetDis)
         
         #delta_vsetdis = abs(self.VSetDis - self.prev_VSetDis)
       
       #브레이크 최우선
-      if self.brake_pressed:
+      if self.brake_pressed and self.prev_clu_CruiseSwState != 4:
         if self.cruise_set_mode !=2:
           self.cruise_set_first = 1
           cruise_set_speed_kph = 0
