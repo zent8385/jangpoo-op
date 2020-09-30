@@ -252,19 +252,19 @@ class CarInterface(CarInterfaceBase):
       ret.mass = 1730. + STD_CARGO_KG #1985. + STD_CARGO_KG
       ret.wheelbase = 2.67 #2.78
       ret.steerRatio = 13.82 #14.1 * 1.1 #13.7
-      ret.steerActuatorDelay = 0.25  #default delay 0.1
-      ret.steerRateCost = 1.0 #0.5
+      ret.steerActuatorDelay = 0.3  #default delay 0.1
+      ret.steerRateCost = 0.55
       ret.steerLimitTimer = 2.0
       
       ret.lateralTuning.init('lqr')
-      ret.lateralTuning.lqr.scale = 1500.0
+      ret.lateralTuning.lqr.scale = 195.0
       ret.lateralTuning.lqr.ki = 0.005
       ret.lateralTuning.lqr.a = [0., 1., -0.22619643, 1.21822268]
       ret.lateralTuning.lqr.b = [-1.92006585e-04, 3.95603032e-05]
       ret.lateralTuning.lqr.c = [1., 0.]
-      ret.lateralTuning.lqr.k = [-110., 451.]
-      ret.lateralTuning.lqr.l = [0.32, 0.318]
-      ret.lateralTuning.lqr.dcGain = 0.0023
+      ret.lateralTuning.lqr.k = [-100., 450.]
+      ret.lateralTuning.lqr.l = [0.22, 0.318]
+      ret.lateralTuning.lqr.dcGain = 0.00288
       
 
     ret.minEnableSpeed = -1.   # enable is done by stock ACC, so ignore this
